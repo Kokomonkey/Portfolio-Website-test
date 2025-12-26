@@ -1,0 +1,162 @@
+/* --- Variables & Reset --- */
+:root {
+    --bg-color: #f4f4f4;
+    --text-main: #1a1a1a;
+    --text-muted: #666;
+    --accent: #000;
+    --box-bg: #fff;
+    --line-color: #ccc;
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --panel-height: 200px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    overflow: hidden; /* Default for workflow page */
+}
+
+/* --- Navigation --- */
+.navbar {
+    position: fixed; top: 0; width: 100%; height: 60px;
+    background: rgba(255,255,255,0.95);
+    border-bottom: 1px solid #ddd;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 40px; z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+.logo { font-weight: 700; font-size: 1.2rem; letter-spacing: 2px; }
+.nav-links a {
+    text-decoration: none; color: var(--text-muted); margin-left: 30px;
+    font-size: 0.9rem; transition: 0.3s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--accent); font-weight: 600; }
+
+/* --- Workflow Page (Infinite Canvas) --- */
+.workflow-body { width: 100vw; height: 100vh; }
+
+#canvas-container {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    cursor: grab;
+    background-image: radial-gradient(#ddd 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+#canvas-container:active { cursor: grabbing; }
+
+#workflow-canvas {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform-origin: center;
+    transition: transform 0.1s ease-out; /* Smooth drag */
+    width: 0; height: 0; /* Centering hack */
+}
+
+/* --- Workflow Nodes --- */
+.step-box {
+    position: absolute;
+    width: 220px;
+    padding: 20px;
+    background: var(--box-bg);
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 10;
+}
+
+.step-box h3 { font-size: 1rem; margin-bottom: 5px; }
+.step-number { font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block;}
+
+/* Connector Lines */
+.connector {
+    position: absolute;
+    background: var(--line-color);
+    height: 2px;
+    transform-origin: 0 50%;
+    z-index: 1;
+}
+
+/* --- Interactive States (Hover) --- */
+/* When container has a hovered item, dim everything else */
+#workflow-canvas.has-hover .step-box {
+    opacity: 0.3;
+    filter: grayscale(100%);
+    transform: scale(0.95);
+}
+
+/* The actual hovered item */
+#workflow-canvas .step-box:hover {
+    opacity: 1 !important;
+    filter: grayscale(0%) !important;
+    transform: scale(1.2) !important;
+    border-color: #000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+/* --- Bottom Detail Panel --- */
+#detail-panel {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: 600px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 -5px 30px rgba(0,0,0,0.1);
+    text-align: center;
+    z-index: 900;
+    transition: opacity 0.3s;
+    border: 1px solid #eee;
+}
+#panel-title { font-size: 1.2rem; margin-bottom: 10px; }
+#panel-desc { font-size: 0.9rem; color: #555; line-height: 1.5; margin-bottom: 15px; }
+
+.ai-chip {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 4px;
+    background: #f0f0f0;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid transparent;
+    transition: 0.2s;
+}
+.ai-chip:hover { background: #000; color: #fff; border-color: #000; }
+
+/* --- Unused AIs (Bottom Right) --- */
+#unused-ai-container {
+    position: fixed; bottom: 20px; right: 20px;
+    width: 250px;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    z-index: 800;
+}
+#unused-ai-container h4 { font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase;}
+#unused-ai-list { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* --- Standard Pages (Table & About) --- */
+.page-content { padding: 100px 40px 40px; max-width: 1200px; margin: 0 auto; overflow-y: auto; height: 100vh;}
+.page-content.narrow { max-width: 800px; }
+
+.table-container { margin-top: 30px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: var(--card-shadow); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+th { background: #fafafa; font-weight: 600; color: #444; }
+tr:hover { background: #f9f9f9; }
+.logo-placeholder { 
+    width: 30px; height: 30px; background: #ddd; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; font-size: 10px; color: #666;
+}
+
+.card { background: #fff; padding: 30px; margin-top: 20px; border-radius: 12px; box-shadow: var(--card-shadow); }
+.card h3 { margin-bottom: 10px; }
+.card p { color: #555; line-height: 1.6; }

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchWorkflow - AI Database</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">ARCH.AI</div>
+        <div class="nav-links">
+            <a href="index.html">Workflow</a>
+            <a href="table.html" class="active">AI Table</a>
+            <a href="about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <h1>AI Tools Database</h1>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Logo</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Function</th>
+                        <th>Cost (Est.)</th>
+                    </tr>
+                </thead>
+                <tbody id="ai-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Trigger table population on load
+        document.addEventListener('DOMContentLoaded', populateTablePage);
+    </script>
+</body>
+</html>
