@@ -3,423 +3,610 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOUWEDOESDESIGN</title>
+    <title>AI in Architecture | Master Workflow</title>
     <style>
-        /* --- CSS VARIABLES & RESET (The "Design System") --- */
+        /* --- CORE VARIABLES --- */
         :root {
-            --bg-color: #0a0a0a;       /* Deep Black */
-            --text-color: #e5e5e5;     /* Off-white for readability */
-            --accent-color: #39ff14;   /* Neon Green */
-            --secondary-bg: #1a1a1a;   /* Slightly lighter black for cards */
+            --bg-color: #f4f7f6;
+            --grid-color: #e1e4e8;
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --accent-red: #d63031;
+            --node-bg: #ffffff;
+            --line-color: #000000;
+            --success: #00b894;
+            --danger: #d63031;
+            --shadow: 0 10px 20px rgba(0,0,0,0.08);
             --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            --spacing-unit: 1rem;
-            --header-height: 80px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        /* Dark / Blueprint Mode Override */
+        [data-theme="blueprint"] {
+            --bg-color: #0c2461;
+            --grid-color: #1e3799;
+            --text-primary: #f1f2f6;
+            --text-secondary: #a4b0be;
+            --accent-red: #fa983a;
+            --node-bg: #0a3d62;
+            --line-color: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-font-smoothing: antialiased; }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
             font-family: var(--font-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        a { text-decoration: none; color: inherit; transition: 0.3s; }
-        ul { list-style: none; }
-        img { max-width: 100%; display: block; }
-
-        /* --- GLOBAL COMPONENT: TOP BAR (Sticky) --- */
-        .top-bar {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: rgba(10, 10, 10, 0.95); /* Slight transparency */
-            border-bottom: 1px solid #333;
-            height: var(--header-height);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5%;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        }
-        .logo span { color: var(--accent-color); }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
-
-        .cta-button {
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 0.5rem 1.5rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-        
-        .cta-button:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-        }
-
-        /* Mobile Hamburger */
-        .hamburger { display: none; cursor: pointer; font-size: 1.5rem; }
-
-        /* --- PAGE 1: HERO SECTION --- */
-        .hero-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            min-height: calc(100vh - var(--header-height));
-            align-items: center;
-            padding: 0 5%;
-            gap: 2rem;
-        }
-
-        .hero-content h1 {
-            font-size: 4rem;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .hero-content p {
-            font-size: 1.25rem;
-            color: #aaa;
-            margin-bottom: 2rem;
-            max-width: 500px;
-        }
-
-        .hero-visual {
-            position: relative;
-            border: 1px solid #333;
-            padding: 10px;
-        }
-
-        /* Simulating the Technical Drawing Look for Image 1 */
-        .tech-drawing-wrapper {
-            width: 100%;
-            height: 500px;
-            background-color: #fff; /* White background because the PDF is a drawing on white */
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100vw; height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        /* --- DYNAMIC GRID BACKGROUND --- */
+        /* Applied via JS to body for performance */
+        body {
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-repeat: repeat;
+            /* Size and position handled by JS updateGrid() */
+        }
+
+        /* --- CANVAS CONTAINER --- */
+        #canvas-container {
+            width: 100%; height: 100%;
+            cursor: grab;
             position: relative;
+            transform-origin: 0 0;
+            perspective: 1000px; /* For 3D effects */
         }
-        
-        .tech-drawing-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: grayscale(100%) contrast(120%); /* Brutalist touch */
-        }
+        #canvas-container:active { cursor: grabbing; }
 
-        .tech-label {
+        #workflow-layer {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: black;
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 5px;
-            font-family: monospace;
+            top: 0; left: 0;
+            transform-origin: 0 0;
+            /* Transition removed for instant drag response, added back conditionally for reset */
         }
 
-        /* --- PAGE 1: SERVICES TEASER --- */
-        .services-teaser {
-            padding: 5rem 5%;
-            text-align: center;
-            border-bottom: 1px solid #333;
-        }
-        .services-teaser h2 {
-            font-size: 2rem;
-            font-weight: normal;
-        }
-        .services-teaser span {
-            color: var(--accent-color);
-            font-weight: bold;
+        /* --- NODES --- */
+        .node {
+            position: absolute;
+            width: 260px;
+            padding: 18px;
+            background: var(--node-bg);
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            border: 1px solid transparent;
+            transition: opacity 0.3s, filter 0.3s; /* For spotlight effect */
+            
+            /* Opening Animation Initial State */
+            opacity: 0;
+            transform: translateY(20px); 
         }
 
-        /* --- PAGE 3 PREVIEW: PORTFOLIO GRID (Masonry-ish) --- */
-        .portfolio-preview {
-            padding: 5rem 5%;
+        /* 3D Tilt Wrapper inside Node */
+        .node-content {
+            width: 100%; height: 100%;
+            pointer-events: none; /* Let clicks pass to parent */
+            transition: transform 0.1s ease-out;
         }
-        .section-header {
-            margin-bottom: 3rem;
+
+        .step-node {
+            border: 2px solid var(--accent-red);
+            z-index: 10;
+            height: 90px;
             display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-        .filter-buttons button {
-            background: none;
-            border: none;
-            color: #888;
-            margin-left: 1rem;
-            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
             font-size: 1rem;
         }
-        .filter-buttons button.active { color: var(--accent-color); text-decoration: underline; }
 
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+        .ai-node {
+            border: 1px solid rgba(0,0,0,0.1);
+            z-index: 5;
+            min-height: 100px;
+            font-size: 0.85rem;
         }
+        [data-theme="blueprint"] .ai-node { border-color: rgba(255,255,255,0.2); }
 
-        .project-card {
-            background-color: var(--secondary-bg);
-            transition: transform 0.3s;
-            cursor: pointer;
+        .ai-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px;
         }
         
-        .project-card:hover {
-            transform: translateY(-5px);
+        .ai-link {
+            text-decoration: none; color: var(--text-primary); font-weight: 700;
+            transition: color 0.2s; pointer-events: auto;
+        }
+        .ai-link:hover { color: var(--accent-red); }
+
+        .ai-tags { font-size: 0.75rem; line-height: 1.4; color: var(--text-secondary); }
+        .tag-pro { color: var(--success); display: block; margin-top: 4px; }
+        .tag-con { color: var(--danger); display: block; }
+
+        /* Opening Keyframes */
+        @keyframes popIn {
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .card-image {
-            height: 250px;
-            background-color: #333;
-            overflow: hidden;
-        }
-        .card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        /* --- CONNECTORS --- */
+        svg.connections-layer {
+            position: absolute; top: 0; left: 0;
+            width: 1px; height: 1px; overflow: visible;
+            pointer-events: none; z-index: 1;
         }
 
-        .card-info {
-            padding: 1.5rem;
+        path {
+            fill: none;
+            stroke: var(--line-color);
+            stroke-width: 2px;
+            stroke-linecap: square; /* Orthogonal look */
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000; /* For draw animation */
+            animation: drawLine 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.5s;
         }
-        .card-info h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .card-info .category { color: var(--accent-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
 
-        /* --- PAGE 2 PREVIEW: ABOUT ME (Teaser) --- */
-        .about-teaser {
-            padding: 5rem 5%;
-            display: flex;
-            gap: 4rem;
-            align-items: center;
-            background-color: var(--secondary-bg);
+        /* --- UI OVERLAY --- */
+        #ui-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 100;
         }
-        .about-text { flex: 1; }
-        .about-image { flex: 1; height: 400px; background-color: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .hud { pointer-events: auto; position: absolute; }
 
-        /* --- GLOBAL COMPONENT: BOTTOM BAR (Footer) --- */
-        .bottom-bar {
-            background-color: #000;
-            border-top: 1px solid var(--accent-color);
-            padding: 4rem 5% 2rem;
-            margin-top: auto; /* Pushes to bottom */
+        /* Header */
+        #header {
+            top: 30px; left: 30px;
+            background: var(--bg-color);
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--accent-red);
+            display: flex; gap: 20px; align-items: center;
+        }
+        .brand { font-weight: 900; letter-spacing: -0.5px; font-size: 1.1rem; }
+        .sub-brand { font-weight: normal; opacity: 0.6; }
+
+        /* Bottom Info Rail */
+        #info-rail {
+            bottom: 0; left: 0; width: 100%;
+            background: var(--bg-color);
+            padding: 40px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            border-top: 1px solid var(--accent-red);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+        }
+        #info-rail.active { transform: translateY(0); }
+        .rail-title { font-size: 1.5rem; font-weight: 800; color: var(--accent-red); margin-bottom: 10px; }
+        .rail-body { max-width: 800px; line-height: 1.6; color: var(--text-secondary); }
+
+        /* Controls */
+        #controls {
+            bottom: 30px; right: 30px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .btn {
+            width: 50px; height: 50px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn:hover { transform: scale(1.1); color: var(--accent-red); }
+        .btn.active-mode { background: var(--accent-red); color: white; }
+
+        /* Laser Canvas */
+        #laser-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 99;
         }
 
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .footer-col h4 { margin-bottom: 1.5rem; color: var(--accent-color); }
-        .footer-col ul li { margin-bottom: 0.8rem; color: #888; }
-        .footer-col ul li:hover { color: #fff; }
-
-        .copyright {
-            text-align: center;
-            color: #555;
-            font-size: 0.8rem;
-            border-top: 1px solid #222;
-            padding-top: 2rem;
-        }
-
-        /* --- RESPONSIVE MEDIA QUERIES --- */
-        @media (max-width: 768px) {
-            .hero-section { grid-template-columns: 1fr; text-align: center; padding-top: 2rem; }
-            .hero-content p { margin: 0 auto 2rem; }
-            .nav-links, .cta-button { display: none; } /* Hide desktop nav */
-            .hamburger { display: block; color: var(--text-color); }
-            .about-teaser { flex-direction: column-reverse; }
-            
-            /* Mobile Menu State (Simplified JS toggle would go here) */
-            .nav-active .nav-links {
-                display: flex;
-                flex-direction: column;
-                position: absolute;
-                top: var(--header-height);
-                left: 0;
-                width: 100%;
-                background: #000;
-                padding: 2rem;
-                border-bottom: 1px solid var(--accent-color);
-            }
-        }
     </style>
 </head>
 <body>
 
-    <nav class="top-bar">
-        <div class="logo">Douwe<span>Does</span>Design</div>
-        <div class="hamburger" onclick="toggleMenu()">☰</div>
-        <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <a href="#projects" class="cta-button">View Work</a>
-    </nav>
-
-    <section id="home" class="hero-section">
-        <div class="hero-content">
-            <h1>Douwe Does Design</h1>
-            <p>I provide both ideas and the drawings to make them reality. Precise engineering meets creative vision.</p>
-            <a href="#projects" class="cta-button" style="background:var(--accent-color); color:black;">Go to Projects</a>
-        </div>
-        
-        <div class="hero-visual">
-            <div class="tech-drawing-wrapper">
-                <img src="images/20.6 - Facade Detailed.png" alt="Facade Detailed Technical Drawing showing stainless steel frame and gear">
-                <div class="tech-label">Spatial Stitch [02/11/2025]</div>
+    <div id="canvas-container">
+        <div id="workflow-layer">
+            <svg class="connections-layer" id="lines"></svg>
             </div>
-        </div>
-    </section>
+    </div>
 
-    <section class="services-teaser">
-        <h2>"I bridge the gap between <span>abstract concepts</span> and <span>technical execution</span>."</h2>
-    </section>
+    <canvas id="laser-canvas"></canvas>
 
-    <section id="about" class="about-teaser">
-        <div class="about-image">
-             <img src="https://placehold.co/600x600/1a1a1a/39ff14?text=Abstract+Isometric+Drawing" alt="Abstract architectural steps">
-        </div>
-        <div class="about-text">
-            <h2 style="margin-bottom:1rem;">Who am I?</h2>
-            <p style="margin-bottom:1rem;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
-            <br>
-            <a href="#" style="text-decoration: underline; color: var(--accent-color);">Read full bio &rarr;</a>
-        </div>
-    </section>
-
-    <section id="projects" class="portfolio-preview">
-        <div class="section-header">
-            <h2>Selected Projects</h2>
-            <div class="filter-buttons">
-                <button class="active">All</button>
-                <button>Engineering</button>
-                <button>Design</button>
-            </div>
+    <div id="ui-layer">
+        <div id="header" class="hud">
+            <div class="brand">DOUWE<span style="color:var(--accent-red)">DOES</span>DESIGN <span class="sub-brand">| AI WORKFLOW</span></div>
+            <div style="font-size:0.8rem; opacity:0.5; margin-left:auto;">SCROLL TO ZOOM • DRAG TO PAN • SPACE FOR LASER</div>
         </div>
 
-        <div class="project-grid">
-            <div class="project-card">
-                <div class="card-image">
-                     <img src="https://placehold.co/600x400/white/black?text=Spatial+Stitch+Detail" alt="Spatial Stitch Detail">
-                </div>
-                <div class="card-info">
-                    <span class="category">Engineering</span>
-                    <h3>Spatial Stitch Facade</h3>
-                    <p style="font-size:0.9rem; color:#888;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </div>
-            </div>
-
-            <div class="project-card">
-                <div class="card-image">
-                    <img src="https://placehold.co/600x400/1a1a1a/39ff14?text=Isometric+Concept" alt="Isometric Concept">
-                </div>
-                <div class="card-info">
-                    <span class="category">Design</span>
-                    <h3>Abstract Flow</h3>
-                    <p style="font-size:0.9rem; color:#888;">Sed do eiusmod tempor incididunt ut labore et dolore.</p>
-                </div>
-            </div>
-
-            <div class="project-card">
-                <div class="card-image">
-                    <img src="https://placehold.co/600x400/333/666?text=Project+Three" alt="Project Three">
-                </div>
-                <div class="card-info">
-                    <span class="category">Drafting</span>
-                    <h3>Residential Frame</h3>
-                    <p style="font-size:0.9rem; color:#888;">Ut enim ad minim veniam, quis nostrud exercitation.</p>
-                </div>
-            </div>
+        <div id="controls" class="hud">
+            <div class="btn" onclick="toggleBlueprint()" title="Blueprint Mode">📐</div>
+            <div class="btn" onclick="resetCam()" title="Reset Camera">🎯</div>
+            <div class="btn" onclick="toggleSpotlight()" id="btn-spot" title="Focus Mode">🔦</div>
         </div>
-    </section>
 
-    <section id="contact" style="padding: 5rem 5%; text-align:center;">
-        <h2 style="font-size:3rem; margin-bottom: 2rem;">Let's Build Something.</h2>
-        <a href="mailto:douwe@example.com" class="cta-button" style="font-size:1.2rem; padding: 1rem 3rem;">Get in Touch</a>
-    </section>
-
-    <footer class="bottom-bar">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h4>DouweDoesDesign</h4>
-                <ul>
-                    <li>Rotterdam, NL</li> <li>+31 6 1234 5678</li>
-                    <li>douwe@example.com</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Sitemap</h4>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About Me</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Socials</h4>
-                <ul>
-                    <li>LinkedIn</li>
-                    <li>Instagram</li>
-                    <li>Behance</li>
-                </ul>
-            </div>
+        <div id="info-rail" class="hud">
+            <div class="rail-title" id="info-title">Phase Title</div>
+            <div class="rail-body" id="info-desc">Description text...</div>
+            <div style="margin-top:20px; font-size:0.7rem; opacity:0.5; cursor:pointer;" onclick="closeRail()">[ CLOSE ]</div>
         </div>
-        <div class="copyright">
-            &copy; 2025 Douwe Does Design. All rights reserved.
-        </div>
-    </footer>
+    </div>
 
     <script>
-        // Simple Mobile Menu Toggle
-        function toggleMenu() {
-            const nav = document.querySelector('.top-bar');
-            nav.classList.toggle('nav-active');
+        // --- DATASET: 6 PHASES + 35 AI TOOLS ---
+        const phases = [
+            {
+                id: "p1", title: "1. PRE-DESIGN",
+                desc: "The analytical foundation. AI shifts this from manual research to algorithmic feasibility study, processing zoning codes, environmental data, and financial models in seconds.",
+                ais: [
+                    { name: "TestFit", url: "https://testfit.io", pro: "Instant site feasibility & parking", con: "Geometric rigidity" },
+                    { name: "Autodesk Forma", url: "https://autodesk.com/forma", pro: "Real-time wind/sun/noise analysis", con: "Requires cloud credits" },
+                    { name: "Snaptrude", url: "https://snaptrude.com", pro: "Browser-based collaborative BIM", con: "Learning curve for Revit users" },
+                    { name: "Archistar", url: "https://archistar.ai", pro: "Zoning compliance check", con: "Region specific (mostly Aus/US)" },
+                    { name: "Hypar", url: "https://hypar.io", pro: "Modular generative functions", con: "Requires computational logic knowledge" },
+                    { name: "Delve", url: "https://sidewalklabs.com", pro: "Optimizes yield vs quality", con: "High enterprise cost" }
+                ]
+            },
+            {
+                id: "p2", title: "2. SCHEMATIC DESIGN",
+                desc: "The creative explosion. AI acts as a 'muse' and 'accelerator', converting text to image, sketch to render, and massing to floor plan instantly.",
+                ais: [
+                    { name: "Midjourney", url: "https://midjourney.com", pro: "Unmatched artistic quality", con: "No precise geometry control" },
+                    { name: "Veras", url: "https://evolvelab.io/veras", pro: "Render inside Revit/Rhino", con: "Limited style flexibility" },
+                    { name: "Maket.ai", url: "https://maket.ai", pro: "Generates residential plans", con: "Generic spatial output" },
+                    { name: "Stable Diffusion", url: "https://stability.ai", pro: "Locally hostable & trainable", con: "High technical barrier" },
+                    { name: "LookX", url: "https://lookx.ai", pro: "Trained specifically on architecture", con: "Newer platform stability" },
+                    { name: "Luma AI", url: "https://lumalabs.ai", pro: "NeRF/3D scanning from phone", con: "Mesh topology is messy" }
+                ]
+            },
+            {
+                id: "p3", title: "3. DESIGN DEVELOPMENT",
+                desc: "System refinement. The 'Simulation' phase where AI predicts performance (energy, structural, carbon) to inform design decisions before documentation.",
+                ais: [
+                    { name: "Cove.tool", url: "https://covetool.com", pro: "Cost vs. Carbon optimization", con: "Simplified physics engine" },
+                    { name: "Finch 3D", url: "https://finch3d.com", pro: "Graph-based adaptive plans", con: "Currently in limited beta" },
+                    { name: "BAMROC", url: "https://bamroc.com", pro: "Automated MEP clash solving", con: "Ignores maintenance logic" },
+                    { name: "UpCodes", url: "https://up.codes", pro: "Spellcheck for building code", con: "Liability remains with human" },
+                    { name: "Autodesk Insight", url: "https://autodesk.com", pro: "Integrated energy modeling", con: "Slow cloud processing" }
+                ]
+            },
+            {
+                id: "p4", title: "4. CONSTRUCTION DOCS",
+                desc: "The production factory. AI automates the tedious tasks: dimensioning, tagging, sheet creation, and specification writing.",
+                ais: [
+                    { name: "Swapp.ai", url: "https://swapp.ai", pro: "Full CD set automation", con: "Black box (hard to edit logic)" },
+                    { name: "Glyph", url: "https://evolvelab.io", pro: "Auto-documentation for Revit", con: "Complex setup required" },
+                    { name: "Augmenta", url: "https://augmenta.ai", pro: "Electrical routing automation", con: "Specific to conduit/pipes" },
+                    { name: "PIRROS", url: "https://pirros.com", pro: "Detail management automation", con: "Requires library curation" },
+                    { name: "SpecLink", url: "https://bspeclink.com", pro: "Data-driven specs", con: "Subscription cost" }
+                ]
+            },
+            {
+                id: "p5", title: "5. BIDDING",
+                desc: "Financial rigor. AI parses messy PDF sets to perform quantity takeoffs, level bids, and identify scope gaps in minutes.",
+                ais: [
+                    { name: "Togal.ai", url: "https://togal.ai", pro: "Fastest PDF takeoffs", con: "2D only (no BIM)" },
+                    { name: "DeepRFP", url: "https://deeprfp.com", pro: "Drafts proposals from RFPs", con: "Can sound generic" },
+                    { name: "Bridgeline", url: "https://bridgeline.com", pro: "Scope gap detection", con: "Niche usage" },
+                    { name: "Destini Estimator", url: "https://beck-technology.com", pro: "Integrated cost history", con: "Legacy interface" }
+                ]
+            },
+            {
+                id: "p6", title: "6. CONST. ADMIN",
+                desc: "The digital eye. AI monitors the job site for safety, progress, and discrepancies against the BIM model.",
+                ais: [
+                    { name: "OpenSpace", url: "https://openspace.ai", pro: "Passive video capture walking", con: "Massive data storage" },
+                    { name: "Part3", url: "https://part3.io", pro: "Streamlines submittals/RFIs", con: "Integration limits" },
+                    { name: "Bluebeam AI", url: "https://bluebeam.com", pro: "Visual search in drawings", con: "Manual workflows persist" },
+                    { name: "Novatr", url: "https://novatr.com", pro: "MEP specific AI tools", con: "New market entrant" },
+                    { name: "Datagrid", url: "https://datagrid.com", pro: "AI agent for RFI analysis", con: "Trust factor involved" },
+                    { name: "Doxel", url: "https://doxel.ai", pro: "Lidar vs BIM progress track", con: "Hardware intensive" }
+                ]
+            }
+        ];
+
+        // --- ENGINE CONFIG ---
+        const CONFIG = {
+            stepW: 280, stepH: 90,
+            aiW: 260, aiH: 110,
+            gapX: 450, gapY: 60,
+            startX: 100, startY: 100
+        };
+
+        let state = {
+            panX: 50, panY: 200, scale: 0.8,
+            isDragging: false,
+            spotlightMode: false,
+            blueprintMode: false,
+            laserMode: false
+        };
+
+        const canvas = document.getElementById('workflow-layer');
+        const container = document.getElementById('canvas-container');
+        const linesSvg = document.getElementById('lines');
+
+        // --- RENDERER ---
+        function init() {
+            let html = "";
+            let svgPaths = "";
+            let curX = CONFIG.startX;
+            const curY = CONFIG.startY;
+
+            phases.forEach((phase, pIdx) => {
+                // 1. Render Step (The Red Box)
+                html += createNodeHtml(phase, curX, curY, 'step', pIdx);
+
+                // Horizontal Line to Next Step
+                if (pIdx < phases.length - 1) {
+                    const x1 = curX + CONFIG.stepW;
+                    const y1 = curY + CONFIG.stepH/2;
+                    const x2 = curX + CONFIG.gapX;
+                    const y2 = curY + CONFIG.stepH/2;
+                    svgPaths += `<path d="M ${x1} ${y1} L ${x2} ${y2}" />`;
+                }
+
+                // 2. Render AIs (Vertical Stack)
+                let aiY = curY + CONFIG.stepH + CONFIG.gapY;
+                const aiX = curX + (CONFIG.stepW - CONFIG.aiW)/2; // Center under step
+
+                // Vertical Line from Step to First AI
+                const stemX = curX + CONFIG.stepW/2;
+                svgPaths += `<path d="M ${stemX} ${curY + CONFIG.stepH} L ${stemX} ${aiY}" />`;
+
+                phase.ais.forEach((ai, aIdx) => {
+                    html += createNodeHtml(ai, aiX, aiY, 'ai', `${pIdx}-${aIdx}`);
+                    
+                    // Link AIs vertically
+                    if (aIdx < phase.ais.length - 1) {
+                        const linkY1 = aiY + CONFIG.aiH; // Bottom of current
+                        const linkY2 = linkY1 + CONFIG.gapY - (CONFIG.aiH - 100); // Top of next (adjusted for variable height)
+                        // Simplified: Connect center bottom to center top
+                        // Since I don't know exact height in JS string build, I assume standard spacing
+                         svgPaths += `<path d="M ${stemX} ${aiY + 100} L ${stemX} ${aiY + 100 + CONFIG.gapY}" />`;
+                    }
+                    aiY += 100 + CONFIG.gapY; // Increment Y
+                });
+
+                curX += CONFIG.gapX;
+            });
+
+            linesSvg.innerHTML = svgPaths;
             
-            // Check if nav-links exist for mobile (simplified for this demo)
-            const links = document.querySelector('.nav-links');
-            if (nav.classList.contains('nav-active')) {
-                links.style.display = 'flex';
-                links.style.flexDirection = 'column';
-                links.style.position = 'absolute';
-                links.style.top = '80px';
-                links.style.left = '0';
-                links.style.width = '100%';
-                links.style.background = '#0a0a0a';
-                links.style.padding = '20px';
+            // Inject Nodes
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            while(temp.firstChild) canvas.appendChild(temp.firstChild);
+
+            // Trigger Entrance Animation
+            setTimeout(() => {
+                const nodes = document.querySelectorAll('.node');
+                nodes.forEach((n, i) => {
+                    setTimeout(() => {
+                        n.style.animation = 'popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+                    }, i * 50); // Staggered
+                });
+            }, 100);
+
+            updateView();
+        }
+
+        function createNodeHtml(data, x, y, type, id) {
+            let content = "";
+            let classes = `node ${type}-node`;
+            
+            if (type === 'step') {
+                content = `
+                    <div class="node-content">
+                        <div>${data.title}</div>
+                    </div>`;
             } else {
-                links.style = ''; // Reset inline styles
+                content = `
+                    <div class="node-content">
+                        <div class="ai-header">
+                            <a href="${data.url}" target="_blank" class="ai-link">${data.name}</a>
+                            <span>↗</span>
+                        </div>
+                        <div class="ai-tags">
+                            <span class="tag-pro">+ ${data.pro}</span>
+                            <span class="tag-con">- ${data.con}</span>
+                        </div>
+                    </div>`;
+            }
+
+            // Store data for click/hover
+            const safeTitle = data.title || data.name;
+            const safeDesc = data.desc || `A powerful tool for ${data.name}. Pros: ${data.pro}.`;
+
+            return `<div class="${classes}" 
+                        style="left:${x}px; top:${y}px;"
+                        onmouseenter="handleHover('${safeTitle}', this)"
+                        onmouseleave="handleLeave(this)"
+                        onclick="handleClick('${safeTitle}', '${safeDesc.replace(/'/g, "\\'")}')"
+                        data-id="${id}">
+                        ${content}
+                    </div>`;
+        }
+
+        // --- INTERACTION CORE ---
+        
+        // 1. Pan & Zoom & Grid Sync
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = -e.deltaY * 0.001;
+            const newScale = Math.min(Math.max(0.1, state.scale + delta), 3);
+            
+            // Zoom to mouse point
+            const rect = container.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            
+            state.panX = mx - (mx - state.panX) * (newScale / state.scale);
+            state.panY = my - (my - state.panY) * (newScale / state.scale);
+            state.scale = newScale;
+            
+            updateView();
+        }, { passive: false });
+
+        let dragStart = {x:0, y:0};
+        container.addEventListener('mousedown', (e) => {
+            if(e.target === container || e.target.id === 'workflow-layer' || e.target.tagName === 'SVG') {
+                state.isDragging = true;
+                dragStart.x = e.clientX - state.panX;
+                dragStart.y = e.clientY - state.panY;
+                container.style.cursor = 'grabbing';
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (state.isDragging) {
+                state.panX = e.clientX - dragStart.x;
+                state.panY = e.clientY - dragStart.y;
+                updateView();
+            }
+            
+            // 3D Tilt Effect on Nodes
+            if (e.target.closest('.node')) {
+                const node = e.target.closest('.node');
+                const content = node.querySelector('.node-content');
+                const rect = node.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Calculate rotation (max 15deg)
+                const xRot = ((y / rect.height) - 0.5) * -15; 
+                const yRot = ((x / rect.width) - 0.5) * 15;
+                
+                content.style.transform = `perspective(500px) rotateX(${xRot}deg) rotateY(${yRot}deg)`;
+            }
+
+            // Laser Effect
+            if (state.laserMode) drawLaser(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.isDragging = false;
+            container.style.cursor = 'grab';
+        });
+
+        function updateView() {
+            // Apply Transform
+            canvas.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
+            
+            // --- GRID TRICK ---
+            // We scale the background size and move position to match canvas
+            // The grid size is 40px at scale 1. 
+            const gridSize = 40 * state.scale;
+            document.body.style.backgroundSize = `${gridSize}px ${gridSize}px`;
+            document.body.style.backgroundPosition = `${state.panX}px ${state.panY}px`;
+        }
+
+        // --- FEATURES ---
+
+        function handleHover(title, el) {
+            if (state.spotlightMode) {
+                document.querySelectorAll('.node').forEach(n => {
+                    if(n !== el) n.style.opacity = '0.1';
+                });
+                el.style.opacity = '1';
             }
         }
+
+        function handleLeave(el) {
+            el.querySelector('.node-content').style.transform = 'none'; // Reset Tilt
+            if (state.spotlightMode) {
+                document.querySelectorAll('.node').forEach(n => n.style.opacity = '1');
+            }
+        }
+
+        function handleClick(title, desc) {
+            document.getElementById('info-title').innerText = title;
+            document.getElementById('info-desc').innerText = desc;
+            document.getElementById('info-rail').classList.add('active');
+        }
+
+        function closeRail() {
+            document.getElementById('info-rail').classList.remove('active');
+        }
+
+        function toggleBlueprint() {
+            state.blueprintMode = !state.blueprintMode;
+            if(state.blueprintMode) document.body.setAttribute('data-theme', 'blueprint');
+            else document.body.removeAttribute('data-theme');
+        }
+
+        function toggleSpotlight() {
+            state.spotlightMode = !state.spotlightMode;
+            const btn = document.getElementById('btn-spot');
+            btn.classList.toggle('active-mode');
+        }
+
+        function resetCam() {
+            state.panX = 100; state.panY = 100; state.scale = 0.8;
+            updateView();
+        }
+
+        // Laser Logic
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                state.laserMode = true; 
+                document.body.style.cursor = 'crosshair';
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                state.laserMode = false;
+                document.body.style.cursor = 'default';
+                ctx.clearRect(0, 0, lCanvas.width, lCanvas.height);
+            }
+        });
+
+        const lCanvas = document.getElementById('laser-canvas');
+        const ctx = lCanvas.getContext('2d');
+        lCanvas.width = window.innerWidth;
+        lCanvas.height = window.innerHeight;
+
+        let points = [];
+        function drawLaser(x, y) {
+            points.push({x, y, age: 0});
+            if (points.length > 20) points.shift();
+
+            ctx.clearRect(0, 0, lCanvas.width, lCanvas.height);
+            ctx.beginPath();
+            if(points.length > 0) ctx.moveTo(points[0].x, points[0].y);
+            
+            points.forEach((p, i) => {
+                ctx.lineTo(p.x, p.y);
+                p.age++;
+            });
+            
+            ctx.strokeStyle = 'rgba(214, 48, 49, 0.8)';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            
+            // Glowing dot at tip
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, Math.PI*2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+        }
+
+        // Init
+        init();
+
     </script>
 </body>
 </html>
