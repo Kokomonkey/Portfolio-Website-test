@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --transition-speed: 0.7s; /* Slightly slower for dramatic slide */
+            
+            /* VERTICAL DIMENSIONS */
+            --header-height: 15vh;     
+            --square-size: 20vh;       
+            --gap-size: 2vh;           
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh; 
+            overflow: hidden; 
+            justify-content: center;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            position: fixed;
+            top: 2vh;
+            left: 2vh; 
+            text-decoration: none;
+            z-index: 200; /* Highest priority */
+            border: 2px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 1vh 2vh; 
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 2vh; 
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: var(--header-height);
+            display: flex;
+            flex-direction: row; /* Side-by-side to save vertical space */
+            align-items: center;
+            justify-content: center;
+            gap: 2vh;
+            margin-bottom: 4vh; /* Space between header and grid */
+        }
+
+        .logo-placeholder {
+            /* Logo scales with height */
+            height: 10vh; 
+            width: 10vh; 
+            background-color: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: invert(1);
+        }
+        
+        /* Adjust image inside logo to fit */
+        .logo-placeholder img {
+            max-height: 100%;
+            width: auto;
+        }
+
+        h1 {
+            font-size: 4vh; /* Text scales with height */
+            letter-spacing: 0.5vh;
+            text-transform: uppercase;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+
+        /* --- GRID CONTAINER --- */
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: var(--gap-size); 
+            width: fit-content;
+        }
+
+        /* --- INTERACTIVE GRID ITEMS --- */
+        .grid-item {
+            display: block; 
+            text-decoration: none;
+            position: relative; /* Anchor point */
+            width: var(--square-size);
+            height: var(--square-size);
+            
+            /* Animation Setup */
+            opacity: 0; 
+            animation-duration: 3s; 
+            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); 
+            animation-fill-mode: forwards;
+        }
+
+        /* High Z-Index on Hover ensures it overlaps neighbors */
+        .grid-item:hover {
+            z-index: 100;
+        }
+
+        /* --- THE SQUARE (LEFT SIDE) --- */
+        .square {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color); 
+            border: 2px solid var(--accent-color); 
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            transition: all var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1);
+            position: absolute; /* Allows sliding */
+            top: 0;
+            left: 0;
+            z-index: 2; /* Sits on top of description initially */
+        }
+
+        .square-icon {
+            width: 50%;
+            height: 50%;
+            background-color: var(--accent-color); 
+            transition: all var(--transition-speed) ease;
+        }
+
+        .square-text {
+            position: absolute;
+            bottom: 8%; 
+            width: 100%;
+            text-align: center;
+            color: var(--bg-color); 
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: calc(var(--square-size) / 9);
+            opacity: 0;
+            transform: translateY(10px); 
+            transition: all var(--transition-speed) ease;
+        }
+
+        /* --- THE DESCRIPTION BOX (RIGHT SIDE) --- */
+        .project-info {
+            width: 100%; /* Same size as square */
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0; /* Starts directly behind square */
+            
+            background-color: var(--accent-color); /* White background */
+            color: var(--bg-color); /* Black text */
+            border: 2px solid var(--accent-color);
+            
+            display: flex;
+            align-items: center;
+            padding: 1.5vh;
+            
+            opacity: 0; /* Hidden initially */
+            z-index: 1; /* Behind square initially */
+            pointer-events: none; /* Can't click it while hidden */
+            
+            transition: all var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .project-info p {
+            font-size: 1.3vh; /* Small, dense text */
+            line-height: 1.4;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        /* CLASS FOR PHOTOS / RENDERS */
+.square-img {
+    width: 70%;
+    height: 70%;
+    object-fit: cover; /* This creates the perfect square crop */
+    object-position: center; /* Focuses on the center of the image */
+    display: block;
+    
+    /* Optional: Start black & white for Brutalist look */
+    filter: grayscale(100%) contrast(1.2); 
+    transition: all 0.3s ease;
+    filter: invert(1);
+}
+
+/* HOVER EFFECT FOR IMAGES */
+/* When hovering, bring back color and zoom slightly */
+.grid-item:hover .square-img {
+    filter: grayscale(0%) contrast(1);
+    transform: scale(1.1); /* Zoom effect */
+}
+
+        /* --- HOVER ANIMATION LOGIC --- */
+
+        /* 1. Square slides Left */
+        .grid-item:hover .square {
+            transform: translateX(-55%); /* Slide left */
+            background-color: var(--accent-color); /* Turn White */
+        }
+
+        /* 2. Description slides Right & Appears */
+        .grid-item:hover .project-info {
+            transform: translateX(55%); /* Slide right */
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 3. Icon Color Inversion */
+        .grid-item:hover .square-icon {
+            background-color: var(--bg-color); 
+            transform: translateY(-15%); 
+        }
+
+        .grid-item:hover .square-text {
+            opacity: 1; 
+            transform: translateY(0);
+        }
+
+        /* --- ENTRANCE ANIMATIONS --- */
+        @keyframes slideFromTop { 0% { transform: translateY(-100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes slideFromBottom { 0% { transform: translateY(100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes slideFromLeft { 0% { transform: translateX(-100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        @keyframes slideFromRight { 0% { transform: translateX(100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Back</a>
+
+    <header>
+        <div class="logo-placeholder">
+            <img src="Recourses/Logos/DDD.jpg" />
+        </div>
+        <h1>Projects</h1>
+    </header>
+
+    <main>
+        <div class="grid-container">
+
+            <a href="convertible-convergence.html" class="grid-item">
+                <div class="square">
+                    <img src="Recourses/Logos/CC.jpg" alt="Render" class="square-img">
+                    <span class="square-text">Convertible Convergence</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+                </div>
+            </a>
+
+            <a href="project-2.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(0% 100%, 25% 100%, 25% 75%, 50% 75%, 50% 50%, 75% 50%, 75% 25%, 100% 25%, 100% 0%, 0% 0%);"></div>
+                    <span class="square-text">Escher's Garden</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.</p>
+                </div>
+            </a>
+
+            <a href="project-3.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: ellipse(50% 30% at 50% 50%);"></div>
+                    <span class="square-text">Ellypse</span>
+                </div>
+                <div class="project-info">
+                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                </div>
+            </a>
+
+            <a href="#" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Placeholder</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum description text for placeholder project number 4.</p>
+                </div>
+            </a>
+
+            <a href="#" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Placeholder</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum description text for placeholder project number 5.</p>
+                </div>
+            </a>
+
+            <a href="#" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Placeholder</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum description text for placeholder project number 6.</p>
+                </div>
+            </a>
+
+            <a href="#" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Placeholder</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum description text for placeholder project number 7.</p>
+                </div>
+            </a>
+
+            <a href="#" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Placeholder</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum description text for placeholder project number 8.</p>
+                </div>
+            </a>
+
+            <a href="#" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Placeholder</span>
+                </div>
+                <div class="project-info">
+                    <p>Lorem ipsum description text for placeholder project number 9.</p>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const squares = document.querySelectorAll('.grid-item');
+            const animations = ['slideFromTop', 'slideFromBottom', 'slideFromLeft', 'slideFromRight'];
+
+            squares.forEach((square) => {
+                const randomIndex = Math.floor(Math.random() * animations.length);
+                square.style.animationName = animations[randomIndex];
+            });
+        });
+    </script>
+
+</body>
+</html>

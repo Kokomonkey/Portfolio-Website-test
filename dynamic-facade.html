@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Facade - Free Rotation</title>
+    <style>
+        :root {
+            --bg-color: #191818;
+            --accent-color: #ff0000;
+            --text-color: #000000;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            /* Grid dots */
+            background-image: radial-gradient(#b0b0b0 1.5px, transparent 1.5px);
+            background-size: 20px 20px;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--text-color);
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* --- UI ELEMENTS --- */
+        
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            text-decoration: none;
+            z-index: 100;
+            border: 2px solid var(--accent-color);
+            background-color: white;
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1rem;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        #offset-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+            border: 2px solid var(--accent-color);
+            background-color: white;
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        #offset-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        #offset-btn.active {
+            background-color: black;
+            color: white;
+            border-color: black;
+        }
+
+        /* Right Side Content */
+        .content-panel {
+            position: fixed;
+            top: 50%;
+            right: 5%; 
+            transform: translateY(-50%);
+            width: 300px;
+            z-index: 100;
+            text-align: right;
+            pointer-events: none;
+        }
+
+        .content-panel h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-right: 4px solid var(--accent-color);
+            padding-right: 20px;
+            text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
+        }
+
+        .content-panel p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding-right: 20px;
+            background-color: rgba(255,255,255,0.7);
+            border-right: 1px solid #ccc;
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <a href="convertible-convergence.html" class="back-btn">← Back</a>
+    <button id="offset-btn">OFFSET: OFF</button>
+
+    <div class="content-panel">
+        <h2>Unrestricted<br>Motion</h2>
+        <p>
+            Rotation constraints disabled. 
+            <span class="highlight">Full angular freedom</span> restored to kinetic elements.
+        </p>
+        <br>
+        <p>
+            Perimeter visualization streamlined.
+            Ray-cast connectors removed.
+            Area analysis active.
+        </p>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const btn = document.getElementById('offset-btn');
+
+        // --- Configuration ---
+        const config = {
+            // Rect Settings
+            rectWidth: 140,
+            rectHeight: 10,
+            gap: 70,
+            rectFillColor: '#000000',
+            rectStrokeColor: '#ffffff', 
+            rectStrokeWidth: 2,
+            
+            // Vision Settings
+            visionColor: 'rgba(255, 0, 0, 0.3)', 
+            borderColor: '#ff0000', 
+            borderWidth: 2,
+            lightRadiusPercent: 0.25, 
+            
+            // Offset logic
+            offsetDegrees: 45
+            // Removed constraintBuffer
+        };
+
+        let width, height;
+        let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        let rectangles = [];
+        let isOffsetActive = false;
+        let time = 0;
+
+        // --- Initialization ---
+
+        function init() {
+            resize();
+            window.addEventListener('resize', resize);
+            document.addEventListener('mousemove', onMouseMove);
+            
+            btn.addEventListener('click', () => {
+                isOffsetActive = !isOffsetActive;
+                btn.classList.toggle('active');
+                btn.innerText = isOffsetActive ? "OFFSET: ACTIVE" : "OFFSET: OFF";
+            });
+
+            animate();
+        }
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            createRectangles();
+        }
+
+        function onMouseMove(e) {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        }
+
+        function createRectangles() {
+            rectangles = [];
+            const availableWidth = width - 380; 
+            const itemSize = config.rectWidth + config.gap;
+            const numRects = Math.floor(availableWidth / itemSize);
+            const totalGroupWidth = (numRects * config.gap) - config.gap;
+            const startX = (availableWidth / 2) - (totalGroupWidth / 2);
+            const centerY = height / 2;
+
+            for (let i = 0; i < numRects; i++) {
+                rectangles.push({
+                    cx: startX + (i * config.gap),
+                    cy: centerY,
+                    angle: 0
+                });
+            }
+        }
+
+        // --- Math Helpers ---
+
+        function rotatePoint(px, py, cx, cy, angle) {
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            const nx = (cos * (px - cx)) - (sin * (py - cy)) + cx;
+            const ny = (sin * (px - cx)) + (cos * (py - cy)) + cy;
+            return { x: nx, y: ny };
+        }
+
+        function getRectCorners(rect) {
+            const hw = config.rectWidth / 2;
+            const hh = config.rectHeight / 2;
+            const points = [
+                { x: rect.cx - hw, y: rect.cy - hh },
+                { x: rect.cx + hw, y: rect.cy - hh },
+                { x: rect.cx + hw, y: rect.cy + hh },
+                { x: rect.cx - hw, y: rect.cy + hh }
+            ];
+            return points.map(p => rotatePoint(p.x, p.y, rect.cx, rect.cy, rect.angle));
+        }
+
+        function projectPoint(px, py, lx, ly, magnitude = 3000) {
+            const dx = px - lx;
+            const dy = py - ly;
+            const len = Math.sqrt(dx*dx + dy*dy);
+            return {
+                x: px + (dx / len) * magnitude,
+                y: py + (dy / len) * magnitude
+            };
+        }
+
+        // --- Animation Loop ---
+
+        function animate() {
+            time += 0.05;
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Update Geometry (No Constraints)
+            rectangles.forEach(rect => {
+                const deltaX = mouse.x - rect.cx;
+                const deltaY = mouse.y - rect.cy;
+                let calculatedAngle = Math.atan2(deltaY, deltaX);
+
+                if (isOffsetActive) {
+                    calculatedAngle += config.offsetDegrees * (Math.PI / 180);
+                }
+                
+                // Directly assign angle (No clamping logic)
+                rect.angle = calculatedAngle;
+            });
+
+            const lightRadius = (width * config.lightRadiusPercent) + (Math.sin(time) * 3);
+
+            // --- LAYER 1: Red Fill + Shadow Erasure ---
+            ctx.save();
+            
+            // Draw Red Circle
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, lightRadius, 0, Math.PI * 2);
+            ctx.fillStyle = config.visionColor;
+            ctx.fill();
+
+            // Erase Shadows from the Red Circle
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'black'; 
+
+            rectangles.forEach(rect => {
+                const corners = getRectCorners(rect);
+                for(let i = 0; i < corners.length; i++) {
+                    const c1 = corners[i];
+                    const c2 = corners[(i + 1) % corners.length]; 
+                    const p1 = projectPoint(c1.x, c1.y, mouse.x, mouse.y);
+                    const p2 = projectPoint(c2.x, c2.y, mouse.x, mouse.y);
+
+                    ctx.beginPath();
+                    ctx.moveTo(c1.x, c1.y);
+                    ctx.lineTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.lineTo(c2.x, c2.y);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            });
+            ctx.restore();
+
+
+            // --- LAYER 2: The Outer Border (Arcs Only) ---
+            ctx.save();
+            
+            // Draw the full circle stroke first
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, lightRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = config.borderColor;
+            ctx.lineWidth = config.borderWidth;
+            ctx.stroke();
+
+            // Cut the stroke where shadows are using 'destination-out'
+            // This leaves only the border segments that are "lit"
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'black';
+            
+            rectangles.forEach(rect => {
+                const corners = getRectCorners(rect);
+                for(let i = 0; i < corners.length; i++) {
+                    const c1 = corners[i];
+                    const c2 = corners[(i + 1) % corners.length]; 
+                    const p1 = projectPoint(c1.x, c1.y, mouse.x, mouse.y);
+                    const p2 = projectPoint(c2.x, c2.y, mouse.x, mouse.y);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(c1.x, c1.y);
+                    ctx.lineTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.lineTo(c2.x, c2.y);
+                    ctx.fill();
+                }
+            });
+            
+            // Note: I have removed the "Draw Shadow Rays" block here entirely.
+            
+            ctx.restore();
+
+
+            // --- LAYER 3: The Obstacles (Rectangles) ---
+            ctx.fillStyle = config.rectFillColor;
+            ctx.strokeStyle = config.rectStrokeColor;
+            ctx.lineWidth = config.rectStrokeWidth;
+            
+            rectangles.forEach(rect => {
+                ctx.save();
+                ctx.translate(rect.cx, rect.cy);
+                ctx.rotate(rect.angle);
+                
+                ctx.beginPath();
+                ctx.rect(-config.rectWidth/2, -config.rectHeight/2, config.rectWidth, config.rectHeight);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.restore();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        init();
+
+    </script>
+</body>
+</html>

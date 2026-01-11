@@ -3,610 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI in Architecture | Master Workflow</title>
+    <title>DouweDoesDesign</title>
     <style>
-        /* --- CORE VARIABLES --- */
+        /* --- CSS VARIABLES & RESET --- */
         :root {
-            --bg-color: #f4f7f6;
-            --grid-color: #e1e4e8;
-            --text-primary: #2d3436;
-            --text-secondary: #636e72;
-            --accent-red: #d63031;
-            --node-bg: #ffffff;
-            --line-color: #000000;
-            --success: #00b894;
-            --danger: #d63031;
-            --shadow: 0 10px 20px rgba(0,0,0,0.08);
-            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
-
-        /* Dark / Blueprint Mode Override */
-        [data-theme="blueprint"] {
-            --bg-color: #0c2461;
-            --grid-color: #1e3799;
-            --text-primary: #f1f2f6;
-            --text-secondary: #a4b0be;
-            --accent-red: #fa983a;
-            --node-bg: #0a3d62;
-            --line-color: #ffffff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-font-smoothing: antialiased; }
-
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            overflow: hidden;
-            width: 100vw; height: 100vh;
-            transition: background 0.5s ease;
-        }
-
-        /* --- DYNAMIC GRID BACKGROUND --- */
-        /* Applied via JS to body for performance */
-        body {
-            background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-repeat: repeat;
-            /* Size and position handled by JS updateGrid() */
-        }
-
-        /* --- CANVAS CONTAINER --- */
-        #canvas-container {
-            width: 100%; height: 100%;
-            cursor: grab;
-            position: relative;
-            transform-origin: 0 0;
-            perspective: 1000px; /* For 3D effects */
-        }
-        #canvas-container:active { cursor: grabbing; }
-
-        #workflow-layer {
-            position: absolute;
-            top: 0; left: 0;
-            transform-origin: 0 0;
-            /* Transition removed for instant drag response, added back conditionally for reset */
-        }
-
-        /* --- NODES --- */
-        .node {
-            position: absolute;
-            width: 260px;
-            padding: 18px;
-            background: var(--node-bg);
-            border-radius: 4px;
-            box-shadow: var(--shadow);
-            border: 1px solid transparent;
-            transition: opacity 0.3s, filter 0.3s; /* For spotlight effect */
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --transition-speed: 0.3s;
             
-            /* Opening Animation Initial State */
-            opacity: 0;
-            transform: translateY(20px); 
+            /* NEW DIMENSIONS BASED ON VERTICALITY (vh) */
+            --header-height: 15vh;     /* Header is exactly 15% of screen */
+            --square-size: 20vh;       /* Squares are 20% of screen height */
+            --gap-size: 2vh;           /* Gaps are small relative to height */
         }
 
-        /* 3D Tilt Wrapper inside Node */
-        .node-content {
-            width: 100%; height: 100%;
-            pointer-events: none; /* Let clicks pass to parent */
-            transition: transform 0.1s ease-out;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .step-node {
-            border: 2px solid var(--accent-red);
-            z-index: 10;
-            height: 90px;
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace; 
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            
+            /* FORCE NO SCROLLING */
+            height: 100vh; 
+            overflow: hidden; 
+            justify-content: center; /* Center everything vertically */
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            position: fixed;
+            top: 2vh;
+            left: 2vh; /* Adjusted to vh for consistency */
+            text-decoration: none;
+            z-index: 100;
+            border: 2px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 1vh 2vh; /* Responsive padding */
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 2vh; 
+            transition: all var(--transition-speed) ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- HEADER SECTION (Strict 15vh) --- */
+        header {
+            height: var(--header-height);
+            display: flex;
+            flex-direction: row; /* Side-by-side to save vertical space */
             align-items: center;
             justify-content: center;
-            text-align: center;
+            gap: 2vh;
+            margin-bottom: 4vh; /* Space between header and grid */
+        }
+
+        .logo-placeholder {
+            /* Logo scales with height */
+            height: 10vh; 
+            width: 10vh; 
+            background-color: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: invert(1);
+        }
+        
+        /* Adjust image inside logo to fit */
+        .logo-placeholder img {
+            max-height: 100%;
+            width: auto;
+        }
+
+        h1 {
+            font-size: 4vh; /* Text scales with height */
+            letter-spacing: 0.5vh;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 800;
-            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1;
         }
 
-        .ai-node {
-            border: 1px solid rgba(0,0,0,0.1);
-            z-index: 5;
-            min-height: 100px;
-            font-size: 0.85rem;
-        }
-        [data-theme="blueprint"] .ai-node { border-color: rgba(255,255,255,0.2); }
-
-        .ai-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px;
-        }
-        
-        .ai-link {
-            text-decoration: none; color: var(--text-primary); font-weight: 700;
-            transition: color 0.2s; pointer-events: auto;
-        }
-        .ai-link:hover { color: var(--accent-red); }
-
-        .ai-tags { font-size: 0.75rem; line-height: 1.4; color: var(--text-secondary); }
-        .tag-pro { color: var(--success); display: block; margin-top: 4px; }
-        .tag-con { color: var(--danger); display: block; }
-
-        /* Opening Keyframes */
-        @keyframes popIn {
-            to { opacity: 1; transform: translateY(0); }
+        /* --- GRID SECTION --- */
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- CONNECTORS --- */
-        svg.connections-layer {
-            position: absolute; top: 0; left: 0;
-            width: 1px; height: 1px; overflow: visible;
-            pointer-events: none; z-index: 1;
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: var(--gap-size); 
+            width: fit-content;
         }
 
-        path {
-            fill: none;
-            stroke: var(--line-color);
-            stroke-width: 2px;
-            stroke-linecap: square; /* Orthogonal look */
-            stroke-dasharray: 2000;
-            stroke-dashoffset: 2000; /* For draw animation */
-            animation: drawLine 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            animation-delay: 0.5s;
+        /* --- INTERACTIVE SQUARES --- */
+        .grid-item {
+            display: block; 
+            text-decoration: none;
+            
+            /* ENTRANCE ANIMATION SETTINGS */
+            opacity: 0; 
+            animation-duration: 3s; 
+            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); 
+            animation-fill-mode: forwards;
         }
-        
-        @keyframes drawLine { to { stroke-dashoffset: 0; } }
 
-        /* --- UI OVERLAY --- */
-        #ui-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 100;
-        }
-        .hud { pointer-events: auto; position: absolute; }
-
-        /* Header */
-        #header {
-            top: 30px; left: 30px;
-            background: var(--bg-color);
-            padding: 15px 30px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            border-left: 5px solid var(--accent-red);
-            display: flex; gap: 20px; align-items: center;
-        }
-        .brand { font-weight: 900; letter-spacing: -0.5px; font-size: 1.1rem; }
-        .sub-brand { font-weight: normal; opacity: 0.6; }
-
-        /* Bottom Info Rail */
-        #info-rail {
-            bottom: 0; left: 0; width: 100%;
-            background: var(--bg-color);
-            padding: 40px;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            border-top: 1px solid var(--accent-red);
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
-        }
-        #info-rail.active { transform: translateY(0); }
-        .rail-title { font-size: 1.5rem; font-weight: 800; color: var(--accent-red); margin-bottom: 10px; }
-        .rail-body { max-width: 800px; line-height: 1.6; color: var(--text-secondary); }
-
-        /* Controls */
-        #controls {
-            bottom: 30px; right: 30px;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .btn {
-            width: 50px; height: 50px;
-            background: var(--bg-color);
-            color: var(--text-primary);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: var(--shadow);
+        .square {
+            /* SIZE BASED ON HEIGHT NOW */
+            width: var(--square-size);
+            height: var(--square-size);
+            
+            background-color: var(--bg-color); 
+            border: 2px solid var(--accent-color); 
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            transition: all var(--transition-speed) ease;
             cursor: pointer;
-            font-size: 1.2rem;
-            transition: transform 0.2s, background 0.2s;
+            overflow: hidden;
+            position: relative; 
         }
-        .btn:hover { transform: scale(1.1); color: var(--accent-red); }
-        .btn.active-mode { background: var(--accent-red); color: white; }
 
-        /* Laser Canvas */
-        #laser-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 99;
+        .square-icon {
+            width: 50%;
+            height: 50%;
+            background-color: var(--accent-color); 
+            transition: all var(--transition-speed) ease;
         }
+        
+        /* If using IMG tag for icon */
+        .square-img {
+            width: 50%;
+            height: auto;
+            transition: all var(--transition-speed) ease;
+            filter: invert(1); /* Assuming black PNGs */
+        }
+
+        .square-text {
+            position: absolute;
+            bottom: 5%; 
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            color: var(--bg-color); 
+            font-weight: bold;
+            text-transform: uppercase;
+            
+            /* Text size relative to the square height */
+            font-size: calc(var(--square-size) / 9);
+            
+            opacity: 0;
+            transform: translateY(10px); 
+            transition: all var(--transition-speed) ease;
+        }
+
+        /* --- HOVER EFFECTS --- */
+        .grid-item:hover .square {
+            transform: scale(1.05); /* Reduced scale slightly to prevent overlap */
+            background-color: var(--accent-color); 
+            border-color: var(--accent-color);
+            z-index: 20; 
+        }
+
+        .grid-item:hover .square-icon {
+            background-color: var(--bg-color); 
+            transform: translateY(-15%); 
+        }
+        
+        .grid-item:hover .square-img {
+            filter: none;
+            transform: translateY(-15%);
+        }
+
+        .grid-item:hover .square-text {
+            opacity: 1; 
+            transform: translateY(0);
+        }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes slideFromTop { 0% { transform: translateY(-100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes slideFromBottom { 0% { transform: translateY(100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes slideFromLeft { 0% { transform: translateX(-100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        @keyframes slideFromRight { 0% { transform: translateX(100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
     </style>
 </head>
 <body>
 
-    <div id="canvas-container">
-        <div id="workflow-layer">
-            <svg class="connections-layer" id="lines"></svg>
+    <header>
+        <div class="logo-placeholder">
+            <img src="Recourses/Logos/DDD.jpg" />
             </div>
-    </div>
+        <h1>DouweDoesDesign</h1>
+    </header>
 
-    <canvas id="laser-canvas"></canvas>
+    <main>
+        <div class="grid-container">
 
-    <div id="ui-layer">
-        <div id="header" class="hud">
-            <div class="brand">DOUWE<span style="color:var(--accent-red)">DOES</span>DESIGN <span class="sub-brand">| AI WORKFLOW</span></div>
-            <div style="font-size:0.8rem; opacity:0.5; margin-left:auto;">SCROLL TO ZOOM • DRAG TO PAN • SPACE FOR LASER</div>
+            <a href="projects.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div>
+                    <span class="square-text">Projects</span>
+                </div>
+            </a>
+
+            <a href="Workflow.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(50% at 50% 50%);"></div>
+                    <span class="square-text">Workflow</span>
+                </div>
+            </a>
+
+            <a href="ai-generation.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+                    <span class="square-text">AI-Generation</span>
+                </div>
+            </a>
+
+            <a href="about.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);"></div>
+                    <span class="square-text">About</span>
+                </div>
+            </a>
+
+            <a href="test-sites.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%);"></div>
+                    <span class="square-text">Test Sites</span>
+                </div>
+            </a>
+
+            <a href="contact.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(10% 25%, 35% 25%, 35% 0%, 65% 0%, 65% 25%, 90% 25%, 90% 50%, 65% 50%, 65% 100%, 35% 100%, 35% 50%, 10% 50%);"></div>
+                    <span class="square-text">Contact</span>
+                </div>
+            </a>
+
+            <a href="archive.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(0% 0%, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 75% 75%, 25% 75%, 25% 100%, 100% 100%, 100% 0%);"></div>
+                    <span class="square-text">Archive</span>
+                </div>
+            </a>
+
+            <a href="playground.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(40% at 50% 50%); border: 5px solid white;"></div>
+                    <span class="square-text">Playground</span>
+                </div>
+            </a>
+
+            <a href="blog.html" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 100%, 80% 100%, 20% 100%, 0% 100%, 0% 20%);"></div>
+                    <span class="square-text">Blog</span>
+                </div>
+            </a>
+
         </div>
+    </main>
 
-        <div id="controls" class="hud">
-            <div class="btn" onclick="toggleBlueprint()" title="Blueprint Mode">📐</div>
-            <div class="btn" onclick="resetCam()" title="Reset Camera">🎯</div>
-            <div class="btn" onclick="toggleSpotlight()" id="btn-spot" title="Focus Mode">🔦</div>
-        </div>
+</body>
 
-        <div id="info-rail" class="hud">
-            <div class="rail-title" id="info-title">Phase Title</div>
-            <div class="rail-body" id="info-desc">Description text...</div>
-            <div style="margin-top:20px; font-size:0.7rem; opacity:0.5; cursor:pointer;" onclick="closeRail()">[ CLOSE ]</div>
-        </div>
-    </div>
-
-    <script>
-        // --- DATASET: 6 PHASES + 35 AI TOOLS ---
-        const phases = [
-            {
-                id: "p1", title: "1. PRE-DESIGN",
-                desc: "The analytical foundation. AI shifts this from manual research to algorithmic feasibility study, processing zoning codes, environmental data, and financial models in seconds.",
-                ais: [
-                    { name: "TestFit", url: "https://testfit.io", pro: "Instant site feasibility & parking", con: "Geometric rigidity" },
-                    { name: "Autodesk Forma", url: "https://autodesk.com/forma", pro: "Real-time wind/sun/noise analysis", con: "Requires cloud credits" },
-                    { name: "Snaptrude", url: "https://snaptrude.com", pro: "Browser-based collaborative BIM", con: "Learning curve for Revit users" },
-                    { name: "Archistar", url: "https://archistar.ai", pro: "Zoning compliance check", con: "Region specific (mostly Aus/US)" },
-                    { name: "Hypar", url: "https://hypar.io", pro: "Modular generative functions", con: "Requires computational logic knowledge" },
-                    { name: "Delve", url: "https://sidewalklabs.com", pro: "Optimizes yield vs quality", con: "High enterprise cost" }
-                ]
-            },
-            {
-                id: "p2", title: "2. SCHEMATIC DESIGN",
-                desc: "The creative explosion. AI acts as a 'muse' and 'accelerator', converting text to image, sketch to render, and massing to floor plan instantly.",
-                ais: [
-                    { name: "Midjourney", url: "https://midjourney.com", pro: "Unmatched artistic quality", con: "No precise geometry control" },
-                    { name: "Veras", url: "https://evolvelab.io/veras", pro: "Render inside Revit/Rhino", con: "Limited style flexibility" },
-                    { name: "Maket.ai", url: "https://maket.ai", pro: "Generates residential plans", con: "Generic spatial output" },
-                    { name: "Stable Diffusion", url: "https://stability.ai", pro: "Locally hostable & trainable", con: "High technical barrier" },
-                    { name: "LookX", url: "https://lookx.ai", pro: "Trained specifically on architecture", con: "Newer platform stability" },
-                    { name: "Luma AI", url: "https://lumalabs.ai", pro: "NeRF/3D scanning from phone", con: "Mesh topology is messy" }
-                ]
-            },
-            {
-                id: "p3", title: "3. DESIGN DEVELOPMENT",
-                desc: "System refinement. The 'Simulation' phase where AI predicts performance (energy, structural, carbon) to inform design decisions before documentation.",
-                ais: [
-                    { name: "Cove.tool", url: "https://covetool.com", pro: "Cost vs. Carbon optimization", con: "Simplified physics engine" },
-                    { name: "Finch 3D", url: "https://finch3d.com", pro: "Graph-based adaptive plans", con: "Currently in limited beta" },
-                    { name: "BAMROC", url: "https://bamroc.com", pro: "Automated MEP clash solving", con: "Ignores maintenance logic" },
-                    { name: "UpCodes", url: "https://up.codes", pro: "Spellcheck for building code", con: "Liability remains with human" },
-                    { name: "Autodesk Insight", url: "https://autodesk.com", pro: "Integrated energy modeling", con: "Slow cloud processing" }
-                ]
-            },
-            {
-                id: "p4", title: "4. CONSTRUCTION DOCS",
-                desc: "The production factory. AI automates the tedious tasks: dimensioning, tagging, sheet creation, and specification writing.",
-                ais: [
-                    { name: "Swapp.ai", url: "https://swapp.ai", pro: "Full CD set automation", con: "Black box (hard to edit logic)" },
-                    { name: "Glyph", url: "https://evolvelab.io", pro: "Auto-documentation for Revit", con: "Complex setup required" },
-                    { name: "Augmenta", url: "https://augmenta.ai", pro: "Electrical routing automation", con: "Specific to conduit/pipes" },
-                    { name: "PIRROS", url: "https://pirros.com", pro: "Detail management automation", con: "Requires library curation" },
-                    { name: "SpecLink", url: "https://bspeclink.com", pro: "Data-driven specs", con: "Subscription cost" }
-                ]
-            },
-            {
-                id: "p5", title: "5. BIDDING",
-                desc: "Financial rigor. AI parses messy PDF sets to perform quantity takeoffs, level bids, and identify scope gaps in minutes.",
-                ais: [
-                    { name: "Togal.ai", url: "https://togal.ai", pro: "Fastest PDF takeoffs", con: "2D only (no BIM)" },
-                    { name: "DeepRFP", url: "https://deeprfp.com", pro: "Drafts proposals from RFPs", con: "Can sound generic" },
-                    { name: "Bridgeline", url: "https://bridgeline.com", pro: "Scope gap detection", con: "Niche usage" },
-                    { name: "Destini Estimator", url: "https://beck-technology.com", pro: "Integrated cost history", con: "Legacy interface" }
-                ]
-            },
-            {
-                id: "p6", title: "6. CONST. ADMIN",
-                desc: "The digital eye. AI monitors the job site for safety, progress, and discrepancies against the BIM model.",
-                ais: [
-                    { name: "OpenSpace", url: "https://openspace.ai", pro: "Passive video capture walking", con: "Massive data storage" },
-                    { name: "Part3", url: "https://part3.io", pro: "Streamlines submittals/RFIs", con: "Integration limits" },
-                    { name: "Bluebeam AI", url: "https://bluebeam.com", pro: "Visual search in drawings", con: "Manual workflows persist" },
-                    { name: "Novatr", url: "https://novatr.com", pro: "MEP specific AI tools", con: "New market entrant" },
-                    { name: "Datagrid", url: "https://datagrid.com", pro: "AI agent for RFI analysis", con: "Trust factor involved" },
-                    { name: "Doxel", url: "https://doxel.ai", pro: "Lidar vs BIM progress track", con: "Hardware intensive" }
-                ]
-            }
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Select all grid items
+        const squares = document.querySelectorAll('.grid-item');
+        
+        // List of CSS animation names matching the @keyframes above
+        const animations = [
+            'slideFromTop', 
+            'slideFromBottom', 
+            'slideFromLeft', 
+            'slideFromRight'
         ];
 
-        // --- ENGINE CONFIG ---
-        const CONFIG = {
-            stepW: 280, stepH: 90,
-            aiW: 260, aiH: 110,
-            gapX: 450, gapY: 60,
-            startX: 100, startY: 100
-        };
-
-        let state = {
-            panX: 50, panY: 200, scale: 0.8,
-            isDragging: false,
-            spotlightMode: false,
-            blueprintMode: false,
-            laserMode: false
-        };
-
-        const canvas = document.getElementById('workflow-layer');
-        const container = document.getElementById('canvas-container');
-        const linesSvg = document.getElementById('lines');
-
-        // --- RENDERER ---
-        function init() {
-            let html = "";
-            let svgPaths = "";
-            let curX = CONFIG.startX;
-            const curY = CONFIG.startY;
-
-            phases.forEach((phase, pIdx) => {
-                // 1. Render Step (The Red Box)
-                html += createNodeHtml(phase, curX, curY, 'step', pIdx);
-
-                // Horizontal Line to Next Step
-                if (pIdx < phases.length - 1) {
-                    const x1 = curX + CONFIG.stepW;
-                    const y1 = curY + CONFIG.stepH/2;
-                    const x2 = curX + CONFIG.gapX;
-                    const y2 = curY + CONFIG.stepH/2;
-                    svgPaths += `<path d="M ${x1} ${y1} L ${x2} ${y2}" />`;
-                }
-
-                // 2. Render AIs (Vertical Stack)
-                let aiY = curY + CONFIG.stepH + CONFIG.gapY;
-                const aiX = curX + (CONFIG.stepW - CONFIG.aiW)/2; // Center under step
-
-                // Vertical Line from Step to First AI
-                const stemX = curX + CONFIG.stepW/2;
-                svgPaths += `<path d="M ${stemX} ${curY + CONFIG.stepH} L ${stemX} ${aiY}" />`;
-
-                phase.ais.forEach((ai, aIdx) => {
-                    html += createNodeHtml(ai, aiX, aiY, 'ai', `${pIdx}-${aIdx}`);
-                    
-                    // Link AIs vertically
-                    if (aIdx < phase.ais.length - 1) {
-                        const linkY1 = aiY + CONFIG.aiH; // Bottom of current
-                        const linkY2 = linkY1 + CONFIG.gapY - (CONFIG.aiH - 100); // Top of next (adjusted for variable height)
-                        // Simplified: Connect center bottom to center top
-                        // Since I don't know exact height in JS string build, I assume standard spacing
-                         svgPaths += `<path d="M ${stemX} ${aiY + 100} L ${stemX} ${aiY + 100 + CONFIG.gapY}" />`;
-                    }
-                    aiY += 100 + CONFIG.gapY; // Increment Y
-                });
-
-                curX += CONFIG.gapX;
-            });
-
-            linesSvg.innerHTML = svgPaths;
+        squares.forEach((square) => {
+            // 1. Pick a random number between 0 and 3
+            const randomIndex = Math.floor(Math.random() * animations.length);
             
-            // Inject Nodes
-            const temp = document.createElement('div');
-            temp.innerHTML = html;
-            while(temp.firstChild) canvas.appendChild(temp.firstChild);
-
-            // Trigger Entrance Animation
-            setTimeout(() => {
-                const nodes = document.querySelectorAll('.node');
-                nodes.forEach((n, i) => {
-                    setTimeout(() => {
-                        n.style.animation = 'popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
-                    }, i * 50); // Staggered
-                });
-            }, 100);
-
-            updateView();
-        }
-
-        function createNodeHtml(data, x, y, type, id) {
-            let content = "";
-            let classes = `node ${type}-node`;
-            
-            if (type === 'step') {
-                content = `
-                    <div class="node-content">
-                        <div>${data.title}</div>
-                    </div>`;
-            } else {
-                content = `
-                    <div class="node-content">
-                        <div class="ai-header">
-                            <a href="${data.url}" target="_blank" class="ai-link">${data.name}</a>
-                            <span>↗</span>
-                        </div>
-                        <div class="ai-tags">
-                            <span class="tag-pro">+ ${data.pro}</span>
-                            <span class="tag-con">- ${data.con}</span>
-                        </div>
-                    </div>`;
-            }
-
-            // Store data for click/hover
-            const safeTitle = data.title || data.name;
-            const safeDesc = data.desc || `A powerful tool for ${data.name}. Pros: ${data.pro}.`;
-
-            return `<div class="${classes}" 
-                        style="left:${x}px; top:${y}px;"
-                        onmouseenter="handleHover('${safeTitle}', this)"
-                        onmouseleave="handleLeave(this)"
-                        onclick="handleClick('${safeTitle}', '${safeDesc.replace(/'/g, "\\'")}')"
-                        data-id="${id}">
-                        ${content}
-                    </div>`;
-        }
-
-        // --- INTERACTION CORE ---
-        
-        // 1. Pan & Zoom & Grid Sync
-        container.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const delta = -e.deltaY * 0.001;
-            const newScale = Math.min(Math.max(0.1, state.scale + delta), 3);
-            
-            // Zoom to mouse point
-            const rect = container.getBoundingClientRect();
-            const mx = e.clientX - rect.left;
-            const my = e.clientY - rect.top;
-            
-            state.panX = mx - (mx - state.panX) * (newScale / state.scale);
-            state.panY = my - (my - state.panY) * (newScale / state.scale);
-            state.scale = newScale;
-            
-            updateView();
-        }, { passive: false });
-
-        let dragStart = {x:0, y:0};
-        container.addEventListener('mousedown', (e) => {
-            if(e.target === container || e.target.id === 'workflow-layer' || e.target.tagName === 'SVG') {
-                state.isDragging = true;
-                dragStart.x = e.clientX - state.panX;
-                dragStart.y = e.clientY - state.panY;
-                container.style.cursor = 'grabbing';
-            }
+            // 2. Assign that animation to the square
+            square.style.animationName = animations[randomIndex];
         });
+    });
+</script>
 
-        window.addEventListener('mousemove', (e) => {
-            if (state.isDragging) {
-                state.panX = e.clientX - dragStart.x;
-                state.panY = e.clientY - dragStart.y;
-                updateView();
-            }
-            
-            // 3D Tilt Effect on Nodes
-            if (e.target.closest('.node')) {
-                const node = e.target.closest('.node');
-                const content = node.querySelector('.node-content');
-                const rect = node.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // Calculate rotation (max 15deg)
-                const xRot = ((y / rect.height) - 0.5) * -15; 
-                const yRot = ((x / rect.width) - 0.5) * 15;
-                
-                content.style.transform = `perspective(500px) rotateX(${xRot}deg) rotateY(${yRot}deg)`;
-            }
-
-            // Laser Effect
-            if (state.laserMode) drawLaser(e.clientX, e.clientY);
-        });
-
-        window.addEventListener('mouseup', () => {
-            state.isDragging = false;
-            container.style.cursor = 'grab';
-        });
-
-        function updateView() {
-            // Apply Transform
-            canvas.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.scale})`;
-            
-            // --- GRID TRICK ---
-            // We scale the background size and move position to match canvas
-            // The grid size is 40px at scale 1. 
-            const gridSize = 40 * state.scale;
-            document.body.style.backgroundSize = `${gridSize}px ${gridSize}px`;
-            document.body.style.backgroundPosition = `${state.panX}px ${state.panY}px`;
-        }
-
-        // --- FEATURES ---
-
-        function handleHover(title, el) {
-            if (state.spotlightMode) {
-                document.querySelectorAll('.node').forEach(n => {
-                    if(n !== el) n.style.opacity = '0.1';
-                });
-                el.style.opacity = '1';
-            }
-        }
-
-        function handleLeave(el) {
-            el.querySelector('.node-content').style.transform = 'none'; // Reset Tilt
-            if (state.spotlightMode) {
-                document.querySelectorAll('.node').forEach(n => n.style.opacity = '1');
-            }
-        }
-
-        function handleClick(title, desc) {
-            document.getElementById('info-title').innerText = title;
-            document.getElementById('info-desc').innerText = desc;
-            document.getElementById('info-rail').classList.add('active');
-        }
-
-        function closeRail() {
-            document.getElementById('info-rail').classList.remove('active');
-        }
-
-        function toggleBlueprint() {
-            state.blueprintMode = !state.blueprintMode;
-            if(state.blueprintMode) document.body.setAttribute('data-theme', 'blueprint');
-            else document.body.removeAttribute('data-theme');
-        }
-
-        function toggleSpotlight() {
-            state.spotlightMode = !state.spotlightMode;
-            const btn = document.getElementById('btn-spot');
-            btn.classList.toggle('active-mode');
-        }
-
-        function resetCam() {
-            state.panX = 100; state.panY = 100; state.scale = 0.8;
-            updateView();
-        }
-
-        // Laser Logic
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                state.laserMode = true; 
-                document.body.style.cursor = 'crosshair';
-            }
-        });
-        document.addEventListener('keyup', (e) => {
-            if (e.code === 'Space') {
-                state.laserMode = false;
-                document.body.style.cursor = 'default';
-                ctx.clearRect(0, 0, lCanvas.width, lCanvas.height);
-            }
-        });
-
-        const lCanvas = document.getElementById('laser-canvas');
-        const ctx = lCanvas.getContext('2d');
-        lCanvas.width = window.innerWidth;
-        lCanvas.height = window.innerHeight;
-
-        let points = [];
-        function drawLaser(x, y) {
-            points.push({x, y, age: 0});
-            if (points.length > 20) points.shift();
-
-            ctx.clearRect(0, 0, lCanvas.width, lCanvas.height);
-            ctx.beginPath();
-            if(points.length > 0) ctx.moveTo(points[0].x, points[0].y);
-            
-            points.forEach((p, i) => {
-                ctx.lineTo(p.x, p.y);
-                p.age++;
-            });
-            
-            ctx.strokeStyle = 'rgba(214, 48, 49, 0.8)';
-            ctx.lineWidth = 4;
-            ctx.lineCap = 'round';
-            ctx.stroke();
-            
-            // Glowing dot at tip
-            ctx.beginPath();
-            ctx.arc(x, y, 6, 0, Math.PI*2);
-            ctx.fillStyle = 'red';
-            ctx.fill();
-        }
-
-        // Init
-        init();
-
-    </script>
-</body>
 </html>

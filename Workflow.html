@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI in Architecture Workflow</title>
+    <style>
+        /* --- CSS VARIABLES & THEMING --- */
+        :root {
+            /* Light Mode Default */
+            --bg-color: #e6e6e6;
+            --text-color: #1a1a1a;
+            --container-bg: #ffffff;
+            --container-border: #000000;
+            --accent-color: #ff3333; 
+            --secondary-accent: #4a90e2; 
+            --dot-color: #cccccc;
+            
+            --line-color: #000000; 
+            --line-active: #ff3333;
+            
+            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --container-bg: #1e1e1e;
+            --container-border: #ffffff;
+            --dot-color: #333333;
+            
+            --line-color: #ffffff; 
+            --line-active: #ff5555;
+        }
+
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+            transition: background-color 0.3s;
+        }
+
+        .bg-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
+            background-size: 25px 25px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- UI LAYER --- */
+        .ui-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Intro Hide State for UI */
+        .ui-hidden { opacity: 0; }
+
+        .header-container {
+            pointer-events: auto;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            background: var(--bg-color);
+            padding: 10px 30px;
+            border: 2px solid var(--container-border);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .logo-placeholder {
+            width: 30px; height: 30px;
+            background: var(--text-color);
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .back-btn { 
+            pointer-events: auto;
+            position: absolute; 
+            top: 30px; 
+            left: 30px; 
+            text-decoration: none; 
+            border: 2px solid var(--accent-color); 
+            background-color: var(--bg-color); 
+            color: var(--accent-color); 
+            padding: 10px 20px; 
+            font-family: var(--font-mono); 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            font-size: 0.9rem; 
+            transition: all 0.2s ease; 
+        }
+        .back-btn:hover { 
+            background-color: var(--accent-color); 
+            color: var(--bg-color); 
+        }
+
+        .controls {
+            pointer-events: auto;
+            position: absolute;
+            bottom: 30px; right: 30px;
+            display: flex; gap: 10px;
+        }
+
+        .btn-ui {
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            color: var(--text-color);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+        .btn-ui:hover { background: var(--dot-color); }
+
+        /* --- INTRO OVERLAY --- */
+        #intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-color);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            pointer-events: none;
+            transition: opacity 0.5s ease-out;
+        }
+        #intro-overlay.finished { opacity: 0; }
+        
+        .terminal-text {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        .cursor {
+            display: inline-block;
+            width: 10px; height: 20px;
+            background: var(--accent-color);
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* --- CANVAS --- */
+        #canvas-wrapper {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            cursor: grab;
+            opacity: 0; /* Hidden initially */
+            transition: opacity 1s ease;
+        }
+        #canvas-wrapper.visible { opacity: 1; }
+        #canvas-wrapper:active { cursor: grabbing; }
+
+        #workflow-root {
+            position: absolute;
+            top: 50%; left: 50%; 
+            transform-origin: 0 0; 
+            width: 0; height: 0; 
+        }
+
+        /* --- NODES --- */
+        .step-node {
+            position: absolute;
+            width: 240px;
+            background: var(--container-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            z-index: 10;
+            user-select: none;
+            
+            /* ANIMATION STATES */
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* The class added by JS to trigger the pop-in */
+        .step-node.intro-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .step-node:hover { transform: scale(1.02); }
+        .step-header { font-weight: 800; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 5px; }
+        .step-desc { font-size: 0.75rem; color: #666; line-height: 1.3; }
+
+        .task-group {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 5;
+        }
+        .task-group.visible { opacity: 1; pointer-events: auto; }
+
+        .task-node {
+            width: 240px;
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+        .task-node:hover { background-color: var(--bg-color); }
+        .task-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+        .task-desc { font-size: 0.7rem; color: #666; }
+
+        .ai-group {
+            position: absolute;
+            left: 280px; 
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 280px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+        .ai-group.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+
+        .ai-node {
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            border-left: 4px solid var(--text-color);
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 0.8rem;
+        }
+        .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .ai-logo { width: 16px; height: 16px; background: #ccc; border-radius: 50%; }
+        .ai-name { font-weight: bold; }
+        .ai-desc { font-size: 0.7rem; color: #666; margin-bottom: 8px; line-height: 1.3;}
+        .ai-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.65rem; font-family: var(--font-mono); border-top: 1px solid var(--line-color); padding-top: 6px; }
+        .pro { color: #2ecc71; }
+        .con { color: #e74c3c; }
+        .price { color: var(--secondary-accent); font-weight: bold; grid-column: span 2; }
+        
+        .ai-link {
+            display: block; margin-top: 6px; 
+            text-align: right; font-size: 0.7rem; 
+            text-decoration: none; color: var(--text-color); 
+            border-bottom: 1px dotted var(--text-color);
+            width: fit-content; margin-left: auto;
+        }
+
+        /* --- SVG LINES --- */
+        svg {
+            position: absolute;
+            overflow: visible;
+            pointer-events: none;
+            z-index: 1;
+            top: 0; left: 0;
+        }
+        path {
+            fill: none;
+            stroke: var(--line-color);
+            stroke-width: 2;
+            transition: stroke 0.3s;
+        }
+        
+        /* Animation class for lines appearing */
+        .intro-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .line-active { stroke: var(--line-active); stroke-width: 3; }
+
+    </style>
+</head>
+<body data-theme="dark"> <div class="bg-pattern"></div>
+
+    <div id="intro-overlay">
+        <div class="terminal-text">Initializing Workflow...<span class="cursor"></span></div>
+    </div>
+
+    <div class="ui-layer ui-hidden" id="main-ui">
+        <a href="index.html" class="back-btn">← Back</a>
+        
+        <div class="header-container">
+            <div class="logo-placeholder"></div>
+            <h1>AI in Architecture</h1>
+        </div>
+
+        <div class="controls">
+            <button class="btn-ui" onclick="toggleTheme()">Dark/Light</button>
+            <button class="btn-ui" onclick="resetView()">Reset View</button>
+        </div>
+    </div>
+
+    <div id="canvas-wrapper">
+        <div id="workflow-root">
+            <svg id="connections-layer"></svg>
+            </div>
+    </div>
+
+<script>
+    /* --- DATA --- */
+    const workflowData = [
+        {
+            title: "1. Pre-Design",
+            desc: "Feasibility & Zoning",
+            tasks: [
+                {
+                    title: "Site Analysis",
+                    desc: "Wind, sun, noise, and massing optimization.",
+                    ais: [
+                        { name: "Autodesk Forma", desc: "Predictive microclimate analysis.", price: "~$1,550/yr", pro: "Revit Integration", con: "Expensive", link: "#" },
+                        { name: "Delve", desc: "Generative masterplanning.", price: "Enterprise", pro: "Holistic Metrics", con: "Complex Setup", link: "#" },
+                        { name: "TestFit", desc: "Real-time deal solving.", price: "$5,000/yr", pro: "Extremely Fast", con: "Simple Geometry", link: "#" }
+                    ]
+                },
+                {
+                    title: "Zoning Check",
+                    desc: "Automated code compliance.",
+                    ais: [
+                        { name: "UpCodes", desc: "AI code assistant.", price: "$50/mo", pro: "Reliable Data", con: "US Focused", link: "#" },
+                        { name: "Deepblocks", desc: "Zoning & financial modeling.", price: "$30/mo", pro: "Visual Maps", con: "Data Gaps", link: "#" }
+                    ]
+                }
+            ]
+        },
+        {
+            title: "2. Schematic Design",
+            desc: "Concept & Iteration",
+            tasks: [
+                {
+                    title: "Ideation (Text-to-Img)",
+                    desc: "Atmosphere & Mood.",
+                    ais: [
+                        { name: "Midjourney", desc: "Atmospheric concept art.", price: "$10-30/mo", pro: "Best Aesthetics", con: "Not 3D", link: "#" },
+                        { name: "DALL-E 3", desc: "Prompt-adherent gen.", price: "$20/mo", pro: "Easy Use", con: "Less Artistic", link: "#" },
+                        { name: "LookX", desc: "AI for architecture.", price: "Freemium", pro: "Model Control", con: "Niche UI", link: "#" }
+                    ]
+                },
+                {
+                    title: "Floor Plan Gen",
+                    desc: "Spatial layout optimization.",
+                    ais: [
+                        { name: "Maket.ai", desc: "Generative residential.", price: "$30/mo", pro: "Rapid Layouts", con: "Generic", link: "#" },
+                        { name: "Finch 3D", desc: "Graph-based optimization.", price: "Contact Sales", pro: "Interactive", con: "Beta Access", link: "#" }
+                    ]
+                }
+            ]
+        },
+        {
+            title: "3. Design Dev",
+            desc: "Systems & Refinement",
+            tasks: [
+                {
+                    title: "AI Rendering",
+                    desc: "Model to Image.",
+                    ais: [
+                        { name: "Veras", desc: "Render inside Revit.", price: "~$40/mo", pro: "In-software", con: "Limited Control", link: "#" },
+                        { name: "Arko.ai", desc: "Cloud rendering.", price: "$25/mo", pro: "Fast", con: "Upload Req.", link: "#" }
+                    ]
+                },
+                {
+                    title: "3D Asset Gen",
+                    desc: "Detailing models.",
+                    ais: [
+                        { name: "Kaedim", desc: "2D sketch to 3D mesh.", price: "$150/mo", pro: "Saves Modeling", con: "Topo Quality", link: "#" },
+                        { name: "Luma AI", desc: "NeRF scanning.", price: "Free/Credits", pro: "Realism", con: "Scan Req.", link: "#" }
+                    ]
+                }
+            ]
+        },
+        {
+            title: "4. Documentation",
+            desc: "Drawings & Specs",
+            tasks: [
+                {
+                    title: "Auto-Drawings",
+                    desc: "BIM to Sheets.",
+                    ais: [
+                        { name: "Swapp", desc: "Full CD set automation.", price: "Enterprise", pro: "Massive Time Save", con: "Black Box", link: "#" }
+                    ]
+                },
+                {
+                    title: "Spec Writing",
+                    desc: "Technical text gen.",
+                    ais: [
+                        { name: "Togal.AI", desc: "Automated takeoffs.", price: "$50/mo", pro: "Accuracy", con: "Learning Curve", link: "#" }
+                    ]
+                }
+            ]
+        },
+        {
+            title: "5. Construction",
+            desc: "Admin & Monitoring",
+            tasks: [
+                {
+                    title: "Site Monitoring",
+                    desc: "Progress tracking.",
+                    ais: [
+                        { name: "OpenSpace", desc: "360 walk-throughs.", price: "Quote Based", pro: "Time Travel", con: "Hardware Cost", link: "#" },
+                        { name: "Buildots", desc: "Digital twin comparison.", price: "Enterprise", pro: "Granular", con: "Heavy Setup", link: "#" }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    /* --- STATE --- */
+    const state = {
+        scale: 1,
+        panning: false,
+        pointX: 0,
+        pointY: 0,
+        startX: 0,
+        startY: 0,
+        openStep: null,
+        openTask: { step: null, task: null },
+        introComplete: false
+    };
+
+    const root = document.getElementById('workflow-root');
+    const svgLayer = document.getElementById('connections-layer');
+    const introOverlay = document.getElementById('intro-overlay');
+    const mainUi = document.getElementById('main-ui');
+    const canvasWrapper = document.getElementById('canvas-wrapper');
+
+    const STEP_WIDTH = 240;
+    const STEP_GAP = 150;
+    const TASK_OFFSET_Y = 120;
+
+    /* --- INIT & RENDER --- */
+    function init() {
+        renderNodes();
+        
+        // --- AUTO CENTERING LOGIC ---
+        const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
+        
+        state.pointX = -(totalWidth / 2) + (STEP_WIDTH / 2);
+        state.pointY = -150;
+
+        updateTransform();
+        
+        // Start the Animation Sequence
+        runIntroSequence();
+    }
+
+    /* --- ANIMATION SEQUENCE --- */
+    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+    async function runIntroSequence() {
+        // 1. Text Typing Effect
+        const textEl = document.querySelector('.terminal-text');
+        textEl.innerHTML = `LOADING SYSTEM...<span class="cursor"></span>`;
+        await sleep(600);
+        textEl.innerHTML = `BUILDING NODES...<span class="cursor"></span>`;
+        await sleep(600);
+        
+        // 2. Fade out overlay
+        introOverlay.classList.add('finished');
+        canvasWrapper.classList.add('visible');
+        await sleep(400); // Wait for fade
+
+        // 3. Reveal Nodes and Draw Lines Sequentially
+        for (let i = 0; i < workflowData.length; i++) {
+            // Reveal Node
+            const node = document.getElementById(`step-${i}`);
+            node.classList.add('intro-active');
+
+            // If not the first node, draw line from previous
+            if (i > 0) {
+                // We create a temporary intro line with animation
+                const prev = document.getElementById(`step-${i-1}`);
+                const x1 = parseInt(prev.style.left) + STEP_WIDTH;
+                const y1 = parseInt(prev.style.top) + prev.offsetHeight / 2;
+                const x2 = parseInt(node.style.left); 
+                const y2 = parseInt(node.style.top) + node.offsetHeight / 2;
+                
+                // Manually draw specific intro line
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
+                path.setAttribute("d", d);
+                path.classList.add('intro-path'); // Adds the draw animation
+                svgLayer.appendChild(path);
+            }
+
+            await sleep(250); // Pause between steps for effect
+        }
+
+        // 4. Show UI and Finalize
+        mainUi.classList.remove('ui-hidden');
+        await sleep(500);
+        
+        // Switch state to allow normal interaction updates
+        state.introComplete = true;
+        
+        // Initial draw of standard lines (replaces intro lines silently if triggered)
+        // But for now, we leave the intro lines or clear and redraw. 
+        // Best to just leave them until interaction happens.
+        setTimeout(() => {
+             introOverlay.style.display = 'none';
+        }, 100);
+    }
+
+
+    function renderNodes() {
+        workflowData.forEach((step, index) => {
+            // Step
+            const stepEl = document.createElement('div');
+            stepEl.className = 'step-node';
+            stepEl.id = `step-${index}`;
+            stepEl.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
+            stepEl.style.top = `0px`; 
+            stepEl.innerHTML = `
+                <div class="step-header">${step.title}</div>
+                <div class="step-desc">${step.desc}</div>
+            `;
+            stepEl.onclick = (e) => toggleStep(index, e);
+            root.appendChild(stepEl);
+
+            // Task Group
+            const taskGroup = document.createElement('div');
+            taskGroup.className = 'task-group';
+            taskGroup.id = `taskgroup-${index}`;
+            taskGroup.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
+            taskGroup.style.top = `${TASK_OFFSET_Y}px`;
+
+            step.tasks.forEach((task, tIndex) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task-node';
+                taskEl.id = `task-${index}-${tIndex}`;
+                taskEl.innerHTML = `
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-desc">${task.desc}</div>
+                `;
+                taskEl.onmouseenter = () => hoverTask(index, tIndex);
+                taskEl.onclick = (e) => { e.stopPropagation(); hoverTask(index, tIndex); };
+
+                // AI Group
+                const aiGroup = document.createElement('div');
+                aiGroup.className = 'ai-group';
+                aiGroup.id = `aigroup-${index}-${tIndex}`;
+                
+                task.ais.forEach(ai => {
+                    const aiEl = document.createElement('div');
+                    aiEl.className = 'ai-node';
+                    aiEl.innerHTML = `
+                        <div class="ai-header">
+                            <div class="ai-logo"></div>
+                            <div class="ai-name">${ai.name}</div>
+                        </div>
+                        <div class="ai-desc">${ai.desc}</div>
+                        <div class="ai-meta">
+                            <span class="pro">+ ${ai.pro}</span>
+                            <span class="con">- ${ai.con}</span>
+                            <span class="price">${ai.price}</span>
+                        </div>
+                        <a href="${ai.link}" class="ai-link">Visit Website</a>
+                    `;
+                    aiGroup.appendChild(aiEl);
+                });
+                
+                taskEl.appendChild(aiGroup);
+                taskGroup.appendChild(taskEl);
+            });
+
+            root.appendChild(taskGroup);
+        });
+    }
+
+    /* --- INTERACTIONS --- */
+    function toggleStep(index, e) {
+        if(!state.introComplete) return; // Prevent clicking during intro
+        
+        e.stopPropagation();
+        const group = document.getElementById(`taskgroup-${index}`);
+        
+        if (state.openStep === index) {
+            group.classList.remove('visible');
+            state.openStep = null;
+            state.openTask = { step: null, task: null };
+            group.querySelectorAll('.ai-group').forEach(el => el.classList.remove('visible'));
+        } else {
+            if (state.openStep !== null) {
+                const prev = document.getElementById(`taskgroup-${state.openStep}`);
+                if(prev) {
+                    prev.classList.remove('visible');
+                    prev.querySelectorAll('.ai-group').forEach(el => el.classList.remove('visible'));
+                }
+            }
+            state.openStep = index;
+            group.classList.add('visible');
+        }
+        setTimeout(drawLines, 50); 
+    }
+
+    function hoverTask(stepIdx, taskIdx) {
+        if(!state.introComplete) return;
+        
+        const group = document.getElementById(`taskgroup-${stepIdx}`);
+        group.querySelectorAll('.ai-group').forEach(el => el.classList.remove('visible'));
+
+        const target = document.getElementById(`aigroup-${stepIdx}-${taskIdx}`);
+        target.classList.add('visible');
+        
+        state.openTask = { step: stepIdx, task: taskIdx };
+        drawLines();
+    }
+
+    /* --- CANVAS & ZOOM --- */
+    const wrapper = document.getElementById('canvas-wrapper');
+
+    wrapper.addEventListener('mousedown', (e) => {
+        if(e.target.closest('.step-node') || e.target.closest('.task-node') || e.target.closest('.ai-node')) return;
+        state.panning = true;
+        state.startX = e.clientX - state.pointX;
+        state.startY = e.clientY - state.pointY;
+        wrapper.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mouseup', () => {
+        state.panning = false;
+        wrapper.style.cursor = 'grab';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!state.panning) return;
+        e.preventDefault();
+        state.pointX = e.clientX - state.startX;
+        state.pointY = e.clientY - state.startY;
+        updateTransform();
+    });
+
+    wrapper.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const xs = (e.clientX - state.pointX) / state.scale;
+        const ys = (e.clientY - state.pointY) / state.scale;
+        
+        const delta = -e.deltaY;
+        (delta > 0) ? (state.scale *= 1.1) : (state.scale /= 1.1);
+        
+        state.scale = Math.min(Math.max(0.1, state.scale), 4);
+
+        state.pointX = e.clientX - xs * state.scale;
+        state.pointY = e.clientY - ys * state.scale;
+
+        updateTransform();
+    }, { passive: false });
+
+    function updateTransform() {
+        root.style.transform = `translate(${state.pointX}px, ${state.pointY}px) scale(${state.scale})`;
+    }
+
+    function resetView() {
+        state.scale = 1;
+        const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
+        state.pointX = -(totalWidth / 2) + (STEP_WIDTH / 2);
+        state.pointY = -150;
+        updateTransform();
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    /* --- SVG CONNECTIONS --- */
+    function drawLines() {
+        svgLayer.innerHTML = ''; 
+        
+        // 1. Horizontal Step Lines
+        for(let i=0; i<workflowData.length-1; i++) {
+            const curr = document.getElementById(`step-${i}`);
+            const next = document.getElementById(`step-${i+1}`);
+            
+            const x1 = parseInt(curr.style.left) + STEP_WIDTH;
+            const y1 = parseInt(curr.style.top) + curr.offsetHeight / 2;
+            const x2 = parseInt(next.style.left); 
+            const y2 = parseInt(next.style.top) + next.offsetHeight / 2;
+
+            createPath(x1, y1, x2, y2, false);
+        }
+
+        // 2. Vertical Task Lines
+        if(state.openStep !== null) {
+            const stepEl = document.getElementById(`step-${state.openStep}`);
+            const taskGroup = document.getElementById(`taskgroup-${state.openStep}`);
+            const tasks = taskGroup.children;
+
+            const startX = parseInt(stepEl.style.left) + STEP_WIDTH/2;
+            const startY = parseInt(stepEl.style.top) + stepEl.offsetHeight;
+
+            Array.from(tasks).forEach(task => {
+                const tX = parseInt(taskGroup.style.left); 
+                const tY = parseInt(taskGroup.style.top) + task.offsetTop + task.offsetHeight/2;
+                
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `M ${startX} ${startY} L ${startX} ${tY} L ${tX} ${tY}`;
+                path.setAttribute("d", d);
+                svgLayer.appendChild(path);
+            });
+        }
+
+        // 3. Horizontal AI Lines
+        if(state.openTask.step !== null && state.openTask.task !== null) {
+            const tStep = state.openTask.step;
+            const tIdx = state.openTask.task;
+            const taskEl = document.getElementById(`task-${tStep}-${tIdx}`);
+            const aiGroup = document.getElementById(`aigroup-${tStep}-${tIdx}`);
+            
+            if(aiGroup && aiGroup.classList.contains('visible')) {
+                const ais = aiGroup.querySelectorAll('.ai-node');
+                const taskRightX = (tStep * (STEP_WIDTH + STEP_GAP)) + STEP_WIDTH; 
+                const groupTop = parseInt(document.getElementById(`taskgroup-${tStep}`).style.top);
+                const taskCenterY = groupTop + taskEl.offsetTop + taskEl.offsetHeight/2;
+
+                ais.forEach(ai => {
+                    const aiLeftX = taskRightX + 280; 
+                    const aiCenterY = groupTop + taskEl.offsetTop + aiGroup.offsetTop + ai.offsetTop + ai.offsetHeight/2;
+                    createPath(taskRightX, taskCenterY, aiLeftX, aiCenterY, true);
+                });
+            }
+        }
+    }
+
+    function createPath(x1, y1, x2, y2, isAI) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        let d = "";
+        if(isAI) {
+            d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
+            path.classList.add('line-active');
+        } else {
+            d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
+        }
+        path.setAttribute("d", d);
+        svgLayer.appendChild(path);
+    }
+
+    window.addEventListener('resize', () => {
+        resetView(); 
+    });
+
+    init();
+
+</script>
+</body>
+</html>

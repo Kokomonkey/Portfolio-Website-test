@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is an LLM? | University Overview</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            
+            /* DYNAMIC SIZING */
+            /* 45vw ensures 2 squares fit side-by-side with a small gap margin if needed */
+            --square-size: 45vw; 
+            --header-height: 15vh;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* SANS SERIF */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh; /* Allow scrolling */
+            padding-bottom: 10vh;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            text-decoration: none;
+            z-index: 100;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5vh;
+            margin-bottom: 5vh;
+        }
+
+        h1 {
+            font-size: 3rem; 
+            letter-spacing: -1px;
+            font-weight: 300; /* Thinner, more academic weight */
+            text-transform: none;
+        }
+
+        /* --- THE GRID --- */
+        main {
+            display: flex;
+            justify-content: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 Wide */
+            /* Rows will auto-generate based on content */
+            gap: 0; 
+            width: fit-content;
+            border: 1px solid var(--accent-color);
+        }
+
+        /* --- GRID ITEMS --- */
+        .grid-item {
+            width: var(--square-size);
+            height: var(--square-size);
+            position: relative;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* --- CONTENT STYLING --- */
+        .text-content {
+            padding: 15%; /* Generous padding for academic reading */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Alignments */
+        .align-left { text-align: left; align-items: flex-start; }
+        .align-right { text-align: right; align-items: flex-end; }
+
+        .square-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .square-desc {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        /* --- IMAGES / PLACEHOLDERS --- */
+        .img-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .img-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            display: block;
+        }
+
+        .placeholder-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: black;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            font-family: monospace;
+        }
+
+        /* --- LINK STYLING --- */
+        .action-link {
+            text-decoration: none;
+            color: var(--accent-color);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .action-link:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+        
+        .action-link:hover .square-title {
+            border-bottom-color: var(--bg-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Home</a>
+
+    <header>
+        <h1>What is an LLM?</h1>
+    </header>
+
+    <main>
+        <div class="grid-container">
+
+            <div class="grid-item">
+                <div class="text-content align-left">
+                    <span class="square-title">01. Definition</span>
+                    <p class="square-desc">
+                        A Large Language Model (LLM) is a probabilistic deep learning algorithm that can recognize, summarize, translate, predict, and generate text and other content based on knowledge gained from massive datasets.
+                    </p>
+                </div>
+            </div>
+            <div class="grid-item">
+                <div class="img-wrapper">
+                    <img src="path/to/vector-space.jpg" class="img-placeholder" style="background: #222;" />
+                    <div class="placeholder-label">[IMG: High-Dimensional Vector Space Topology]</div>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="img-wrapper">
+                    <img src="path/to/transformer.jpg" class="img-placeholder" style="background: #333;" />
+                    <div class="placeholder-label">[IMG: The Transformer Architecture / Attention Mechanism]</div>
+                </div>
+            </div>
+            <div class="grid-item">
+                <div class="text-content align-right">
+                    <span class="square-title">02. Architecture</span>
+                    <p class="square-desc">
+                        Built on the <strong>Transformer</strong> architecture, LLMs utilize "Self-Attention" mechanisms. This allows the model to weigh the importance of different words in a sequence simultaneously, regardless of their distance from one another, enabling contextual understanding.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="text-content align-left">
+                    <span class="square-title">03. Training</span>
+                    <p class="square-desc">
+                        Through self-supervised learning, the model minimizes a loss function by predicting masked tokens within billions of parameters. It does not "know" facts; it learns statistical correlations between linguistic tokens.
+                    </p>
+                </div>
+            </div>
+            <div class="grid-item">
+                <div class="img-wrapper">
+                    <img src="path/to/neural-net.jpg" class="img-placeholder" style="background: #111;" />
+                    <div class="placeholder-label">[IMG: Dense Neural Network Layer Visualization]</div>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="img-wrapper">
+                    <img src="path/to/probability.jpg" class="img-placeholder" style="background: #444;" />
+                    <div class="placeholder-label">[IMG: Next-Token Probability Distribution Chart]</div>
+                </div>
+            </div>
+            <div class="grid-item">
+                <div class="text-content align-right">
+                    <span class="square-title">04. Inference</span>
+                    <p class="square-desc">
+                        During generation, the model outputs a probability distribution for the next likely token. Through sampling techniques (temperature), it selects the next piece of data, iteratively constructing a coherent output.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="text-content align-left">
+                    <span class="square-title">05. Multimodality</span>
+                    <p class="square-desc">
+                        Modern models like <strong>Google Nano</strong> extend this architecture beyond text to visuals. By tokenizing image data, the model can "hallucinate" visual structures constrained by your text prompts.
+                    </p>
+                </div>
+            </div>
+            
+            <a href="https://deepmind.google/technologies/gemini/nano/" target="_blank" class="grid-item action-link">
+                <div class="text-content align-right" style="justify-content: center; align-items: center;">
+                    <div style="font-size: 4rem; margin-bottom:20px;">🍌</div>
+                    <span class="square-title" style="border-bottom: 2px solid white;">Try Nano Banana</span>
+                    <p class="square-desc" style="text-align: center; margin-top: 10px;">
+                        Execute Generation >
+                    </p>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+</body>
+</html>

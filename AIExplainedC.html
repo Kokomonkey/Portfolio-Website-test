@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering | Architecture</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            
+            /* LOGIC HIGHLIGHT COLORS */
+            --color-role: #00ffff;   /* Cyan - Role */
+            --color-context: #ff00ff; /* Magenta - Context */
+            --color-style: #ffff00;   /* Yellow - Parameters */
+
+            /* DYNAMIC SIZING */
+            --square-size: 45vw; 
+            --header-height: 15vh;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 10vh;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            text-decoration: none;
+            z-index: 100;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5vh;
+            margin-bottom: 5vh;
+        }
+
+        h1 {
+            font-size: 3rem; 
+            letter-spacing: -1px;
+            font-weight: 300;
+            text-transform: none;
+        }
+
+        /* --- THE GRID --- */
+        main {
+            display: flex;
+            justify-content: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 0; 
+            width: fit-content;
+            border: 1px solid var(--accent-color);
+        }
+
+        /* --- GRID ITEMS --- */
+        .grid-item {
+            width: var(--square-size);
+            height: var(--square-size);
+            position: relative;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* --- CONTENT STYLING --- */
+        .text-content {
+            padding: 12%; 
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .align-left { text-align: left; align-items: flex-start; }
+        .align-right { text-align: right; align-items: flex-end; }
+
+        .square-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .square-desc {
+            font-size: 1.1rem; /* Slightly larger for readability */
+            line-height: 1.5;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        /* --- PROMPT HIGHLIGHTING CLASSES --- */
+        .prompt-box {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            border-left: 2px solid var(--accent-color);
+            padding-left: 20px;
+        }
+
+        .highlight-role {
+            color: var(--color-role);
+            border-bottom: 1px dashed var(--color-role);
+        }
+        
+        .highlight-context {
+            color: var(--color-context);
+            border-bottom: 1px dashed var(--color-context);
+        }
+
+        .highlight-style {
+            color: var(--color-style);
+            border-bottom: 1px dashed var(--color-style);
+        }
+
+        /* --- LOGIC LIST (Next Cube) --- */
+        .logic-list {
+            list-style: none;
+            width: 100%;
+        }
+
+        .logic-item {
+            margin-bottom: 20px;
+            border-right: 4px solid white; /* Default */
+            padding-right: 15px;
+        }
+
+        .logic-role { border-color: var(--color-role); }
+        .logic-context { border-color: var(--color-context); }
+        .logic-style { border-color: var(--color-style); }
+
+        .logic-header {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* --- IMAGES / PLACEHOLDERS --- */
+        .img-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .img-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            display: block;
+        }
+
+        .placeholder-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: black;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            font-family: monospace;
+        }
+        
+        /* --- LINK STYLING --- */
+        .gemini-link {
+            color: var(--accent-color);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .gemini-link:hover {
+            color: var(--color-role);
+        }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Home</a>
+
+    <header>
+        <h1>Architectural Diffusion</h1>
+    </header>
+
+    <main>
+        <div class="grid-container">
+
+            <div class="grid-item">
+                <div class="text-content align-left">
+                    <span class="square-title">01. Input Generation</span>
+                    <p class="square-desc">
+                        <strong>Task:</strong> Produce a conceptual volume study of a building structure.<br><br>
+                        <strong>Constraint:</strong> 60 Seconds.<br><br>
+                        The LLM requires a visual anchor. High fidelity is not required; accurate massing and perspective are prioritized to guide the ControlNet.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="grid-item">
+                <div class="img-wrapper">
+                    <img src="path/to/sketch.jpg" class="img-placeholder" style="background: #222;" />
+                    <div class="placeholder-label">[IMG: Rough 60-second pencil/marker sketch of a tower block]</div>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="text-content align-left">
+                    <span class="square-title">02. Prompt Engineering</span>
+                    <p class="square-desc prompt-box">
+                        "<span class="highlight-role">Act as a specialist in high-fidelity architectural visualization.</span> Transform the provided sketch into a 
+                        <span class="highlight-context">mixed-use tower located at Museumplein, Amsterdam, featuring a double-skin façade of glazing and timber lattice, crowned with honed basalt stone.</span>
+                        Ensure the atmosphere reflects 
+                        <span class="highlight-style">golden hour lighting conditions, 4K photorealistic resolution, and active pedestrian density.</span>"
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="text-content align-right">
+                    <span class="square-title">03. Logic Decoding</span>
+                    
+                    <ul class="logic-list">
+                        <li class="logic-item logic-role">
+                            <span class="logic-header" style="color: var(--color-role);">System Instruction (Cyan)</span>
+                            <span style="font-size: 0.9rem;">Defines the "Persona." This limits the model's latent space to professional architectural terminology, preventing generic or cartoonish outputs.</span>
+                        </li>
+
+                        <li class="logic-item logic-context">
+                            <span class="logic-header" style="color: var(--color-context);">Contextual Anchoring (Magenta)</span>
+                            <span style="font-size: 0.9rem;">Providing geographic data ("Amsterdam") and materiality forces the model to access specific training data regarding Dutch light, urban density, and texture.</span>
+                        </li>
+
+                        <li class="logic-item logic-style">
+                            <span class="logic-header" style="color: var(--color-style);">Stylistic Tokenization (Yellow)</span>
+                            <span style="font-size: 0.9rem;">"Golden Hour" and "4K" are high-weight tokens. They determine the noise-reduction path, ensuring the lighting and sharpness align with industry standards.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="img-wrapper">
+                    <img src="path/to/render.jpg" class="img-placeholder" style="background: #111;" />
+                    <div class="placeholder-label">[IMG: Photorealistic golden-hour render of the tower on Museumplein]</div>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <div class="text-content align-right">
+                    <span class="square-title">04. Recursive Refinement</span>
+                    <p class="square-desc">
+                        The loop does not end at generation. Language models possess the recursive ability to self-critique and refine their own prompts based on the visual output.
+                        <br><br>
+                        Use <a href="https://gemini.google.com" target="_blank" class="gemini-link">Gemini AI</a> to analyze your renders and suggest improved prompt iterations for higher precision.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
