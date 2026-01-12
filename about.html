@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
+    <title>Contact | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --transition-speed: 0.3s;
+            --header-height: 15vh;
+            --square-size: 15vh; /* Slightly smaller for contact page icons */
+            --gap-size: 2vh;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh; 
+            overflow: hidden; 
+            justify-content: center;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            position: fixed;
+            top: 2vh;
+            left: 2vh;
+            text-decoration: none;
+            z-index: 100;
+            border: 2px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 1vh 2vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 2vh; 
+            transition: all var(--transition-speed) ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- HEADER SECTION --- */
+        header {
+            height: var(--header-height);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 2vh;
+            margin-bottom: 2vh;
+        }
+
+        .logo-placeholder {
+            height: 10vh; 
+            width: 10vh; 
+            background-color: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logo-placeholder img {
+            max-height: 100%;
+            width: auto;
+        }
+
+        h1 {
+            font-size: 4vh;
+            letter-spacing: 0.5vh;
+            text-transform: uppercase;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        /* --- CONTACT LAYOUT --- */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        /* The container for text details */
+        .details-container {
+            width: 100%;
+            border-top: 2px solid var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding: 4vh 0;
+            margin-bottom: 4vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns */
+            gap: 4vh;
+            
+            /* Animation Entrance */
+            opacity: 0; 
+            animation-duration: 2s; 
+            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); 
+            animation-fill-mode: forwards;
+            animation-name: slideFromBottom;
+        }
+
+        .info-block h3 {
+            text-transform: uppercase;
+            font-size: 2vh;
+            margin-bottom: 2vh;
+            text-decoration: underline;
+            text-underline-offset: 0.5vh;
+        }
+
+        .info-block p, .info-block a {
+            font-size: 1.8vh;
+            line-height: 1.5;
+            display: block;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .info-block a:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- SOCIAL GRID (Mini version of home grid) --- */
+        .social-grid {
+            display: flex;
+            gap: 3vh;
+        }
+
+        .grid-item {
+            display: block; 
+            text-decoration: none;
+            opacity: 0; 
+            animation-duration: 2.5s; 
+            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); 
+            animation-fill-mode: forwards;
+        }
+
+        .square {
+            width: var(--square-size);
+            height: var(--square-size);
+            background-color: var(--bg-color); 
+            border: 2px solid var(--accent-color); 
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            transition: all var(--transition-speed) ease;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative; 
+        }
+
+        .square-icon {
+            width: 50%;
+            height: 50%;
+            background-color: var(--accent-color); 
+            transition: all var(--transition-speed) ease;
+        }
+
+        .square-text {
+            position: absolute;
+            bottom: 5%; 
+            width: 100%;
+            text-align: center;
+            color: var(--bg-color); 
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: calc(var(--square-size) / 8);
+            opacity: 0;
+            transform: translateY(10px); 
+            transition: all var(--transition-speed) ease;
+        }
+
+        /* HOVER EFFECTS */
+        .grid-item:hover .square {
+            background-color: var(--accent-color); 
+            transform: scale(1.05);
+        }
+
+        .grid-item:hover .square-icon {
+            background-color: var(--bg-color); 
+            transform: translateY(-20%); 
+        }
+
+        .grid-item:hover .square-text {
+            opacity: 1; 
+            transform: translateY(0);
+        }
+
+        /* RESPONSIVE ADJUSTMENT */
+        @media (max-width: 768px) {
+            .details-container {
+                grid-template-columns: 1fr; /* Stack vertically on mobile */
+                text-align: center;
+                gap: 3vh;
+                padding: 2vh 0;
+            }
+            .social-grid {
+                gap: 2vh;
+            }
+        }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes slideFromBottom { 0% { transform: translateY(10vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes slideFromTop { 0% { transform: translateY(-10vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Back</a>
+
+    <header>
+        <div class="logo-placeholder">
+            <img src="Recourses/Logos/DDD.jpg" />
+        </div>
+        <h1>DouweDoesDesign</h1>
+    </header>
+
+    <main>
+        
+        <div class="details-container">
+            
+            <div class="info-block">
+                <h3>Contact</h3>
+                <p>DouweDoesDesign Architecture</p>
+                <p>Anna van Hannoverstraat 2D</p>
+                <p>2595BJ Den Haag</p>
+                <br>
+                <p><a href="mailto:douwedoesdesignarchitecture@gmail.com">hello@douwedoesdesign.com</a></p>
+                <p><a href="tel:+31638466311">+31 (0)638 466 311</a></p>
+            </div>
+
+            <div class="info-block">
+                <h3>Firm Details</h3>
+                <p>KVK: 99292211</p>
+                <p>BTW-ID: NL005379257B01</p>
+                <br>
+                <p>Visit by appointment only.</p>
+                <p><a href="#">Terms & Conditions [PDF]</a></p>
+            </div>
+
+        </div>
+
+        <div class="social-grid">
+            
+            <a href="https://linkedin.com" target="_blank" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(0% 0%, 30% 0%, 30% 100%, 0% 100%, 0% 0%, 40% 0%, 100% 0%, 100% 100%, 70% 100%, 70% 40%, 40% 40%, 40% 100%);"></div>
+                    <span class="square-text">LinkedIn</span>
+                </div>
+            </a>
+
+            <a href="https://instagram.com" target="_blank" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 20%);"></div>
+                    <span class="square-text">Instagram</span>
+                </div>
+            </a>
+
+        </div>
+
+    </main>
+
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Apply random animations to the social squares
+        const squares = document.querySelectorAll('.grid-item');
+        const animations = ['slideFromBottom', 'slideFromTop'];
+
+        squares.forEach((square) => {
+            const randomIndex = Math.floor(Math.random() * animations.length);
+            square.style.animationName = animations[randomIndex];
+            // Add a slight delay so they don't appear exactly at the same time as the text
+            square.style.animationDelay = "0.2s";
+        });
+    });
+</script>
+
+</html>
