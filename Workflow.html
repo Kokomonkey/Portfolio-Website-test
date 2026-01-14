@@ -241,8 +241,9 @@
 
         .ai-group {
             position: absolute;
-            left: 280px; 
-            top: 0;
+            left: 365px; 
+            top: 50%;
+            transform: translate(-50%);
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -261,7 +262,14 @@
             border-radius: 4px;
             padding: 12px;
             font-size: 0.8rem;
+            cursor: pointer; /* Interaction Cue */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+        .ai-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
         .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
         .ai-logo { width: 16px; height: 16px; background: #ccc; border-radius: 50%; }
         .ai-name { font-weight: bold; }
@@ -307,12 +315,183 @@
 
         .line-active { stroke: var(--line-active); stroke-width: 3; }
 
+
+        /* --- NEW: SCREEN FILL OVERLAY (The Deep Dive Box) --- */
+        #detail-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8);
+            z-index: 5000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        #detail-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .overlay-content {
+            width: 90vw;
+            height: 90vh;
+            background: #000; /* High Contrast Theme from Reference */
+            color: #fff;
+            border: 2px solid #fff;
+            display: flex;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            width: 40px; height: 40px;
+            background: #fff;
+            color: #000;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            border: none;
+        }
+        .close-btn:hover { background: var(--accent-color); color: white; }
+
+        /* The Split Layout */
+        .detail-left {
+            width: 40%;
+            padding: 60px;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .detail-right {
+            width: 60%;
+            background: #000;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        /* Typography for Overlay */
+        .ov-title {
+            font-size: 3rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .ov-desc {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 40px;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+        .ov-meta {
+            margin-top: auto;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+        .ov-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .ov-label { color: #666; }
+        .ov-val { color: #fff; font-weight: bold; }
+
+        .ov-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 30px;
+            border: 1px solid #fff;
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+        }
+        .ov-btn:hover { background: #fff; color: #000; }
+
+        /* Grid Items (From Inspiration Code) */
+        .grid-square {
+            border: 1px solid #333;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px;
+        }
+        .sq-img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0;
+            opacity: 0.4; filter: grayscale(100%);
+        }
+        .sq-title {
+            position: relative; z-index: 2;
+            font-size: 1.2rem; font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 2px solid white;
+            display: inline-block; padding-bottom: 10px; margin-bottom: 10px;
+        }
+        .sq-txt {
+            position: relative; z-index: 2;
+            font-size: 0.9rem; color: #aaa;
+        }
+        .sq-center { align-items: center; text-align: center; }
+
     </style>
 </head>
 <body data-theme="dark"> <div class="bg-pattern"></div>
 
     <div id="intro-overlay">
         <div class="terminal-text">Initializing Workflow...<span class="cursor"></span></div>
+    </div>
+
+    <div id="detail-overlay" onclick="closeDetailOverlay(event)">
+        <div class="overlay-content" onclick="event.stopPropagation()"> <button class="close-btn" onclick="closeDetailOverlay()">×</button>
+            
+            <div class="detail-left">
+                <h2 id="ov-title" class="ov-title">AI Name</h2>
+                <p id="ov-desc" class="ov-desc">Description goes here.</p>
+                
+                <div class="ov-meta">
+                    <div class="ov-row"><span class="ov-label">Pricing:</span> <span id="ov-price" class="ov-val">Free</span></div>
+                    <div class="ov-row"><span class="ov-label">Pros:</span> <span id="ov-pro" class="ov-val" style="color:#2ecc71">Good</span></div>
+                    <div class="ov-row"><span class="ov-label">Cons:</span> <span id="ov-con" class="ov-val" style="color:#e74c3c">Bad</span></div>
+                </div>
+
+                <a id="ov-link" href="#" target="_blank" class="ov-btn">Visit Website</a>
+            </div>
+
+            <div class="detail-right">
+                <div class="grid-square">
+                    <span class="sq-title">01. Workflow</span>
+                    <p class="sq-txt">Integration method and API capabilities within the current pipeline architecture.</p>
+                </div>
+                <div class="grid-square">
+                    <div style="background:#222; width:100%; height:100%; position:absolute; top:0; left:0;"></div>
+                    <span class="sq-title" style="margin-top: auto;">[Visual Output]</span>
+                </div>
+                <div class="grid-square">
+                    <div style="background:#1a1a1a; width:100%; height:100%; position:absolute; top:0; left:0;"></div>
+                    <span class="sq-title" style="margin-top: auto;">[Data Model]</span>
+                </div>
+                <div class="grid-square sq-center">
+                    <span class="sq-title">02. Efficiency</span>
+                    <p class="sq-txt">Estimated time savings based on task automation parameters.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="ui-layer ui-hidden" id="main-ui">
@@ -336,111 +515,201 @@
     </div>
 
 <script>
-    /* --- DATA --- */
-    const workflowData = [
-        {
-            title: "1. Pre-Design",
-            desc: "Feasibility & Zoning",
-            tasks: [
-                {
-                    title: "Site Analysis",
-                    desc: "Wind, sun, noise, and massing optimization.",
-                    ais: [
-                        { name: "Autodesk Forma", desc: "Predictive microclimate analysis.", price: "~$1,550/yr", pro: "Revit Integration", con: "Expensive", link: "#" },
-                        { name: "Delve", desc: "Generative masterplanning.", price: "Enterprise", pro: "Holistic Metrics", con: "Complex Setup", link: "#" },
-                        { name: "TestFit", desc: "Real-time deal solving.", price: "$5,000/yr", pro: "Extremely Fast", con: "Simple Geometry", link: "#" }
-                    ]
-                },
-                {
-                    title: "Zoning Check",
-                    desc: "Automated code compliance.",
-                    ais: [
-                        { name: "UpCodes", desc: "AI code assistant.", price: "$50/mo", pro: "Reliable Data", con: "US Focused", link: "#" },
-                        { name: "Deepblocks", desc: "Zoning & financial modeling.", price: "$30/mo", pro: "Visual Maps", con: "Data Gaps", link: "#" }
-                    ]
-                }
-            ]
-        },
-        {
-            title: "2. Schematic Design",
-            desc: "Concept & Iteration",
-            tasks: [
-                {
-                    title: "Ideation (Text-to-Img)",
-                    desc: "Atmosphere & Mood.",
-                    ais: [
-                        { name: "Midjourney", desc: "Atmospheric concept art.", price: "$10-30/mo", pro: "Best Aesthetics", con: "Not 3D", link: "#" },
-                        { name: "DALL-E 3", desc: "Prompt-adherent gen.", price: "$20/mo", pro: "Easy Use", con: "Less Artistic", link: "#" },
-                        { name: "LookX", desc: "AI for architecture.", price: "Freemium", pro: "Model Control", con: "Niche UI", link: "#" }
-                    ]
-                },
-                {
-                    title: "Floor Plan Gen",
-                    desc: "Spatial layout optimization.",
-                    ais: [
-                        { name: "Maket.ai", desc: "Generative residential.", price: "$30/mo", pro: "Rapid Layouts", con: "Generic", link: "#" },
-                        { name: "Finch 3D", desc: "Graph-based optimization.", price: "Contact Sales", pro: "Interactive", con: "Beta Access", link: "#" }
-                    ]
-                }
-            ]
-        },
-        {
-            title: "3. Design Dev",
-            desc: "Systems & Refinement",
-            tasks: [
-                {
-                    title: "AI Rendering",
-                    desc: "Model to Image.",
-                    ais: [
-                        { name: "Veras", desc: "Render inside Revit.", price: "~$40/mo", pro: "In-software", con: "Limited Control", link: "#" },
-                        { name: "Arko.ai", desc: "Cloud rendering.", price: "$25/mo", pro: "Fast", con: "Upload Req.", link: "#" }
-                    ]
-                },
-                {
-                    title: "3D Asset Gen",
-                    desc: "Detailing models.",
-                    ais: [
-                        { name: "Kaedim", desc: "2D sketch to 3D mesh.", price: "$150/mo", pro: "Saves Modeling", con: "Topo Quality", link: "#" },
-                        { name: "Luma AI", desc: "NeRF scanning.", price: "Free/Credits", pro: "Realism", con: "Scan Req.", link: "#" }
-                    ]
-                }
-            ]
-        },
-        {
-            title: "4. Documentation",
-            desc: "Drawings & Specs",
-            tasks: [
-                {
-                    title: "Auto-Drawings",
-                    desc: "BIM to Sheets.",
-                    ais: [
-                        { name: "Swapp", desc: "Full CD set automation.", price: "Enterprise", pro: "Massive Time Save", con: "Black Box", link: "#" }
-                    ]
-                },
-                {
-                    title: "Spec Writing",
-                    desc: "Technical text gen.",
-                    ais: [
-                        { name: "Togal.AI", desc: "Automated takeoffs.", price: "$50/mo", pro: "Accuracy", con: "Learning Curve", link: "#" }
-                    ]
-                }
-            ]
-        },
-        {
-            title: "5. Construction",
-            desc: "Admin & Monitoring",
-            tasks: [
-                {
-                    title: "Site Monitoring",
-                    desc: "Progress tracking.",
-                    ais: [
-                        { name: "OpenSpace", desc: "360 walk-throughs.", price: "Quote Based", pro: "Time Travel", con: "Hardware Cost", link: "#" },
-                        { name: "Buildots", desc: "Digital twin comparison.", price: "Enterprise", pro: "Granular", con: "Heavy Setup", link: "#" }
-                    ]
-                }
-            ]
-        }
-    ];
+    
+  /* --- ELABORATE DATA RESTRUCTURED FROM DOCUMENT --- */
+const workflowData = [
+  {
+    title: "1. Pre-Design",
+    desc: "Strategic Definition & Discovery",
+    tasks: [
+      {
+        title: "Client Intake & Programming",
+        desc: "Visioning workshops, user-needs surveys, and developing room data sheets/adjacency matrices.",
+        ais: [
+          { name: "Excel / Data Tools", desc: "Managing functional requirements and square footage targets.", price: "Standard", pro: "Structured brief", con: "Manual data entry", link: "#", target: "_blank" },
+          { name: "Digital Blue Foam", desc: "Web-based generative design for sustainable feasibility studies.", price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/", target: "_blank" },
+          { name: "Crosby Studios", desc: "Generative interior design concepts.", price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Site & Regulatory Analysis",
+        desc: "Topographic review, solar/climate analysis, and detailed zoning audit (FAR, setbacks, height).",
+        ais: [
+          { name: "Autodesk Forma", desc: "Real-time environmental analysis (wind, noise, sun) & conceptual site planning.", price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma", target: "_blank" },
+          { name: "Archistar", desc: "Property intelligence platform for checking zoning compliance instantly.", price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/", target: "_blank" },
+          { name: "Climate Studio", desc: "Environmental performance and solar orientation modeling.", price: "Subscription", pro: "Passive design", con: "Specialized", link: "https://www.solemma.com/climate-studio", target: "_blank" }
+        ]
+      },
+      {
+        title: "Feasibility & Budgeting",
+        desc: "Developing Rough Order of Magnitude (ROM) cost models and testing project viability.",
+        ais: [
+          { name: "TestFit", desc: "Real-time generative deal solving and yield analysis.", price: "$5,000/yr", pro: "Instant ROI math", con: "Boxy geometry", link: "https://www.testfit.io/", target: "_blank" },
+          { name: "Maket", desc: "Generative residential design for quick layout iterations.", price: "Free Tier / Sub", pro: "Fast residential", con: "Less complex commercial", link: "https://www.maket.ai/", target: "_blank" },
+          { name: "qbiq", desc: "AI office layout planning and 3D virtual tours for test fits.", price: "Subscription", pro: "High speed layouts", con: "Office focused", link: "https://www.qbiq.ai/", target: "_blank" },
+          { name: "Laiout", desc: "Automated floor plans for commercial real estate.", price: "Subscription", pro: "Instant options", con: "Commercial focus", link: "https://www.laiout.co/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "2. Schematic Design",
+    desc: "Concept Formulation & Form",
+    tasks: [
+      {
+        title: "Parti & Concept Generation",
+        desc: "Creating guiding organizational principles, sketches, and mood boards to establish design intent.",
+        ais: [
+          { name: "Midjourney", desc: "AI-driven atmospheric concept art for client visioning.", price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/", target: "_blank" },
+          { name: "LookX", desc: "AI tailored for architecture to generate renderings from massing models.", price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/", target: "_blank" },
+          { name: "PromeAI", desc: "Transform sketches into rendered concepts.", price: "Freemium", pro: "Easy sketch-to-image", con: "2D only", link: "https://www.promeai.pro/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Massing & Spatial Studies",
+        desc: "Drafting preliminary single-line plans and testing building scale/volume on site.",
+        ais: [
+          { name: "Rhino / SketchUp", desc: "Flexible 3D modeling for rapid iteration.", price: "Varies", pro: "Easy form making", con: "Lacks BIM data", link: "#", target: "_blank" },
+          { name: "Finch 3D", desc: "Graph-based generative design for optimizing floor plans.", price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/", target: "_blank" },
+          { name: "ARCHITEChTURES", desc: "AI-powered residential building design generator.", price: "Subscription", pro: "Full building generation", con: "Strict parameters", link: "https://architechtures.com/", target: "_blank" },
+          { name: "Conix", desc: "AI for residential zoning and planning optimization.", price: "Subscription", pro: "Zoning logic", con: "Region specific roots", link: "https://conix.ai/", target: "_blank" },
+          { name: "PlanFinder", desc: "Plugin for Rhino/Revit to generate apartment layouts.", price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/", target: "_blank" },
+          { name: "ArkDesign.ai", desc: "AI optimizing architectural floor plans for density and code.", price: "Subscription", pro: "Efficiency", con: "Strict logic", link: "https://arkdesign.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Visualization & VR",
+        desc: "Producing renderings and VR walkthroughs to secure early client buy-in.",
+        ais: [
+          { name: "Veras (EvolveLAB)", desc: "AI rendering plugin directly inside Revit/Rhino.", price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras", target: "_blank" },
+          { name: "Arko.ai", desc: "Cloud-based AI rendering for SketchUp/Revit/Rhino.", price: "Subscription", pro: "Cloud processing", con: "Upload time", link: "https://arko.ai/", target: "_blank" },
+          { name: "Enscape", desc: "Real-time rendering integrated into the design workflow.", price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "3. Design Development",
+    desc: "Technical Refinement & Systems",
+    tasks: [
+      {
+        title: "Federated Modeling",
+        desc: "Integrating Structural and MEP models with Architecture for multi-discipline coordination.",
+        ais: [
+          { name: "Autodesk Revit", desc: "Core BIM authoring and information management.", price: "$2,500/yr", pro: "Fully integrated", con: "Steep learning", link: "https://www.autodesk.com/products/revit/overview", target: "_blank" },
+          { name: "Augmenta", desc: "AI for automated electrical and systems design.", price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/", target: "_blank" },
+          { name: "SkyCiv", desc: "Cloud-based structural engineering and analysis.", price: "Subscription", pro: "Cloud native", con: "Analysis focus", link: "https://skyciv.com/", target: "_blank" },
+          { name: "Hypar", desc: "Cloud platform for generating building systems and logic.", price: "Subscription", pro: "Modular logic", con: "Coding knowledge help", link: "https://hypar.io/", target: "_blank" },
+          { name: "Navisworks", desc: "Clash detection to resolve system conflicts early.", price: "Subscription", pro: "Reduces field errors", con: "Separate license", link: "https://www.autodesk.com/products/navisworks/overview", target: "_blank" }
+        ]
+      },
+      {
+        title: "Envelope & Interior Detailing",
+        desc: "Refining wall sections, interior elevations, millwork, and waterproofing strategies.",
+        ais: [
+          { name: "Kaedim", desc: "Convert 2D images into 3D models for detailed assets.", price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/", target: "_blank" },
+          { name: "Sloyd", desc: "Generative 3D asset creation for props and details.", price: "Freemium", pro: "Fast assets", con: "Game-dev focus", link: "https://www.sloyd.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Specifications Refinement",
+        desc: "Selecting specific products and creating Outline Specifications for key assemblies.",
+        ais: [
+          { name: "Specright", desc: "Specification data management to ensure product accuracy.", price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/", target: "_blank" },
+          { name: "Deltek Specpoint", desc: "Modern specification writing tool linked to BIM.", price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "4. Construction Docs",
+    desc: "Technical Execution & Permitting",
+    tasks: [
+      {
+        title: "Production Drafting",
+        desc: "Creating fully dimensioned and annotated working drawings for legal construction.",
+        ais: [
+          { name: "Swapp", desc: "AI that automates construction documents from models.", price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/", target: "_blank" },
+          { name: "Glyph (EvolveLAB)", desc: "Automating documentation tasks in Revit (tagging, dimensioning).", price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph", target: "_blank" }
+        ]
+      },
+      {
+        title: "The Project Manual",
+        desc: "Writing technical specifications using CSI MasterFormat to define quality standards.",
+        ais: [
+          { name: "SpecLink", desc: "Database-driven specification writing.", price: "Enterprise", pro: "Linked data", con: "Complex UI", link: "https://bspeclink.com/", target: "_blank" },
+          { name: "Document Crunch", desc: "AI review of contracts and specifications for risk.", price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "QA/QC & Permitting",
+        desc: "Internal redline reviews and submission to Authorities Having Jurisdiction (AHJ).",
+        ais: [
+          { name: "Bluebeam Revu", desc: "Advanced PDF markup and document coordination.", price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "5. Bidding & Negotiation",
+    desc: "Procurement & Contracts",
+    tasks: [
+      {
+        title: "Bid Management",
+        desc: "Issuing bid sets, conducting pre-bid conferences, and managing bidder RFIs.",
+        ais: [
+          { name: "SmartBid", desc: "Construction bid management software for GCs.", price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/", target: "_blank" },
+          { name: "Procore", desc: "Construction management and bid package tracking.", price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Bid Leveling & Analysis",
+        desc: "Analyzing contractor bids to ensure a fair 'apples-to-apples' comparison.",
+        ais: [
+          { name: "Togal.AI", desc: "AI-powered estimating and takeoff from plans.", price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/", target: "_blank" },
+          { name: "Pelles.ai", desc: "AI for preconstruction and estimating.", price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Value Engineering (VE)",
+        desc: "Identifying cost-saving alternatives without compromising essential design intent.",
+        ais: [
+          { name: "Drawer AI", desc: "AI for electrical estimating and optimization.", price: "Subscription", pro: "Trade specific", con: "Niche", link: "https://drawer.ai/", target: "_blank" },
+          { name: "OpenCost", desc: "Open source cost monitoring.", price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "6. Construction Admin",
+    desc: "Construction Realization",
+    tasks: [
+      {
+        title: "Site Observation & Reports",
+        desc: "Regular site visits to verify work conforms to the Construction Documents.",
+        ais: [
+          { name: "OpenSpace", desc: "360-degree photo documentation mapped to plans.", price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/", target: "_blank" },
+          { name: "PlanGrid", desc: "Mobile access to drawings and site reporting.", price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Submittals & Shop Drawings",
+        desc: "Reviewing contractor samples and technical drawings for design intent.",
+        ais: [
+          { name: "Part3", desc: "Automating the workflow for RFIs and submittals.", price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Project Closeout",
+        desc: "Managing the Punch List and issuing the Certificate of Substantial Completion.",
+        ais: [
+          { name: "Trunk Tools", desc: "AI for construction workflow and incentives.", price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/", target: "_blank" },
+          { name: "Civils.ai", desc: "Construction data AI for managing project records.", price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/", target: "_blank" }
+        ]
+      }
+    ]
+  }
+];
 
     /* --- STATE --- */
     const state = {
@@ -472,7 +741,7 @@
         // --- AUTO CENTERING LOGIC ---
         const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
         
-        state.pointX = -(totalWidth / 2) + (STEP_WIDTH / 2);
+        state.pointX = -(totalWidth / 2);
         state.pointY = -150;
 
         updateTransform();
@@ -534,7 +803,7 @@
         // But for now, we leave the intro lines or clear and redraw. 
         // Best to just leave them until interaction happens.
         setTimeout(() => {
-             introOverlay.style.display = 'none';
+              introOverlay.style.display = 'none';
         }, 100);
     }
 
@@ -591,8 +860,14 @@
                             <span class="con">- ${ai.con}</span>
                             <span class="price">${ai.price}</span>
                         </div>
-                        <a href="${ai.link}" class="ai-link">Visit Website</a>
+                        <div class="ai-link" style="opacity:0.6">Click for Details</div> 
                     `;
+                    // UPDATED CLICK HANDLER TO OPEN OVERLAY
+                    aiEl.onclick = (e) => {
+                        e.stopPropagation();
+                        openDetailOverlay(ai);
+                    }
+                    
                     aiGroup.appendChild(aiEl);
                 });
                 
@@ -603,6 +878,32 @@
             root.appendChild(taskGroup);
         });
     }
+
+    /* --- OVERLAY INTERACTIONS --- */
+    function openDetailOverlay(aiData) {
+        // Populate the overlay
+        document.getElementById('ov-title').innerText = aiData.name;
+        document.getElementById('ov-desc').innerText = aiData.desc;
+        document.getElementById('ov-price').innerText = aiData.price;
+        document.getElementById('ov-pro').innerText = aiData.pro;
+        document.getElementById('ov-con').innerText = aiData.con;
+        document.getElementById('ov-link').href = aiData.link;
+        
+        // Show overlay
+        document.getElementById('detail-overlay').classList.add('active');
+    }
+
+    function closeDetailOverlay(e) {
+        // If triggered by event, ensure we aren't clicking inside the content box
+        // (Handled by stopPropagation on content box, but good backup)
+        document.getElementById('detail-overlay').classList.remove('active');
+    }
+
+    // Close on Escape Key
+    document.addEventListener('keydown', (e) => {
+        if(e.key === "Escape") closeDetailOverlay();
+    });
+
 
     /* --- INTERACTIONS --- */
     function toggleStep(index, e) {
@@ -740,22 +1041,31 @@
 
         // 3. Horizontal AI Lines
         if(state.openTask.step !== null && state.openTask.task !== null) {
-            const tStep = state.openTask.step;
-            const tIdx = state.openTask.task;
-            const taskEl = document.getElementById(`task-${tStep}-${tIdx}`);
-            const aiGroup = document.getElementById(`aigroup-${tStep}-${tIdx}`);
-            
-            if(aiGroup && aiGroup.classList.contains('visible')) {
-                const ais = aiGroup.querySelectorAll('.ai-node');
-                const taskRightX = (tStep * (STEP_WIDTH + STEP_GAP)) + STEP_WIDTH; 
-                const groupTop = parseInt(document.getElementById(`taskgroup-${tStep}`).style.top);
-                const taskCenterY = groupTop + taskEl.offsetTop + taskEl.offsetHeight/2;
+    const tStep = state.openTask.step;
+    const tIdx = state.openTask.task;
+    const taskEl = document.getElementById(`task-${tStep}-${tIdx}`);
+    const aiGroup = document.getElementById(`aigroup-${tStep}-${tIdx}`);
+    
+    if(aiGroup && aiGroup.classList.contains('visible')) {
+        const ais = aiGroup.querySelectorAll('.ai-node');
+        
+        // Find the right edge of the task box
+        const taskRect = taskEl.getBoundingClientRect();
+        const rootRect = root.getBoundingClientRect();
 
-                ais.forEach(ai => {
-                    const aiLeftX = taskRightX + 280; 
-                    const aiCenterY = groupTop + taskEl.offsetTop + aiGroup.offsetTop + ai.offsetTop + ai.offsetHeight/2;
-                    createPath(taskRightX, taskCenterY, aiLeftX, aiCenterY, true);
-                });
+        // Calculate coordinates relative to the workflow-root
+        const x1 = (taskRect.right - rootRect.left) / state.scale;
+        const y1 = (taskRect.top + taskRect.height / 2 - rootRect.top) / state.scale;
+
+        ais.forEach(ai => {
+            const aiRect = ai.getBoundingClientRect();
+            
+            // Destination: Left edge of the AI card
+            const x2 = (aiRect.left - rootRect.left) / state.scale;
+            const y2 = (aiRect.top + aiRect.height / 2 - rootRect.top) / state.scale;
+
+            createPath(x1, y1, x2, y2, true);
+        });
             }
         }
     }

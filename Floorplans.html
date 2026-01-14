@@ -218,6 +218,17 @@
         </div>
     </div>
 
+    <div id="lightbox" class="hidden">
+         <div class="viewer-container">
+      <img id="zoomed-image" src="" alt="Plan View">
+    
+         <button id="prev-btn" class="nav-arrow left">←</button>
+         <button id="next-btn" class="nav-arrow right">→</button>
+
+          <button id="close-btn">×</button>
+        </div>
+    </div>
+
     <div class="info-panel">
         <h2>Floorplans</h2>
         <p>
@@ -264,6 +275,9 @@
 
         // Initial state
         updateView("3");
+
+
+        
     </script>
 </body>
 </html>
