@@ -189,6 +189,14 @@
             transition: all var(--transition-speed) ease;
         }
 
+        .square-img {
+            width: 100%;         /* Changed from 50% to fill square */
+            height: 100%;        /* Changed from auto to fill square */
+            object-fit: cover;   /* Ensures image fills without stretching */
+            transition: all var(--transition-speed) ease;
+            filter: invert(1);   /* Assuming black PNGs/JPGs */
+        }
+
         /* HOVER EFFECTS */
         .grid-item:hover .square {
             background-color: var(--accent-color); 
@@ -203,6 +211,11 @@
         .grid-item:hover .square-text {
             opacity: 1; 
             transform: translateY(0);
+        }
+
+        .grid-item:hover .square-img {
+            filter: none;
+            transform: translateY(-7%);
         }
 
         /* RESPONSIVE ADJUSTMENT */
@@ -245,7 +258,7 @@
                 <p>Anna van Hannoverstraat 2D</p>
                 <p>2595BJ Den Haag</p>
                 <br>
-                <p><a href="mailto:douwedoesdesignarchitecture@gmail.com">douwedoesdesignarchitecture@gmail.com</a></p>
+                <p><a href="mailto:douwedoesdesign@gmail.com">douwedoesdesign@gmail.com</a></p>
                 <p><a href="tel:+31638466311">+31 (0)638 466 311</a></p>
             </div>
 
@@ -262,16 +275,16 @@
 
         <div class="social-grid">
             
-            <a href="https://linkedin.com" target="_blank" class="grid-item">
+            <a href="https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3Bc795PccjRNeMsqx%2Fl3U%2BwA%3D%3D" target="_blank" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(0% 0%, 30% 0%, 30% 100%, 0% 100%, 0% 0%, 40% 0%, 100% 0%, 100% 100%, 70% 100%, 70% 40%, 40% 40%, 40% 100%);"></div>
+                    <img src="Recourses/Logos/linkedin.jpg" alt="Contact Logo" class="square-img">
                     <span class="square-text">LinkedIn</span>
                 </div>
             </a>
 
-            <a href="https://instagram.com" target="_blank" class="grid-item">
+            <a href="https://www.instagram.com/douwedoesdesign/#" target="_blank" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 20% 20%, 80% 20%, 80% 80%, 20% 80%, 20% 20%);"></div>
+                    <img src="Recourses/Logos/instagram.jpg" alt="Contact Logo" class="square-img">
                     <span class="square-text">Instagram</span>
                 </div>
             </a>
