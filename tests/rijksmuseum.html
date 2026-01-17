@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rijksmuseum: CSS Block Construction</title>
+    <style>
+        /* --- General Reset & Variables --- */
+        :root {
+            --bg-color: #f4f1ea; /* Parchment off-white */
+            --text-color: #2c241b; /* Dark Sepia */
+            --accent-color: #8c7b64; /* Muted Gold/Brown */
+            --heading-font: 'Playfair Display', Georgia, serif;
+            --body-font: 'Lora', serif;
+            
+            /* CSS Drawing Colors */
+            --brick-red: #8a4b38;
+            --stone-beige: #d4c5a9;
+            --roof-slate: #3E4756;
+            --window-dark: #1a1f29;
+            --sky-blue: #eaddcf;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--body-font);
+            line-height: 1.6;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- Header & Nav --- */
+        header {
+            padding: 40px 0;
+            border-bottom: 2px solid var(--accent-color);
+            margin-bottom: 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo h1 { font-family: var(--heading-font); font-size: 2rem; letter-spacing: 1px; }
+        .logo span { display: block; font-size: 0.9rem; font-style: italic; color: var(--accent-color); }
+        nav ul { list-style: none; display: flex; gap: 30px; }
+        nav a { text-decoration: none; color: var(--text-color); font-family: var(--heading-font); font-weight: 600; transition: color 0.3s ease; }
+        nav a:hover { color: var(--accent-color); }
+
+        /* --- CSS Drawing Section --- */
+        .hero { text-align: center; margin-bottom: 60px; }
+        .hero h2 { font-family: var(--heading-font); font-size: 2.5rem; margin-top: 30px; }
+        .divider { height: 2px; width: 100px; background-color: var(--accent-color); margin: 20px auto; }
+
+        /* THE CSS DRAWING CANVAS */
+        .drawing-frame {
+            border: 8px solid #e3decb;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 10px;
+            background: white;
+            display: inline-block;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .css-canvas {
+            /* This defines the grid we will draw on. 60 columns wide, 40 rows high */
+            display: grid;
+            grid-template-columns: repeat(60, 1fr);
+            grid-template-rows: repeat(40, minmax(5px, 12px));
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: var(--sky-blue);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+
+        /* Generic Block Types */
+        .b { position: relative; } /* Base block class */
+        .brick { background-color: var(--brick-red); }
+        .stone { background-color: var(--stone-beige); }
+        .roof { background-color: var(--roof-slate); }
+        .dark { background-color: var(--window-dark); }
+
+        /* Utility to simulate windows using gradients */
+        .windows-pattern {
+            background-image: linear-gradient(to bottom, transparent 60%, var(--stone-beige) 60%, var(--stone-beige) 65%, transparent 65%),
+                              linear-gradient(to right, transparent 70%, var(--window-dark) 70%, var(--window-dark) 90%, transparent 90%);
+            background-size: 100% 25%, 10% 100%; /* Rows and columns of windows */
+        }
+
+        /* --- PLACING THE BLOCKS ON THE GRID --- */
+
+        /* Ground */
+        .ground { grid-column: 1 / -1; grid-row: 39 / -1; background-color: #7d7468; }
+
+        /* Central Section */
+        .center-main { grid-column: 22 / 40; grid-row: 15 / 39; }
+        .center-arch-dark { grid-column: 27 / 35; grid-row: 28 / 39; background-color: #222; border-radius: 50% 50% 0 0; } /* The main passage tunnel */
+        .center-roof-base { grid-column: 21 / 41; grid-row: 12 / 15; }
+        
+        /* Twin Towers */
+        .tower-left-base { grid-column: 22 / 27; grid-row: 8 / 15; }
+        .tower-right-base { grid-column: 35 / 40; grid-row: 8 / 15; }
+        .tower-left-spire { grid-column: 22 / 27; grid-row: 2 / 8; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+        .tower-right-spire { grid-column: 35 / 40; grid-row: 2 / 8; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+
+        /* Wings */
+        .wing-left { grid-column: 6 / 22; grid-row: 20 / 39; }
+        .wing-right { grid-column: 40 / 56; grid-row: 20 / 39; }
+        .wing-left-roof { grid-column: 5 / 22; grid-row: 16 / 20; clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 0% 100%);}
+        .wing-right-roof { grid-column: 40 / 57; grid-row: 16 / 20; clip-path: polygon(0% 0%, 90% 0%, 100% 100%, 0% 100%);}
+
+        /* Corner Pavilions */
+        .corner-left { grid-column: 1 / 6; grid-row: 18 / 39; }
+        .corner-right { grid-column: 56 / 61; grid-row: 18 / 39; }
+        .corner-left-roof { grid-column: 1 / 6; grid-row: 14 / 18; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+        .corner-right-roof { grid-column: 56 / 61; grid-row: 14 / 18; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+
+
+        /* --- Content Grid --- */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-bottom: 80px; }
+        .card { background: rgba(255, 255, 255, 0.4); padding: 30px; border: 1px solid #dcd6c8; }
+        .card h3 { font-family: var(--heading-font); background-color: #d8cfbe; padding: 10px; text-align: center; margin-bottom: 20px; }
+        footer { border-top: 1px solid var(--accent-color); padding: 40px 0; text-align: center; color: #666; }
+
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>Rijksmuseum</h1>
+                <span>Built with CSS Blocks</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">The Code</a></li>
+                    <li><a href="#">The Building</a></li>
+                    <li><a href="#">Visit</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="drawing-frame">
+                    <div class="css-canvas">
+                        <div class="b ground"></div>
+                        
+                        <div class="b brick windows-pattern center-main"></div>
+                        <div class="b center-arch-dark"></div>
+                        <div class="b roof center-roof-base"></div>
+                        
+                        <div class="b brick tower-left-base"></div>
+                        <div class="b brick tower-right-base"></div>
+                        <div class="b roof tower-left-spire"></div>
+                        <div class="b roof tower-right-spire"></div>
+
+                        <div class="b brick windows-pattern wing-left"></div>
+                        <div class="b brick windows-pattern wing-right"></div>
+                        <div class="b roof wing-left-roof"></div>
+                        <div class="b roof wing-right-roof"></div>
+
+                        <div class="b brick windows-pattern corner-left"></div>
+                        <div class="b brick windows-pattern corner-right"></div>
+                        <div class="b roof corner-left-roof"></div>
+                        <div class="b roof corner-right-roof"></div>
+                    </div>
+                </div>
+                <h2>An Abstraction in Code</h2>
+                <div class="divider"></div>
+            </section>
+
+            <section class="info-grid">
+                <div class="card">
+                    <h3>The Grid System</h3>
+                    <p>Unlike the previous pen drawing, this image is constructed entirely of HTML <code>&lt;div&gt;</code> blocks placed on a 60x40 CSS Grid. It's a digital mosaic made of code.</p>
+                </div>
+                <div class="card">
+                    <h3>Simplified Geometry</h3>
+                    <p>To render the complex Neo-Gothic architecture using only rectangular blocks, details had to be abstracted into simple geometric shapes, using colors to represent brick, stone, and slate.</p>
+                </div>
+                <div class="card">
+                    <h3>CSS "Windows"</h3>
+                    <p>Instead of placing hundreds of tiny window divs, which would clutter the code, the window rows are simulated using CSS linear gradients applied as background patterns on the brick blocks.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 CSS Architecture Projects.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
