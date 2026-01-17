@@ -145,12 +145,13 @@
             transition: all var(--transition-speed) ease;
         }
         
-        /* If using IMG tag for icon */
+        /* UPDATED: If using IMG tag for icon */
         .square-img {
-            width: 50%;
-            height: auto;
+            width: 100%;         /* Changed from 50% to fill square */
+            height: 100%;        /* Changed from auto to fill square */
+            object-fit: cover;   /* Ensures image fills without stretching */
             transition: all var(--transition-speed) ease;
-            filter: invert(1); /* Assuming black PNGs */
+            filter: invert(1);   /* Assuming black PNGs/JPGs */
         }
 
         .square-text {
@@ -177,7 +178,7 @@
             transform: scale(1.05); /* Reduced scale slightly to prevent overlap */
             background-color: var(--accent-color); 
             border-color: var(--accent-color);
-            z-index: 20; 
+            z-index: 8; 
         }
 
         .grid-item:hover .square-icon {
@@ -187,7 +188,7 @@
         
         .grid-item:hover .square-img {
             filter: none;
-            transform: translateY(-15%);
+            transform: translateY(-7%);
         }
 
         .grid-item:hover .square-text {
@@ -217,59 +218,64 @@
 
             <a href="projects.html" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div>
+                    <img src="Recourses/Logos/Index/Projects.jpg" alt="Projects Logo" class="square-img">
                     <span class="square-text">Projects</span>
                 </div>
             </a>
 
-      
+            <a href="Workflow.html" class="grid-item">
+                <div class="square">
+                    <img src="Recourses/Logos/Index/Workflow.jpg" alt="Workflow Logo" class="square-img">
+                    <span class="square-text">Workflow</span>
+                </div>
+            </a>
 
             <a href="ai-generation.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/AIGeneration.jpg"/></div>
+                    <img src="Recourses/Logos/Index/AIGeneration.jpg" alt="AI-Generation Logo" class="square-img">
                     <span class="square-text">AI-Generation</span>
                 </div>
             </a>
 
             <a href="about.html" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);"></div>
+                    <img src="Recourses/Logos/Index/About.jpg" alt="About Logo" class="square-img">
                     <span class="square-text">About</span>
                 </div>
             </a>
 
-            <a href="Updates.html" class="grid-item">
+            <a href="test-sites.html" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%);"></div>
-                    <span class="square-text">Updates</span>
+                    <img src="Recourses/Logos/Index/TestSites.jpg" alt="Test Sites Logo" class="square-img">
+                    <span class="square-text">Test Sites</span>
                 </div>
             </a>
 
             <a href="contact.html" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(10% 25%, 35% 25%, 35% 0%, 65% 0%, 65% 25%, 90% 25%, 90% 50%, 65% 50%, 65% 100%, 35% 100%, 35% 50%, 10% 50%);"></div>
+                    <img src="Recourses/Logos/Index/Contact.jpg" alt="Contact Logo" class="square-img">
                     <span class="square-text">Contact</span>
                 </div>
             </a>
 
-            <a href="imagegallery.html" class="grid-item">
+            <a href="imageGallery.html" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(0% 0%, 0% 100%, 25% 100%, 25% 25%, 75% 25%, 75% 75%, 25% 75%, 25% 100%, 100% 100%, 100% 0%);"></div>
+                    <img src="Recourses/Logos/Index/ImageGallery.jpg" alt="Archive Logo" class="square-img">
                     <span class="square-text">Image Gallery</span>
                 </div>
             </a>
 
             <a href="playground.html" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: circle(40% at 50% 50%); border: 5px solid white;"></div>
+                    <img src="Recourses/Logos/Index/Playground.jpg" alt="Playground Logo" class="square-img">
                     <span class="square-text">Playground</span>
                 </div>
             </a>
 
-            <a href="test-sites.html" class="grid-item">
+            <a href="updates.html" class="grid-item">
                 <div class="square">
-                    <div class="square-icon" style="clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 100%, 80% 100%, 20% 100%, 0% 100%, 0% 20%);"></div>
-                    <span class="square-text">Test-Sites</span>
+                    <img src="Recourses/Logos/Index/Updates.jpg" alt="Blog Logo" class="square-img">
+                    <span class="square-text">Updates</span>
                 </div>
             </a>
 
