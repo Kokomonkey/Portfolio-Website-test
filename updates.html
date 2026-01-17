@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
+    <title>System Logs | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --code-font: 'Courier New', Courier, monospace;
+            --body-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --header-height: 20vh;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: var(--body-font);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: scroll; /* Force scrollbar */
+        }
+
+        /* Scrollbar Styling (Webkit) */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #333; border: 1px solid #000; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+        /* --- HEADER & NAV --- */
+        .back-btn {
+            position: fixed;
+            top: 4vh; left: 4vh;
+            text-decoration: none;
+            z-index: 1000;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        header {
+            min-height: var(--header-height);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        .site-logo {
+            height: 60px; width: auto; margin-bottom: 20px;
+            border-radius: 50%; border: 1px solid var(--accent-color);
+        }
+
+        h1 {
+            font-size: 2rem; letter-spacing: -1px; text-transform: uppercase;
+            font-weight: 300; border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        /* --- VERSION TIMELINE --- */
+        main {
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px 100px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* The Status Bar (Simulating a terminal prompt) */
+        .status-bar {
+            font-family: var(--code-font);
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #333;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .status-dot {
+            display: inline-block; width: 10px; height: 10px; 
+            background: limegreen; border-radius: 50%; margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        /* The Commit Card */
+        .commit-entry {
+            border: 1px solid #333;
+            padding: 25px;
+            background: #050505;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+            overflow: hidden;
+            
+            /* Initial State for Animation */
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: streamIn 0.5s ease forwards;
+        }
+
+        /* Hover Interaction */
+        .commit-entry:hover {
+            border-color: var(--accent-color);
+            background: var(--bg-color);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .commit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-family: var(--code-font);
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .commit-date { text-transform: uppercase; letter-spacing: 1px; }
+
+        .commit-msg {
+            font-size: 1.2rem;
+            font-weight: 400;
+            line-height: 1.4;
+            color: var(--accent-color);
+        }
+
+        /* The SHA Hash (Hidden until hover) */
+        .commit-sha {
+            position: absolute;
+            top: 25px; right: -100px; /* Start off screen */
+            font-family: var(--code-font);
+            color: var(--bg-color);
+            background: var(--accent-color);
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            transition: right 0.3s ease;
+        }
+
+        .commit-entry:hover .commit-sha {
+            right: 0; /* Slide in on hover */
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes streamIn {
+            0% { opacity: 0; transform: translateX(-20px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; }
+        }
+
+        /* Loading Spinner */
+        #loading-msg {
+            text-align: center;
+            font-family: var(--code-font);
+            font-size: 0.9rem;
+            animation: blink 0.5s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Back</a>
+
+    <header>
+        <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Deployment Log</h1>
+    </header>
+
+    <main id="log-container">
+        <div class="status-bar">
+            <span><span class="status-dot"></span>CONNECTING TO REPOSITORY...</span>
+            <span id="repo-target">Kokomonkey/Portfolio-Website-test</span>
+        </div>
+
+        <div id="loading-msg">> FETCHING DATA STREAM...</div>
+
+        </main>
+
+    <script>
+        // CONFIGURATION
+        const GITHUB_USERNAME = 'Kokomonkey';
+        const GITHUB_REPO = 'Portfolio-Website-test';
+        const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/commits`;
+
+        const container = document.getElementById('log-container');
+        const loader = document.getElementById('loading-msg');
+        const statusText = document.querySelector('.status-bar span');
+
+        // --- MAIN FUNCTION ---
+        async function initLogs() {
+            try {
+                // 1. Attempt to fetch from GitHub
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) throw new Error('Repo not found or Rate Limit Exceeded');
+                
+                const data = await response.json();
+                
+                // 2. Clear Loader
+                loader.remove();
+                statusText.innerHTML = '<span class="status-dot"></span>LIVE CONNECTION ESTABLISHED';
+                
+                // 3. Render Real Data
+                renderCommits(data);
+
+            } catch (error) {
+                console.warn("GitHub API failed, loading static backup.", error);
+                
+                // 4. Fallback Protocol
+                loader.remove();
+                statusText.innerHTML = '<span class="status-dot" style="background:orange"></span>OFFLINE MODE - STATIC LOGS';
+                renderFallback();
+            }
+        }
+
+        // --- RENDER REAL DATA ---
+        function renderCommits(commits) {
+            // Limit to last 15 commits to keep page clean
+            const recentCommits = commits.slice(0, 15);
+
+            recentCommits.forEach((item, index) => {
+                const msg = item.commit.message;
+                const date = new Date(item.commit.author.date).toLocaleDateString("en-US", { 
+                    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' 
+                });
+                const sha = item.sha.substring(0, 7); // Short Hash
+                
+                createEntry(date, msg, sha, index);
+            });
+        }
+
+        // --- RENDER STATIC FALLBACK ---
+        function renderFallback() {
+            const staticData = [
+                { ver: "v0.2.0", msg: "Implemented 3D interaction engine & shadow logic", date: "Oct 24, 2023" },
+                { ver: "v0.1.6", msg: "Refined navigation transitions (Flip animation)", date: "Oct 18, 2023" },
+                { ver: "v0.1.5", msg: "Added mobile responsiveness constraints", date: "Oct 15, 2023" },
+                { ver: "v0.1.0", msg: "Initial Commit: Brutalist Layout Structure", date: "Oct 01, 2023" }
+            ];
+
+            staticData.forEach((item, index) => {
+                createEntry(item.date, `${item.ver} - ${item.msg}`, "STATIC", index);
+            });
+        }
+
+        // --- HTML GENERATOR ---
+        function createEntry(date, msg, sha, index) {
+            const div = document.createElement('div');
+            div.className = 'commit-entry';
+            
+            // Staggered Animation Delay (0.1s per item)
+            div.style.animationDelay = `${index * 0.1}s`;
+
+            div.innerHTML = `
+                <div class="commit-header">
+                    <span class="commit-date">${date}</span>
+                    <span>ID: ${sha}</span>
+                </div>
+                <div class="commit-msg">${msg}</div>
+                <div class="commit-sha">VIEW DIFF ${sha}</div>
+            `;
+
+            container.appendChild(div);
+        }
+
+        // Start the engine
+        initLogs();
+
+    </script>
+</body>
+</html>

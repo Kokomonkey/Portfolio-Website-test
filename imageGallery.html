@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
+    <title>Visual Archives | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --secondary-bg: #111111;
+            --transition-curve: cubic-bezier(0.76, 0, 0.24, 1);
+            --header-height: 15vh;
+            
+            /* UPDATED: Wider Sidebar */
+            --sidebar-width: 120px; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER & NAV --- */
+        .back-btn {
+            position: fixed;
+            top: 4vh; left: 4vh; /* Moved slightly inward for alignment */
+            text-decoration: none;
+            z-index: 1000;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        header {
+            height: var(--header-height);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            z-index: 10;
+            transition: all 0.6s var(--transition-curve);
+        }
+
+        .site-logo {
+            height: 50px; width: auto; margin-bottom: 15px;
+            border-radius: 50%; border: 1px solid var(--accent-color);
+        }
+
+        h1 {
+            font-size: 2rem; letter-spacing: -1px; text-transform: uppercase;
+            font-weight: 300; border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        main {
+            flex-grow: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- STATE 1: THE GRID (Home) --- */
+        .grid-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            width: 50vmin; 
+            height: 50vmin;
+            transition: all 0.8s var(--transition-curve);
+            z-index: 5;
+        }
+
+        .category-card {
+            border: 1px solid var(--accent-color);
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.5s var(--transition-curve);
+            overflow: hidden;
+        }
+        .category-card:hover { background: var(--secondary-bg); letter-spacing: 3px; }
+
+        /* --- STATE 2: GALLERY SIDEBAR (Modified) --- */
+        body.gallery-mode .grid-container {
+            top: 0; left: 0;
+            transform: none;
+            width: var(--sidebar-width);
+            height: 100%;
+            gap: 0;
+            
+            /* Sidebar Grid Layout */
+            grid-template-columns: 1fr;
+            
+            /* UPDATED ROW LOGIC:
+               1fr (Top Spacer) -> Buttons -> 1fr (Bottom Spacer)
+            */
+            grid-template-rows: 1fr repeat(4, auto) 1fr;
+            
+            border-right: 1px solid #333;
+            
+            /* UPDATED: Push content down to avoid the Back Button */
+            padding-top: 15vh; 
+            z-index: 100;
+        }
+
+        /* Spacers for vertical centering */
+        body.gallery-mode .grid-container::before { content: ""; grid-row: 1; }
+        body.gallery-mode .grid-container::after { content: ""; grid-row: 6; }
+
+        body.gallery-mode .category-card {
+            font-size: 0.7rem; 
+            letter-spacing: 1px;
+            border: none;
+            border-top: 1px solid #222; 
+            border-bottom: 1px solid #222;
+            justify-content: center;
+            color: #666;
+            height: 70px; /* Slightly taller for wider bar */
+            grid-column: 1;
+        }
+
+        body.gallery-mode .category-card.active-category {
+            background: var(--bg-color);
+            color: var(--accent-color);
+            border: none;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            height: 350px; /* Tall active state */
+            padding-top: 20px;
+            z-index: 2;
+            border-right: 1px solid var(--accent-color); /* Overlap border */
+            margin-right: -1px;
+        }
+
+        body.gallery-mode header {
+            position: absolute; top: 20px; right: 40px;
+            height: auto; align-items: flex-end; z-index: 50; pointer-events: none;
+        }
+        body.gallery-mode h1 { display: none; }
+        body.gallery-mode .site-logo { height: 40px; margin: 0; opacity: 0.5; }
+
+        /* --- IMAGE FEED (Modified) --- */
+        .image-feed {
+            position: absolute;
+            top: 0; 
+            left: var(--sidebar-width);
+            width: calc(100vw - var(--sidebar-width));
+            height: 100%;
+            overflow-y: auto;
+            
+            /* UPDATED: Centering & Margins */
+            display: flex; /* Use flex to center the grid container */
+            justify-content: center;
+            padding: 50px 0; /* Vertical breathing room */
+            
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+        }
+
+        /* The Grid wrapper inside the feed to handle the constraints */
+        .feed-grid {
+            /* UPDATED: Prevent touching sides */
+            width: 100%;
+            max-width: 1400px; /* Maximum width for large screens */
+            padding: 0 60px;   /* Horizontal Gutter/Margin */
+            
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-auto-rows: 250px;
+            gap: 20px; /* Space between images */
+        }
+
+        body.gallery-mode .image-feed {
+            opacity: 1; pointer-events: auto; transform: translateY(0);
+        }
+
+        .gallery-thumb {
+            width: 100%; height: 100%;
+            background-color: #1a1a1a;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .gallery-thumb:hover { border-color: var(--accent-color); }
+        .gallery-thumb img {
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.7; transition: opacity 0.3s, transform 0.5s; filter: grayscale(100%);
+        }
+        .gallery-thumb:hover img { opacity: 1; transform: scale(1.1); filter: grayscale(0%); }
+
+        /* --- MODAL (Preserved) --- */
+        .presentation-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: black; z-index: 2000; display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .presentation-modal.active { opacity: 1; pointer-events: all; }
+        .stage-area { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .presentation-img { max-height: 80vh; max-width: 90vw; object-fit: contain; cursor: zoom-in; transition: transform 0.1s linear; }
+        .presentation-img.zoomed { cursor: grab; transform: scale(2.5); }
+        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); font-size: 3rem; color: white; background: none; border: none; cursor: pointer; padding: 20px; opacity: 0.3; transition: opacity 0.2s; }
+        .nav-arrow:hover { opacity: 1; }
+        .nav-arrow.left { left: 10px; } .nav-arrow.right { right: 10px; }
+        .control-bar { height: 15vh; background: #111; border-top: 1px solid #333; display: flex; flex-direction: column; }
+        .caption-overlay { background: #222; color: #aaa; padding: 10px; text-align: center; font-size: 0.8rem; border-bottom: 1px solid #333; }
+        .strip-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 5px; overflow-x: auto; padding: 0 10px; }
+        .strip-thumb { height: 70%; aspect-ratio: 1/1; opacity: 0.3; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .strip-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .strip-thumb.active { opacity: 1; border-color: white; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; cursor: pointer; z-index: 2001; width: 40px; height: 40px; text-align: center; line-height: 40px; border: 1px solid #666; border-radius: 50%; }
+        .close-modal:hover { background: white; color: black; border-color: white; }
+
+    </style>
+</head>
+<body>
+
+    <button class="back-btn" id="mainBackBtn" onclick="handleBack()">← Menu</button>
+
+    <header>
+        <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Visual Archive</h1>
+    </header>
+
+    <main>
+        <div class="grid-container" id="gridContainer">
+            <div class="category-card" id="btn-arch" onclick="openCategory('architecture')">Architecture</div>
+            <div class="category-card" id="btn-proj" onclick="openCategory('projects')">Projects</div>
+            <div class="category-card" id="btn-hobb" onclick="openCategory('hobbies')">Hobbies</div>
+            <div class="category-card" id="btn-phot" onclick="openCategory('photography')">Photography</div>
+        </div>
+
+        <div class="image-feed" id="imageFeed">
+            <div class="feed-grid" id="feedContent"></div>
+        </div>
+    </main>
+
+    <div class="presentation-modal" id="modal">
+        <div class="close-modal" onclick="closeModal()">×</div>
+        <div class="stage-area" id="stageArea">
+            <button class="nav-arrow left" onclick="changeSlide(-1)">&#8249;</button>
+            <img src="" class="presentation-img" id="mainImage">
+            <button class="nav-arrow right" onclick="changeSlide(1)">&#8250;</button>
+        </div>
+        <div class="control-bar">
+            <div class="caption-overlay" id="imageCaption"></div>
+            <div class="strip-container" id="thumbStrip"></div>
+        </div>
+    </div>
+
+    <script>
+        const categories = {
+            'architecture': generateData('Architecture', 'grayscale'),
+            'projects': generateData('Project', 'sepia'),
+            'hobbies': generateData('Hobby', 'invert'),
+            'photography': generateData('Photo', 'blur')
+        };
+
+        function generateData(prefix, style) {
+            let arr = [];
+            for (let i = 1; i <= 24; i++) {
+                arr.push({
+                    id: i,
+                    url: `https://placehold.co/1600x1200/111/fff?text=${prefix}+${i}`,
+                    thumb: `https://placehold.co/400x400/222/fff?text=${i}`,
+                    desc: `Image ${i} // ${prefix}. Analysis of form and void.`
+                });
+            }
+            return arr;
+        }
+
+        let currentCategoryKey = null;
+        let currentIndex = 0;
+        let isGalleryMode = false;
+
+        const body = document.body;
+        const feed = document.getElementById('imageFeed');
+        const feedContent = document.getElementById('feedContent'); // New inner container
+        const modal = document.getElementById('modal');
+        const mainImg = document.getElementById('mainImage');
+        const caption = document.getElementById('imageCaption');
+        const strip = document.getElementById('thumbStrip');
+        const backBtn = document.getElementById('mainBackBtn');
+        const stage = document.getElementById('stageArea');
+        const cardIds = ['btn-arch', 'btn-proj', 'btn-hobb', 'btn-phot'];
+
+        function openCategory(key) {
+            isGalleryMode = true;
+            body.classList.add('gallery-mode');
+            currentCategoryKey = key;
+            backBtn.innerText = "← HOME";
+
+            const map = { 'architecture': 'btn-arch', 'projects': 'btn-proj', 'hobbies': 'btn-hobb', 'photography': 'btn-phot' };
+            const activeId = map[key];
+
+            cardIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(id === activeId) el.classList.add('active-category');
+                else el.classList.remove('active-category');
+            });
+
+            renderFeed(categories[key]);
+        }
+
+        function renderFeed(data) {
+            feed.style.opacity = '0';
+            setTimeout(() => {
+                feedContent.innerHTML = ''; // Render into inner container
+                data.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'gallery-thumb';
+                    div.innerHTML = `<img src="${item.thumb}" loading="lazy" alt="Thumb">`;
+                    div.onclick = () => openModal(index);
+                    feedContent.appendChild(div);
+                });
+                feed.style.opacity = '1';
+            }, 200);
+        }
+
+        function openModal(index) {
+            currentIndex = index;
+            updateModalContent();
+            modal.classList.add('active');
+            renderStrip();
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            mainImg.classList.remove('zoomed');
+            mainImg.style.transform = 'scale(1)';
+        }
+
+        function updateModalContent() {
+            const data = categories[currentCategoryKey][currentIndex];
+            mainImg.src = data.url;
+            caption.innerText = data.desc;
+            
+            const thumbs = document.querySelectorAll('.strip-thumb');
+            thumbs.forEach((t, i) => {
+                if(i === currentIndex) t.classList.add('active');
+                else t.classList.remove('active');
+            });
+
+            mainImg.classList.remove('zoomed');
+            mainImg.style.transform = 'scale(1)';
+        }
+
+        function renderStrip() {
+            strip.innerHTML = '';
+            categories[currentCategoryKey].forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = `strip-thumb ${idx === currentIndex ? 'active' : ''}`;
+                div.innerHTML = `<img src="${item.thumb}">`;
+                div.onclick = () => { currentIndex = idx; updateModalContent(); };
+                strip.appendChild(div);
+            });
+        }
+
+        function changeSlide(dir) {
+            const list = categories[currentCategoryKey];
+            currentIndex += dir;
+            if(currentIndex < 0) currentIndex = list.length - 1;
+            if(currentIndex >= list.length) currentIndex = 0;
+            updateModalContent();
+        }
+
+        stage.addEventListener('click', (e) => {
+            if(e.target !== mainImg) return;
+            mainImg.classList.toggle('zoomed');
+            if(mainImg.classList.contains('zoomed')) panImage(e);
+            else mainImg.style.transformOrigin = 'center';
+        });
+
+        stage.addEventListener('mousemove', (e) => {
+            if(!mainImg.classList.contains('zoomed')) return;
+            panImage(e);
+        });
+
+        function panImage(e) {
+            const rect = stage.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width * 100;
+            const y = (e.clientY - rect.top) / rect.height * 100;
+            mainImg.style.transformOrigin = `${x}% ${y}%`;
+        }
+
+        function handleBack() {
+            if (modal.classList.contains('active')) {
+                closeModal();
+            } else if (isGalleryMode) {
+                body.classList.remove('gallery-mode');
+                isGalleryMode = false;
+                backBtn.innerText = "← MENU";
+                cardIds.forEach(id => document.getElementById(id).classList.remove('active-category'));
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if(!modal.classList.contains('active')) return;
+            if(e.key === 'ArrowLeft') changeSlide(-1);
+            if(e.key === 'ArrowRight') changeSlide(1);
+            if(e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
