@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prototype Lab | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --grid-line-color: rgba(255, 255, 255, 0.3);
+            --header-height: 20vh;
+            --panel-width: 25vw;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh; 
+            overflow-x: hidden;
+        }
+
+        /* --- REUSED HEADER COMPONENTS --- */
+        .back-btn {
+            position: fixed;
+            top: 2vh;
+            left: 2vh;
+            text-decoration: none;
+            z-index: 100;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-weight: 400;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        header {
+            min-height: var(--header-height);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4vh;
+            padding-top: 4vh;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .site-logo {
+            height: 60px;
+            width: auto;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            border: 1px solid var(--accent-color);
+        }
+
+        h1 {
+            font-size: 2rem; 
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            font-weight: 300;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        /* --- MAIN WORKBENCH LAYOUT --- */
+        main {
+            display: grid;
+            grid-template-columns: repeat(3, var(--panel-width));
+            gap: 3vw;
+            justify-content: center;
+            align-items: start;
+            padding-bottom: 50px;
+            position: relative;
+        }
+
+        /* --- ANIMATION GRID LINES --- */
+        /* These draw the layout before content appears */
+        .grid-line {
+            position: absolute;
+            background-color: var(--grid-line-color);
+            z-index: 0;
+        }
+        .gl-v { top: 0; bottom: 0; width: 1px; transform: scaleY(0); transform-origin: top; animation: drawGridY 1s ease-out forwards; }
+        .gl-h { left: 0; right: 0; height: 1px; transform: scaleX(0); transform-origin: left; animation: drawGridX 1s ease-out forwards 0.5s; }
+
+        /* Positioning the lines between the columns */
+        .gl-v-1 { left: calc(50% - var(--panel-width) * 1.5 - 1.5vw); }
+        .gl-v-2 { left: calc(50% - var(--panel-width) * 0.5 - 1.5vw); }
+        .gl-v-3 { left: calc(50% + var(--panel-width) * 0.5 + 1.5vw); }
+        .gl-v-4 { left: calc(50% + var(--panel-width) * 1.5 + 1.5vw); }
+        .gl-h-top { top: var(--header-height); }
+
+        /* --- THE WORK STATIONS --- */
+        .station {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            opacity: 0;
+            /* The panels "snap" into place after grid is drawn */
+            animation: snapIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1.2s;
+        }
+
+        /* The "Square" Containers */
+        .station-square {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border: 2px solid var(--accent-color);
+            background: #0a0a0a; /* Slightly off-black for depth */
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Station Labels & Buttons (Underneath the squares) */
+        .station-label {
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .action-btn {
+            padding: 12px 0;
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-family: inherit;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- STATION 1: SKETCH CANVAS --- */
+        #sketchCanvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* --- STATION 2: PROMPT TERMINAL --- */
+        .prompt-container {
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace; /* Terminal look */
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Styling the dropdowns to look like terminal text */
+        .prompt-select {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 700;
+            padding: 0 5px;
+            cursor: pointer;
+            appearance: none; /* Removes default OS styling */
+            -webkit-appearance: none;
+            border-radius: 0;
+        }
+        
+        .prompt-select:hover { background: #222; }
+        .prompt-select:focus { outline: none; background: #333; }
+        /* Hack to style dropdown options in some browsers */
+        .prompt-select option { background-color: #000; color: white; }
+
+        /* --- STATION 3: OUTPUT & LOADING --- */
+        .output-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.5; /* Dim placeholder */
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active { opacity: 1; pointer-events: all; }
+
+        /* Brutalist Loader Animation */
+        .loader-bar {
+            width: 80%; height: 4px; background: #333; margin-top: 10px; position: relative; overflow: hidden;
+        }
+        .loader-progress {
+            position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: white; animation: scan 1.5s infinite linear;
+        }
+
+        /* --- KEYFRAMES --- */
+        @keyframes drawGridY { to { transform: scaleY(1); } }
+        @keyframes drawGridX { to { transform: scaleX(1); } }
+        @keyframes snapIn { 
+            0% { opacity: 0; transform: translateY(50px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="grid-line gl-v gl-v-1"></div>
+    <div class="grid-line gl-v gl-v-2"></div>
+    <div class="grid-line gl-v gl-v-3"></div>
+    <div class="grid-line gl-v gl-v-4"></div>
+    <header>
+        <div class="grid-line gl-h gl-h-top"></div>
+        <a href="index.html" class="back-btn">← Back</a>
+        <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Rapid Prototyper</h1>
+    </header>
+
+    <main>
+        <section class="station">
+            <div class="station-square">
+                <canvas id="sketchCanvas"></canvas>
+            </div>
+            <span class="station-label">1. Sketch Input</span>
+            <button class="action-btn" id="clearBtn" style="font-size: 0.8rem;">[Clear Canvas]</button>
+        </section>
+
+        <section class="station" style="animation-delay: 1.4s;">
+            <div class="station-square prompt-container">
+                > DESIGN_TYPE: <br>
+                A <select class="prompt-select" id="styleSelect">
+                    <option value="brutalist">brutalist</option>
+                    <option value="minimalist">minimalist</option>
+                    <option value="parametric">parametric</option>
+                </select> structure.<br><br>
+                > MATERIAL_ID: <br>
+                The facade is <select class="prompt-select" id="materialSelect">
+                    <option value="raw concrete">raw concrete</option>
+                    <option value="weathered steel">weathered steel</option>
+                    <option value="charred timber">charred timber</option>
+                </select> panels.<br><br>
+                > ENVIRONMENT: <br>
+                Set in a <select class="prompt-select" id="envSelect">
+                    <option value="foggy cityscape">foggy cityscape</option>
+                    <option value="desert landscape">desert landscape</option>
+                    <option value="nordic forest">nordic forest</option>
+                </select>.
+            </div>
+            <span class="station-label">2. Parameter Definition</span>
+            <button class="action-btn" id="generateBtn">>>> GENERATE <<<</button>
+        </section>
+
+        <section class="station" style="animation-delay: 1.6s;">
+            <div class="station-square" id="outputContainer">
+                <img src="https://placehold.co/400x400/000000/FFFFFF/png?text=WAITING+FOR+INPUT" class="output-image" id="resultImage" alt="AI Output Placeholder">
+                
+                <div class="loading-overlay" id="loadingOverlay">
+                    <span>PROCESSING...</span>
+                    <div class="loader-bar"><div class="loader-progress"></div></div>
+                </div>
+            </div>
+            <span class="station-label">3. AI Render Output</span>
+            <a href="#" target="_blank" rel="noopener noreferrer" class="action-btn">Try Full Version ↗</a>
+        </section>
+
+    </main>
+
+    <script>
+        /* --- 1. SKETCH CANVAS FUNCTIONALITY --- */
+        const canvas = document.getElementById('sketchCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // Handle resizing to keep canvas sharp
+        function resizeCanvas() {
+            // Get the computed size of the container
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // Reset Styles after resize
+            ctx.strokeStyle = '#ffffff'; // White lines
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'square'; // Brutalist square ends
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); // Initial call
+
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath(); // Reset path so lines don't connect
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            // Calculate mouse position relative to canvas bounds
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Clear Button
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+
+        /* --- 2. API SIMULATION & GENERATION --- */
+        const generateBtn = document.getElementById('generateBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const resultImage = document.getElementById('resultImage');
+
+        generateBtn.addEventListener('click', async () => {
+            // 1. Gather Prompt Data
+            const style = document.getElementById('styleSelect').value;
+            const material = document.getElementById('materialSelect').value;
+            const env = document.getElementById('envSelect').value;
+            
+            const finalPrompt = `A ${style} structure with a ${material} facade located in a ${env}. based on sketch input.`;
+            console.log("Sending to API:", finalPrompt);
+            // NOTE: In a real app, you'd also convert canvas to base64 here: canvas.toDataURL()
+
+            // 2. Show Loading State
+            loadingOverlay.classList.add('active');
+            generateBtn.disabled = true;
+            generateBtn.innerText = "PROCESSING...";
+            resultImage.style.opacity = 0.2;
+
+            // 3. Simulate API Call (Wait 3 seconds)
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            // ---- SIMULATED "NANOBANANA" API RESPONSE ----
+            // Since we don't have a real backend, I'm switching the placeholder image 
+            // to represent a "success" state. 
+            // In a real scenario, this URL would come from the fetch response data.
+            const simulatedGeneratedImageUrl = "https://placehold.co/400x400/111111/FFFFFF/png?text=RENDER+COMPLETE (Simulated)";
+            
+            // 4. Update UI with Result
+            resultImage.src = simulatedGeneratedImageUrl;
+            resultImage.style.opacity = 1;
+            
+            // 5. Hide Loading State
+            loadingOverlay.classList.remove('active');
+            generateBtn.disabled = false;
+            generateBtn.innerText = ">>> GENERATE <<<";
+        });
+
+    </script>
+
+</body>
+</html>

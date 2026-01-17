@@ -3,269 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playground | Parquet Explorer</title>
+    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
+    <title>Light & Void Studio | DouweDoesDesign</title>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
     <style>
+        /* --- CSS VARIABLES & RESET --- */
         :root {
             --bg-color: #000000;
             --accent-color: #ffffff;
-            --dim-color: #333333;
-            --blueprint-line: #1a1a1a;
-            --font-mono: 'Courier New', Courier, monospace;
+            --ui-bg: rgba(0, 0, 0, 0.8);
+            --header-height: 20vh;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             background-color: var(--bg-color);
             color: var(--accent-color);
-            font-family: var(--font-mono);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            overflow: hidden; /* No scrolling allowed in the 3D view */
             height: 100vh;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* --- UI OVERLAY --- */
+        /* --- PRESERVED HEADER ELEMENTS --- */
         .back-btn {
             position: fixed;
-            top: 20px; left: 20px;
+            top: 2vh;
+            left: 2vh;
             text-decoration: none;
             z-index: 100;
-            border: 2px solid var(--accent-color);
-            background: var(--bg-color);
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
             color: var(--accent-color);
             padding: 10px 20px;
-            font-weight: bold;
+            font-weight: 400;
             text-transform: uppercase;
-            transition: 0.3s;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
         }
-        .back-btn:hover { background: var(--accent-color); color: var(--bg-color); }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
 
         header {
-            padding: 40px;
-            text-align: center;
-            border-bottom: 1px solid var(--dim-color);
-        }
-
-        h1 { font-size: 1.5rem; letter-spacing: 4px; text-transform: uppercase; }
-        .subtitle { font-size: 0.7rem; color: #666; margin-top: 5px; }
-
-        main {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 120px);
-        }
-
-        /* --- CONTROL PANEL (LEFT) --- */
-        .controls {
-            width: 300px;
-            border-right: 1px solid var(--dim-color);
-            padding: 30px;
+            height: var(--header-height);
             display: flex;
             flex-direction: column;
-            gap: 30px;
-            background: #050505;
+            align-items: center;
+            justify-content: center;
+            position: absolute; /* Overlay on top of canvas */
+            top: 0;
+            width: 100%;
+            pointer-events: none; /* Let clicks pass through to canvas */
+            z-index: 10;
         }
 
-        .control-group { display: flex; flex-direction: column; gap: 10px; }
-        label { font-size: 0.8rem; text-transform: uppercase; color: #888; }
-        
-        input[type="range"] {
-            appearance: none;
+        .site-logo {
+            height: 60px;
+            width: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-color);
+            pointer-events: auto; /* Re-enable pointer events for logo */
+            filter: invert(1);
+        }
+
+        h1 {
+            font-size: 2rem; 
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            font-weight: 300;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+            background: rgba(0,0,0,0.5); /* Slight backdrop for legibility */
+        }
+
+        /* --- THE 3D CANVAS --- */
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            cursor: crosshair; /* Architectural precision cursor */
+            display: block;
+        }
+
+        /* --- CONTROLS OVERLAY --- */
+        #controls-bar {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            background: var(--ui-bg);
+            border: 1px solid var(--accent-color);
+            padding: 15px 25px;
+            z-index: 20;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+
+        /* Brutalist Slider Styling */
+        input[type=range] {
+            width: 200px;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 15px;
+            width: 15px;
+            background: var(--accent-color);
+            cursor: pointer;
+            margin-top: -6px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
             height: 2px;
-            background: var(--dim-color);
-            outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            appearance: none;
-            width: 15px; height: 15px;
-            background: var(--accent-color);
-            cursor: pointer;
+            background: #444;
         }
 
-        .btn-gen {
-            background: none;
+        /* Buttons */
+        .tool-btn {
+            background: transparent;
             border: 1px solid var(--accent-color);
             color: var(--accent-color);
-            padding: 15px;
-            cursor: pointer;
+            padding: 10px 20px;
             text-transform: uppercase;
-            font-weight: bold;
-            font-family: var(--font-mono);
-            margin-top: auto;
-            transition: 0.3s;
-        }
-        .btn-gen:hover { background: var(--accent-color); color: var(--bg-color); }
-
-        /* --- VIEWPORT (RIGHT) --- */
-        .viewport {
-            flex: 1;
-            position: relative;
-            background-image: 
-                linear-gradient(var(--blueprint-line) 1px, transparent 1px),
-                linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px);
-            background-size: 40px 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 100%;
         }
 
-        #canvas-container {
-            position: relative;
-            width: 600px;
-            height: 600px;
-            border: 1px solid var(--dim-color);
-        }
-
-        .room-node {
-            position: absolute;
-            border: 1px solid var(--accent-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .room-label { font-size: 0.6rem; text-transform: uppercase; pointer-events: none; }
-        .room-dim { font-size: 0.5rem; color: #555; margin-top: 2px; }
-
-        .connection-line {
-            position: absolute;
+        .tool-btn:hover {
             background: var(--accent-color);
-            opacity: 0.1;
-            height: 1px;
-            transform-origin: left center;
+            color: var(--bg-color);
+        }
+
+        /* Coordinates Display */
+        #coords-display {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-family: monospace;
+            color: var(--accent-color);
+            opacity: 0.6;
             pointer-events: none;
         }
 
-        .status-bar {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-size: 0.6rem;
-            color: #444;
-            text-align: right;
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 1s ease;
         }
+        .loader-text {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
 
     </style>
 </head>
 <body>
 
-    <a href="playground.html" class="back-btn">← EXIT</a>
+    <div id="loader"><span class="loader-text">INITIALIZING GEOMETRY ENGINE...</span></div>
+
+    <a href="index.html" class="back-btn">← Back</a>
 
     <header>
-        <h1>Parquet.Explorer_v1.0</h1>
-        <p class="subtitle">Generative Spatial Adjacency & Constraint Solving</p>
+        <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Light & Void Studio</h1>
     </header>
 
-    <main>
-        <section class="controls">
-            <div class="control-group">
-                <label>Program Density</label>
-                <input type="range" id="param-density" min="3" max="8" value="5">
-            </div>
-            <div class="control-group">
-                <label>Target Area (m²)</label>
-                <input type="range" id="param-area" min="100" max="400" value="200">
-            </div>
-            <div class="control-group">
-                <label>Aspect Ratio Jitter</label>
-                <input type="range" id="param-jitter" min="0" max="100" value="30">
-            </div>
+    <div id="canvas-container"></div>
 
-            <div style="font-size: 0.7rem; color: #444; line-height: 1.6;">
-                [SYSTEM LOG]<br>
-                > Initializing seeds...<br>
-                > Checking adjacency constraints...<br>
-                > Optimization: ACTIVE
-            </div>
+    <div id="coords-display">X: 0.00 | Z: 0.00</div>
 
-            <button class="btn-gen" onclick="generateLayout()">Generate Iteration</button>
-        </section>
+    <div id="controls-bar">
+        <div class="control-group">
+            <label>Solar Rotation</label>
+            <input type="range" id="sun-slider" min="0" max="6.28" step="0.01" value="3">
+        </div>
+        <div class="control-group">
+            <label>Solar Altitude</label>
+            <input type="range" id="height-slider" min="0" max="20" step="0.1" value="10">
+        </div>
+        <button class="tool-btn" id="clear-btn">Clear Site</button>
+    </div>
 
-        <section class="viewport">
-            <div id="canvas-container">
-                </div>
-            <div class="status-bar">
-                COORDINATE_SYSTEM: GRID_40<br>
-                ALGORITHM: RECURSIVE_SQUARIFIED_TREE
-            </div>
-        </section>
-    </main>
+    <script type="module">
+        import * as THREE from 'three';
 
-    <script>
+        // --- 1. SETUP THE SCENE ---
         const container = document.getElementById('canvas-container');
-        const roomNames = ['Living', 'Kitchen', 'Bedroom_A', 'Bedroom_B', 'Bath', 'Entry', 'Studio', 'Dining'];
+        const loader = document.getElementById('loader');
+        
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000); // Pitch black
+        scene.fog = new THREE.FogExp2(0x000000, 0.022); // Atmospheric depth
 
-        function generateLayout() {
-            container.innerHTML = '';
-            const density = document.getElementById('param-density').value;
-            const jitter = document.getElementById('param-jitter').value / 100;
-            const totalArea = document.getElementById('param-area').value;
+        // --- 2. ARCHITECTURAL CAMERA (ISOMETRIC) ---
+        // We use Orthographic to keep parallel lines parallel (like a blueprint)
+        const aspect = window.innerWidth / window.innerHeight;
+        const d = 20; // View size
+        const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
+        
+        camera.position.set(20, 20, 20); // High angle
+        camera.lookAt(scene.position); // Look at center (0,0,0)
 
-            let rooms = [];
-            const canvasSize = 600;
-            
-            // Generate pseudo-random room sizes that sum up (roughly)
-            for(let i=0; i<density; i++) {
-                rooms.push({
-                    name: roomNames[i],
-                    weight: Math.random() + 0.5
-                });
-            }
+        // --- 3. RENDERER ---
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true; // CRITICAL: Turn on shadows
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft edges
+        container.appendChild(renderer.domElement);
 
-            const totalWeight = rooms.reduce((acc, r) => acc + r.weight, 0);
-            
-            let currentX = 50;
-            let currentY = 50;
-            let maxWidth = canvasSize - 100;
-            let maxHeight = canvasSize - 100;
+        // --- 4. LIGHTING (THE SUN) ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2); // Weak fill light
+        scene.add(ambientLight);
 
-            rooms.forEach((room, idx) => {
-                const roomEl = document.createElement('div');
-                roomEl.className = 'room-node';
+        const sunLight = new THREE.DirectionalLight(0xffffff, 2);
+        sunLight.position.set(10, 20, 10);
+        sunLight.castShadow = true;
+        
+        // Optimize Shadow Quality
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 50;
+        sunLight.shadow.camera.left = -20;
+        sunLight.shadow.camera.right = 20;
+        sunLight.shadow.camera.top = 20;
+        sunLight.shadow.camera.bottom = -20;
+        
+        scene.add(sunLight);
+
+        // --- 5. THE GROUND PLANE (GRID) ---
+        const planeGeometry = new THREE.PlaneGeometry(100, 100);
+        const planeMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x444444, // Dark grey floor
+            roughness: 1,
+            metalness: 0
+        });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = -Math.PI / 2; // Lay flat
+        plane.receiveShadow = true; // Shadows fall on this
+        scene.add(plane);
+
+        // Helper Grid
+        const gridHelper = new THREE.GridHelper(50, 50, 0x444444, 0x222222);
+        scene.add(gridHelper);
+
+        // --- 6. INTERACTION (RAYCASTER) ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const coordsDisplay = document.getElementById('coords-display');
+        let blocks = []; // Store placed blocks
+
+        // Highlight Geometry (The ghost block follows mouse)
+        const ghostGeo = new THREE.BoxGeometry(1, 1, 1);
+        const ghostMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.3 });
+        const ghostBlock = new THREE.Mesh(ghostGeo, ghostMat);
+        scene.add(ghostBlock);
+
+        // MOUSE MOVE
+        function onMouseMove( event ) {
+            // Normalize mouse position (-1 to +1)
+            mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+            raycaster.setFromCamera( mouse, camera );
+            const intersects = raycaster.intersectObject( plane );
+
+            if ( intersects.length > 0 ) {
+                const intersect = intersects[0];
                 
-                // Generative Sizing Logic
-                const share = room.weight / totalWeight;
-                let w = Math.sqrt(maxWidth * maxHeight * share);
-                let h = w;
+                // Snap to Grid
+                const snapX = Math.round(intersect.point.x);
+                const snapZ = Math.round(intersect.point.z);
 
-                // Apply Aspect Ratio Jitter
-                const jitterFactor = 1 + (Math.random() - 0.5) * jitter * 2;
-                w *= jitterFactor;
-                h /= jitterFactor;
-
-                // Technical Snapping (Grid alignment)
-                w = Math.round(w / 40) * 40;
-                h = Math.round(h / 40) * 40;
-
-                // Simple collision avoidance for the demo (Horizontal stacking)
-                if (currentX + w > canvasSize - 50) {
-                    currentX = 50;
-                    currentY += 120; // Move to next "wing"
-                }
-
-                roomEl.style.width = `${w}px`;
-                roomEl.style.height = `${h}px`;
-                roomEl.style.left = `${currentX}px`;
-                roomEl.style.top = `${currentY}px`;
-
-                roomEl.innerHTML = `
-                    <span class="room-label">${room.name}</span>
-                    <span class="room-dim">${Math.round(w/10)}m x ${Math.round(h/10)}m</span>
-                `;
-
-                container.appendChild(roomEl);
-                currentX += w + 10; // Gap
-            });
+                ghostBlock.position.set(snapX, 0.5, snapZ);
+                coordsDisplay.innerText = `X: ${snapX.toFixed(2)} | Z: ${snapZ.toFixed(2)}`;
+            }
         }
 
-        // Initial Build
-        window.onload = generateLayout;
+        // MOUSE CLICK (PLACE BLOCK)
+        function onMouseClick( event ) {
+            // Prevent placing if clicking controls
+            if(event.target.closest('#controls-bar') || event.target.closest('header')) return;
+
+            raycaster.setFromCamera( mouse, camera );
+            const intersects = raycaster.intersectObject( plane );
+
+            if ( intersects.length > 0 ) {
+                const intersect = intersects[0];
+                const snapX = Math.round(intersect.point.x);
+                const snapZ = Math.round(intersect.point.z);
+
+                // Create Building Block
+                const geometry = new THREE.BoxGeometry( 1, Math.random() * 3 + 1, 1 ); // Random Height
+                // Shift geometry up so it sits ON the floor, not halfway through
+                geometry.translate(0, geometry.parameters.height / 2, 0); 
+                
+                const material = new THREE.MeshStandardMaterial( { color: 0xffffff, roughness: 0.2 } );
+                const cube = new THREE.Mesh( geometry, material );
+                
+                cube.position.set(snapX, 0, snapZ);
+                cube.castShadow = true;
+                cube.receiveShadow = true;
+                
+                // Entrance Animation
+                cube.scale.set(0,0,0);
+                scene.add( cube );
+                blocks.push(cube);
+
+                // Simple grow animation loop
+                let scale = 0;
+                function grow() {
+                    scale += 0.1;
+                    cube.scale.set(scale, scale, scale);
+                    if(scale < 1) requestAnimationFrame(grow);
+                }
+                grow();
+            }
+        }
+
+        window.addEventListener( 'mousemove', onMouseMove, false );
+        window.addEventListener( 'mousedown', onMouseClick, false );
+
+        // --- 7. UI CONTROLS ---
+        const sunSlider = document.getElementById('sun-slider');
+        const heightSlider = document.getElementById('height-slider');
+        const clearBtn = document.getElementById('clear-btn');
+
+        sunSlider.addEventListener('input', updateSun);
+        heightSlider.addEventListener('input', updateSun);
+
+        function updateSun() {
+            const angle = sunSlider.value;
+            const height = heightSlider.value;
+            const radius = 10; // Distance from center
+
+            sunLight.position.x = radius * Math.cos(angle);
+            sunLight.position.z = radius * Math.sin(angle);
+            sunLight.position.y = height;
+        }
+
+        clearBtn.addEventListener('click', () => {
+            blocks.forEach(block => scene.remove(block));
+            blocks = [];
+        });
+
+        // --- 8. ANIMATION LOOP ---
+        function animate() {
+            requestAnimationFrame( animate );
+            renderer.render( scene, camera );
+        }
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            const aspect = window.innerWidth / window.innerHeight;
+            camera.left = -d * aspect;
+            camera.right = d * aspect;
+            camera.top = d;
+            camera.bottom = -d;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+        });
+
+        // Start
+        animate();
+        // Remove loader
+        setTimeout(() => { loader.style.opacity = 0; setTimeout(() => loader.remove(), 1000); }, 1000);
+
     </script>
 </body>
 </html>
