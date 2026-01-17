@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOUWEDOESDESIGN - Concurrent AI Workflow V3</title>
+    <style>
+        /* --- GLOBAL & TYPOGRAPHY --- */
+        :root {
+            --bg-color: #f4f4f4;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --accent-red: #ff3b30;
+            --accent-blue: #007aff;
+            --border-light: #e5e5e5;
+            --font-stack: 'Courier New', Courier, monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-stack);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+        }
+
+        /* --- UI LAYER --- */
+        #ui-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: auto;
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--accent-red);
+            margin: 0;
+            padding-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* SURPRISE 1: Search Bar */
+        #search-container {
+            display: flex;
+            gap: 5px;
+        }
+        
+        #search-input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 12px;
+            width: 200px;
+        }
+
+        #search-btn {
+            background: var(--text-main);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            pointer-events: auto;
+            background: white;
+            border: 1px solid var(--border-light);
+            padding: 10px 15px;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        button.action-btn {
+            cursor: pointer; 
+            background:none; 
+            border:1px solid #999; 
+            padding:4px 8px; 
+            font-family:inherit; 
+            font-size:10px;
+            margin-top: 5px;
+            transition: all 0.2s;
+        }
+        
+        button.action-btn:hover {
+            background: #eee;
+        }
+
+        /* SURPRISE 2: Mini-Map */
+        #minimap-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 100px;
+            background: white;
+            border: 1px solid #ccc;
+            pointer-events: auto;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        #minimap-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #f9f9f9;
+        }
+        
+        #minimap-viewport {
+            position: absolute;
+            border: 1px solid var(--accent-red);
+            background: rgba(255, 59, 48, 0.1);
+            box-sizing: border-box;
+        }
+
+        .minimap-node {
+            position: absolute;
+            background: #ccc;
+        }
+
+        /* --- BOTTOM INFO BAR --- */
+        #bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-top: 4px solid var(--accent-red);
+            padding: 25px 40px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: auto;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            z-index: 200; /* Above minimap */
+        }
+
+        #bottom-bar.active {
+            transform: translateY(0);
+        }
+
+        #bottom-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #bottom-bar h2 {
+            margin: 0;
+            font-size: 20px;
+            text-transform: uppercase;
+            color: var(--accent-red);
+        }
+
+        #bottom-bar p {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 900px;
+            color: #333;
+        }
+
+        .tool-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: var(--text-main);
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.2s;
+        }
+
+        .tool-link:hover {
+            background: var(--accent-red);
+        }
+
+        /* --- CANVAS --- */
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            background-image: 
+                linear-gradient(var(--border-light) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: -1px -1px;
+        }
+
+        #canvas-container:active {
+            cursor: grabbing;
+        }
+
+        #world {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        /* SVG Connections */
+        #connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            overflow: visible;
+            z-index: 0;
+        }
+
+        .connection-line {
+            fill: none;
+            stroke: #333;
+            stroke-width: 2px;
+            stroke-dasharray: 10;
+            animation: dash 30s linear infinite;
+            opacity: 0.6;
+        }
+
+        .connection-branch {
+            stroke: #999;
+            stroke-dasharray: 5;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        /* Nodes */
+        .node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            z-index: 10;
+            user-select: none;
+        }
+
+        .node:hover, .node.search-highlight {
+            transform: scale(1.1);
+            z-index: 20;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .node.search-highlight {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 15px var(--accent-blue);
+        }
+
+        /* Node Types */
+        .node-step {
+            width: 180px;
+            height: 90px;
+            background: #fff;
+            border: 2px solid var(--accent-red);
+            color: #000;
+        }
+
+        .node-branch {
+            width: 160px;
+            height: 70px;
+            background: #f0f0f0;
+            border: 2px dashed #666;
+            color: #444;
+            font-style: italic;
+        }
+
+        .node-ai {
+            width: 140px;
+            height: 50px;
+            background: #ffffff;
+            border: 1px solid #aaa;
+            color: #555;
+            border-radius: 4px;
+            font-family: sans-serif;
+            font-size: 10px;
+        }
+
+        .node-ai::before {
+            content: 'AI';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            background: #333;
+            color: white;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+
+        /* Phase Label */
+        .phase-block {
+            position: absolute;
+            border-bottom: 2px solid #ccc;
+            color: #888;
+            font-size: 16px;
+            text-transform: uppercase;
+            padding-bottom: 10px;
+            letter-spacing: 3px;
+            white-space: nowrap;
+            /* Moved up significantly as requested */
+            transform: translateY(-50px); 
+        }
+
+        .tag-id {
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            font-size: 9px;
+            color: var(--accent-red);
+            opacity: 0.7;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <div class="header">
+            <div>
+                <h1>AI Concurrent Workflow</h1>
+                <div class="subtitle">Based on RIBA/AIA + AI Augmentation Analysis</div>
+            </div>
+            <div id="search-container">
+                <input type="text" id="search-input" placeholder="Find step or tool..." onkeydown="if(event.key==='Enter') searchNodes()">
+                <button id="search-btn" onclick="searchNodes()">GO</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div><span class="badge">Wheel</span> Zoom In/Out</div>
+            <div><span class="badge">Drag</span> Pan Canvas</div>
+            <div><span class="badge">Click</span> View Details</div>
+            
+            <button class="action-btn" onclick="resetView()">Reset View</button>
+            <button class="action-btn" onclick="alert('Screenshot functionality would trigger here (requires html2canvas library in prod).')">Export View</button>
+        </div>
+
+        <div id="minimap-container">
+            <div id="minimap-content">
+                <div id="minimap-viewport"></div>
+            </div>
+        </div>
+
+        <div id="bottom-bar">
+            <div id="bottom-bar-header">
+                <h2 id="info-title">Title Placeholder</h2>
+                <button onclick="closeBar()" style="background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>
+            </div>
+            <p id="info-desc">Description placeholder text.</p>
+            <div id="link-container"></div>
+        </div>
+    </div>
+
+    <div id="canvas-container">
+        <div id="world">
+            <svg id="connections"></svg>
+            </div>
+    </div>
+
+    <script>
+        // --- 1. DATA STRUCTURE (Updated & Expanded) ---
+        const phases = [
+            {
+                name: "Phase 0: Strategic Definition",
+                nodes: [
+                    {
+                        id: "2.1", type: "step", strand: "main",
+                        title: "1. Client Requirements",
+                        desc: "Formulation of the Strategic Brief. Dissecting operational goals and validating business cases before spatial visualization.",
+                        ai: [
+                            { name: "Archistar", desc: "Property feasibility reports & zoning analysis.", url: "https://www.archistar.ai/" },
+                            { name: "Mercator.ai", desc: "Tracks early construction opportunities.", url: "https://mercator.ai/" },
+                            { name: "ChatGPT", desc: "Drafts strategic briefs and user personas.", url: "https://openai.com/" }
+                        ]
+                    },
+                    {
+                        id: "2.1-b1", type: "branch", strand: "parallel",
+                        title: "Sustainability Strategy",
+                        desc: "Concurrent Branch: High-level audit defining 'Sustainability Outcomes' (Net Zero, Passivhaus).",
+                        ai: []
+                    },
+                    {
+                        id: "2.1-b2", type: "branch", strand: "parallel",
+                        title: "Market Analysis",
+                        desc: "Concurrent Branch: 'Highest and best use' analysis testing density assumptions.",
+                        ai: []
+                    },
+                    {
+                        id: "2.2", type: "step", strand: "main",
+                        title: "2. Site Appraisal",
+                        desc: "Constraints mapping using 'buildable volume' analysis. Aggregation of geospatial data.",
+                        ai: [
+                            { name: "Autodesk Forma", desc: "ML for site data analysis (sun, wind, noise).", url: "https://www.autodesk.com/products/forma/overview" },
+                            { name: "Urban Footprint", desc: "Urban planning analytics and climate risk.", url: "https://urbanfootprint.com/" }
+                        ]
+                    },
+                    {
+                        id: "2.2-b1", type: "branch", strand: "parallel",
+                        title: "Legal & Zoning",
+                        desc: "Concurrent Branch: Examining easements and rights of light. The 'bounding box'.",
+                        ai: []
+                    }
+                ]
+            },
+            {
+                name: "Phase 1: Preparation & Briefing",
+                nodes: [
+                    {
+                        id: "3.1", type: "step", strand: "main",
+                        title: "3. Team Assembly",
+                        desc: "Developing Responsibility Matrix and Digital Execution Plan (DEP).",
+                        ai: [
+                            { name: "Mosaic", desc: "AI resource planning to allocate staff.", url: "https://www.mosaicapp.com/" },
+                            { name: "ClickUp", desc: "Project management brain for tasks.", url: "https://clickup.com/" }
+                        ]
+                    },
+                    {
+                        id: "3.1-b1", type: "branch", strand: "parallel",
+                        title: "Dig. Execution Plan",
+                        desc: "Concurrent Branch: BIM Manager defines CDE and software ecosystem.",
+                        ai: []
+                    },
+                    {
+                        id: "3.2", type: "step", strand: "main",
+                        title: "4. Programmatic Analysis",
+                        desc: "Converting abstract needs into spaces (Areas, Adjacencies).",
+                        ai: [
+                            { name: "Hypar", desc: "Text-to-BIM automating space layout.", url: "https://hypar.io/" },
+                            { name: "ArkDesign.ai", desc: "Schematic designs and optimized floor plans.", url: "https://arkdesign.ai/" }
+                        ]
+                    },
+                    {
+                        id: "3.2-b1", type: "branch", strand: "parallel",
+                        title: "Cost Planning (Stage 1)",
+                        desc: "Concurrent Branch: QS reality check. Reconciliation between 'wants' and 'means'.",
+                        ai: []
+                    }
+                ]
+            },
+            {
+                name: "Phase 2: Concept Design",
+                nodes: [
+                    {
+                        id: "4.1", type: "step", strand: "main",
+                        title: "5. Massing Study",
+                        desc: "Generating 3D form (bulk, height, shadow). Transition from data to geometry.",
+                        ai: [
+                            { name: "TestFit", desc: "Generates parking and unit layouts instantly.", url: "https://testfit.io/" },
+                            { name: "Digital Blue Foam", desc: "Web-based generative design integrating GIS.", url: "https://www.digitalbluefoam.com/" }
+                        ]
+                    },
+                    {
+                        id: "4.1-b1", type: "branch", strand: "parallel",
+                        title: "Microclimate Analysis",
+                        desc: "Concurrent Branch: Testing wind turbulence and solar access.",
+                        ai: []
+                    },
+                    {
+                        id: "4.2", type: "step", strand: "main",
+                        title: "6. Aesthetic Concept",
+                        desc: "Defining 'look and feel'. Mood boards and brand alignment.",
+                        ai: [
+                            { name: "Midjourney", desc: "Rapid mood image generation.", url: "https://www.midjourney.com/" },
+                            { name: "Veras", desc: "AI render plugin for Revit/Rhino.", url: "https://www.evolvelab.io/veras" },
+                            { name: "LookX", desc: "Style transfer for massing models.", url: "https://www.lookx.ai/" }
+                        ]
+                    },
+                    {
+                        id: "4.2-b1", type: "branch", strand: "parallel",
+                        title: "Embodied Carbon",
+                        desc: "Concurrent Branch: Material choices screened for carbon impact.",
+                        ai: []
+                    },
+                    {
+                        id: "4.3", type: "step", strand: "main",
+                        title: "7. Functional Layout",
+                        desc: "Blocking and Stacking. Assigning functions to zones.",
+                        ai: [
+                            { name: "Maket.ai", desc: "Generates residential floor plans.", url: "https://www.maket.ai/" },
+                            { name: "Finch3D", desc: "Optimizes floor plans using graph theory.", url: "https://finch3d.com/" }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "Phase 3: Spatial Coordination",
+                nodes: [
+                    {
+                        id: "5.1", type: "step", strand: "main",
+                        title: "8. Federated Model",
+                        desc: "Combining models (Arch, Struct, MEP). Automated Clash Detection.",
+                        ai: [
+                            { name: "Revizto", desc: "Centralized issue tracking; AI groups clashes.", url: "https://revizto.com/" },
+                            { name: "BricsCAD BIM", desc: "Auto-classifies geometry (walls vs slabs).", url: "https://www.bricsys.com/" }
+                        ]
+                    },
+                    {
+                        id: "5.2", type: "step", strand: "main",
+                        title: "9. Structural & MEP",
+                        desc: "Detailed system selection. Coordinating the 'ceiling sandwich'.",
+                        ai: [
+                            { name: "Cove.tool", desc: "Automated energy, daylight, and glare analysis.", url: "https://cove.tools/" }
+                        ]
+                    },
+                    {
+                        id: "5.2-b1", type: "branch", strand: "parallel",
+                        title: "Thermal Modeling",
+                        desc: "Concurrent Branch: Predictive energy modeling for HVAC loads.",
+                        ai: []
+                    }
+                ]
+            },
+            /* --- NEW ADDITION: PHASE 4 --- */
+            {
+                name: "Phase 4: Technical Design",
+                nodes: [
+                    {
+                        id: "6.1", type: "step", strand: "main",
+                        title: "10. Detailed Design",
+                        desc: "The 'How To' manual. Drafting 1:5 scale details and material interfaces.",
+                        ai: [
+                            { name: "Civils.ai", desc: "Extracts data from PDF specs to cross-reference.", url: "https://civils.ai/" },
+                            { name: "Copilot", desc: "Assists writing Dynamo/Python scripts for Revit.", url: "https://github.com/features/copilot" }
+                        ]
+                    },
+                    {
+                        id: "6.1-b1", type: "branch", strand: "parallel",
+                        title: "Specification Writing",
+                        desc: "Concurrent Branch: Defining quality of workmanship (e.g., C40 Concrete).",
+                        ai: [
+                            { name: "Document Crunch", desc: "AI Legal Assistant checking contract risks.", url: "https://www.documentcrunch.com/" }
+                        ]
+                    },
+                    {
+                        id: "6.2", type: "step", strand: "main",
+                        title: "11. Reg. Compliance",
+                        desc: "Rigorous audit of technical drawings against building codes (Fire, Access).",
+                        ai: [
+                            { name: "PlanCheck", desc: "Automated code compliance checking.", url: "#" } // Placeholder URL
+                        ]
+                    }
+                ]
+            },
+            /* --- NEW ADDITION: PHASE 5 --- */
+            {
+                name: "Phase 5: Construction",
+                nodes: [
+                    {
+                        id: "7.1", type: "step", strand: "main",
+                        title: "12. Site Operations",
+                        desc: "Mobilization and physical construction. Tracking progress against the Digital Twin.",
+                        ai: [
+                            { name: "OpenSpace", desc: "360-camera tracking mapped to BIM.", url: "https://www.openspace.ai/" },
+                            { name: "Buildots", desc: "Computer vision for progress tracking.", url: "https://buildots.com/" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // --- 2. LAYOUT ENGINE ---
+        
+        const CONFIG = {
+            startX: 150,
+            startY: 500,        // Shifted down slightly to allow for higher labels
+            stepGap: 450,       
+            branchOffsetY: 250, 
+            aiOffsetY: 90,      
+            aiOffsetX: 0
+        };
+
+        let currentX = CONFIG.startX;
+        const world = document.getElementById('world');
+        const svgLayer = document.getElementById('connections');
+        const bottomBar = document.getElementById('bottom-bar');
+        const minimapContent = document.getElementById('minimap-content');
+
+        const nodePositions = {}; 
+        let globalMinX = 0, globalMaxX = 0, globalMinY = 0, globalMaxY = 0;
+
+        phases.forEach(phase => {
+            const phaseStartX = currentX;
+
+            // Render Phase Label - MOVED UP
+            const label = document.createElement('div');
+            label.className = 'phase-block';
+            label.innerText = phase.name;
+            // Increased vertical offset to -200 to clear AI stacks
+            label.style.top = (CONFIG.startY - 250) + 'px'; 
+            label.style.left = phaseStartX + 'px';
+            world.appendChild(label);
+
+            phase.nodes.forEach(node => {
+                let x = currentX;
+                let y = CONFIG.startY;
+
+                if (node.strand === 'parallel') {
+                    y += CONFIG.branchOffsetY;
+                }
+
+                createNode(node, x, y);
+                updateBounds(x, y);
+                nodePositions[node.id] = { x, y, type: node.type };
+
+                // AI Tools
+                let aiY = node.strand === 'main' ? y - CONFIG.aiOffsetY : y + CONFIG.aiOffsetY;
+                let aiDir = node.strand === 'main' ? -1 : 1;
+                let prevAiId = node.id;
+
+                if (node.ai && node.ai.length > 0) {
+                    node.ai.forEach((tool, idx) => {
+                        const aiId = `${node.id}-ai-${idx}`;
+                        createNode({
+                            id: aiId, 
+                            title: tool.name, 
+                            desc: tool.desc, 
+                            type: 'ai', 
+                            url: tool.url 
+                        }, x, aiY);
+                        
+                        updateBounds(x, aiY);
+                        nodePositions[aiId] = { x, y: aiY, type: 'ai' };
+                        drawConnection(prevAiId, aiId, false);
+                        
+                        prevAiId = aiId;
+                        aiY += (CONFIG.aiOffsetY * aiDir);
+                    });
+                }
+
+                // Connections
+                if (node.strand === 'main') {
+                    const prevStep = findPreviousNode(node.id, 'main');
+                    if (prevStep) drawConnection(prevStep, node.id, true);
+                } 
+                if (node.strand === 'parallel') {
+                    const parentId = findPreviousNode(node.id, 'step'); 
+                    if (parentId) drawConnection(parentId, node.id, false, true);
+                }
+
+                if (node.strand === 'main') {
+                    currentX += CONFIG.stepGap;
+                }
+            });
+            currentX += 50; 
+        });
+
+        // Add Minimap nodes after generation
+        renderMinimap();
+
+        // --- 3. HELPER FUNCTIONS ---
+
+        function updateBounds(x, y) {
+            globalMaxX = Math.max(globalMaxX, x);
+            globalMaxY = Math.max(globalMaxY, y);
+        }
+
+        function findPreviousNode(currentId, typeFilter) {
+            const allNodes = [];
+            phases.forEach(p => allNodes.push(...p.nodes));
+            const idx = allNodes.findIndex(n => n.id === currentId);
+            if (idx <= 0) return null;
+
+            for (let i = idx - 1; i >= 0; i--) {
+                if (typeFilter === 'main' && allNodes[i].strand === 'main') return allNodes[i].id;
+                if (typeFilter === 'step' && allNodes[i].type === 'step') return allNodes[i].id;
+            }
+            return null;
+        }
+
+        function createNode(data, x, y) {
+            const el = document.createElement('div');
+            el.id = `node-${data.id}`;
+            el.className = `node node-${data.type}`;
+            el.innerHTML = `<span class="tag-id">${data.id.includes('ai') ? '' : data.id}</span>${data.title}`;
+            
+            const w = data.type === 'step' ? 180 : (data.type === 'branch' ? 160 : 140);
+            const h = data.type === 'step' ? 90 : (data.type === 'branch' ? 70 : 50);
+            
+            el.style.left = (x - w/2) + 'px';
+            el.style.top = (y - h/2) + 'px';
+
+            el.dataset.searchParams = (data.title + " " + data.id).toLowerCase();
+
+            el.onmouseenter = () => showInfo(data);
+            el.onclick = (e) => { e.stopPropagation(); lockInfo(data); };
+
+            world.appendChild(el);
+        }
+
+        function drawConnection(idA, idB, isHorizontal, isBranchLink = false) {
+            const posA = nodePositions[idA];
+            const posB = nodePositions[idB];
+            if(!posA || !posB) return;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.classList.add(isBranchLink ? "connection-branch" : "connection-line");
+
+            const dX = posB.x - posA.x;
+            
+            let d = "";
+            if (isHorizontal) {
+                const midX = posA.x + dX / 2;
+                d = `M ${posA.x} ${posA.y} C ${midX} ${posA.y}, ${midX} ${posB.y}, ${posB.x} ${posB.y}`;
+            } else {
+                d = `M ${posA.x} ${posA.y} L ${posB.x} ${posB.y}`;
+            }
+
+            path.setAttribute("d", d);
+            svgLayer.appendChild(path);
+        }
+
+        // --- 4. MINIMAP LOGIC ---
+        function renderMinimap() {
+            // Simple representation: scaled down dots
+            const scaleX = 150 / (globalMaxX + 500);
+            const scaleY = 100 / (globalMaxY + 500);
+            const scale = Math.min(scaleX, scaleY);
+            
+            Object.values(nodePositions).forEach(pos => {
+                const d = document.createElement('div');
+                d.className = 'minimap-node';
+                d.style.left = (pos.x * scale) + 'px';
+                d.style.top = (pos.y * scale) + 'px';
+                d.style.width = '2px';
+                d.style.height = '2px';
+                if(pos.type === 'step') {
+                    d.style.background = 'red';
+                    d.style.width = '4px'; d.style.height = '4px';
+                }
+                minimapContent.appendChild(d);
+            });
+            
+            // Viewport Rect update is handled in updateTransform
+            window.minimapScale = scale;
+        }
+
+        // --- 5. INTERACTION & SEARCH ---
+
+        let state = {
+            scale: 1,
+            panning: false,
+            pointX: 0, pointY: 0,
+            startX: 0, startY: 0,
+            x: 50, y: 50
+        };
+
+        const container = document.getElementById('canvas-container');
+        const minimapViewport = document.getElementById('minimap-viewport');
+
+        function updateTransform() {
+            world.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+            
+            // Update Minimap Rect
+            if(window.minimapScale) {
+                const rectW = (container.offsetWidth / state.scale) * window.minimapScale;
+                const rectH = (container.offsetHeight / state.scale) * window.minimapScale;
+                const rectX = (-state.x / state.scale) * window.minimapScale;
+                const rectY = (-state.y / state.scale) * window.minimapScale;
+                
+                minimapViewport.style.width = rectW + 'px';
+                minimapViewport.style.height = rectH + 'px';
+                minimapViewport.style.left = rectX + 'px';
+                minimapViewport.style.top = rectY + 'px';
+            }
+        }
+
+        // Search Function
+        function searchNodes() {
+            const val = document.getElementById('search-input').value.toLowerCase();
+            if(!val) return;
+            
+            const nodes = document.querySelectorAll('.node');
+            let found = false;
+            
+            nodes.forEach(n => {
+                n.classList.remove('search-highlight');
+                if(!found && n.dataset.searchParams.includes(val)) {
+                    n.classList.add('search-highlight');
+                    
+                    // Pan to node
+                    const nx = parseFloat(n.style.left);
+                    const ny = parseFloat(n.style.top);
+                    
+                    // Center view on node
+                    state.scale = 1.5;
+                    state.x = (container.offsetWidth / 2) - (nx * state.scale);
+                    state.y = (container.offsetHeight / 2) - (ny * state.scale);
+                    updateTransform();
+                    
+                    found = true;
+                }
+            });
+        }
+
+        // Standard Zoom/Pan events (Same as V2)
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const xs = (e.clientX - state.x) / state.scale;
+            const ys = (e.clientY - state.y) / state.scale;
+            const delta = -e.deltaY;
+            (delta > 0) ? (state.scale *= 1.1) : (state.scale /= 1.1);
+            state.scale = Math.min(Math.max(0.1, state.scale), 4);
+            state.x = e.clientX - xs * state.scale;
+            state.y = e.clientY - ys * state.scale;
+            updateTransform();
+        });
+
+        container.addEventListener('mousedown', (e) => {
+            if(e.target.closest('.node')) return;
+            state.panning = true;
+            state.startX = e.clientX - state.x;
+            state.startY = e.clientY - state.y;
+            container.style.cursor = 'grabbing';
+            bottomBar.classList.remove('active');
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!state.panning) return;
+            e.preventDefault();
+            state.x = e.clientX - state.startX;
+            state.y = e.clientY - state.startY;
+            updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.panning = false;
+            container.style.cursor = 'grab';
+        });
+
+        function showInfo(data) {
+            if (bottomBar.classList.contains('active-locked')) return;
+            renderBottomContent(data);
+            bottomBar.classList.add('active');
+        }
+
+        function lockInfo(data) {
+            renderBottomContent(data);
+            bottomBar.classList.add('active');
+            bottomBar.classList.add('active-locked');
+        }
+
+        function closeBar() {
+            bottomBar.classList.remove('active');
+            bottomBar.classList.remove('active-locked');
+        }
+
+        function renderBottomContent(data) {
+            document.getElementById('info-title').innerText = data.title;
+            document.getElementById('info-desc').innerText = data.desc;
+            const linkCont = document.getElementById('link-container');
+            linkCont.innerHTML = '';
+            if (data.url && data.url !== "#") {
+                const a = document.createElement('a');
+                a.href = data.url;
+                a.target = "_blank";
+                a.innerText = "OPEN TOOL WEBSITE";
+                a.className = "tool-link";
+                linkCont.appendChild(a);
+            }
+        }
+
+        function resetView() {
+            state.scale = 0.7;
+            state.x = 50;
+            state.y = 50;
+            updateTransform();
+        }
+
+        // Init
+        resetView();
+
+    </script>
+</body>
+</html>

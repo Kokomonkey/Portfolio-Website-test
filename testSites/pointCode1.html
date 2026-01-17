@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Line</title>
+    <style>
+        /* CSS: The Canvas */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #ffffff; /* Pure White */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevents scrollbars */
+        }
+
+        /* CSS: The Object */
+        #line {
+            width: 150px;
+            height: 2px; /* A thin, elegant stroke */
+            background-color: #000000; /* Pure Black */
+            position: absolute;
+            /* Will change via JS */
+            transform-origin: center center; 
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="line"></div>
+
+    <script>
+        // JS: The Logic
+        const line = document.getElementById('line');
+        
+        document.addEventListener('mousemove', (event) => {
+            // 1. Get the center of the screen
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            // 2. Calculate distance between mouse and center
+            const deltaX = event.clientX - centerX;
+            const deltaY = event.clientY - centerY;
+            
+            // 3. Calculate the angle (Math.atan2 handles the quadrant logic)
+            // Result is in radians
+            const angleRad = Math.atan2(deltaY, deltaX);
+            
+            // 4. Convert radians to degrees for CSS
+            const angleDeg = angleRad * (180 / Math.PI);
+            
+            // 5. Apply the rotation
+            line.style.transform = `rotate(${angleDeg}deg)`;
+        });
+    </script>
+</body>
+</html>

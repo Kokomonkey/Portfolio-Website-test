@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOUWEDOESDESIGN</title>
+    <style>
+        /* --- CSS VARIABLES & RESET (The "Design System") --- */
+        :root {
+            --bg-color: #0a0a0a;       /* Deep Black */
+            --text-color: #e5e5e5;     /* Off-white for readability */
+            --accent-color: #39ff14;   /* Neon Green */
+            --secondary-bg: #1a1a1a;   /* Slightly lighter black for cards */
+            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --spacing-unit: 1rem;
+            --header-height: 80px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* --- GLOBAL COMPONENT: TOP BAR (Sticky) --- */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(10, 10, 10, 0.95); /* Slight transparency */
+            border-bottom: 1px solid #333;
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+        .logo span { color: var(--accent-color); }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .cta-button {
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.5rem 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* Mobile Hamburger */
+        .hamburger { display: none; cursor: pointer; font-size: 1.5rem; }
+
+        /* --- PAGE 1: HERO SECTION --- */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: calc(100vh - var(--header-height));
+            align-items: center;
+            padding: 0 5%;
+            gap: 2rem;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: #aaa;
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-visual {
+            position: relative;
+            border: 1px solid #333;
+            padding: 10px;
+        }
+
+        /* Simulating the Technical Drawing Look for Image 1 */
+        .tech-drawing-wrapper {
+            width: 100%;
+            height: 500px;
+            background-color: #fff; /* White background because the PDF is a drawing on white */
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .tech-drawing-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: grayscale(100%) contrast(120%); /* Brutalist touch */
+        }
+
+        .tech-label {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: black;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            font-family: monospace;
+        }
+
+        /* --- PAGE 1: SERVICES TEASER --- */
+        .services-teaser {
+            padding: 5rem 5%;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+        .services-teaser h2 {
+            font-size: 2rem;
+            font-weight: normal;
+        }
+        .services-teaser span {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* --- PAGE 3 PREVIEW: PORTFOLIO GRID (Masonry-ish) --- */
+        .portfolio-preview {
+            padding: 5rem 5%;
+        }
+        .section-header {
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .filter-buttons button {
+            background: none;
+            border: none;
+            color: #888;
+            margin-left: 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .filter-buttons button.active { color: var(--accent-color); text-decoration: underline; }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background-color: var(--secondary-bg);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-image {
+            height: 250px;
+            background-color: #333;
+            overflow: hidden;
+        }
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-info {
+            padding: 1.5rem;
+        }
+        .card-info h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .card-info .category { color: var(--accent-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- PAGE 2 PREVIEW: ABOUT ME (Teaser) --- */
+        .about-teaser {
+            padding: 5rem 5%;
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+            background-color: var(--secondary-bg);
+        }
+        .about-text { flex: 1; }
+        .about-image { flex: 1; height: 400px; background-color: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+        /* --- GLOBAL COMPONENT: BOTTOM BAR (Footer) --- */
+        .bottom-bar {
+            background-color: #000;
+            border-top: 1px solid var(--accent-color);
+            padding: 4rem 5% 2rem;
+            margin-top: auto; /* Pushes to bottom */
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-col h4 { margin-bottom: 1.5rem; color: var(--accent-color); }
+        .footer-col ul li { margin-bottom: 0.8rem; color: #888; }
+        .footer-col ul li:hover { color: #fff; }
+
+        .copyright {
+            text-align: center;
+            color: #555;
+            font-size: 0.8rem;
+            border-top: 1px solid #222;
+            padding-top: 2rem;
+        }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            .hero-section { grid-template-columns: 1fr; text-align: center; padding-top: 2rem; }
+            .hero-content p { margin: 0 auto 2rem; }
+            .nav-links, .cta-button { display: none; } /* Hide desktop nav */
+            .hamburger { display: block; color: var(--text-color); }
+            .about-teaser { flex-direction: column-reverse; }
+            
+            /* Mobile Menu State (Simplified JS toggle would go here) */
+            .nav-active .nav-links {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: var(--header-height);
+                left: 0;
+                width: 100%;
+                background: #000;
+                padding: 2rem;
+                border-bottom: 1px solid var(--accent-color);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="logo">Douwe<span>Does</span>Design</div>
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="#projects" class="cta-button">View Work</a>
+    </nav>
+
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <h1>Douwe Does Design</h1>
+            <p>I provide both ideas and the drawings to make them reality. Precise engineering meets creative vision.</p>
+            <a href="#projects" class="cta-button" style="background:var(--accent-color); color:black;">Go to Projects</a>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="tech-drawing-wrapper">
+                <img src="images/20.6 - Facade Detailed.png" alt="Facade Detailed Technical Drawing showing stainless steel frame and gear">
+                <div class="tech-label">Spatial Stitch [02/11/2025]</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-teaser">
+        <h2>"I bridge the gap between <span>abstract concepts</span> and <span>technical execution</span>."</h2>
+    </section>
+
+    <section id="about" class="about-teaser">
+        <div class="about-image">
+             <img src="https://placehold.co/600x600/1a1a1a/39ff14?text=Abstract+Isometric+Drawing" alt="Abstract architectural steps">
+        </div>
+        <div class="about-text">
+            <h2 style="margin-bottom:1rem;">Who am I?</h2>
+            <p style="margin-bottom:1rem;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+            <br>
+            <a href="#" style="text-decoration: underline; color: var(--accent-color);">Read full bio &rarr;</a>
+        </div>
+    </section>
+
+    <section id="projects" class="portfolio-preview">
+        <div class="section-header">
+            <h2>Selected Projects</h2>
+            <div class="filter-buttons">
+                <button class="active">All</button>
+                <button>Engineering</button>
+                <button>Design</button>
+            </div>
+        </div>
+
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="card-image">
+                     <img src="https://placehold.co/600x400/white/black?text=Spatial+Stitch+Detail" alt="Spatial Stitch Detail">
+                </div>
+                <div class="card-info">
+                    <span class="category">Engineering</span>
+                    <h3>Spatial Stitch Facade</h3>
+                    <p style="font-size:0.9rem; color:#888;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="card-image">
+                    <img src="https://placehold.co/600x400/1a1a1a/39ff14?text=Isometric+Concept" alt="Isometric Concept">
+                </div>
+                <div class="card-info">
+                    <span class="category">Design</span>
+                    <h3>Abstract Flow</h3>
+                    <p style="font-size:0.9rem; color:#888;">Sed do eiusmod tempor incididunt ut labore et dolore.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="card-image">
+                    <img src="https://placehold.co/600x400/333/666?text=Project+Three" alt="Project Three">
+                </div>
+                <div class="card-info">
+                    <span class="category">Drafting</span>
+                    <h3>Residential Frame</h3>
+                    <p style="font-size:0.9rem; color:#888;">Ut enim ad minim veniam, quis nostrud exercitation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" style="padding: 5rem 5%; text-align:center;">
+        <h2 style="font-size:3rem; margin-bottom: 2rem;">Let's Build Something.</h2>
+        <a href="mailto:douwe@example.com" class="cta-button" style="font-size:1.2rem; padding: 1rem 3rem;">Get in Touch</a>
+    </section>
+
+    <footer class="bottom-bar">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>DouweDoesDesign</h4>
+                <ul>
+                    <li>Rotterdam, NL</li> <li>+31 6 1234 5678</li>
+                    <li>douwe@example.com</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sitemap</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Me</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Socials</h4>
+                <ul>
+                    <li>LinkedIn</li>
+                    <li>Instagram</li>
+                    <li>Behance</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2025 Douwe Does Design. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Simple Mobile Menu Toggle
+        function toggleMenu() {
+            const nav = document.querySelector('.top-bar');
+            nav.classList.toggle('nav-active');
+            
+            // Check if nav-links exist for mobile (simplified for this demo)
+            const links = document.querySelector('.nav-links');
+            if (nav.classList.contains('nav-active')) {
+                links.style.display = 'flex';
+                links.style.flexDirection = 'column';
+                links.style.position = 'absolute';
+                links.style.top = '80px';
+                links.style.left = '0';
+                links.style.width = '100%';
+                links.style.background = '#0a0a0a';
+                links.style.padding = '20px';
+            } else {
+                links.style = ''; // Reset inline styles
+            }
+        }
+    </script>
+</body>
+</html>

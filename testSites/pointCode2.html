@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line of Sight</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+        canvas {
+            display: block; /* Removes tiny bottom margin */
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Configuration
+    const config = {
+        numRects: 12,
+        rectWidth: 150,
+        rectHeight: 18,
+        gap: 80,
+        cornerRadius: 0,
+        lightOpacity: 0.65,
+        lightBorder: 10,
+        lightRadiusPercent: 0.15
+    };
+
+    let width, height;
+    let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    let rectangles = [];
+
+    // --- Initialization and Events ---
+
+    function init() {
+        resize();
+        window.addEventListener('resize', resize);
+        document.addEventListener('mousemove', onMouseMove);
+        createRectangles();
+        animate();
+    }
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        // Re-center rectangles on resize
+        createRectangles();
+    }
+
+    function onMouseMove(e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    }
+
+    function createRectangles() {
+        rectangles = [];
+        const totalWidth = (config.numRects * config.gap) - config.gap;
+        const startX = (width / 2) - (totalWidth / 2);
+        const centerY = height / 2;
+
+        for (let i = 0; i < config.numRects; i++) {
+            rectangles.push({
+                cx: startX + (i * config.gap),
+                cy: centerY,
+                angle: 0
+            });
+        }
+    }
+
+    // --- The Math ---
+
+    // Helper to draw rounded rectangles on canvas
+    function roundedRectPath(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+    }
+
+    // Rotates a point around a center
+    function rotatePoint(px, py, cx, cy, angle) {
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const nx = (cos * (px - cx)) - (sin * (py - cy)) + cx;
+        const ny = (sin * (px - cx)) + (cos * (py - cy)) + cy;
+        return { x: nx, y: ny };
+    }
+
+    // Gets the 4 actual corner coordinates of a rotated rectangle
+    function getRectCorners(rect) {
+        const hw = config.rectWidth / 2;
+        const hh = config.rectHeight / 2;
+        // Unrotated corners relative to center
+        const p1 = { x: rect.cx - hw, y: rect.cy - hh };
+        const p2 = { x: rect.cx + hw, y: rect.cy - hh };
+        const p3 = { x: rect.cx + hw, y: rect.cy + hh };
+        const p4 = { x: rect.cx - hw, y: rect.cy + hh };
+        
+        // Rotate them
+        return [
+            rotatePoint(p1.x, p1.y, rect.cx, rect.cy, rect.angle),
+            rotatePoint(p2.x, p2.y, rect.cx, rect.cy, rect.angle),
+            rotatePoint(p3.x, p3.y, rect.cx, rect.cy, rect.angle),
+            rotatePoint(p4.x, p4.y, rect.cx, rect.cy, rect.angle)
+        ];
+    }
+
+    // Helper to project a point far away from the light source to create shadow volume
+    function projectPoint(px, py, lx, ly, magnitude = 2500) {
+        const dx = px - lx;
+        const dy = py - ly;
+        const len = Math.sqrt(dx*dx + dy*dy);
+        // Normalize and scale
+        return {
+            x: px + (dx / len) * magnitude,
+            y: py + (dy / len) * magnitude
+        };
+    }
+
+    // --- The Animation Loop ---
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0,0,width,height);
+
+        // 1. Update angles based on mouse position
+        rectangles.forEach(rect => {
+            const deltaX = mouse.x - rect.cx;
+            const deltaY = mouse.y - rect.cy;
+            rect.angle = Math.atan2(deltaY, deltaX);
+        });
+
+        // --- LAYER 1: The Red Vision (The Light) ---
+        ctx.save();
+        const lightRadius = width * config.lightRadiusPercent;
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, lightRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 0, 0, ${config.lightOpacity})`;
+        ctx.fill();
+        ctx.lineWidth = config.lightBorder;
+        ctx.strokeStyle = 'red';
+        ctx.stroke();
+        ctx.restore();
+
+
+        // --- LAYER 2: The Shadows (Erasing the light) ---
+        // We use 'destination-out' compositing. Anything drawn here erases what's underneath.
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.fillStyle = 'black'; // Color doesn't matter in destination-out, only alpha
+
+        rectangles.forEach(rect => {
+            const corners = getRectCorners(rect);
+            
+            // Simple shadow casting algorithm:
+            // Project every edge of the rectangle outwards from the mouse.
+            for(let i = 0; i < corners.length; i++) {
+                const c1 = corners[i];
+                const c2 = corners[(i + 1) % corners.length]; // next corner wrapping around
+
+                // Project endpoints far away
+                const p1 = projectPoint(c1.x, c1.y, mouse.x, mouse.y);
+                const p2 = projectPoint(c2.x, c2.y, mouse.x, mouse.y);
+
+                // Draw the shadow quad (the area behind the object edge)
+                ctx.beginPath();
+                ctx.moveTo(c1.x, c1.y);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.lineTo(c2.x, c2.y);
+                ctx.closePath();
+                ctx.fill();
+            }
+        });
+        ctx.restore();
+
+
+        // --- LAYER 3: The Obstacles (Black Rectangles) on top ---
+        ctx.fillStyle = '#000000';
+        rectangles.forEach(rect => {
+            ctx.save();
+            // Move to center of rect, rotate, then draw centered at 0,0
+            ctx.translate(rect.cx, rect.cy);
+            ctx.rotate(rect.angle);
+            roundedRectPath(ctx, -config.rectWidth/2, -config.rectHeight/2, config.rectWidth, config.rectHeight, config.cornerRadius);
+            ctx.fill();
+            ctx.restore();
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    // Start the engine
+    init();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Archives | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --transition-speed: 0.4s;
+            --header-height: 25vh; /* Increased slightly to fit logo */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+
+        /* --- BACK BUTTON (Preserved) --- */
+        .back-btn {
+            position: fixed;
+            top: 2vh;
+            left: 2vh;
+            text-decoration: none;
+            z-index: 100;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-weight: 400;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* --- HEADER --- */
+        header {
+            min-height: var(--header-height);
+            display: flex;
+            flex-direction: column; /* Stack Logo and Text */
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4vh;
+            padding-top: 4vh;
+            flex-shrink: 0;
+        }
+
+        /* Logo Styling */
+        .site-logo {
+            height: 80px; /* Adjust size as needed */
+            width: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-color);
+            filter: invert(1);
+        }
+
+        h1 {
+            font-size: 2.5rem; 
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            font-weight: 300;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 10px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        main {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            padding: 0 20px 50px 20px; /* Bottom padding for scroll space */
+            gap: 20px;
+        }
+
+        /* THE COMPONENT: Horizontal Bar */
+        .project-bar {
+            width: 100%;
+            border: 1px solid var(--accent-color);
+            background: var(--bg-color);
+            /* ANIMATION SETUP */
+            opacity: 0;
+            transform: translateX(-50px); 
+            animation: slideInProject 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* Staggered Entrance */
+        .project-bar:nth-child(even) { transform: translateX(50px); }
+        .project-bar:nth-child(1) { animation-delay: 0.2s; }
+        .project-bar:nth-child(2) { animation-delay: 0.4s; }
+        .project-bar:nth-child(3) { animation-delay: 0.6s; }
+
+        /* The Clickable Header */
+        .bar-header {
+            width: 100%;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--accent-color);
+            font-family: inherit;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .bar-header:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-icon {
+            font-size: 1.5rem;
+            font-weight: 300;
+            transition: transform 0.3s ease;
+        }
+
+        /* The Dropdown Content */
+        .bar-content {
+            max-height: 0; /* Closed by default */
+            overflow: hidden;
+            transition: max-height 0.4s ease-out; /* Smooth slide */
+            background-color: #111; /* Slightly lighter black for contrast */
+        }
+
+        .version-list {
+            list-style: none;
+            padding: 20px 25px;
+            border-top: 1px solid #333;
+        }
+
+        .version-item { margin-bottom: 15px; }
+        .version-item:last-child { margin-bottom: 0; }
+
+        .version-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 1rem;
+            opacity: 0.7;
+            display: block;
+            border-left: 1px solid transparent;
+            padding-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .version-link:hover {
+            opacity: 1;
+            border-left: 3px solid var(--accent-color);
+            padding-left: 15px;
+        }
+
+        /* Active State Styling */
+        .project-bar.active .bar-header {
+            background: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        .project-bar.active .toggle-icon {
+            transform: rotate(45deg);
+        }
+
+        @keyframes slideInProject {
+            0% { opacity: 0; }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← Back</a>
+
+    <header>
+        <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Archive Index</h1>
+    </header>
+
+    <main>
+
+        <article class="project-bar">
+            <button class="bar-header" onclick="toggleBar(this)">
+                <span>Old Workflows</span>
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="bar-content">
+                <ul class="version-list">
+                    <li class="version-item"><a href="testSites/workflowVersion2.html" class="version-link" target="_blank" rel="noopener noreferrer">Version 2</a></li>
+                    <li class="version-item"><a href="testSites/workflowVersion3.html" class="version-link" target="_blank" rel="noopener noreferrer">Version 3</a></li>
+                </ul>
+            </div>
+        </article>
+       
+        <article class="project-bar">
+            <button class="bar-header" onclick="toggleBar(this)">
+                <span>Permeable Facade</span>
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="bar-content">
+                <ul class="version-list">
+                    <li class="version-item"><a href="testSites/pointCode1.html" class="version-link" target="_blank" rel="noopener noreferrer">Facade page creation step 1</a></li>
+                    <li class="version-item"><a href="testSites/pointCode2.html" class="version-link" target="_blank" rel="noopener noreferrer">Facade page creation step 2</a></li>
+                    <li class="version-item"><a href="testSites/pointCode3.html" class="version-link" target="_blank" rel="noopener noreferrer">Facade page creation step 3</a></li>
+                    <li class="version-item"> <a href="testSites/pointCode4.html" class="version-link" target="_blank" rel="noopener noreferrer">Facade page creation step 4</a></li>
+                </ul>
+            </div>
+        </article>
+
+        <article class="project-bar">
+            <button class="bar-header" onclick="toggleBar(this)">
+                <span>Old Portfolio</span>
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="bar-content">
+                <ul class="version-list">
+                    <li class="version-item"><a href="testSites/oldPortfolio1.html" class="version-link" target="_blank" rel="noopener noreferrer">2025 - First portfolio site</a></li>
+                </ul>
+            </div>
+        </article>
+
+        
+
+        </main>
+
+    <script>
+        function toggleBar(button) {
+            // Get the container (article)
+            const container = button.parentElement;
+            // Get the content div
+            const content = container.querySelector('.bar-content');
+            
+            // Toggle the visual active state
+            container.classList.toggle('active');
+
+            // Logic: If active, set height to scrollHeight (actual height). If not, set to null (0).
+            if (container.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + "px";
+            } else {
+                content.style.maxHeight = null;
+            }
+        }
+    </script>
+
+</body>
+</html>

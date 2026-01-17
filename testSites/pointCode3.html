@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Array</title>
+    <style>
+        /* CSS: The Canvas */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Container to hold the row of 12 */
+        #container {
+            display: flex;
+            flex-direction: row;
+            gap: 80px; /* The specific gap requested */
+        }
+
+        /* CSS: The Object */
+        .rectangle {
+            /* Width 18px as requested, length 150px */
+            width: 150px;  
+            height: 18px;
+            background-color: #000000;
+            border-radius: 4px; /* The 4px fillet */
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const numberOfRectangles = 12;
+        const rectangles = [];
+
+        // 1. Create the 12 rectangles dynamically
+        for (let i = 0; i < numberOfRectangles; i++) {
+            const rect = document.createElement('div');
+            rect.classList.add('rectangle');
+            container.appendChild(rect);
+            rectangles.push(rect);
+        }
+
+        // 2. The Interaction Logic
+        document.addEventListener('mousemove', (event) => {
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            rectangles.forEach(rect => {
+                // Get the center position of THIS specific rectangle
+                const rectBounds = rect.getBoundingClientRect();
+                const rectCenterX = rectBounds.left + rectBounds.width / 2;
+                const rectCenterY = rectBounds.top + rectBounds.height / 2;
+
+                // Calculate distance vector
+                const deltaX = mouseX - rectCenterX;
+                const deltaY = mouseY - rectCenterY;
+
+                // Calculate angle
+                const angleRad = Math.atan2(deltaY, deltaX);
+                const angleDeg = angleRad * (180 / Math.PI);
+
+                // Apply rotation
+                rect.style.transform = `rotate(${angleDeg}deg)`;
+            });
+        });
+    </script>
+</body>
+</html>
