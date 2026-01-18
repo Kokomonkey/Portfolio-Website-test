@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
     <title>AI in Architecture Workflow</title>
     <style>
@@ -65,6 +69,18 @@
             width: 100vw;
             transition: background-color 0.3s;
         }
+
+        /* --- CAPTURE MODE STYLES (For PDF Export) --- */
+        /* Hides everything except the personal workflow elements during capture */
+        body.capturing-mode .step-node:not(.mirrored),
+        body.capturing-mode .task-group,
+        body.capturing-mode #connections-layer path:not(.personal-path) {
+           display: none !important;
+        }
+        body.capturing-mode #canvas-wrapper {
+            background: var(--bg-color); /* Ensure background fills */
+        }
+
 
         .bg-pattern {
             position: absolute;
@@ -180,7 +196,6 @@
             margin-bottom: 2px;
         }
         
-        /* New Legend Note */
         .legend-note {
             font-size: 0.65rem;
             color: var(--accent-color);
@@ -275,12 +290,6 @@
         .step-node.intro-active {
             opacity: 1;
             transform: translateY(0) scale(1);
-        }
-
-        /* --- GHOST MODE (Greyed out) --- */
-        .step-node.step-ghost {
-            opacity: 0.3;
-            filter: grayscale(100%);
         }
 
         /* --- MIRRORED STEPS (Personal Workflow Base) --- */
@@ -481,7 +490,7 @@
             font-family: 'Helvetica Neue', sans-serif;
             font-size: 24px;
             font-weight: bold;
-            display: flex; justify-content: center; align-items: center;
+            display: flex; justify-content center; align-items: center;
             cursor: pointer;
             z-index: 100;
             border: none;
@@ -614,7 +623,7 @@
         <a href="index.html" class="back-btn">← Back</a>
         
         <div class="header-container">
-            <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
+            <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo" id="header-logo-img">
             <h1>AI in Architecture</h1>
         </div>
 
@@ -630,6 +639,7 @@
         </div>
 
         <div class="controls">
+            <button class="btn-ui" onclick="exportPersonalWorkflow()" style="border-color:var(--accent-color); color:var(--accent-color); font-weight:800;">EXPORT PDF</button>
             <button class="btn-ui" onclick="toggleTheme()">Dark/Light</button>
             <button class="btn-ui" onclick="resetView()">Reset View</button>
         </div>
@@ -894,7 +904,7 @@ const workflowData = [
     const STEP_WIDTH = 240;
     const STEP_GAP = 150;
     const TASK_OFFSET_Y = 120;
-    const PERSONAL_BASE_GAP = 350; // Increased margin
+    const PERSONAL_BASE_GAP = 350; 
     const PERSONAL_CARD_HEIGHT = 160; 
 
     /* --- INIT & RENDER --- */
@@ -1104,8 +1114,7 @@ const workflowData = [
                 node.style.borderLeftColor = item.typeColor;
                 node.style.left = `${stepIdx * (STEP_WIDTH + STEP_GAP)}px`;
                 
-                // Stack upwards starting from the Mirrored Step
-                // Base = -350px. Card 1 = -350 - 160 = -510.
+                // Stack upwards starting from the Mirrored Step position
                 const yPos = -(PERSONAL_BASE_GAP + (idx * PERSONAL_CARD_HEIGHT));
                 node.style.top = `${yPos}px`;
 
@@ -1133,17 +1142,9 @@ const workflowData = [
             });
         });
 
-        updateGhostMode();
+        // REMOVED updateGhostMode call
         drawLines(); 
     }
-
-    function updateGhostMode() {
-    // Logic removed to prevent original step containers from graying out
-    for(let i=0; i<workflowData.length; i++) {
-        const stepNode = document.getElementById(`step-${i}`);
-        stepNode.classList.remove('step-ghost');
-    }
-}
 
 
     /* --- OVERLAY INTERACTIONS --- */
@@ -1334,19 +1335,14 @@ const workflowData = [
                 const currIdx = sortedSteps[i];
                 const nextIdx = sortedSteps[i+1];
 
-                // Check if they are neighbors (distance of 1)
                 if (nextIdx === currIdx + 1) {
                     const currCol = state.personalWorkflow[currIdx];
                     const nextCol = state.personalWorkflow[nextIdx];
                     
-                    // Loop through EVERY item in current step
                     currCol.forEach((itemA, idxA) => {
-                        // Loop through EVERY item in next step
                         nextCol.forEach((itemB, idxB) => {
-                             // Calculate Y positions based on index stack
-                             // Calculate Y positions based on the new overlapping stack logic
-                            const yA = -(PERSONAL_BASE_GAP + (idxA * PERSONAL_CARD_HEIGHT)) + 50; 
-                            const yB = -(PERSONAL_BASE_GAP + (idxB * PERSONAL_CARD_HEIGHT)) + 50;
+                             const yA = -(PERSONAL_BASE_GAP + (idxA * PERSONAL_CARD_HEIGHT)) + 50; 
+                             const yB = -(PERSONAL_BASE_GAP + (idxB * PERSONAL_CARD_HEIGHT)) + 50;
                              
                              const xA = (currIdx * (STEP_WIDTH + STEP_GAP)) + STEP_WIDTH;
                              const xB = (nextIdx * (STEP_WIDTH + STEP_GAP));
@@ -1377,6 +1373,192 @@ const workflowData = [
     }
 
     window.addEventListener('resize', () => { resetView(); });
+
+    /* --- HELPER TO GET IMAGE DATA URL --- */
+    function imgToDataURL(imgElement) {
+        const canvas = document.createElement("canvas");
+        canvas.width = imgElement.width;
+        canvas.height = imgElement.height;
+        const ctx = canvas.getContext("2d");
+        
+        // Check if image is actually loaded
+        if (imgElement.complete && imgElement.naturalHeight !== 0) {
+             ctx.drawImage(imgElement, 0, 0);
+             return canvas.toDataURL("image/png");
+        } else {
+             // Fallback or error handling if logo isn't loaded
+             console.warn("Logo image not fully loaded for PDF export.");
+             return null;
+        }
+    }
+
+    /* --- EXPORT TO PDF FUNCTIONALITY --- */
+    async function exportPersonalWorkflow() {
+        const { jsPDF } = window.jspdf;
+        
+        if(Object.keys(state.personalWorkflow).length === 0) {
+            alert("Your personal workflow is empty. Right-click some AI nodes to add them first!");
+            return;
+        }
+
+        // 1. Get Logo Data
+        const logoImg = document.getElementById('header-logo-img');
+        const logoDataUrl = imgToDataURL(logoImg);
+
+        // 2. Prepare UI for Capture (Enter Capturing Mode)
+        const ui = document.getElementById('main-ui');
+        document.body.classList.add('capturing-mode'); // Add class to hide non-personal items
+        ui.classList.add('ui-hidden');
+        document.body.style.cursor = 'wait';
+
+        // Calculate bounds of personal workflow to center it optimally
+        let minY = 0;
+        let maxStack = 0;
+        const sortedSteps = Object.keys(state.personalWorkflow).map(k => parseInt(k)).sort((a,b) => a-b);
+        const minStep = sortedSteps[0];
+        const maxStep = sortedSteps[sortedSteps.length-1];
+
+        Object.values(state.personalWorkflow).forEach(col => {
+             maxStack = Math.max(maxStack, col.length);
+        });
+        // Top most point (highest stack)
+        minY = -(PERSONAL_BASE_GAP + (maxStack * PERSONAL_CARD_HEIGHT));
+        // Bottom most point (mirrored step)
+        const maxY = -PERSONAL_BASE_GAP + 100; // +100 is approx height of step node
+        
+        const contentWidth = (maxStep - minStep + 1) * (STEP_WIDTH + STEP_GAP);
+        const contentHeight = Math.abs(minY - maxY) + 200; // Add padding
+
+        // Force view to center on the personal block
+        state.scale = Math.min(window.innerWidth / contentWidth, window.innerHeight / contentHeight, 0.8); // Zoom to fit
+        // Calculate center point of content relative to root origin
+        const centerX = (minStep * (STEP_WIDTH + STEP_GAP)) + (contentWidth / 2);
+        const centerY = minY + (contentHeight / 2);
+        
+        state.pointX = (window.innerWidth / 2) - (centerX * state.scale);
+        state.pointY = (window.innerHeight / 2) - (centerY * state.scale);
+        
+        updateTransform();
+        await sleep(800); // Wait for transition and redraw
+
+        // 3. Capture the Canvas
+        const canvasElement = document.getElementById('canvas-wrapper');
+        const canvasShot = await html2canvas(canvasElement, {
+            backgroundColor: document.body.getAttribute('data-theme') === 'dark' ? '#121212' : '#e6e6e6',
+            scale: 2, // Higher resolution
+            logging: false,
+            useCORS: true // Important for images
+        });
+        
+        const imgData = canvasShot.toDataURL('image/png');
+
+        // 4. Restore View
+        document.body.classList.remove('capturing-mode');
+        ui.classList.remove('ui-hidden');
+        document.body.style.cursor = 'default';
+        state.scale = 1; 
+        resetView(); 
+
+        // 5. Generate PDF
+        const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+        let yPos = margin;
+
+        // -- Header (Logo & Branding) --
+        if(logoDataUrl) {
+             doc.addImage(logoDataUrl, 'PNG', margin, yPos, 15, 15); // Adjust logo size
+             doc.setFont("helvetica", "bold");
+             doc.setFontSize(18);
+             doc.setTextColor(0,0,0);
+             doc.text("DouweDoesDesign", margin + 20, yPos + 10);
+             yPos += 25;
+        } else {
+             yPos += 10;
+        }
+
+        // -- Title --
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text("Personal Architecture Workflow", margin, yPos);
+        yPos += 8;
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100,100,100);
+        doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, yPos);
+        yPos += 15;
+
+        // -- Visual Snapshot --
+        const imgProps = doc.getImageProperties(imgData);
+        const pdfImgWidth = pageWidth - (margin * 2);
+        const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
+        
+        // Cap image height if it's too tall relative to width
+        const maxImgHeight = 130; 
+        const finalHeight = Math.min(pdfImgHeight, maxImgHeight);
+
+        doc.addImage(imgData, 'PNG', margin, yPos, pdfImgWidth, finalHeight);
+        yPos += finalHeight + 15;
+
+        // -- Detailed List --
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0,0,0);
+        doc.text("Selected Tool Stack", margin, yPos);
+        yPos += 10;
+
+        sortedSteps.forEach(stepIdx => {
+            const stepName = workflowData[stepIdx].title;
+            const items = state.personalWorkflow[stepIdx];
+
+            if(yPos > pageHeight - 30) { doc.addPage(); yPos = 20; }
+
+            // Step Header
+            doc.setFillColor(240, 240, 240);
+            doc.rect(margin, yPos - 6, pageWidth - (margin * 2), 8, 'F');
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text(stepName, margin + 2, yPos);
+            yPos += 10;
+
+            // Tools
+            items.forEach(item => {
+                if(yPos > pageHeight - 30) { doc.addPage(); yPos = 20; }
+
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(50, 50, 50);
+                doc.text(`• ${item.name}`, margin + 5, yPos);
+                
+                doc.setFont("courier", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`[${item.type}]`, margin + 70, yPos);
+
+                yPos += 5;
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(60, 60, 60);
+                
+                const descLines = doc.splitTextToSize(item.desc, pageWidth - (margin * 2) - 10);
+                doc.text(descLines, margin + 10, yPos);
+                yPos += (descLines.length * 5);
+
+                doc.setTextColor(74, 144, 226);
+                doc.textWithLink("Visit Website", margin + 10, yPos, { url: item.link });
+                doc.setTextColor(0);
+                
+                yPos += 10;
+            });
+            yPos += 5;
+        });
+
+        doc.save("DDD_Personal_Workflow.pdf");
+    }
 
     init();
 
