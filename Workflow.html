@@ -19,6 +19,15 @@
             
             --line-color: #000000; 
             --line-active: #ff3333;
+            --line-personal: #4a90e2; /* Blue for personal workflow */
+            
+            /* --- CATEGORY COLORS --- */
+            --cat-gen: #9b59b6;    
+            --cat-tech: #2980b9;   
+            --cat-text: #27ae60;   
+            --cat-mgmt: #f39c12;   
+            --cat-bid: #c0392b;    
+            --cat-scan: #16a085;   
             
             --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             --font-mono: 'Courier New', Courier, monospace;
@@ -33,6 +42,15 @@
             
             --line-color: #ffffff; 
             --line-active: #ff5555;
+            --line-personal: #5dade2;
+
+            /* Dark mode adjustments */
+            --cat-gen: #af7ac5;
+            --cat-tech: #5dade2;
+            --cat-text: #58d68d;
+            --cat-mgmt: #f5b041;
+            --cat-bid: #ec7063;
+            --cat-scan: #48c9b0;
         }
 
         /* --- GLOBAL RESET --- */
@@ -66,7 +84,6 @@
             transition: opacity 0.5s ease;
         }
         
-        /* Intro Hide State for UI */
         .ui-hidden { opacity: 0; }
 
         .header-container {
@@ -86,10 +103,10 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .logo-placeholder {
-            width: 30px; height: 30px;
+        .site-logo {
+            height: 30px; width: auto;
+            filter: invert(100%);
             background: var(--text-color);
-            border-radius: 50%;
         }
 
         h1 {
@@ -139,6 +156,54 @@
         }
         .btn-ui:hover { background: var(--dot-color); }
 
+        .legend-container {
+            pointer-events: auto;
+            position: absolute;
+            bottom: 80px; 
+            right: 30px;
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .legend-title {
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--line-color);
+            padding-bottom: 5px;
+            margin-bottom: 2px;
+        }
+        
+        /* New Legend Note */
+        .legend-note {
+            font-size: 0.65rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            border-top: 1px dashed var(--line-color);
+            padding-top: 6px;
+            margin-top: 4px;
+            font-family: var(--font-mono);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+        }
+
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+
         /* --- INTRO OVERLAY --- */
         #intro-overlay {
             position: fixed;
@@ -173,7 +238,7 @@
             width: 100%; height: 100%;
             overflow: hidden;
             cursor: grab;
-            opacity: 0; /* Hidden initially */
+            opacity: 0; 
             transition: opacity 1s ease;
         }
         #canvas-wrapper.visible { opacity: 1; }
@@ -181,7 +246,8 @@
 
         #workflow-root {
             position: absolute;
-            top: 50%; left: 50%; 
+            top: 0; 
+            left: 0; 
             transform-origin: 0 0; 
             width: 0; height: 0; 
         }
@@ -190,6 +256,10 @@
         .step-node {
             position: absolute;
             width: 240px;
+            min-height: 100px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
             background: var(--container-bg);
             border: 2px solid var(--accent-color);
             border-radius: 12px;
@@ -197,23 +267,45 @@
             cursor: pointer;
             z-index: 10;
             user-select: none;
-            
-            /* ANIMATION STATES */
             opacity: 0;
             transform: translateY(50px) scale(0.9);
-            transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: opacity 0.6s, transform 0.6s, background-color 0.3s, border-color 0.3s;
         }
         
-        /* The class added by JS to trigger the pop-in */
         .step-node.intro-active {
             opacity: 1;
             transform: translateY(0) scale(1);
         }
 
-        .step-node:hover { transform: scale(1.02); }
+        /* --- GHOST MODE (Greyed out) --- */
+        .step-node.step-ghost {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        /* --- MIRRORED STEPS (Personal Workflow Base) --- */
+        .step-node.mirrored {
+            border-style: dashed;
+            border-color: var(--line-personal);
+            background: transparent;
+            opacity: 0.7;
+            pointer-events: none; /* Just visual */
+            z-index: 5;
+        }
+        .step-node.mirrored .step-header { color: var(--line-personal); }
+
+        .step-node:not(.mirrored):hover { transform: scale(1.02); }
         .step-header { font-weight: 800; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 5px; }
         .step-desc { font-size: 0.75rem; color: #666; line-height: 1.3; }
+
+        /* --- DIVIDER LINE --- */
+        #workflow-divider {
+            position: absolute;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--line-color) 0, var(--line-color) 10px, transparent 10px, transparent 20px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
 
         .task-group {
             position: absolute;
@@ -259,16 +351,42 @@
         .ai-node {
             background: var(--container-bg);
             border: 1px solid var(--container-border);
-            border-left: 4px solid var(--text-color);
+            border-left: 4px solid var(--text-color); 
             border-radius: 4px;
             padding: 12px;
             font-size: 0.8rem;
-            cursor: pointer; /* Interaction Cue */
+            cursor: pointer; 
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
         }
         .ai-node:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* PERSONAL WORKFLOW NODES */
+        .personal-node {
+            position: absolute;
+            width: 240px;
+            z-index: 20;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .ai-type-badge {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--container-bg);
         }
 
         .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
@@ -303,11 +421,17 @@
             transition: stroke 0.3s;
         }
         
-        /* Animation class for lines appearing */
         .intro-path {
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
             animation: dash 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        
+        .personal-path {
+            stroke: var(--line-personal);
+            stroke-width: 2;
+            stroke-dasharray: 5, 5;
+            opacity: 0.6;
         }
 
         @keyframes dash {
@@ -317,7 +441,7 @@
         .line-active { stroke: var(--line-active); stroke-width: 3; }
 
 
-        /* --- NEW: SCREEN FILL OVERLAY (The Deep Dive Box) --- */
+        /* --- SCREEN FILL OVERLAY --- */
         #detail-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -340,7 +464,7 @@
         .overlay-content {
             width: 90vw;
             height: 90vh;
-            background: #000; /* High Contrast Theme from Reference */
+            background: #000;
             color: #fff;
             border: 2px solid #fff;
             display: flex;
@@ -364,7 +488,6 @@
         }
         .close-btn:hover { background: var(--accent-color); color: white; }
 
-        /* The Split Layout */
         .detail-left {
             width: 40%;
             padding: 60px;
@@ -382,7 +505,6 @@
             grid-template-rows: 1fr 1fr;
         }
 
-        /* Typography for Overlay */
         .ov-title {
             font-size: 3rem;
             font-weight: 300;
@@ -423,7 +545,6 @@
         }
         .ov-btn:hover { background: #fff; color: #000; }
 
-        /* Grid Items (From Inspiration Code) */
         .grid-square {
             border: 1px solid #333;
             position: relative;
@@ -432,11 +553,6 @@
             justify-content: center;
             padding: 30px;
         }
-        .sq-img {
-            width: 100%; height: 100%; object-fit: cover;
-            position: absolute; top: 0; left: 0;
-            opacity: 0.4; filter: grayscale(100%);
-        }
         .sq-title {
             position: relative; z-index: 2;
             font-size: 1.2rem; font-weight: 700;
@@ -444,25 +560,24 @@
             border-bottom: 2px solid white;
             display: inline-block; padding-bottom: 10px; margin-bottom: 10px;
         }
-        .sq-txt {
-            position: relative; z-index: 2;
-            font-size: 0.9rem; color: #aaa;
-        }
+        .sq-txt { position: relative; z-index: 2; font-size: 0.9rem; color: #aaa; }
         .sq-center { align-items: center; text-align: center; }
 
     </style>
 </head>
-<body data-theme="dark"> <div class="bg-pattern"></div>
+<body data-theme="dark"> 
+    <div class="bg-pattern"></div>
 
     <div id="intro-overlay">
         <div class="terminal-text">Initializing Workflow...<span class="cursor"></span></div>
     </div>
 
     <div id="detail-overlay" onclick="closeDetailOverlay(event)">
-        <div class="overlay-content" onclick="event.stopPropagation()"> <button class="close-btn" onclick="closeDetailOverlay()">×</button>
-            
+        <div class="overlay-content" onclick="event.stopPropagation()"> 
+            <button class="close-btn" onclick="closeDetailOverlay()">×</button>
             <div class="detail-left">
                 <h2 id="ov-title" class="ov-title">AI Name</h2>
+                <div id="ov-type" style="color:var(--accent-color); font-family:var(--font-mono); margin-bottom:10px; text-transform:uppercase;">TYPE</div>
                 <p id="ov-desc" class="ov-desc">Description goes here.</p>
                 
                 <div class="ov-meta">
@@ -499,8 +614,19 @@
         <a href="index.html" class="back-btn">← Back</a>
         
         <div class="header-container">
-            <div class="logo-placeholder"></div>
+            <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
             <h1>AI in Architecture</h1>
+        </div>
+
+        <div class="legend-container">
+            <div class="legend-title">Legend</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-gen)"></div>Image/Video Gen</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-tech)"></div>CAD/BIM/Technical</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-text)"></div>Text/Code/Regs</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-mgmt)"></div>Management</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-bid)"></div>Bidding/Finance</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-scan)"></div>Reality Capture</div>
+            <div class="legend-note">Right-click AI to add/remove</div>
         </div>
 
         <div class="controls">
@@ -511,13 +637,14 @@
 
     <div id="canvas-wrapper">
         <div id="workflow-root">
+            <div id="workflow-divider"></div>
             <svg id="connections-layer"></svg>
-            </div>
+            <div id="personal-workflow-layer"></div>
+        </div>
     </div>
 
 <script>
     
-  /* --- ELABORATE DATA RESTRUCTURED FROM DOCUMENT --- */
 const workflowData = [
   {
     title: "1. Pre-Design",
@@ -527,28 +654,35 @@ const workflowData = [
         title: "Client Intake & Programming",
         desc: "Visioning workshops, user-needs surveys, and developing room data sheets/adjacency matrices.",
         ais: [
-          { name: "Excel / Data Tools", desc: "Managing functional requirements and square footage targets.", price: "Standard", pro: "Structured brief", con: "Manual data entry", link: "#", target: "_blank" },
-          { name: "Digital Blue Foam", desc: "Web-based generative design for sustainable feasibility studies.", price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/", target: "_blank" },
-          { name: "Crosby Studios", desc: "Generative interior design concepts.", price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/", target: "_blank" }
+          { name: "Excel / Data Tools", type: "Management", desc: "Managing functional requirements and square footage targets.", price: "Standard", pro: "Structured brief", con: "Manual data entry", link: "#", target: "_blank" },
+          { name: "Digital Blue Foam", type: "CAD/BIM/Technical", desc: "Web-based generative design for sustainable feasibility studies.", price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/", target: "_blank" },
+          { name: "Crosby Studios", type: "Image/Video Gen", desc: "Generative interior design concepts.", price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/", target: "_blank" },
+          { name: "ReimagineHome", type: "Image/Video Gen", desc: "AI for virtual staging and renovation ideas from photos.", price: "Freemium", pro: "Instant renovation ideas", con: "2D only", link: "https://www.reimaginehome.ai/", target: "_blank" }
         ]
       },
       {
         title: "Site & Regulatory Analysis",
         desc: "Topographic review, solar/climate analysis, and detailed zoning audit (FAR, setbacks, height).",
         ais: [
-          { name: "Autodesk Forma", desc: "Real-time environmental analysis (wind, noise, sun) & conceptual site planning.", price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma", target: "_blank" },
-          { name: "Archistar", desc: "Property intelligence platform for checking zoning compliance instantly.", price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/", target: "_blank" },
-          { name: "Climate Studio", desc: "Environmental performance and solar orientation modeling.", price: "Subscription", pro: "Passive design", con: "Specialized", link: "https://www.solemma.com/climate-studio", target: "_blank" }
+          { name: "UpCodes Copilot", type: "Text/Code/Regs", desc: "AI assistant that answers building code questions and compliance checks.", price: "$59/mo", pro: "Instant code answers", con: "US/Code specific", link: "https://up.codes/", target: "_blank" },
+          { name: "Autodesk Forma", type: "CAD/BIM/Technical", desc: "Real-time environmental analysis (wind, noise, sun) & conceptual site planning.", price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma", target: "_blank" },
+          { name: "Polycam", type: "Reality Capture", desc: "LiDAR scanning app to capture site conditions into 3D models.", price: "Freemium / $27/mo", pro: "Fast site context", con: "Phone hardware dep.", link: "https://poly.cam/", target: "_blank" },
+          { name: "Luma AI", type: "Reality Capture", desc: "Capture photorealistic 3D scenes (NeRFs) from video.", price: "Free / Sub", pro: "Photorealism", con: "Heavy mesh files", link: "https://lumalabs.ai/", target: "_blank" },
+          { name: "Archistar", type: "Text/Code/Regs", desc: "Property intelligence platform for checking zoning compliance instantly.", price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/", target: "_blank" },
+          { name: "Aurivus", type: "Reality Capture", desc: "AI that processes laser scans (point clouds) into BIM geometry automatically.", price: "Quote", pro: "Scan-to-BIM automation", con: "Complex setup", link: "https://aurivus.com/", target: "_blank" },
+          { name: "Pointly", type: "Reality Capture", desc: "Cloud-based AI for classifying and segmenting 3D point clouds.", price: "~€99/mo", pro: "Fast classification", con: "Storage limits", link: "https://pointly.ai/", target: "_blank" }
         ]
       },
       {
         title: "Feasibility & Budgeting",
         desc: "Developing Rough Order of Magnitude (ROM) cost models and testing project viability.",
         ais: [
-          { name: "TestFit", desc: "Real-time generative deal solving and yield analysis.", price: "$5,000/yr", pro: "Instant ROI math", con: "Boxy geometry", link: "https://www.testfit.io/", target: "_blank" },
-          { name: "Maket", desc: "Generative residential design for quick layout iterations.", price: "Free Tier / Sub", pro: "Fast residential", con: "Less complex commercial", link: "https://www.maket.ai/", target: "_blank" },
-          { name: "qbiq", desc: "AI office layout planning and 3D virtual tours for test fits.", price: "Subscription", pro: "High speed layouts", con: "Office focused", link: "https://www.qbiq.ai/", target: "_blank" },
-          { name: "Laiout", desc: "Automated floor plans for commercial real estate.", price: "Subscription", pro: "Instant options", con: "Commercial focus", link: "https://www.laiout.co/", target: "_blank" }
+          { name: "Giraffe", type: "CAD/BIM/Technical", desc: "Geospatial planning tool for rapid urban feasibility.", price: "$45/mo", pro: "Map-based logic", con: "Learning curve", link: "https://www.giraffe.build/", target: "_blank" },
+          { name: "TestFit", type: "CAD/BIM/Technical", desc: "Real-time generative deal solving and yield analysis.", price: "$5,000/yr", pro: "Instant ROI math", con: "Boxy geometry", link: "https://www.testfit.io/", target: "_blank" },
+          { name: "Maket", type: "CAD/BIM/Technical", desc: "Generative residential design for quick layout iterations.", price: "Free Tier / Sub", pro: "Fast residential", con: "Less complex commercial", link: "https://www.maket.ai/", target: "_blank" },
+          { name: "qbiq", type: "CAD/BIM/Technical", desc: "AI office layout planning and 3D virtual tours for test fits.", price: "Subscription", pro: "High speed layouts", con: "Office focused", link: "https://www.qbiq.ai/", target: "_blank" },
+          { name: "Hypar", type: "CAD/BIM/Technical", desc: "Open platform for generating building systems and functions via code.", price: "$25/mo", pro: "Extremely flexible", con: "Requires logic setup", link: "https://hypar.io/", target: "_blank" },
+          { name: "ARK (Automated Residential Kits)", type: "CAD/BIM/Technical", desc: "Automated feasibility and schematic design for multi-family housing.", price: "Quote", pro: "Detail rich output", con: "Residential focus", link: "https://ark.design/", target: "_blank" }
         ]
       }
     ]
@@ -561,30 +695,41 @@ const workflowData = [
         title: "Parti & Concept Generation",
         desc: "Creating guiding organizational principles, sketches, and mood boards to establish design intent.",
         ais: [
-          { name: "Midjourney", desc: "AI-driven atmospheric concept art for client visioning.", price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/", target: "_blank" },
-          { name: "LookX", desc: "AI tailored for architecture to generate renderings from massing models.", price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/", target: "_blank" },
-          { name: "PromeAI", desc: "Transform sketches into rendered concepts.", price: "Freemium", pro: "Easy sketch-to-image", con: "2D only", link: "https://www.promeai.pro/", target: "_blank" }
+          { name: "Vizcom", type: "Image/Video Gen", desc: "Turn hand sketches into photorealistic renders in seconds.", price: "$49/mo", pro: "Retains design intent", con: "Requires sketching", link: "https://www.vizcom.ai/", target: "_blank" },
+          { name: "Midjourney", type: "Image/Video Gen", desc: "AI-driven atmospheric concept art for client visioning.", price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/", target: "_blank" },
+          { name: "Adobe Firefly", type: "Image/Video Gen", desc: "Ethical generative AI integrated into Photoshop for textures/concepts.", price: "Part of CC", pro: "Safe for commercial", con: "Less 'artistic' than MJ", link: "https://www.adobe.com/sensei/generative-ai/firefly.html", target: "_blank" },
+          { name: "Krea.ai", type: "Image/Video Gen", desc: "Real-time generation that updates renders as you move shapes.", price: "Freemium", pro: "Instant feedback", con: "Web-based", link: "https://www.krea.ai/", target: "_blank" },
+          { name: "LookX", type: "Image/Video Gen", desc: "AI tailored for architecture to generate renderings from massing models.", price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/", target: "_blank" },
+          { name: "mnml.ai", type: "Image/Video Gen", desc: "Renders architecture sketches and massing models into various styles.", price: "$19/mo", pro: "Wide style variety", con: "Image-to-image only", link: "https://mnml.ai/", target: "_blank" },
+          { name: "PromeAI", type: "Image/Video Gen", desc: "Sketch-to-render tool with specific modes for architecture and interiors.", price: "Freemium", pro: "Controllable output", con: "Web interface", link: "https://www.promeai.com/", target: "_blank" }
         ]
       },
       {
         title: "Massing & Spatial Studies",
         desc: "Drafting preliminary single-line plans and testing building scale/volume on site.",
         ais: [
-          { name: "Rhino / SketchUp", desc: "Flexible 3D modeling for rapid iteration.", price: "Varies", pro: "Easy form making", con: "Lacks BIM data", link: "#", target: "_blank" },
-          { name: "Finch 3D", desc: "Graph-based generative design for optimizing floor plans.", price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/", target: "_blank" },
-          { name: "ARCHITEChTURES", desc: "AI-powered residential building design generator.", price: "Subscription", pro: "Full building generation", con: "Strict parameters", link: "https://architechtures.com/", target: "_blank" },
-          { name: "Conix", desc: "AI for residential zoning and planning optimization.", price: "Subscription", pro: "Zoning logic", con: "Region specific roots", link: "https://conix.ai/", target: "_blank" },
-          { name: "PlanFinder", desc: "Plugin for Rhino/Revit to generate apartment layouts.", price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/", target: "_blank" },
-          { name: "ArkDesign.ai", desc: "AI optimizing architectural floor plans for density and code.", price: "Subscription", pro: "Efficiency", con: "Strict logic", link: "https://arkdesign.ai/", target: "_blank" }
+          { name: "Snaptrude", type: "CAD/BIM/Technical", desc: "Collaborative browser-based BIM for concept design.", price: "$100/mo", pro: "Google Docs for BIM", con: "New ecosystem", link: "https://www.snaptrude.com/", target: "_blank" },
+          { name: "Finch 3D", type: "CAD/BIM/Technical", desc: "Graph-based generative design for optimizing floor plans.", price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/", target: "_blank" },
+          { name: "ARCHITEChTURES", type: "CAD/BIM/Technical", desc: "AI-powered residential building design generator.", price: "Subscription", pro: "Full building generation", con: "Strict parameters", link: "https://architechtures.com/", target: "_blank" },
+          { name: "Conix", type: "CAD/BIM/Technical", desc: "AI for residential zoning and planning optimization.", price: "Subscription", pro: "Zoning logic", con: "Region specific roots", link: "https://conix.ai/", target: "_blank" },
+          { name: "PlanFinder", type: "CAD/BIM/Technical", desc: "Plugin for Rhino/Revit to generate apartment layouts.", price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/", target: "_blank" },
+          { name: "Rayon", type: "CAD/BIM/Technical", desc: "Collaborative space planning tool with smart AI fill and furniture logic.", price: "Freemium", pro: "Fast 2D workflow", con: "2D focused", link: "https://www.rayon.so/", target: "_blank" },
+          { name: "Laiout", type: "CAD/BIM/Technical", desc: "Generates floor plan options tailored to specific architectural constraints.", price: "Subscription", pro: "Rapid iteration", con: "Early stage", link: "https://laiout.co/", target: "_blank" }
         ]
       },
       {
         title: "Visualization & VR",
         desc: "Producing renderings and VR walkthroughs to secure early client buy-in.",
         ais: [
-          { name: "Veras (EvolveLAB)", desc: "AI rendering plugin directly inside Revit/Rhino.", price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras", target: "_blank" },
-          { name: "Arko.ai", desc: "Cloud-based AI rendering for SketchUp/Revit/Rhino.", price: "Subscription", pro: "Cloud processing", con: "Upload time", link: "https://arko.ai/", target: "_blank" },
-          { name: "Enscape", desc: "Real-time rendering integrated into the design workflow.", price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/", target: "_blank" }
+          { name: "Magnific AI", type: "Image/Video Gen", desc: "Upscales and adds massive detail to low-res renders.", price: "$39/mo", pro: "Incredible detail", con: "Can hallucinate details", link: "https://magnific.ai/", target: "_blank" },
+          { name: "Veras (EvolveLAB)", type: "Image/Video Gen", desc: "AI rendering plugin directly inside Revit/Rhino.", price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras", target: "_blank" },
+          { name: "Runway", type: "Image/Video Gen", desc: "Generate cinematic fly-through videos from static images.", price: "Subscription", pro: "Video generation", con: "Abstract motion", link: "https://runwayml.com/", target: "_blank" },
+          { name: "Enscape", type: "Image/Video Gen", desc: "Real-time rendering integrated into the design workflow.", price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/", target: "_blank" },
+          { name: "ArkoAI", type: "Image/Video Gen", desc: "Cloud-based rendering plugin for Rhino, Revit, and SketchUp.", price: "$25/mo", pro: "Fast cloud render", con: "Less control than local", link: "https://arko.ai/", target: "_blank" },
+          { name: "SketchUp Diffusion", type: "Image/Video Gen", desc: "Native Stable Diffusion integration for SketchUp.", price: "Free for Subscribers", pro: "Native workflow", con: "Basic control", link: "https://www.sketchup.com/", target: "_blank" },
+          { name: "D5 Render", type: "Image/Video Gen", desc: "Real-time renderer with AI atmosphere and material scattering.", price: "Free / $30/mo", pro: "Raytracing quality", con: "Hardware intensive", link: "https://www.d5render.com/", target: "_blank" },
+          { name: "Graphisoft AI Visualizer", type: "Image/Video Gen", desc: "Stable Diffusion tool built directly into Archicad.", price: "Free for Subscribers", pro: "BIM integration", con: "Archicad only", link: "https://graphisoft.com/", target: "_blank" },
+          { name: "Arkio", type: "CAD/BIM/Technical", desc: "Collaborative VR design with pass-through modeling features.", price: "Freemium", pro: "Immersive design", con: "VR headset needed", link: "https://www.arkio.is/", target: "_blank" }
         ]
       }
     ]
@@ -594,30 +739,34 @@ const workflowData = [
     desc: "Technical Refinement & Systems",
     tasks: [
       {
-        title: "Federated Modeling",
-        desc: "Integrating Structural and MEP models with Architecture for multi-discipline coordination.",
+        title: "Federated Modeling & Analytics",
+        desc: "Integrating Structural and MEP models and running performance analysis.",
         ais: [
-          { name: "Autodesk Revit", desc: "Core BIM authoring and information management.", price: "$2,500/yr", pro: "Fully integrated", con: "Steep learning", link: "https://www.autodesk.com/products/revit/overview", target: "_blank" },
-          { name: "Augmenta", desc: "AI for automated electrical and systems design.", price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/", target: "_blank" },
-          { name: "SkyCiv", desc: "Cloud-based structural engineering and analysis.", price: "Subscription", pro: "Cloud native", con: "Analysis focus", link: "https://skyciv.com/", target: "_blank" },
-          { name: "Hypar", desc: "Cloud platform for generating building systems and logic.", price: "Subscription", pro: "Modular logic", con: "Coding knowledge help", link: "https://hypar.io/", target: "_blank" },
-          { name: "Navisworks", desc: "Clash detection to resolve system conflicts early.", price: "Subscription", pro: "Reduces field errors", con: "Separate license", link: "https://www.autodesk.com/products/navisworks/overview", target: "_blank" }
+          { name: "Cove.tool", type: "CAD/BIM/Technical", desc: "Automated energy, daylight, and carbon analysis.", price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/", target: "_blank" },
+          { name: "Autodesk Revit", type: "CAD/BIM/Technical", desc: "Core BIM authoring and information management.", price: "$2,500/yr", pro: "Fully integrated", con: "Steep learning", link: "https://www.autodesk.com/products/revit/overview", target: "_blank" },
+          { name: "BricsCAD BIM", type: "CAD/BIM/Technical", desc: "AI-driven BIM that classifies geometry automatically.", price: "Perpetual/Sub", pro: "Smart classification", con: "Market share", link: "https://www.bricsys.com/bricscad-bim", target: "_blank" },
+          { name: "Augmenta", type: "CAD/BIM/Technical", desc: "AI for automated electrical and systems design.", price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/", target: "_blank" },
+          { name: "One Click LCA", type: "CAD/BIM/Technical", desc: "Automated life-cycle carbon assessment from BIM data.", price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/", target: "_blank" },
         ]
       },
       {
         title: "Envelope & Interior Detailing",
         desc: "Refining wall sections, interior elevations, millwork, and waterproofing strategies.",
         ais: [
-          { name: "Kaedim", desc: "Convert 2D images into 3D models for detailed assets.", price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/", target: "_blank" },
-          { name: "Sloyd", desc: "Generative 3D asset creation for props and details.", price: "Freemium", pro: "Fast assets", con: "Game-dev focus", link: "https://www.sloyd.ai/", target: "_blank" }
+          { name: "Kaedim", type: "CAD/BIM/Technical", desc: "Convert 2D images into 3D models for detailed assets.", price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/", target: "_blank" },
+          { name: "Sloyd", type: "CAD/BIM/Technical", desc: "Generative 3D asset creation for props and details.", price: "Freemium", pro: "Fast assets", con: "Game-dev focus", link: "https://www.sloyd.ai/", target: "_blank" },
+          { name: "Adobe Substance 3D Sampler", type: "Reality Capture", desc: "AI photogrammetry to turn physical material scans into 3D textures.", price: "$50/mo", pro: "High fidelity mats", con: "Part of Adobe suite", link: "https://www.adobe.com/products/substance3d-sampler.html", target: "_blank" },
+          { name: "Stylib", type: "Management", desc: "AI-powered search engine for architectural materials and products.", price: "Free / Brand driven", pro: "Visual search", con: "Inventory limited", link: "https://www.stylib.com/", target: "_blank" },
+          { name: "Homestyler", type: "CAD/BIM/Technical", desc: "AI interior design tool for rapid room layout and furniture placement.", price: "Freemium / Sub", pro: "User friendly", con: "Not BIM native", link: "https://www.homestyler.com/", target: "_blank" },
+          { name: "Oda Studio", type: "Image/Video Gen", desc: "AI for home staging and high-fidelity interior renders.", price: "$30/mo", pro: "Real estate focus", con: "Web based", link: "https://www.odastudio.ai/", target: "_blank" }
         ]
       },
       {
         title: "Specifications Refinement",
         desc: "Selecting specific products and creating Outline Specifications for key assemblies.",
         ais: [
-          { name: "Specright", desc: "Specification data management to ensure product accuracy.", price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/", target: "_blank" },
-          { name: "Deltek Specpoint", desc: "Modern specification writing tool linked to BIM.", price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint", target: "_blank" }
+          { name: "Specright", type: "Management", desc: "Specification data management to ensure product accuracy.", price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/", target: "_blank" },
+          { name: "Deltek Specpoint", type: "Management", desc: "Modern specification writing tool linked to BIM.", price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint", target: "_blank" }
         ]
       }
     ]
@@ -630,23 +779,25 @@ const workflowData = [
         title: "Production Drafting",
         desc: "Creating fully dimensioned and annotated working drawings for legal construction.",
         ais: [
-          { name: "Swapp", desc: "AI that automates construction documents from models.", price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/", target: "_blank" },
-          { name: "Glyph (EvolveLAB)", desc: "Automating documentation tasks in Revit (tagging, dimensioning).", price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph", target: "_blank" }
+          { name: "Swapp", type: "CAD/BIM/Technical", desc: "AI that automates construction documents from models.", price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/", target: "_blank" },
+          { name: "Glyph (EvolveLAB)", type: "CAD/BIM/Technical", desc: "Automating documentation tasks in Revit (tagging, dimensioning).", price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph", target: "_blank" },
+          { name: "BlacksmithSoft", type: "Management", desc: "Connects BIM models to schedules to manage constraints.", price: "Quote", pro: "AWP logic", con: "Complex setup", link: "https://blacksmithsoft.com/", target: "_blank" },
+          { name: "Vectorworks AI Visualizer", type: "CAD/BIM/Technical", desc: "Integrated AI for visualization and line drawing stylization.", price: "Sub/Perpetual", pro: "Integrated CAD/BIM", con: "Vectorworks only", link: "https://www.vectorworks.net/", target: "_blank" }
         ]
       },
       {
         title: "The Project Manual",
         desc: "Writing technical specifications using CSI MasterFormat to define quality standards.",
         ais: [
-          { name: "SpecLink", desc: "Database-driven specification writing.", price: "Enterprise", pro: "Linked data", con: "Complex UI", link: "https://bspeclink.com/", target: "_blank" },
-          { name: "Document Crunch", desc: "AI review of contracts and specifications for risk.", price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/", target: "_blank" }
+          { name: "Pype AutoSpecs", type: "Management", desc: "Scans spec manuals to automatically generate submittal logs.", price: "Quote", pro: "Compliance safety", con: "Post-doc focused", link: "https://pype.io/", target: "_blank" },
+          { name: "Document Crunch", type: "Text/Code/Regs", desc: "AI review of contracts and specifications for risk.", price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/", target: "_blank" }
         ]
       },
       {
         title: "QA/QC & Permitting",
         desc: "Internal redline reviews and submission to Authorities Having Jurisdiction (AHJ).",
         ais: [
-          { name: "Bluebeam Revu", desc: "Advanced PDF markup and document coordination.", price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/", target: "_blank" }
+          { name: "Bluebeam Revu", type: "Management", desc: "Advanced PDF markup and document coordination.", price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/", target: "_blank" }
         ]
       }
     ]
@@ -659,24 +810,26 @@ const workflowData = [
         title: "Bid Management",
         desc: "Issuing bid sets, conducting pre-bid conferences, and managing bidder RFIs.",
         ais: [
-          { name: "SmartBid", desc: "Construction bid management software for GCs.", price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/", target: "_blank" },
-          { name: "Procore", desc: "Construction management and bid package tracking.", price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/", target: "_blank" }
+          { name: "Downtobid", type: "Bidding/Finance", desc: "AI scans plans to detect scope and create bid packages.", price: "Subscription", pro: "Scope detection", con: "GC focused", link: "https://downtobid.com/", target: "_blank" },
+          { name: "SmartBid", type: "Bidding/Finance", desc: "Construction bid management software for GCs.", price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/", target: "_blank" },
+          { name: "Procore", type: "Management", desc: "Construction management and bid package tracking.", price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/", target: "_blank" }
         ]
       },
       {
         title: "Bid Leveling & Analysis",
         desc: "Analyzing contractor bids to ensure a fair 'apples-to-apples' comparison.",
         ais: [
-          { name: "Togal.AI", desc: "AI-powered estimating and takeoff from plans.", price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/", target: "_blank" },
-          { name: "Pelles.ai", desc: "AI for preconstruction and estimating.", price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/", target: "_blank" }
+          { name: "Alice Technologies", type: "Management", desc: "Generative construction scheduling for option analysis.", price: "Quote", pro: "Schedule optimization", con: "Complex input", link: "https://www.alicetechnologies.com/", target: "_blank" },
+          { name: "Togal.AI", type: "Bidding/Finance", desc: "AI-powered estimating and takeoff from plans.", price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/", target: "_blank" },
+          { name: "Pelles.ai", type: "Bidding/Finance", desc: "AI for preconstruction and estimating.", price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/", target: "_blank" }
         ]
       },
       {
         title: "Value Engineering (VE)",
         desc: "Identifying cost-saving alternatives without compromising essential design intent.",
         ais: [
-          { name: "Drawer AI", desc: "AI for electrical estimating and optimization.", price: "Subscription", pro: "Trade specific", con: "Niche", link: "https://drawer.ai/", target: "_blank" },
-          { name: "OpenCost", desc: "Open source cost monitoring.", price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/", target: "_blank" }
+          { name: "Drawer AI", type: "Bidding/Finance", desc: "AI for electrical estimating and optimization.", price: "Subscription", pro: "Trade specific", con: "Niche", link: "https://drawer.ai/", target: "_blank" },
+          { name: "OpenCost", type: "Bidding/Finance", desc: "Open source cost monitoring.", price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/", target: "_blank" }
         ]
       }
     ]
@@ -689,23 +842,27 @@ const workflowData = [
         title: "Site Observation & Reports",
         desc: "Regular site visits to verify work conforms to the Construction Documents.",
         ais: [
-          { name: "OpenSpace", desc: "360-degree photo documentation mapped to plans.", price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/", target: "_blank" },
-          { name: "PlanGrid", desc: "Mobile access to drawings and site reporting.", price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/", target: "_blank" }
+          { name: "Disperse", type: "Reality Capture", desc: "Uses site photos to track work-in-place and progress.", price: "Quote", pro: "Productivity data", con: "Service heavy", link: "https://www.disperse.io/", target: "_blank" },
+          { name: "StructionSite", type: "Reality Capture", desc: "360° reality capture mapped to floor plans automatically.", price: "Quote", pro: "Easy walk-throughs", con: "Data storage", link: "https://structionsite.com/", target: "_blank" },
+          { name: "OpenSpace", type: "Reality Capture", desc: "360-degree photo documentation mapped to plans.", price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/", target: "_blank" },
+          { name: "PlanGrid", type: "Management", desc: "Mobile access to drawings and site reporting.", price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/", target: "_blank" }
         ]
       },
       {
         title: "Submittals & Shop Drawings",
         desc: "Reviewing contractor samples and technical drawings for design intent.",
         ais: [
-          { name: "Part3", desc: "Automating the workflow for RFIs and submittals.", price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/", target: "_blank" }
+          { name: "Newforma Konekt", type: "Management", desc: "AI-driven PIM for managing RFIs and emails.", price: "Quote", pro: "Finding info", con: "Enterprise scale", link: "https://www.newforma.com/", target: "_blank" },
+          { name: "Part3", type: "Management", desc: "Automating the workflow for RFIs and submittals.", price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/", target: "_blank" },
+          { name: "Nyfty.ai", type: "Management", desc: "AI bots that automate Procore administrative tasks.", price: "Subscription", pro: "Admin automation", con: "Procore dependent", link: "https://www.nyfty.ai/", target: "_blank" }
         ]
       },
       {
         title: "Project Closeout",
         desc: "Managing the Punch List and issuing the Certificate of Substantial Completion.",
         ais: [
-          { name: "Trunk Tools", desc: "AI for construction workflow and incentives.", price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/", target: "_blank" },
-          { name: "Civils.ai", desc: "Construction data AI for managing project records.", price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/", target: "_blank" }
+          { name: "Trunk Tools", type: "Management", desc: "AI for construction workflow and incentives.", price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/", target: "_blank" },
+          { name: "Civils.ai", type: "Text/Code/Regs", desc: "Construction data AI for managing project records.", price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/", target: "_blank" }
         ]
       }
     ]
@@ -722,11 +879,14 @@ const workflowData = [
         startY: 0,
         openStep: null,
         openTask: { step: null, task: null },
-        introComplete: false
+        introComplete: false,
+        personalWorkflow: {} // Key: StepIndex, Value: Array of {aiData, taskIdx}
     };
 
     const root = document.getElementById('workflow-root');
     const svgLayer = document.getElementById('connections-layer');
+    const personalLayer = document.getElementById('personal-workflow-layer');
+    const dividerLayer = document.getElementById('workflow-divider');
     const introOverlay = document.getElementById('intro-overlay');
     const mainUi = document.getElementById('main-ui');
     const canvasWrapper = document.getElementById('canvas-wrapper');
@@ -734,20 +894,22 @@ const workflowData = [
     const STEP_WIDTH = 240;
     const STEP_GAP = 150;
     const TASK_OFFSET_Y = 120;
+    const PERSONAL_BASE_GAP = 350; // Increased margin
+    const PERSONAL_CARD_HEIGHT = 160; 
 
     /* --- INIT & RENDER --- */
     function init() {
         renderNodes();
         
-        // --- AUTO CENTERING LOGIC ---
         const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
-        
-        state.pointX = -(totalWidth / 2);
-        state.pointY = -150;
+        state.pointX = (window.innerWidth / 2) - (totalWidth / 2);
+        state.pointY = (window.innerHeight / 2); 
+
+        // Set Divider Width
+        dividerLayer.style.width = `${totalWidth}px`;
+        dividerLayer.style.top = `-${PERSONAL_BASE_GAP / 2}px`; // Center in gap
 
         updateTransform();
-        
-        // Start the Animation Sequence
         runIntroSequence();
     }
 
@@ -755,63 +917,55 @@ const workflowData = [
     function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
     async function runIntroSequence() {
-        // 1. Text Typing Effect
         const textEl = document.querySelector('.terminal-text');
         textEl.innerHTML = `LOADING SYSTEM...<span class="cursor"></span>`;
         await sleep(600);
         textEl.innerHTML = `BUILDING NODES...<span class="cursor"></span>`;
         await sleep(600);
         
-        // 2. Fade out overlay
         introOverlay.classList.add('finished');
         canvasWrapper.classList.add('visible');
-        await sleep(400); // Wait for fade
+        await sleep(400); 
 
-        // 3. Reveal Nodes and Draw Lines Sequentially
         for (let i = 0; i < workflowData.length; i++) {
-            // Reveal Node
             const node = document.getElementById(`step-${i}`);
             node.classList.add('intro-active');
+            
+            // Also reveal mirrored nodes
+            const mirror = document.getElementById(`mirror-step-${i}`);
+            mirror.classList.add('intro-active');
 
-            // If not the first node, draw line from previous
             if (i > 0) {
-                // We create a temporary intro line with animation
                 const prev = document.getElementById(`step-${i-1}`);
                 const x1 = parseInt(prev.style.left) + STEP_WIDTH;
-                const y1 = parseInt(prev.style.top) + prev.offsetHeight / 2;
+                const y1 = parseInt(prev.style.top) + 50; 
                 const x2 = parseInt(node.style.left); 
-                const y2 = parseInt(node.style.top) + node.offsetHeight / 2;
+                const y2 = y1; 
                 
-                // Manually draw specific intro line
                 const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                const d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
+                const d = `M ${x1} ${y1} L ${x2} ${y2}`; 
                 path.setAttribute("d", d);
-                path.classList.add('intro-path'); // Adds the draw animation
+                path.classList.add('intro-path');
                 svgLayer.appendChild(path);
             }
 
-            await sleep(250); // Pause between steps for effect
+            await sleep(250); 
         }
 
-        // 4. Show UI and Finalize
         mainUi.classList.remove('ui-hidden');
         await sleep(500);
         
-        // Switch state to allow normal interaction updates
         state.introComplete = true;
         
-        // Initial draw of standard lines (replaces intro lines silently if triggered)
-        // But for now, we leave the intro lines or clear and redraw. 
-        // Best to just leave them until interaction happens.
         setTimeout(() => {
-              introOverlay.style.display = 'none';
+             introOverlay.style.display = 'none';
         }, 100);
     }
 
 
     function renderNodes() {
         workflowData.forEach((step, index) => {
-            // Step
+            // 1. MAIN STEP NODE
             const stepEl = document.createElement('div');
             stepEl.className = 'step-node';
             stepEl.id = `step-${index}`;
@@ -824,7 +978,19 @@ const workflowData = [
             stepEl.onclick = (e) => toggleStep(index, e);
             root.appendChild(stepEl);
 
-            // Task Group
+            // 2. MIRRORED STEP NODE (Personal Base)
+            const mirrorEl = document.createElement('div');
+            mirrorEl.className = 'step-node mirrored';
+            mirrorEl.id = `mirror-step-${index}`;
+            mirrorEl.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
+            mirrorEl.style.top = `-${PERSONAL_BASE_GAP}px`; // Fixed position above
+            mirrorEl.innerHTML = `
+                <div class="step-header" style="opacity:0.6">${step.title}</div>
+                <div class="step-desc" style="opacity:0.6">(Personal Workflow)</div>
+            `;
+            root.appendChild(mirrorEl);
+
+            // 3. TASK GROUPS
             const taskGroup = document.createElement('div');
             taskGroup.className = 'task-group';
             taskGroup.id = `taskgroup-${index}`;
@@ -848,9 +1014,20 @@ const workflowData = [
                 aiGroup.id = `aigroup-${index}-${tIndex}`;
                 
                 task.ais.forEach(ai => {
+                    let typeColor = 'var(--text-color)';
+                    if(ai.type === "Image/Video Gen") typeColor = 'var(--cat-gen)';
+                    if(ai.type === "CAD/BIM/Technical") typeColor = 'var(--cat-tech)';
+                    if(ai.type === "Text/Code/Regs") typeColor = 'var(--cat-text)';
+                    if(ai.type === "Management") typeColor = 'var(--cat-mgmt)';
+                    if(ai.type === "Bidding/Finance") typeColor = 'var(--cat-bid)';
+                    if(ai.type === "Reality Capture") typeColor = 'var(--cat-scan)';
+
                     const aiEl = document.createElement('div');
                     aiEl.className = 'ai-node';
+                    aiEl.style.borderLeftColor = typeColor;
+                    
                     aiEl.innerHTML = `
+                        <div class="ai-type-badge" style="background:${typeColor}">${ai.type}</div>
                         <div class="ai-header">
                             <div class="ai-logo"></div>
                             <div class="ai-name">${ai.name}</div>
@@ -863,11 +1040,16 @@ const workflowData = [
                         </div>
                         <div class="ai-link" style="opacity:0.6">Click for Details</div> 
                     `;
-                    // UPDATED CLICK HANDLER TO OPEN OVERLAY
                     aiEl.onclick = (e) => {
                         e.stopPropagation();
                         openDetailOverlay(ai);
-                    }
+                    };
+                    
+                    aiEl.oncontextmenu = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addToPersonalWorkflow(index, tIndex, ai, typeColor);
+                    };
                     
                     aiGroup.appendChild(aiEl);
                 });
@@ -880,27 +1062,107 @@ const workflowData = [
         });
     }
 
+    /* --- PERSONAL WORKFLOW LOGIC --- */
+    function addToPersonalWorkflow(stepIdx, taskIdx, aiData, typeColor) {
+        if (!state.personalWorkflow[stepIdx]) {
+            state.personalWorkflow[stepIdx] = [];
+        }
+
+        const column = state.personalWorkflow[stepIdx];
+        const existingIndex = column.findIndex(item => item.taskIdx === taskIdx);
+        const newItem = { ...aiData, taskIdx, typeColor };
+
+        if (existingIndex > -1) {
+            column[existingIndex] = newItem;
+        } else {
+            column.push(newItem);
+        }
+
+        renderPersonalWorkflow();
+    }
+
+    function removeFromPersonalWorkflow(stepIdx, itemIndex) {
+        if(state.personalWorkflow[stepIdx]) {
+            state.personalWorkflow[stepIdx].splice(itemIndex, 1);
+            if(state.personalWorkflow[stepIdx].length === 0) {
+                delete state.personalWorkflow[stepIdx];
+            }
+        }
+        renderPersonalWorkflow();
+    }
+
+    function renderPersonalWorkflow() {
+        personalLayer.innerHTML = '';
+        
+        Object.keys(state.personalWorkflow).forEach(key => {
+            const stepIdx = parseInt(key);
+            const items = state.personalWorkflow[stepIdx];
+
+            items.forEach((item, idx) => {
+                const node = document.createElement('div');
+                node.className = 'ai-node personal-node';
+                node.style.borderLeftColor = item.typeColor;
+                node.style.left = `${stepIdx * (STEP_WIDTH + STEP_GAP)}px`;
+                
+                // Stack upwards starting from the Mirrored Step
+                // Base = -350px. Card 1 = -350 - 160 = -510.
+                const yPos = -(PERSONAL_BASE_GAP + (idx * PERSONAL_CARD_HEIGHT));
+                node.style.top = `${yPos}px`;
+
+                node.innerHTML = `
+                    <div class="ai-type-badge" style="background:${item.typeColor}">${item.type}</div>
+                    <div class="ai-header">
+                        <div class="ai-logo"></div>
+                        <div class="ai-name">${item.name}</div>
+                    </div>
+                    <div class="ai-desc">${item.desc}</div>
+                `;
+
+                node.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeFromPersonalWorkflow(stepIdx, idx);
+                };
+                
+                node.onclick = (e) => {
+                    e.stopPropagation();
+                    openDetailOverlay(item);
+                }
+
+                personalLayer.appendChild(node);
+            });
+        });
+
+        updateGhostMode();
+        drawLines(); 
+    }
+
+    function updateGhostMode() {
+    // Logic removed to prevent original step containers from graying out
+    for(let i=0; i<workflowData.length; i++) {
+        const stepNode = document.getElementById(`step-${i}`);
+        stepNode.classList.remove('step-ghost');
+    }
+}
+
+
     /* --- OVERLAY INTERACTIONS --- */
     function openDetailOverlay(aiData) {
-        // Populate the overlay
         document.getElementById('ov-title').innerText = aiData.name;
+        document.getElementById('ov-type').innerText = aiData.type; 
         document.getElementById('ov-desc').innerText = aiData.desc;
         document.getElementById('ov-price').innerText = aiData.price;
         document.getElementById('ov-pro').innerText = aiData.pro;
         document.getElementById('ov-con').innerText = aiData.con;
         document.getElementById('ov-link').href = aiData.link;
         
-        // Show overlay
         document.getElementById('detail-overlay').classList.add('active');
     }
 
     function closeDetailOverlay(e) {
-        // If triggered by event, ensure we aren't clicking inside the content box
-        // (Handled by stopPropagation on content box, but good backup)
         document.getElementById('detail-overlay').classList.remove('active');
     }
 
-    // Close on Escape Key
     document.addEventListener('keydown', (e) => {
         if(e.key === "Escape") closeDetailOverlay();
     });
@@ -908,7 +1170,7 @@ const workflowData = [
 
     /* --- INTERACTIONS --- */
     function toggleStep(index, e) {
-        if(!state.introComplete) return; // Prevent clicking during intro
+        if(!state.introComplete) return; 
         
         e.stopPropagation();
         const group = document.getElementById(`taskgroup-${index}`);
@@ -969,21 +1231,18 @@ const workflowData = [
         updateTransform();
     });
 
-    wrapper.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const xs = (e.clientX - state.pointX) / state.scale;
-        const ys = (e.clientY - state.pointY) / state.scale;
-        
-        const delta = -e.deltaY;
-        (delta > 0) ? (state.scale *= 1.1) : (state.scale /= 1.1);
-        
-        state.scale = Math.min(Math.max(0.1, state.scale), 4);
-
-        state.pointX = e.clientX - xs * state.scale;
-        state.pointY = e.clientY - ys * state.scale;
-
-        updateTransform();
-    }, { passive: false });
+   wrapper.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const xs = (e.clientX - state.pointX) / state.scale;
+    const ys = (e.clientY - state.pointY) / state.scale;
+    const delta = -e.deltaY;
+    const factor = delta > 0 ? 1.1 : 0.9; 
+    const nextScale = Math.min(Math.max(0.1, state.scale * factor), 4);
+    state.pointX = e.clientX - xs * nextScale;
+    state.pointY = e.clientY - ys * nextScale;
+    state.scale = nextScale;
+    updateTransform();
+}, { passive: false });
 
     function updateTransform() {
         root.style.transform = `translate(${state.pointX}px, ${state.pointY}px) scale(${state.scale})`;
@@ -992,8 +1251,8 @@ const workflowData = [
     function resetView() {
         state.scale = 1;
         const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
-        state.pointX = -(totalWidth / 2) + (STEP_WIDTH / 2);
-        state.pointY = -150;
+        state.pointX = (window.innerWidth / 2) - (totalWidth / 2);
+        state.pointY = (window.innerHeight / 2);
         updateTransform();
     }
 
@@ -1007,17 +1266,20 @@ const workflowData = [
     function drawLines() {
         svgLayer.innerHTML = ''; 
         
-        // 1. Horizontal Step Lines
+        // 1. Horizontal Step Lines (Main Workflow)
         for(let i=0; i<workflowData.length-1; i++) {
             const curr = document.getElementById(`step-${i}`);
             const next = document.getElementById(`step-${i+1}`);
             
             const x1 = parseInt(curr.style.left) + STEP_WIDTH;
-            const y1 = parseInt(curr.style.top) + curr.offsetHeight / 2;
+            const y1 = parseInt(curr.style.top) + 50; 
             const x2 = parseInt(next.style.left); 
-            const y2 = parseInt(next.style.top) + next.offsetHeight / 2;
+            const y2 = y1; 
 
-            createPath(x1, y1, x2, y2, false);
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const d = `M ${x1} ${y1} L ${x2} ${y2}`; 
+            path.setAttribute("d", d);
+            svgLayer.appendChild(path);
         }
 
         // 2. Vertical Task Lines
@@ -1042,32 +1304,62 @@ const workflowData = [
 
         // 3. Horizontal AI Lines
         if(state.openTask.step !== null && state.openTask.task !== null) {
-    const tStep = state.openTask.step;
-    const tIdx = state.openTask.task;
-    const taskEl = document.getElementById(`task-${tStep}-${tIdx}`);
-    const aiGroup = document.getElementById(`aigroup-${tStep}-${tIdx}`);
-    
-    if(aiGroup && aiGroup.classList.contains('visible')) {
-        const ais = aiGroup.querySelectorAll('.ai-node');
-        
-        // Find the right edge of the task box
-        const taskRect = taskEl.getBoundingClientRect();
-        const rootRect = root.getBoundingClientRect();
-
-        // Calculate coordinates relative to the workflow-root
-        const x1 = (taskRect.right - rootRect.left) / state.scale;
-        const y1 = (taskRect.top + taskRect.height / 2 - rootRect.top) / state.scale;
-
-        ais.forEach(ai => {
-            const aiRect = ai.getBoundingClientRect();
+            const tStep = state.openTask.step;
+            const tIdx = state.openTask.task;
+            const taskEl = document.getElementById(`task-${tStep}-${tIdx}`);
+            const aiGroup = document.getElementById(`aigroup-${tStep}-${tIdx}`);
             
-            // Destination: Left edge of the AI card
-            const x2 = (aiRect.left - rootRect.left) / state.scale;
-            const y2 = (aiRect.top + aiRect.height / 2 - rootRect.top) / state.scale;
+            if(aiGroup && aiGroup.classList.contains('visible')) {
+                const ais = aiGroup.querySelectorAll('.ai-node');
+                
+                const taskRect = taskEl.getBoundingClientRect();
+                const rootRect = root.getBoundingClientRect();
 
-            createPath(x1, y1, x2, y2, true);
-        });
+                const x1 = (taskRect.right - rootRect.left) / state.scale;
+                const y1 = (taskRect.top + taskRect.height / 2 - rootRect.top) / state.scale;
+
+                ais.forEach(ai => {
+                    const aiRect = ai.getBoundingClientRect();
+                    const x2 = (aiRect.left - rootRect.left) / state.scale;
+                    const y2 = (aiRect.top + aiRect.height / 2 - rootRect.top) / state.scale;
+                    createPath(x1, y1, x2, y2, true);
+                });
             }
+        }
+
+        // 4. PERSONAL WORKFLOW LINES (Many-to-Many)
+        const sortedSteps = Object.keys(state.personalWorkflow).map(k => parseInt(k)).sort((a,b) => a-b);
+        if(sortedSteps.length > 1) {
+             for(let i=0; i<sortedSteps.length-1; i++) {
+                const currIdx = sortedSteps[i];
+                const nextIdx = sortedSteps[i+1];
+
+                // Check if they are neighbors (distance of 1)
+                if (nextIdx === currIdx + 1) {
+                    const currCol = state.personalWorkflow[currIdx];
+                    const nextCol = state.personalWorkflow[nextIdx];
+                    
+                    // Loop through EVERY item in current step
+                    currCol.forEach((itemA, idxA) => {
+                        // Loop through EVERY item in next step
+                        nextCol.forEach((itemB, idxB) => {
+                             // Calculate Y positions based on index stack
+                             // Calculate Y positions based on the new overlapping stack logic
+                            const yA = -(PERSONAL_BASE_GAP + (idxA * PERSONAL_CARD_HEIGHT)) + 50; 
+                            const yB = -(PERSONAL_BASE_GAP + (idxB * PERSONAL_CARD_HEIGHT)) + 50;
+                             
+                             const xA = (currIdx * (STEP_WIDTH + STEP_GAP)) + STEP_WIDTH;
+                             const xB = (nextIdx * (STEP_WIDTH + STEP_GAP));
+
+                             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                             const d = `M ${xA} ${yA} C ${xA+50} ${yA}, ${xB-50} ${yB}, ${xB} ${yB}`; 
+                             path.setAttribute("d", d);
+                             path.classList.add('personal-path');
+                             svgLayer.appendChild(path);
+                        });
+                    });
+                }
+             }
         }
     }
 
@@ -1084,9 +1376,7 @@ const workflowData = [
         svgLayer.appendChild(path);
     }
 
-    window.addEventListener('resize', () => {
-        resetView(); 
-    });
+    window.addEventListener('resize', () => { resetView(); });
 
     init();
 
