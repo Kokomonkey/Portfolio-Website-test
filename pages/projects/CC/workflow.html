@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../Recourses/Logos//DDD.jpg">
+    <title>Workflow | Convertible Convergence</title>
+    <style>
+        /* --- CSS VARIABLES (MATCHING PREVIOUS STYLE) --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --secondary-bg: #111111;
+            --header-height: 15vh;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Prevent native scrollbars */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER & NAV --- */
+        .back-btn {
+            position: fixed;
+            top: 40px; left: 40px;
+            text-decoration: none;
+            z-index: 1000;
+            border: 1px solid var(--accent-color);
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            height: var(--header-height);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none; /* Let clicks pass through to image */
+            z-index: 10;
+        }
+
+        .site-logo {
+            height: 80px; width: auto; margin-bottom: 10px;
+            filter: invert();
+            pointer-events: auto;
+        }
+
+        h1 {
+            font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
+            font-weight: 300; border-bottom: 1px solid #333;
+            padding-bottom: 5px; color: #ccc;
+            pointer-events: auto;
+            background: rgba(0,0,0,0.3); /* Legibility backdrop */
+        }
+
+        /* --- VIEWER CONTAINER --- */
+        #viewport {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #viewport:active {
+            cursor: grabbing;
+        }
+
+        /* The container that actually moves */
+        .transform-layer {
+            transform-origin: 0 0;
+            position: absolute;
+            top: 0; left: 0;
+            /* Will-change optimization for smooth dragging */
+            will-change: transform;
+        }
+
+        /* The Image itself */
+        .target-image {
+            display: block;
+            pointer-events: none; /* Prevents browser image-drag behavior */
+            max-width: none; /* Allow image to be full size */
+            /* Add a subtle shadow to separate from bg */
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1); 
+        }
+
+        /* --- CONTROLS --- */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .ctrl-btn {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--accent-color);
+            color: white;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        .ctrl-btn:hover { background: var(--accent-color); color: black; }
+
+    </style>
+</head>
+<body>
+
+    <a href="convertible-convergence.html" class="back-btn">← Back</a>
+
+    <header>
+        <img src="../../../Recourses/Logos/CC.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Detailed Plan View</h1>
+    </header>
+
+    <div id="viewport">
+        <div class="transform-layer" id="transformLayer">
+            <img src="https://placehold.co/3840x2160/111/fff?text=High+Res+Plan+Drawing" 
+                 class="target-image" 
+                 id="targetImage" 
+                 alt="Detailed Plan">
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn" onclick="resetView()">Reset View</button>
+    </div>
+
+    <script>
+        const state = {
+            scale: 1,
+            panning: false,
+            pointX: 0,
+            pointY: 0,
+            startX: 0,
+            startY: 0
+        };
+
+        const viewport = document.getElementById('viewport');
+        const layer = document.getElementById('transformLayer');
+        const img = document.getElementById('targetImage');
+
+        // Center image on load
+        img.onload = () => {
+            centerImage();
+        };
+
+        function centerImage() {
+            // Calculate scale to fit screen (contain)
+            const scaleX = window.innerWidth / img.naturalWidth;
+            const scaleY = window.innerHeight / img.naturalHeight;
+            // Use the smaller scale to ensure it fits, but clamp max zoom
+            const fitScale = Math.min(scaleX, scaleY) * 0.9; 
+            
+            state.scale = fitScale;
+            
+            // Center the positions
+            state.pointX = (window.innerWidth - (img.naturalWidth * fitScale)) / 2;
+            state.pointY = (window.innerHeight - (img.naturalHeight * fitScale)) / 2;
+            
+            updateTransform();
+        }
+
+        /* --- MOUSE EVENTS (PANNING) --- */
+        viewport.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            state.panning = true;
+            state.startX = e.clientX - state.pointX;
+            state.startY = e.clientY - state.pointY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.panning = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!state.panning) return;
+            e.preventDefault();
+            state.pointX = e.clientX - state.startX;
+            state.pointY = e.clientY - state.startY;
+            updateTransform();
+        });
+
+        /* --- WHEEL EVENTS (ZOOMING) --- */
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            // Calculate mouse position relative to container
+            const xs = (e.clientX - state.pointX) / state.scale;
+            const ys = (e.clientY - state.pointY) / state.scale;
+            
+            // Determine Scroll Direction
+            const delta = -e.deltaY;
+            const factor = delta > 0 ? 1.1 : 0.9; // Zoom speed
+            
+            // Calculate new scale
+            let nextScale = state.scale * factor;
+            
+            // Optional: Limit Zoom (0.1x to 10x)
+            if (nextScale < 0.1) nextScale = 0.1;
+            if (nextScale > 10) nextScale = 10;
+
+            // Adjust X/Y to zoom towards mouse pointer
+            state.pointX = e.clientX - xs * nextScale;
+            state.pointY = e.clientY - ys * nextScale;
+            state.scale = nextScale;
+
+            updateTransform();
+        }, { passive: false });
+
+        function updateTransform() {
+            layer.style.transform = `translate(${state.pointX}px, ${state.pointY}px) scale(${state.scale})`;
+        }
+
+        function resetView() {
+            centerImage();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+           // Optional: You could re-center here, 
+           // or just leave it as is to not disrupt user focus.
+        });
+
+    </script>
+</body>
+</html>

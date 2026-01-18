@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../Recourses/Logos//DDD.jpg">
+    <title>Convertible Convergence | Renders</title>
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --secondary-bg: #111111;
+            --header-height: 15vh;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER & NAV --- */
+        .back-btn {
+            position: fixed;
+            top: 40px; left: 40px;
+            text-decoration: none;
+            z-index: 1000;
+            border: 1px solid var(--accent-color);
+            background-color: rgba(0, 0, 0, 0.5); /* Slight transparency */
+            backdrop-filter: blur(5px);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        header {
+            height: var(--header-height);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .site-logo {
+            height: 80px; width: auto; margin-bottom: 10px;
+            filter: invert();
+        }
+
+        h1 {
+            font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase;
+            font-weight: 300; border-bottom: 1px solid #333;
+            padding-bottom: 5px; color: #ccc;
+        }
+
+        /* --- GALLERY GRID --- */
+        main {
+            flex-grow: 1;
+            width: 100%;
+            padding: 20px 40px 60px 40px;
+        }
+
+        .feed-grid {
+            width: 100%;
+            max-width: 1600px; /* Constrain width on huge screens */
+            margin: 0 auto;
+            display: grid;
+            /* Adaptive columns: roughly 350px wide */
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-auto-rows: 250px;
+            gap: 15px;
+            opacity: 0; /* Fade in effect */
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .gallery-thumb {
+            width: 100%; height: 100%;
+            background-color: #1a1a1a;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .gallery-thumb:hover { border-color: var(--accent-color); }
+        
+        .gallery-thumb img {
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.8; 
+            transition: opacity 0.3s, transform 0.5s; 
+            filter: grayscale(100%);
+        }
+        
+        .gallery-thumb:hover img { 
+            opacity: 1; 
+            transform: scale(1.05); 
+            filter: grayscale(0%); 
+        }
+
+        /* --- MODAL (Preserved functionality) --- */
+        .presentation-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: black; z-index: 2000; display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .presentation-modal.active { opacity: 1; pointer-events: all; }
+        
+        .stage-area { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .presentation-img { max-height: 80vh; max-width: 90vw; object-fit: contain; cursor: zoom-in; transition: transform 0.1s linear; }
+        .presentation-img.zoomed { cursor: grab; transform: scale(2.5); }
+        
+        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); font-size: 3rem; color: white; background: none; border: none; cursor: pointer; padding: 20px; opacity: 0.3; transition: opacity 0.2s; }
+        .nav-arrow:hover { opacity: 1; }
+        .nav-arrow.left { left: 10px; } .nav-arrow.right { right: 10px; }
+        
+        .control-bar { height: 15vh; background: #111; border-top: 1px solid #333; display: flex; flex-direction: column; }
+        .caption-overlay { background: #222; color: #aaa; padding: 10px; text-align: center; font-size: 0.8rem; border-bottom: 1px solid #333; }
+        
+        .strip-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 5px; overflow-x: auto; padding: 0 10px; }
+        .strip-thumb { height: 70%; aspect-ratio: 1/1; opacity: 0.3; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .strip-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .strip-thumb.active { opacity: 1; border-color: white; }
+        
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; cursor: pointer; z-index: 2001; width: 40px; height: 40px; text-align: center; line-height: 40px; border: 1px solid #666; border-radius: 50%; }
+        .close-modal:hover { background: white; color: black; border-color: white; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .feed-grid { grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); }
+            .back-btn { top: 20px; left: 20px; padding: 8px 15px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <a href="convertible-convergence.html" class="back-btn">← Back to Project</a>
+
+    <header>
+        <img src="../../../Recourses/Logos/CC.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Convertible Convergence</h1>
+    </header>
+
+    <main>
+        <div class="feed-grid" id="feedContent">
+            </div>
+    </main>
+
+    <div class="presentation-modal" id="modal">
+        <div class="close-modal" onclick="closeModal()">×</div>
+        <div class="stage-area" id="stageArea">
+            <button class="nav-arrow left" onclick="changeSlide(-1)">&#8249;</button>
+            <img src="" class="presentation-img" id="mainImage">
+            <button class="nav-arrow right" onclick="changeSlide(1)">&#8250;</button>
+        </div>
+        <div class="control-bar">
+            <div class="caption-overlay" id="imageCaption"></div>
+            <div class="strip-container" id="thumbStrip"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA CONFIGURATION ---
+        // Replace these placeholder URLs with your actual Convertible Convergence renders
+        const projectImages = [
+            { id: 1, url: 'https://placehold.co/1600x1200/111/fff?text=CC+Render+01', thumb: 'https://placehold.co/400x400/222/fff?text=01', desc: 'Convertible Convergence // Exterior View' },
+            { id: 2, url: 'https://placehold.co/1600x1200/111/fff?text=CC+Render+02', thumb: 'https://placehold.co/400x400/222/fff?text=02', desc: 'Convertible Convergence // Interior Atrium' },
+            { id: 3, url: 'https://placehold.co/1600x1200/111/fff?text=CC+Render+03', thumb: 'https://placehold.co/400x400/222/fff?text=03', desc: 'Convertible Convergence // Facade Detail' },
+            { id: 4, url: 'https://placehold.co/1600x1200/111/fff?text=CC+Render+04', thumb: 'https://placehold.co/400x400/222/fff?text=04', desc: 'Convertible Convergence // Night Shot' },
+            { id: 5, url: 'https://placehold.co/1600x1200/111/fff?text=CC+Render+05', thumb: 'https://placehold.co/400x400/222/fff?text=05', desc: 'Convertible Convergence // Section Perspective' },
+            { id: 6, url: 'https://placehold.co/1600x1200/111/fff?text=CC+Render+06', thumb: 'https://placehold.co/400x400/222/fff?text=06', desc: 'Convertible Convergence // Aerial Context' },
+            // Add more images here...
+        ];
+
+        let currentIndex = 0;
+        
+        const feedContent = document.getElementById('feedContent');
+        const modal = document.getElementById('modal');
+        const mainImg = document.getElementById('mainImage');
+        const caption = document.getElementById('imageCaption');
+        const strip = document.getElementById('thumbStrip');
+        const stage = document.getElementById('stageArea');
+
+        // Initialize
+        window.onload = () => {
+            renderFeed();
+        };
+
+        function renderFeed() {
+            feedContent.innerHTML = '';
+            projectImages.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'gallery-thumb';
+                // Using thumb for grid, larger url for modal
+                div.innerHTML = `<img src="${item.thumb}" loading="lazy" alt="Render ${index + 1}">`;
+                div.onclick = () => openModal(index);
+                feedContent.appendChild(div);
+            });
+        }
+
+        // --- MODAL FUNCTIONS ---
+
+        function openModal(index) {
+            currentIndex = index;
+            updateModalContent();
+            modal.classList.add('active');
+            renderStrip();
+            document.body.style.overflow = 'hidden'; // Stop background scroll
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            mainImg.classList.remove('zoomed');
+            mainImg.style.transform = 'scale(1)';
+            document.body.style.overflow = ''; // Restore scroll
+        }
+
+        function updateModalContent() {
+            const data = projectImages[currentIndex];
+            mainImg.src = data.url;
+            caption.innerText = data.desc;
+            
+            // Update active state in strip
+            const thumbs = document.querySelectorAll('.strip-thumb');
+            thumbs.forEach((t, i) => {
+                if(i === currentIndex) t.classList.add('active');
+                else t.classList.remove('active');
+            });
+
+            // Reset zoom
+            mainImg.classList.remove('zoomed');
+            mainImg.style.transform = 'scale(1)';
+        }
+
+        function renderStrip() {
+            strip.innerHTML = '';
+            projectImages.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = `strip-thumb ${idx === currentIndex ? 'active' : ''}`;
+                div.innerHTML = `<img src="${item.thumb}">`;
+                div.onclick = () => { currentIndex = idx; updateModalContent(); };
+                strip.appendChild(div);
+            });
+        }
+
+        function changeSlide(dir) {
+            currentIndex += dir;
+            if(currentIndex < 0) currentIndex = projectImages.length - 1;
+            if(currentIndex >= projectImages.length) currentIndex = 0;
+            updateModalContent();
+        }
+
+        // --- ZOOM & PAN LOGIC ---
+
+        stage.addEventListener('click', (e) => {
+            if(e.target !== mainImg) return;
+            mainImg.classList.toggle('zoomed');
+            if(mainImg.classList.contains('zoomed')) panImage(e);
+            else mainImg.style.transformOrigin = 'center';
+        });
+
+        stage.addEventListener('mousemove', (e) => {
+            if(!mainImg.classList.contains('zoomed')) return;
+            panImage(e);
+        });
+
+        function panImage(e) {
+            const rect = stage.getBoundingClientRect();
+            // Calculate percentage position
+            const x = (e.clientX - rect.left) / rect.width * 100;
+            const y = (e.clientY - rect.top) / rect.height * 100;
+            mainImg.style.transformOrigin = `${x}% ${y}%`;
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if(!modal.classList.contains('active')) return;
+            if(e.key === 'ArrowLeft') changeSlide(-1);
+            if(e.key === 'ArrowRight') changeSlide(1);
+            if(e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
