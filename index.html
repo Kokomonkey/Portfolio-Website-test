@@ -12,7 +12,7 @@
     <meta property="og:title" content="DouweDoesDesign | AI in Architecture">
     <meta property="og:description" content="Explore my personal portfolio on AI-driven architecture and design workflows.">
     <meta property="og:image" content="Recourses/Logos/DDD.jpg">
-    <meta property="og:url" content="https://yourwebsite.com"> ```
+    <meta property="og:url" content="https://yourwebsite.com"> 
     <style>
         /* --- CSS VARIABLES & RESET --- */
         :root {
@@ -209,6 +209,64 @@
         @keyframes slideFromBottom { 0% { transform: translateY(100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes slideFromLeft { 0% { transform: translateX(-100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
         @keyframes slideFromRight { 0% { transform: translateX(100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+
+        /* --- MOBILE RESPONSIVENESS (Add this at the bottom of your CSS) --- */
+        @media (max-width: 768px) {
+            
+            /* 1. ALLOW SCROLLING */
+            body {
+                height: auto;           /* Let page grow as needed */
+                min-height: 100vh;      /* At least full screen */
+                overflow-y: auto;       /* Enable vertical scrolling */
+                padding-bottom: 50px;   /* Add space at the bottom */
+                display: block;         /* Stack elements normally */
+            }
+
+            /* 2. ADJUST HEADER */
+            header {
+                height: auto;           /* Let header grow naturally */
+                padding: 20px 0;
+                flex-direction: column; /* Stack Logo and Text vertically */
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;        /* Readable pixel size instead of vh */
+                margin-top: 10px;
+                text-align: center;
+            }
+
+            /* 3. CHANGE GRID TO 2 COLUMNS */
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 Columns instead of 3 */
+                width: 90%;             /* Use 90% of screen width */
+                margin: 0 auto;         /* Center the grid */
+                gap: 15px;              /* Smaller gap */
+            }
+
+            /* 4. SQUARE SIZING */
+            .square {
+                /* Make squares based on Width, not Height */
+                width: 100%;            
+                height: 40vw;           /* Squares are 40% of screen width */
+                border-width: 1px;      /* Thinner borders look better on mobile */
+            }
+
+            /* 5. TEXT ALWAYS VISIBLE (No Hover needed) */
+            .square-text {
+                opacity: 1;             /* Always show text */
+                transform: translateY(0);
+                font-size: 0.8rem;
+                background: rgba(0,0,0,0.6); /* Semi-transparent background for readability */
+                bottom: 0;
+                padding: 5px 0;
+            }
+            
+            /* Optional: Adjust image visibility if text covers it */
+            .square-img {
+                filter: none;           /* Don't invert colors by default if preferred */
+            }
+        }
 
     </style>
 </head>
