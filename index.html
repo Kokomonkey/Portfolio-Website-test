@@ -6,13 +6,13 @@
     <link rel="icon" type="image/jpeg" href="Recourses/Logos/DDD.jpg">
     <link rel="apple-touch-icon" href="Recourses/Logos/DDD.jpg">
     <meta name="description" content="An interactive AI workflow tool for architects. Design your personalized AI strategy for pre-design, construction docs, and site management.">
-    <meta name="keywords" content="Architecture, AI, Workflow, DouweDoesDesign, BIM, Generative Design">
+    <meta name="keywords" content="Architecture, AI, Workflow, DouweDoesDesign, BIM, Generative Design, Limits of AI">
     <meta name="author" content="DouweDoesDesign">
     <title>DouweDoesDesign</title>
     <meta property="og:title" content="DouweDoesDesign | AI in Architecture">
     <meta property="og:description" content="Explore my personal portfolio on AI-driven architecture and design workflows.">
     <meta property="og:image" content="Recourses/Logos/DDD.jpg">
-    <meta property="og:url" content="https://yourwebsite.com"> 
+    <meta property="og:url" content="https://douwedoesdesign.com"> 
     <style>
         /* --- CSS VARIABLES & RESET --- */
         :root {
@@ -125,8 +125,8 @@
             
             /* ENTRANCE ANIMATION SETTINGS */
             opacity: 0; 
-            animation-duration: 3s; 
-            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); 
+            animation-duration: 2s; 
+            animation-timing-function: cubic-bezier(0.16, 1, 0.5, 1); 
             animation-fill-mode: forwards;
         }
 
@@ -210,6 +210,29 @@
         @keyframes slideFromLeft { 0% { transform: translateX(-100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
         @keyframes slideFromRight { 0% { transform: translateX(100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
+        /* --- VISITOR COUNTER --- */
+.visitor-counter {
+    position: fixed;
+    bottom: 2vh;
+    right: 2vh;
+    color: var(--accent-color);
+    background-color: var(--bg-color);
+    border: 2px solid var(--accent-color);
+    padding: 1vh 2vh;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1vh; 
+    z-index: 100;
+    display: flex;
+    gap: 1vh;
+    transition: all var(--transition-speed) ease;
+}
+
+.visitor-counter:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
         /* --- MOBILE RESPONSIVENESS (Add this at the bottom of your CSS) --- */
         @media (max-width: 768px) {
             
@@ -234,6 +257,7 @@
                 font-size: 2rem;        /* Readable pixel size instead of vh */
                 margin-top: 10px;
                 text-align: center;
+                color: white;
             }
 
             /* 3. CHANGE GRID TO 2 COLUMNS */
@@ -250,6 +274,7 @@
                 width: 100%;            
                 height: 40vw;           /* Squares are 40% of screen width */
                 border-width: 1px;      /* Thinner borders look better on mobile */
+                filter: invert();
             }
 
             /* 5. TEXT ALWAYS VISIBLE (No Hover needed) */
@@ -348,14 +373,19 @@
         </div>
     </main>
 
+    <div class="visitor-counter">
+    <span>Visitor-count:</span>
+    <span id="visit-count">...</span>
+
+</div>
+
 </body>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Select all grid items
-        const squares = document.querySelectorAll('.grid-item');
         
-        // List of CSS animation names matching the @keyframes above
+        // --- 1. GRID ANIMATION LOGIC (Your existing code) ---
+        const squares = document.querySelectorAll('.grid-item');
         const animations = [
             'slideFromTop', 
             'slideFromBottom', 
@@ -364,12 +394,24 @@
         ];
 
         squares.forEach((square) => {
-            // 1. Pick a random number between 0 and 3
             const randomIndex = Math.floor(Math.random() * animations.length);
-            
-            // 2. Assign that animation to the square
             square.style.animationName = animations[randomIndex];
         });
+
+        // --- 2. VISITOR COUNTER LOGIC (New code) ---
+        const counterDisplay = document.getElementById('visit-count');
+        
+        // We use a specific namespace 'douwedoesdesign' and key 'homepage'
+        // The '/up' at the end tells the API to add +1 immediately
+        fetch('https://api.counterapi.dev/v1/douwedoesdesign/homepage/up')
+            .then(response => response.json())
+            .then(data => {
+                counterDisplay.innerText = data.count;
+            })
+            .catch(error => {
+                console.error('Error loading counter:', error);
+                counterDisplay.innerText = "ERR";
+            });
     });
 </script>
 

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
-    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
     <title>Contact | DouweDoesDesign</title>
     <style>
         /* --- CSS VARIABLES & RESET --- */
@@ -13,7 +12,7 @@
             --accent-color: #ffffff;
             --transition-speed: 0.3s;
             --header-height: 15vh;
-            --square-size: 15vh; /* Slightly smaller for contact page icons */
+            --square-size: 15vh; 
             --gap-size: 2vh;
         }
 
@@ -30,9 +29,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh; 
-            overflow: hidden; 
+            /* Changed height to min-height to allow scrolling on mobile */
+            min-height: 100vh; 
+            /* Removed overflow: hidden so users can scroll on small screens */
             justify-content: center;
+            /* Added padding to prevent content touching edges on mobile */
+            padding-bottom: 5vh; 
         }
 
         /* --- BACK BUTTON --- */
@@ -59,13 +61,16 @@
 
         /* --- HEADER SECTION --- */
         header {
-            height: var(--header-height);
+            /* Changed from fixed height to min-height for flexibility */
+            min-height: var(--header-height); 
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: center;
             gap: 2vh;
             margin-bottom: 2vh;
+            margin-top: 8vh; /* Added top margin so back button doesn't overlap on mobile */
+            text-align: center;
         }
 
         .logo-placeholder {
@@ -75,6 +80,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-shrink: 0; /* Prevents logo from squishing */
         }
         
         .logo-placeholder img {
@@ -140,10 +146,12 @@
             color: var(--bg-color);
         }
 
-        /* --- SOCIAL GRID (Mini version of home grid) --- */
+        /* --- SOCIAL GRID --- */
         .social-grid {
             display: flex;
             gap: 3vh;
+            flex-wrap: wrap; /* Allows wrapping on very small screens */
+            justify-content: center;
         }
 
         .grid-item {
@@ -169,13 +177,6 @@
             position: relative; 
         }
 
-        .square-icon {
-            width: 50%;
-            height: 50%;
-            background-color: var(--accent-color); 
-            transition: all var(--transition-speed) ease;
-        }
-
         .square-text {
             position: absolute;
             bottom: 5%; 
@@ -191,22 +192,17 @@
         }
 
         .square-img {
-            width: 100%;         /* Changed from 50% to fill square */
-            height: 100%;        /* Changed from auto to fill square */
-            object-fit: cover;   /* Ensures image fills without stretching */
+            width: 100%;       
+            height: 100%;       
+            object-fit: cover;   
             transition: all var(--transition-speed) ease;
-            filter: invert(1);   /* Assuming black PNGs/JPGs */
+            filter: invert(1);   
         }
 
         /* HOVER EFFECTS */
         .grid-item:hover .square {
             background-color: var(--accent-color); 
             transform: scale(1.05);
-        }
-
-        .grid-item:hover .square-icon {
-            background-color: var(--bg-color); 
-            transform: translateY(-20%); 
         }
 
         .grid-item:hover .square-text {
@@ -219,16 +215,88 @@
             transform: translateY(-7%);
         }
 
-        /* RESPONSIVE ADJUSTMENT */
+        /* --- POPUP STYLES --- */
+        .popup-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .popup-box {
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent-color);
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .popup-box p {
+            font-size: 2vh;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .close-btn {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 1.5vh;
+        }
+
+        .close-btn:hover {
+            background-color: #ccc; /* Slight hover effect */
+        }
+
+
+        /* --- RESPONSIVE ADJUSTMENT --- */
         @media (max-width: 768px) {
+            header {
+                flex-direction: column; /* Stack logo above text */
+                gap: 1vh;
+            }
+            
+            h1 {
+                font-size: 3vh; /* Slightly smaller title on mobile */
+            }
+
             .details-container {
-                grid-template-columns: 1fr; /* Stack vertically on mobile */
+                grid-template-columns: 1fr; /* Stack text sections vertically */
                 text-align: center;
                 gap: 3vh;
                 padding: 2vh 0;
+                width: 90%; /* Wider width on mobile */
             }
-            .social-grid {
-                gap: 2vh;
+            
+            main {
+                width: 90%;
+            }
+
+            .info-block p, .info-block a {
+                font-size: 2vh; /* Slightly larger text for readability on phone */
+            }
+
+            .square {
+                /* Make squares fixed size on mobile for easier tapping */
+                width: 120px;
+                height: 120px;
+            }
+            
+            .square-text {
+                 font-size: 14px;
             }
         }
 
@@ -269,7 +337,7 @@
                 <p>BTW-ID: NL005379257B01</p>
                 <br>
                 <p>Visit by appointment only.</p>
-                <p><a href="#">Terms & Conditions [PDF]</a></p>
+                <p><a href="#" onclick="openPopup(event)">Terms & Conditions [PDF]</a></p>
             </div>
 
         </div>
@@ -294,6 +362,13 @@
 
     </main>
 
+    <div id="popup" class="popup-overlay">
+        <div class="popup-box">
+            <p>Currently unavailable, please contact me personally for more information.</p>
+            <button class="close-btn" onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
 </body>
 
 <script>
@@ -309,6 +384,16 @@
             square.style.animationDelay = "0.2s";
         });
     });
+
+    // --- POPUP LOGIC ---
+    function openPopup(e) {
+        e.preventDefault(); // Prevents the link from reloading the page
+        document.getElementById('popup').style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
 </script>
 
 </html>

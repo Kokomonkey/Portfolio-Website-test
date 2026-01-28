@@ -2,27 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" type="image/png" href="../../../Recourses/Logos//DDD.jpg">
-    <title>Dynamic Facade - Free Rotation</title>
+    <title>Dynamic Facade | Permeability Study</title>
     <style>
         :root {
-            --bg-color: #191818;
-            --accent-color: #ff0000;
-            --text-color: #000000;
-            --transition-speed: 0.3s;
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --highlight-color: #ff0000; /* Red for the 'vision' cone */
+            --font-main: 'Courier New', Courier, monospace;
         }
 
         body {
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
-            /* Grid dots */
-            background-image: radial-gradient(#b0b0b0 1.5px, transparent 1.5px);
-            background-size: 20px 20px;
-            overflow: hidden;
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--text-color);
+            /* Subtle grid texture */
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 30px 30px;
+            overflow: hidden; /* Prevent scrolling */
+            font-family: var(--font-main);
+            color: var(--accent-color);
+            height: 100vh;
+            width: 100vw;
         }
 
         canvas {
@@ -33,113 +35,167 @@
             z-index: 1;
         }
 
-        /* --- UI ELEMENTS --- */
-        
-        .back-btn {
+        /* --- UI LAYER --- */
+        .ui-layer {
             position: fixed;
-            top: 30px;
-            left: 30px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none; /* Let clicks pass through to canvas */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        /* --- NAVIGATION --- */
+        .back-btn {
+            pointer-events: auto;
             text-decoration: none;
-            z-index: 100;
-            border: 2px solid var(--accent-color);
-            background-color: white;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
             color: var(--accent-color);
-            padding: 10px 20px;
+            padding: 10px 15px;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 1rem;
-            transition: all var(--transition-speed) ease;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            display: inline-block;
+            width: fit-content;
         }
 
         .back-btn:hover {
             background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-            cursor: pointer;
+            color: var(--bg-color);
+        }
+
+        /* --- INFO PANEL --- */
+        .info-panel {
+            align-self: flex-end;
+            text-align: right;
+            max-width: 350px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-right: 2px solid var(--highlight-color);
+            backdrop-filter: blur(2px);
+        }
+
+        .info-panel h1 {
+            font-size: 1.5rem;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            color: var(--highlight-color);
+        }
+
+        .info-panel p {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 0;
+            color: #ddd;
+        }
+
+        .instruction {
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            border: 1px dashed #555;
+            padding: 5px;
+            display: inline-block;
+        }
+
+        /* --- CONTROLS --- */
+        .controls {
+            pointer-events: auto;
+            align-self: flex-start;
         }
 
         #offset-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            z-index: 100;
-            border: 2px solid var(--accent-color);
-            background-color: white;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
             color: var(--accent-color);
-            padding: 10px 20px;
-            font-family: 'Courier New', Courier, monospace;
+            padding: 15px 25px;
+            font-family: var(--font-main);
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all var(--transition-speed) ease;
+            transition: 0.2s;
         }
 
         #offset-btn:hover {
             background-color: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
+            color: var(--bg-color);
         }
 
         #offset-btn.active {
-            background-color: black;
+            background-color: var(--highlight-color);
             color: white;
-            border-color: black;
+            border-color: var(--highlight-color);
         }
 
-        /* Right Side Content */
-        .content-panel {
-            position: fixed;
-            top: 50%;
-            right: 5%; 
-            transform: translateY(-50%);
-            width: 300px;
-            z-index: 100;
-            text-align: right;
-            pointer-events: none;
-        }
+        /* --- MOBILE ADAPTATION --- */
+        @media (max-width: 768px) {
+            .ui-layer {
+                padding: 20px;
+            }
 
-        .content-panel h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            border-right: 4px solid var(--accent-color);
-            padding-right: 20px;
-            text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
-        }
+            /* Move Info to top so it doesn't get covered by thumb */
+            .info-panel {
+                position: absolute;
+                top: 70px; /* Below back button */
+                left: 20px;
+                right: 20px;
+                max-width: 100%;
+                text-align: left;
+                align-self: flex-start;
+                border-right: none;
+                border-left: 2px solid var(--highlight-color);
+            }
 
-        .content-panel p {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            padding-right: 20px;
-            background-color: rgba(255,255,255,0.7);
-            border-right: 1px solid #ccc;
-        }
+            .info-panel h1 { font-size: 1.2rem; }
+            .info-panel p { font-size: 0.8rem; }
+            
+            /* Move controls to bottom center */
+            .controls {
+                position: absolute;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+                text-align: center;
+            }
 
-        .highlight {
-            color: var(--accent-color);
-            font-weight: bold;
+            #offset-btn {
+                width: 80%;
+                padding: 15px;
+                font-size: 1rem;
+            }
         }
-
     </style>
 </head>
 <body>
 
-    <a href="convertible-convergence.html" class="back-btn">← Back</a>
-    <button id="offset-btn">OFFSET: OFF</button>
+    <div class="ui-layer">
+        <a href="convertible-convergence.html" class="back-btn">← Project</a>
 
-    <div class="content-panel">
-        <h2>Unrestricted<br>Motion</h2>
-        <p>
-            Rotation constraints disabled. 
-            <span class="highlight">Full angular freedom</span> restored to kinetic elements.
-        </p>
-        <br>
-        <p>
-            Perimeter visualization streamlined.
-            Ray-cast connectors removed.
-            Area analysis active.
-        </p>
+        <div class="info-panel">
+            <h1>Permeability Study</h1>
+            <p>
+                This conceptual facade demonstrates the relationship between rotation and visibility.
+                By orienting the louvers, the structure transitions from an 
+                <strong>opaque barrier</strong> to a <strong>transparent filter</strong>.
+            </p>
+            <div class="instruction">
+                [ HOLD & DRAG TO ROTATE ]
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="offset-btn">MODE: ALIGNED</button>
+        </div>
     </div>
 
     <canvas id="canvas"></canvas>
@@ -151,43 +207,38 @@
 
         // --- Configuration ---
         const config = {
-            // Rect Settings
-            rectWidth: 140,
-            rectHeight: 10,
-            gap: 70,
-            rectFillColor: '#000000',
-            rectStrokeColor: '#ffffff', 
-            rectStrokeWidth: 2,
+            rectWidth: 120,    // Width of the wall segments
+            rectHeight: 12,    // Thickness of wall segments
+            gap: 80,           // Gap between centers
             
-            // Vision Settings
-            visionColor: 'rgba(255, 0, 0, 0.3)', 
-            borderColor: '#ff0000', 
-            borderWidth: 2,
-            lightRadiusPercent: 0.25, 
+            // Colors
+            wallColor: '#ffffff',
+            visionColor: 'rgba(255, 0, 0, 0.4)', // The red "sight" cone
+            visionBorder: '#ff0000',
             
-            // Offset logic
-            offsetDegrees: 45
-            // Removed constraintBuffer
+            // Interaction
+            offsetDegrees: 90 // 90 degrees blocks the view perfectly when mouse aligns
         };
 
         let width, height;
+        // Start mouse in center
         let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
         let rectangles = [];
         let isOffsetActive = false;
-        let time = 0;
 
         // --- Initialization ---
-
         function init() {
             resize();
             window.addEventListener('resize', resize);
-            document.addEventListener('mousemove', onMouseMove);
             
-            btn.addEventListener('click', () => {
-                isOffsetActive = !isOffsetActive;
-                btn.classList.toggle('active');
-                btn.innerText = isOffsetActive ? "OFFSET: ACTIVE" : "OFFSET: OFF";
-            });
+            // Mouse Events
+            document.addEventListener('mousemove', onMove);
+            
+            // Touch Events (Mobile Support)
+            document.addEventListener('touchstart', onTouch, { passive: false });
+            document.addEventListener('touchmove', onTouch, { passive: false });
+            
+            btn.addEventListener('click', toggleOffset);
 
             animate();
         }
@@ -198,21 +249,37 @@
             createRectangles();
         }
 
-        function onMouseMove(e) {
+        function onMove(e) {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
         }
 
+        function onTouch(e) {
+            // Prevent scrolling while interacting
+            if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+                e.preventDefault();
+            }
+            const touch = e.touches[0];
+            mouse.x = touch.clientX;
+            mouse.y = touch.clientY;
+        }
+
+        function toggleOffset() {
+            isOffsetActive = !isOffsetActive;
+            btn.classList.toggle('active');
+            btn.innerText = isOffsetActive ? "MODE: OFFSET (BLOCK)" : "MODE: ALIGNED (VIEW)";
+        }
+
         function createRectangles() {
             rectangles = [];
-            const availableWidth = width - 380; 
-            const itemSize = config.rectWidth + config.gap;
-            const numRects = Math.floor(availableWidth / itemSize);
-            const totalGroupWidth = (numRects * config.gap) - config.gap;
-            const startX = (availableWidth / 2) - (totalGroupWidth / 2);
+            // Calculate how many fit
+            const itemSpace = config.rectWidth + 40; 
+            const count = Math.ceil(width / config.gap) + 2; // Extra padding
+            
             const centerY = height / 2;
+            const startX = (width / 2) - ((count * config.gap) / 2);
 
-            for (let i = 0; i < numRects; i++) {
+            for (let i = 0; i < count; i++) {
                 rectangles.push({
                     cx: startX + (i * config.gap),
                     cy: centerY,
@@ -221,80 +288,81 @@
             }
         }
 
-        // --- Math Helpers ---
-
+        // --- Geometry & Math ---
         function rotatePoint(px, py, cx, cy, angle) {
             const cos = Math.cos(angle);
             const sin = Math.sin(angle);
-            const nx = (cos * (px - cx)) - (sin * (py - cy)) + cx;
-            const ny = (sin * (px - cx)) + (cos * (py - cy)) + cy;
-            return { x: nx, y: ny };
+            return {
+                x: (cos * (px - cx)) - (sin * (py - cy)) + cx,
+                y: (sin * (px - cx)) + (cos * (py - cy)) + cy
+            };
         }
 
-        function getRectCorners(rect) {
+        function getCorners(rect) {
             const hw = config.rectWidth / 2;
             const hh = config.rectHeight / 2;
-            const points = [
+            // Define unrotated corners
+            const pts = [
                 { x: rect.cx - hw, y: rect.cy - hh },
                 { x: rect.cx + hw, y: rect.cy - hh },
                 { x: rect.cx + hw, y: rect.cy + hh },
                 { x: rect.cx - hw, y: rect.cy + hh }
             ];
-            return points.map(p => rotatePoint(p.x, p.y, rect.cx, rect.cy, rect.angle));
+            return pts.map(p => rotatePoint(p.x, p.y, rect.cx, rect.cy, rect.angle));
         }
 
-        function projectPoint(px, py, lx, ly, magnitude = 3000) {
+        function projectShadow(px, py, lx, ly) {
+            // Project points away from light source to infinity (or far enough off screen)
             const dx = px - lx;
             const dy = py - ly;
             const len = Math.sqrt(dx*dx + dy*dy);
+            const scale = 3000; // Project far away
             return {
-                x: px + (dx / len) * magnitude,
-                y: py + (dy / len) * magnitude
+                x: px + (dx / len) * scale,
+                y: py + (dy / len) * scale
             };
         }
 
         // --- Animation Loop ---
-
         function animate() {
-            time += 0.05;
             ctx.clearRect(0, 0, width, height);
 
-            // 1. Update Geometry (No Constraints)
+            // 1. Update Angles based on Mouse/Touch
             rectangles.forEach(rect => {
-                const deltaX = mouse.x - rect.cx;
-                const deltaY = mouse.y - rect.cy;
-                let calculatedAngle = Math.atan2(deltaY, deltaX);
-
+                const dx = mouse.x - rect.cx;
+                const dy = mouse.y - rect.cy;
+                let angle = Math.atan2(dy, dx);
+                
                 if (isOffsetActive) {
-                    calculatedAngle += config.offsetDegrees * (Math.PI / 180);
+                    angle += Math.PI / 2; // Add 90 degrees to make them perpendicular to vision
                 }
                 
-                // Directly assign angle (No clamping logic)
-                rect.angle = calculatedAngle;
+                rect.angle = angle;
             });
 
-            const lightRadius = (width * config.lightRadiusPercent) + (Math.sin(time) * 3);
+            const visionRadius = Math.min(width, height) * 0.4;
 
-            // --- LAYER 1: Red Fill + Shadow Erasure ---
+            // 2. Draw Vision Cone (Red Light)
             ctx.save();
-            
-            // Draw Red Circle
             ctx.beginPath();
-            ctx.arc(mouse.x, mouse.y, lightRadius, 0, Math.PI * 2);
+            ctx.arc(mouse.x, mouse.y, visionRadius, 0, Math.PI * 2);
             ctx.fillStyle = config.visionColor;
             ctx.fill();
 
-            // Erase Shadows from the Red Circle
+            // 3. Cast Shadows (Erase the vision cone where walls block it)
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = 'black'; 
+            ctx.fillStyle = '#000'; // Color doesn't matter for destination-out
 
             rectangles.forEach(rect => {
-                const corners = getRectCorners(rect);
+                const corners = getCorners(rect);
+                // Create shadow volumes for each edge
                 for(let i = 0; i < corners.length; i++) {
                     const c1 = corners[i];
-                    const c2 = corners[(i + 1) % corners.length]; 
-                    const p1 = projectPoint(c1.x, c1.y, mouse.x, mouse.y);
-                    const p2 = projectPoint(c2.x, c2.y, mouse.x, mouse.y);
+                    const c2 = corners[(i+1)%corners.length];
+                    
+                    // Project these two points away from mouse
+                    const p1 = projectShadow(c1.x, c1.y, mouse.x, mouse.y);
+                    const p2 = projectShadow(c2.x, c2.y, mouse.x, mouse.y);
 
                     ctx.beginPath();
                     ctx.moveTo(c1.x, c1.y);
@@ -307,30 +375,25 @@
             });
             ctx.restore();
 
-
-            // --- LAYER 2: The Outer Border (Arcs Only) ---
+            // 4. Draw Vision Border (The red ring, cut by shadows)
             ctx.save();
-            
-            // Draw the full circle stroke first
             ctx.beginPath();
-            ctx.arc(mouse.x, mouse.y, lightRadius, 0, Math.PI * 2);
-            ctx.strokeStyle = config.borderColor;
-            ctx.lineWidth = config.borderWidth;
+            ctx.arc(mouse.x, mouse.y, visionRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = config.visionBorder;
+            ctx.lineWidth = 2;
             ctx.stroke();
-
-            // Cut the stroke where shadows are using 'destination-out'
-            // This leaves only the border segments that are "lit"
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = 'black';
             
+            // Re-apply shadow casting to the border stroke
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = '#000';
             rectangles.forEach(rect => {
-                const corners = getRectCorners(rect);
+                const corners = getCorners(rect);
                 for(let i = 0; i < corners.length; i++) {
                     const c1 = corners[i];
-                    const c2 = corners[(i + 1) % corners.length]; 
-                    const p1 = projectPoint(c1.x, c1.y, mouse.x, mouse.y);
-                    const p2 = projectPoint(c2.x, c2.y, mouse.x, mouse.y);
-                    
+                    const c2 = corners[(i+1)%corners.length];
+                    const p1 = projectShadow(c1.x, c1.y, mouse.x, mouse.y);
+                    const p2 = projectShadow(c2.x, c2.y, mouse.x, mouse.y);
+
                     ctx.beginPath();
                     ctx.moveTo(c1.x, c1.y);
                     ctx.lineTo(p1.x, p1.y);
@@ -339,27 +402,21 @@
                     ctx.fill();
                 }
             });
-            
-            // Note: I have removed the "Draw Shadow Rays" block here entirely.
-            
             ctx.restore();
 
+            // 5. Draw The Walls (The Physical Objects)
+            ctx.fillStyle = config.wallColor;
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
 
-            // --- LAYER 3: The Obstacles (Rectangles) ---
-            ctx.fillStyle = config.rectFillColor;
-            ctx.strokeStyle = config.rectStrokeColor;
-            ctx.lineWidth = config.rectStrokeWidth;
-            
             rectangles.forEach(rect => {
                 ctx.save();
                 ctx.translate(rect.cx, rect.cy);
                 ctx.rotate(rect.angle);
-                
                 ctx.beginPath();
                 ctx.rect(-config.rectWidth/2, -config.rectHeight/2, config.rectWidth, config.rectHeight);
                 ctx.fill();
                 ctx.stroke();
-
                 ctx.restore();
             });
 
@@ -367,7 +424,6 @@
         }
 
         init();
-
     </script>
 </body>
 </html>

@@ -10,7 +10,7 @@
             --bg-color: #000000;
             --accent-color: #ffffff;
             --transition-speed: 0.4s;
-            --header-height: 25vh; /* Increased slightly to fit logo */
+            --header-height: auto; /* Changed from fixed 25vh to auto to accommodate text */
         }
 
         * {
@@ -61,9 +61,15 @@
             flex-direction: column; /* Stack Logo and Text */
             align-items: center;
             justify-content: center;
-            margin-bottom: 4vh;
-            padding-top: 4vh;
+            margin-bottom: 1vh;
+            padding-top: 10vh; /* Increased top padding to clear back button */
+            padding-bottom: 2vh;
             flex-shrink: 0;
+            width: 100%;
+            max-width: 800px;
+            padding-left: 20px;
+            padding-right: 20px;
+            text-align: center;
         }
 
         /* Logo Styling */
@@ -83,6 +89,32 @@
             border-bottom: 1px solid var(--accent-color);
             padding-bottom: 10px;
             animation: fadeIn 1.5s ease-out;
+            margin-bottom: 25px;
+        }
+
+        /* NEW: Intro Text Styling */
+        .intro-text {
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: 300;
+            line-height: 1.5;
+            color: #ccc; /* Slightly dimmed for hierarchy */
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-out;
+        }
+
+        /* NEW: Disclaimer Box */
+        .disclaimer-box {
+            font-size: 0.85rem;
+            border: 1px solid #555;
+            padding: 10px 15px;
+            background: #111;
+            display: inline-block;
+            margin-top: 10px;
+            color: #ddd;
+            animation: fadeIn 2.2s ease-out;
+            max-width: 75%;
+            line-height: 1.4;
         }
 
         /* --- MAIN LAYOUT --- */
@@ -194,6 +226,27 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        /* --- MOBILE COMPATIBILITY --- */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            .site-logo {
+                height: 60px;
+            }
+            .bar-header {
+                padding: 20px;
+                font-size: 1.1rem;
+            }
+            .intro-text {
+                font-size: 0.9rem;
+            }
+            .back-btn {
+                padding: 8px 15px;
+                font-size: 0.7rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -202,7 +255,19 @@
 
     <header>
         <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
-        <h1>Archive Index</h1>
+        <h1>Archive</h1>
+        
+        <div class="intro-text">
+            <p>
+                This repository serves as storage for pages I've created that couldn't fit into the main website without overcrowding it. 
+                
+                It also stands as a record of where this site once started.
+            </p>
+            <div class="disclaimer-box">
+                <strong>NOTE:</strong> Please be aware that most archived sites listed below are older prototypes and are <strong>not optimized for mobile phones</strong>.
+            </div>
+        </div>
+
     </header>
 
     <main>
@@ -247,9 +312,7 @@
             </div>
         </article>
 
-        
-
-        </main>
+    </main>
 
     <script>
         function toggleBar(button) {

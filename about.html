@@ -30,12 +30,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Changed height to min-height to allow scrolling for text content */
             min-height: 100vh; 
             overflow-x: hidden; 
         }
 
-        /* --- BACK BUTTON (KEPT AS IS) --- */
+        /* --- BACK BUTTON --- */
         .back-btn {
             position: fixed;
             top: 2vh;
@@ -58,14 +57,15 @@
             color: var(--bg-color);
         }
 
-        /* --- HEADER (KEPT AS IS) --- */
+        /* --- HEADER --- */
         header {
-            height: var(--header-height);
+            min-height: var(--header-height);
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
             margin-bottom: 2vh;
+            padding-top: 50px; /* Added space for the fixed back button on mobile */
         }
 
         h1 {
@@ -75,6 +75,7 @@
             font-weight: 300;
             border-bottom: 1px solid var(--accent-color);
             padding-bottom: 10px;
+            text-align: center;
         }
 
         /* --- CONTENT LAYOUT --- */
@@ -86,12 +87,12 @@
             gap: 2rem;
             padding-bottom: 5vh;
             
-            /* Entry Animation similar to the grid */
+            /* Entry Animation */
             opacity: 0;
             animation: fadeInContent 0.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
         }
 
-        /* Generic Section Styling to match the "Boxed" look */
+        /* Generic Section Styling */
         .content-section {
             border: 1px solid var(--accent-color);
             padding: 2rem;
@@ -130,7 +131,7 @@
         .profile-img-placeholder {
             width: 100%;
             aspect-ratio: 1/1; /* Keeps it square */
-            background-color: #222; /* Slightly lighter black */
+            background-color: #222;
             border: 1px dashed var(--accent-color);
             display: flex;
             align-items: center;
@@ -139,6 +140,26 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #666;
+            overflow: hidden; /* Ensures image doesn't spill out */
+        }
+
+        .profielfoto {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image fills without stretching */
+            transition: all var(--transition-speed) ease;
+        }
+
+        .profile-text ul {
+            list-style: none;
+            margin-bottom: 1rem;
+            padding-left: 0;
+        }
+        
+        .profile-text li {
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 0.2rem;
         }
 
         /* --- CONTACT BUTTON --- */
@@ -155,6 +176,7 @@
             letter-spacing: 1px;
             transition: all 0.3s ease;
             cursor: pointer;
+            text-align: center;
         }
 
         .contact-btn:hover {
@@ -168,24 +190,32 @@
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- RESPONSIVE --- */
+        /* --- MOBILE RESPONSIVE --- */
         @media (max-width: 768px) {
-            .profile-container {
-                grid-template-columns: 1fr; /* Stack image and text on mobile */
-            }
-            
             h1 {
                 font-size: 1.8rem;
+                width: 90%; /* Ensure line doesn't span full width unnecessarily */
+            }
+
+            .profile-container {
+                grid-template-columns: 1fr; /* Stack image and text vertically */
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+
+            .back-btn {
+                padding: 8px 15px;
+                font-size: 0.7rem;
+            }
+            
+            .contact-btn {
+                width: 100%; /* Full width button on mobile */
             }
         }
-
-        .profielfoto {
-            width: 100%;         /* Changed from 50% to fill square */
-            height: 100%;        /* Changed from auto to fill square */
-            object-fit: cover;   /* Ensures image fills without stretching */
-            transition: all var(--transition-speed) ease;
-        }
-
     </style>
 </head>
 <body>
@@ -207,16 +237,18 @@
 
             <div class="profile-text">
                 <p>
-                     I am an architecture student focusing on how to implement AI in the everyday architectural process.
-                    My work focuses on how algorithms can augment the productive & creative process, moving beyond simple automation to genuine co-creation.
-
-
-                    Locations of study:
-                    - TU Delft 2024 - current [Architecture Bachelor]
-                    - NUS Singapore 2025 [non-faculty based Exchange] (but focused on architecture)
+                     I am an architecture student exploring how to implement AI into the everyday architectural process.
+                    My work focuses on how algorithms can augment the productive and creative process, moving beyond simple automation to genuine co-creation.
                 </p>
+                
+                <p>Locations of study:</p>
+                <ul>
+                    <li>- TU Delft 2024 - current [Architecture Bachelor]</li>
+                    <li>- NUS Singapore 2025 [Non-faculty based Exchange] (Focused on architecture)</li>
+                </ul>
+                
                 <p>
-                    This is my first proper website and it is meant to both display my capabilities and to be a source of information for other architects (students).
+                    This is my first proper website. It is meant to both display my capabilities and serve as a source of information for other architects and students.
                 </p>
             </div>
         </div>
@@ -225,10 +257,10 @@
         <div class="content-section">
             <h2 class="section-title">What is this Webpage</h2>
             <p>
-                This hub serves as a living documentation of my AI knowledge. It is not just a portfolio, but a deconstruction of my workflow used to generate architectural concepts and even more information on what is possible.
+                This hub serves as a living documentation of my AI knowledge. It is not just a portfolio, but a deconstruction of the workflow I use to generate architectural concepts, providing insight into what is possible.
             </p>
             <p>
-                Here, I break down the specific AI's available, give some starter tips and tricks, and post-processing techniques used to achieve the best result. It is designed to be transparent.
+                Here, I break down the specific AIs available, share starter tips and tricks, and explain the post-processing techniques used to achieve the best results. It is designed to be transparent.
             </p>
         </div>
 
@@ -236,10 +268,10 @@
         <div class="content-section">
             <h2 class="section-title">Help Me Develop</h2>
             <p>
-                This architecture hub is an ongoing experiment. I am constantly looking for new API integrations, more efficient AI's, or new creative ways to implement them.
+                This architecture hub is an ongoing experiment. I am constantly looking for new API integrations, more efficient AIs, or new creative ways to implement them.
             </p>
             <p>
-                If you have ideas for new features, notice an AI missing for the workflow, or or want to suggest anything I can add, then please contact me at any of the provided links!
+                If you have ideas for new features, notice an AI missing from the workflow, or want to suggest anything I can add, please contact me at any of the provided links!
             </p>
             
             <a href="contact.html" class="contact-btn">Contact Me</a>

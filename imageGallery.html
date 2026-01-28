@@ -13,8 +13,6 @@
             --secondary-bg: #111111;
             --transition-curve: cubic-bezier(0.76, 0, 0.24, 1);
             --header-height: 15vh;
-            
-            /* UPDATED: Wider Sidebar */
             --sidebar-width: 120px; 
         }
 
@@ -33,7 +31,7 @@
         /* --- HEADER & NAV --- */
         .back-btn {
             position: fixed;
-            top: 4vh; left: 4vh; /* Moved slightly inward for alignment */
+            top: 4vh; left: 4vh;
             text-decoration: none;
             z-index: 1000;
             border: 1px solid var(--accent-color);
@@ -57,11 +55,12 @@
             flex-shrink: 0;
             z-index: 10;
             transition: all 0.6s var(--transition-curve);
+            width: 100%;
         }
 
         .site-logo {
             height: 50px; width: auto; margin-bottom: 15px;
-            border-radius: 50%; border: 1px solid var(--accent-color);
+            filter: invert();
         }
 
         h1 {
@@ -108,32 +107,26 @@
             transition: all 0.5s var(--transition-curve);
             overflow: hidden;
         }
-        .category-card:hover { background: var(--secondary-bg); letter-spacing: 3px; }
+        /* Mobile touch capability check usually handles hover, but keeping for desktop */
+        @media (hover: hover) {
+            .category-card:hover { background: var(--secondary-bg); letter-spacing: 3px; }
+        }
 
-        /* --- STATE 2: GALLERY SIDEBAR (Modified) --- */
+        /* --- STATE 2: GALLERY SIDEBAR --- */
         body.gallery-mode .grid-container {
             top: 0; left: 0;
             transform: none;
             width: var(--sidebar-width);
             height: 100%;
             gap: 0;
-            
-            /* Sidebar Grid Layout */
             grid-template-columns: 1fr;
-            
-            /* UPDATED ROW LOGIC:
-               1fr (Top Spacer) -> Buttons -> 1fr (Bottom Spacer)
-            */
+            /* 1fr (Top Spacer) -> Buttons -> 1fr (Bottom Spacer) */
             grid-template-rows: 1fr repeat(4, auto) 1fr;
-            
             border-right: 1px solid #333;
-            
-            /* UPDATED: Push content down to avoid the Back Button */
             padding-top: 15vh; 
             z-index: 100;
         }
 
-        /* Spacers for vertical centering */
         body.gallery-mode .grid-container::before { content: ""; grid-row: 1; }
         body.gallery-mode .grid-container::after { content: ""; grid-row: 6; }
 
@@ -145,7 +138,7 @@
             border-bottom: 1px solid #222;
             justify-content: center;
             color: #666;
-            height: 70px; /* Slightly taller for wider bar */
+            height: 70px; 
             grid-column: 1;
         }
 
@@ -157,10 +150,10 @@
             transform: rotate(180deg);
             font-size: 1.5rem;
             letter-spacing: 5px;
-            height: 350px; /* Tall active state */
+            height: 350px; 
             padding-top: 20px;
             z-index: 2;
-            border-right: 1px solid var(--accent-color); /* Overlap border */
+            border-right: 1px solid var(--accent-color);
             margin-right: -1px;
         }
 
@@ -171,7 +164,7 @@
         body.gallery-mode h1 { display: none; }
         body.gallery-mode .site-logo { height: 40px; margin: 0; opacity: 0.5; }
 
-        /* --- IMAGE FEED (Modified) --- */
+        /* --- IMAGE FEED --- */
         .image-feed {
             position: absolute;
             top: 0; 
@@ -179,29 +172,23 @@
             width: calc(100vw - var(--sidebar-width));
             height: 100%;
             overflow-y: auto;
-            
-            /* UPDATED: Centering & Margins */
-            display: flex; /* Use flex to center the grid container */
+            display: flex; 
             justify-content: center;
-            padding: 50px 0; /* Vertical breathing room */
-            
+            padding: 50px 0;
             opacity: 0;
             pointer-events: none;
             transform: translateY(20px);
             transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
         }
 
-        /* The Grid wrapper inside the feed to handle the constraints */
         .feed-grid {
-            /* UPDATED: Prevent touching sides */
             width: 100%;
-            max-width: 1400px; /* Maximum width for large screens */
-            padding: 0 60px;   /* Horizontal Gutter/Margin */
-            
+            max-width: 1400px;
+            padding: 0 60px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             grid-auto-rows: 250px;
-            gap: 20px; /* Space between images */
+            gap: 20px;
         }
 
         body.gallery-mode .image-feed {
@@ -224,7 +211,7 @@
         }
         .gallery-thumb:hover img { opacity: 1; transform: scale(1.1); filter: grayscale(0%); }
 
-        /* --- MODAL (Preserved) --- */
+        /* --- MODAL --- */
         .presentation-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: black; z-index: 2000; display: flex; flex-direction: column;
@@ -240,11 +227,118 @@
         .control-bar { height: 15vh; background: #111; border-top: 1px solid #333; display: flex; flex-direction: column; }
         .caption-overlay { background: #222; color: #aaa; padding: 10px; text-align: center; font-size: 0.8rem; border-bottom: 1px solid #333; }
         .strip-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 5px; overflow-x: auto; padding: 0 10px; }
-        .strip-thumb { height: 70%; aspect-ratio: 1/1; opacity: 0.3; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .strip-thumb { height: 70%; aspect-ratio: 1/1; opacity: 0.3; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; flex-shrink: 0; }
         .strip-thumb img { width: 100%; height: 100%; object-fit: cover; }
         .strip-thumb.active { opacity: 1; border-color: white; }
-        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; cursor: pointer; z-index: 2001; width: 40px; height: 40px; text-align: center; line-height: 40px; border: 1px solid #666; border-radius: 50%; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; cursor: pointer; z-index: 2001; width: 40px; height: 40px; text-align: center; line-height: 40px; border: 1px solid #666; border-radius: 50%; background: rgba(0,0,0,0.5); }
         .close-modal:hover { background: white; color: black; border-color: white; }
+
+
+        /* =========================================
+           MOBILE & RESPONSIVE ADAPTATIONS
+           ========================================= */
+        @media (max-width: 768px) {
+            
+            /* 1. Header Adjustment */
+            :root { --header-height: 12vh; }
+            h1 { font-size: 1.5rem; }
+            .site-logo { height: 35px; }
+
+            .back-btn {
+                top: 20px; left: 20px;
+                padding: 8px 12px;
+                font-size: 0.7rem;
+            }
+
+            /* 2. Home Grid: Convert to Vertical Stack */
+            .grid-container {
+                width: 85vw;
+                height: 60vh;
+                grid-template-columns: 1fr; /* Stack vertically */
+                grid-template-rows: repeat(4, 1fr);
+            }
+            
+            .category-card {
+                font-size: 1rem; /* Smaller text for mobile */
+            }
+
+            /* 3. Gallery Mode: Left Sidebar becomes Top Nav Bar */
+            body.gallery-mode .grid-container {
+                width: 100vw;
+                height: 60px; /* Fixed height bar */
+                position: absolute;
+                top: 80px; /* Push below header */
+                left: 0;
+                border-right: none;
+                border-bottom: 1px solid #333;
+                
+                /* Horizontal Layout */
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: 1fr;
+                padding-top: 0;
+            }
+
+            /* Hide Spacers */
+            body.gallery-mode .grid-container::before,
+            body.gallery-mode .grid-container::after { display: none; }
+
+            /* Style Tabs */
+            body.gallery-mode .category-card {
+                height: 100%;
+                font-size: 0.6rem; /* Tiny text to fit */
+                letter-spacing: 0;
+                border: none;
+                border-right: 1px solid #222;
+                padding: 0 2px;
+                text-align: center;
+            }
+
+            /* Style Active Tab (No Rotation) */
+            body.gallery-mode .category-card.active-category {
+                writing-mode: horizontal-tb;
+                transform: none;
+                height: 100%;
+                width: 100%;
+                padding-top: 0;
+                margin-right: 0;
+                border-right: 1px solid #222;
+                border-bottom: 2px solid white;
+                font-size: 0.7rem;
+                letter-spacing: 0;
+                background: #111;
+            }
+
+            /* Header position in Gallery Mode */
+            body.gallery-mode header {
+                top: 0; 
+                right: 0; 
+                width: 100%;
+                height: 80px; /* Fixed header height */
+                align-items: center;
+                justify-content: center;
+                background: var(--bg-color);
+            }
+            body.gallery-mode .site-logo { opacity: 1; height: 30px; }
+
+            /* 4. Image Feed Adaptation */
+            .image-feed {
+                left: 0;
+                width: 100vw;
+                padding-top: 150px; /* Clear header + top nav */
+                padding-bottom: 50px;
+            }
+
+            .feed-grid {
+                padding: 0 20px;
+                grid-template-columns: 1fr; /* 1 column of images on mobile */
+                gap: 15px;
+            }
+
+            /* 5. Modal Tweaks */
+            .nav-arrow { font-size: 2rem; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; }
+            .caption-overlay { font-size: 0.7rem; padding: 5px; }
+            .strip-thumb { height: 60%; }
+        }
 
     </style>
 </head>
@@ -310,7 +404,7 @@
 
         const body = document.body;
         const feed = document.getElementById('imageFeed');
-        const feedContent = document.getElementById('feedContent'); // New inner container
+        const feedContent = document.getElementById('feedContent');
         const modal = document.getElementById('modal');
         const mainImg = document.getElementById('mainImage');
         const caption = document.getElementById('imageCaption');
@@ -340,7 +434,7 @@
         function renderFeed(data) {
             feed.style.opacity = '0';
             setTimeout(() => {
-                feedContent.innerHTML = ''; // Render into inner container
+                feedContent.innerHTML = ''; 
                 data.forEach((item, index) => {
                     const div = document.createElement('div');
                     div.className = 'gallery-thumb';
