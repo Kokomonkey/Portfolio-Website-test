@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
+    <title>AI in Architecture Workflow</title>
+    <style>
+        /* --- CSS VARIABLES & THEMING --- */
+        :root {
+            /* Light Mode Default */
+            --bg-color: #e6e6e6;
+            --text-color: #1a1a1a;
+            --container-bg: #ffffff;
+            --container-border: #000000;
+            --accent-color: #ff3333; 
+            --secondary-accent: #4a90e2; 
+            --dot-color: #cccccc;
+            
+            --line-color: #000000; 
+            --line-active: #ff3333;
+            --line-personal: #4a90e2; /* Blue for personal workflow */
+            
+            /* --- CATEGORY COLORS --- */
+            --cat-gen: #9b59b6;    
+            --cat-tech: #2980b9;   
+            --cat-text: #27ae60;   
+            --cat-mgmt: #f39c12;   
+            --cat-bid: #c0392b;    
+            --cat-scan: #16a085;   
+            
+            --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --container-bg: #1e1e1e;
+            --container-border: #ffffff;
+            --dot-color: #333333;
+            
+            --line-color: #ffffff; 
+            --line-active: #ff5555;
+            --line-personal: #5dade2;
+
+            /* Dark mode adjustments */
+            --cat-gen: #af7ac5;
+            --cat-tech: #5dade2;
+            --cat-text: #58d68d;
+            --cat-mgmt: #f5b041;
+            --cat-bid: #ec7063;
+            --cat-scan: #48c9b0;
+        }
+
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+            transition: background-color 0.3s;
+        }
+
+        /* --- CAPTURE MODE STYLES (For PDF Export) --- */
+        /* Hides everything except the personal workflow elements during capture */
+        body.capturing-mode .step-node:not(.mirrored),
+        body.capturing-mode .task-group,
+        body.capturing-mode #connections-layer path:not(.personal-path) {
+           display: none !important;
+        }
+        body.capturing-mode #canvas-wrapper {
+            background: var(--bg-color); /* Ensure background fills */
+        }
+
+
+        .bg-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
+            background-size: 25px 25px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- UI LAYER --- */
+        .ui-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .ui-hidden { opacity: 0; }
+
+        .header-container {
+            pointer-events: auto;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            background: var(--bg-color);
+            padding: 10px 30px;
+            border: 2px solid var(--container-border);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .site-logo {
+            height: 30px; width: auto;
+            filter: invert(100%);
+            background: var(--text-color);
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .back-btn { 
+            pointer-events: auto;
+            position: absolute; 
+            top: 30px; 
+            left: 30px; 
+            text-decoration: none; 
+            border: 2px solid var(--accent-color); 
+            background-color: var(--bg-color); 
+            color: var(--accent-color); 
+            padding: 10px 20px; 
+            font-family: var(--font-mono); 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            font-size: 0.9rem; 
+            transition: all 0.2s ease; 
+        }
+        .back-btn:hover { 
+            background-color: var(--accent-color); 
+            color: var(--bg-color); 
+        }
+
+        .controls {
+            pointer-events: auto;
+            position: absolute;
+            bottom: 30px; right: 30px;
+            display: flex; gap: 10px;
+        }
+
+        .btn-ui {
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            color: var(--text-color);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+        .btn-ui:hover { background: var(--dot-color); }
+
+        .legend-container {
+            pointer-events: auto;
+            position: absolute;
+            bottom: 80px; 
+            right: 30px;
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .legend-title {
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--line-color);
+            padding-bottom: 5px;
+            margin-bottom: 2px;
+        }
+        
+        .legend-note {
+            font-size: 0.65rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            border-top: 1px dashed var(--line-color);
+            padding-top: 6px;
+            margin-top: 4px;
+            font-family: var(--font-mono);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+        }
+
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+
+        /* --- INTRO OVERLAY --- */
+        #intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-color);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            pointer-events: none;
+            transition: opacity 0.5s ease-out;
+        }
+        #intro-overlay.finished { opacity: 0; }
+        
+        .terminal-text {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        .cursor {
+            display: inline-block;
+            width: 10px; height: 20px;
+            background: var(--accent-color);
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* --- CANVAS --- */
+        #canvas-wrapper {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            cursor: grab;
+            opacity: 0; 
+            transition: opacity 1s ease;
+        }
+        #canvas-wrapper.visible { opacity: 1; }
+        #canvas-wrapper:active { cursor: grabbing; }
+
+        #workflow-root {
+            position: absolute;
+            top: 0; 
+            left: 0; 
+            transform-origin: 0 0; 
+            width: 0; height: 0; 
+        }
+
+        /* --- NODES --- */
+        .step-node {
+            position: absolute;
+            width: 240px;
+            min-height: 100px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            background: var(--container-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            z-index: 10;
+            user-select: none;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: opacity 0.6s, transform 0.6s, background-color 0.3s, border-color 0.3s;
+        }
+        
+        .step-node.intro-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* --- MIRRORED STEPS (Personal Workflow Base) --- */
+        .step-node.mirrored {
+            border-style: dashed;
+            border-color: var(--line-personal);
+            background: transparent;
+            opacity: 0.7;
+            pointer-events: none; /* Just visual */
+            z-index: 5;
+        }
+        .step-node.mirrored .step-header { color: var(--line-personal); }
+
+        .step-node:not(.mirrored):hover { transform: scale(1.02); }
+        .step-header { font-weight: 800; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 5px; }
+        .step-desc { font-size: 0.75rem; color: #666; line-height: 1.3; }
+
+        /* --- DIVIDER LINE --- */
+        #workflow-divider {
+            position: absolute;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--line-color) 0, var(--line-color) 10px, transparent 10px, transparent 20px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .task-group {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 5;
+        }
+        .task-group.visible { opacity: 1; pointer-events: auto; }
+
+        .task-node {
+            width: 240px;
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+        .task-node:hover { background-color: var(--bg-color); }
+        .task-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+        .task-desc { font-size: 0.7rem; color: #666; }
+
+        .ai-group {
+            position: absolute;
+            left: 365px; 
+            top: 50%;
+            transform: translate(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 280px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+        .ai-group.visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+
+        .ai-node {
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            border-left: 4px solid var(--text-color); 
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 0.8rem;
+            cursor: pointer; 
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+        .ai-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* PERSONAL WORKFLOW NODES */
+        .personal-node {
+            position: absolute;
+            width: 240px;
+            z-index: 20;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .ai-type-badge {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--container-bg);
+        }
+
+        .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .ai-logo { width: 16px; height: 16px; background: #ccc; border-radius: 50%; }
+        .ai-name { font-weight: bold; }
+        .ai-desc { font-size: 0.7rem; color: #666; margin-bottom: 8px; line-height: 1.3;}
+        .ai-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.65rem; font-family: var(--font-mono); border-top: 1px solid var(--line-color); padding-top: 6px; }
+        .pro { color: #2ecc71; }
+        .con { color: #e74c3c; }
+        .price { color: var(--secondary-accent); font-weight: bold; grid-column: span 2; }
+        
+        .ai-link {
+            display: block; margin-top: 6px; 
+            text-align: right; font-size: 0.7rem; 
+            text-decoration: none; color: var(--text-color); 
+            border-bottom: 1px dotted var(--text-color);
+            width: fit-content; margin-left: auto;
+        }
+
+        /* --- SVG LINES --- */
+        svg {
+            position: absolute;
+            overflow: visible;
+            pointer-events: none;
+            z-index: 1;
+            top: 0; left: 0;
+        }
+        path {
+            fill: none;
+            stroke: var(--line-color);
+            stroke-width: 2;
+            transition: stroke 0.3s;
+        }
+        
+        .intro-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        
+        .personal-path {
+            stroke: var(--line-personal);
+            stroke-width: 2;
+            stroke-dasharray: 5, 5;
+            opacity: 0.6;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .line-active { stroke: var(--line-active); stroke-width: 3; }
+
+
+        /* --- SCREEN FILL OVERLAY --- */
+        #detail-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8);
+            z-index: 5000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        #detail-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .overlay-content {
+            width: 90vw;
+            height: 90vh;
+            background: #000;
+            color: #fff;
+            border: 2px solid #fff;
+            display: flex;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            width: 40px; height: 40px;
+            background: #fff;
+            color: #000;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex; justify-content center; align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            border: none;
+        }
+        .close-btn:hover { background: var(--accent-color); color: white; }
+
+        .detail-left {
+            width: 40%;
+            padding: 60px;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .detail-right {
+            width: 60%;
+            background: #000;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .ov-title {
+            font-size: 3rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .ov-desc {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 40px;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+        .ov-meta {
+            margin-top: auto;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+        .ov-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .ov-label { color: #666; }
+        .ov-val { color: #fff; font-weight: bold; }
+
+        .ov-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 30px;
+            border: 1px solid #fff;
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+        }
+        .ov-btn:hover { background: #fff; color: #000; }
+
+        .grid-square {
+            border: 1px solid #333;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px;
+        }
+        .sq-title {
+            position: relative; z-index: 2;
+            font-size: 1.2rem; font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 2px solid white;
+            display: inline-block; padding-bottom: 10px; margin-bottom: 10px;
+        }
+        .sq-txt { position: relative; z-index: 2; font-size: 0.9rem; color: #aaa; }
+        .sq-center { align-items: center; text-align: center; }
+
+    </style>
+</head>
+<body data-theme="dark"> 
+    <div class="bg-pattern"></div>
+
+    <div id="intro-overlay">
+        <div class="terminal-text">Initializing Workflow...<span class="cursor"></span></div>
+    </div>
+
+    <div id="detail-overlay" onclick="closeDetailOverlay(event)">
+        <div class="overlay-content" onclick="event.stopPropagation()"> 
+            <button class="close-btn" onclick="closeDetailOverlay()">×</button>
+            <div class="detail-left">
+                <h2 id="ov-title" class="ov-title">AI Name</h2>
+                <div id="ov-type" style="color:var(--accent-color); font-family:var(--font-mono); margin-bottom:10px; text-transform:uppercase;">TYPE</div>
+                <p id="ov-desc" class="ov-desc">Description goes here.</p>
+                
+                <div class="ov-meta">
+                    <div class="ov-row"><span class="ov-label">Pricing:</span> <span id="ov-price" class="ov-val">Free</span></div>
+                    <div class="ov-row"><span class="ov-label">Pros:</span> <span id="ov-pro" class="ov-val" style="color:#2ecc71">Good</span></div>
+                    <div class="ov-row"><span class="ov-label">Cons:</span> <span id="ov-con" class="ov-val" style="color:#e74c3c">Bad</span></div>
+                </div>
+
+                <a id="ov-link" href="#" target="_blank" class="ov-btn">Visit Website</a>
+            </div>
+
+            <div class="detail-right">
+                <div class="grid-square">
+                    <span class="sq-title">01. Workflow</span>
+                    <p class="sq-txt">Integration method and API capabilities within the current pipeline architecture.</p>
+                </div>
+                <div class="grid-square">
+                    <div style="background:#222; width:100%; height:100%; position:absolute; top:0; left:0;"></div>
+                    <span class="sq-title" style="margin-top: auto;">[Visual Output]</span>
+                </div>
+                <div class="grid-square">
+                    <div style="background:#1a1a1a; width:100%; height:100%; position:absolute; top:0; left:0;"></div>
+                    <span class="sq-title" style="margin-top: auto;">[Data Model]</span>
+                </div>
+                <div class="grid-square sq-center">
+                    <span class="sq-title">02. Efficiency</span>
+                    <p class="sq-txt">Estimated time savings based on task automation parameters.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-layer ui-hidden" id="main-ui">
+        <a href="index.html" class="back-btn">← Back</a>
+        
+        <div class="header-container">
+            <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo" id="header-logo-img">
+            <h1>AI in Architecture</h1>
+        </div>
+
+        <div class="legend-container">
+            <div class="legend-title">Legend</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-gen)"></div>Image/Video Gen</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-tech)"></div>CAD/BIM/Technical</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-text)"></div>Text/Code/Regs</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-mgmt)"></div>Management</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-bid)"></div>Bidding/Finance</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cat-scan)"></div>Reality Capture</div>
+            <div class="legend-note">Right-click AI to add/remove</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-ui" onclick="exportPersonalWorkflow()" style="border-color:var(--accent-color); color:var(--accent-color); font-weight:800;">EXPORT PDF</button>
+            <button class="btn-ui" onclick="toggleTheme()">Dark/Light</button>
+            <button class="btn-ui" onclick="resetView()">Reset View</button>
+        </div>
+    </div>
+
+    <div id="canvas-wrapper">
+        <div id="workflow-root">
+            <div id="workflow-divider"></div>
+            <svg id="connections-layer"></svg>
+            <div id="personal-workflow-layer"></div>
+        </div>
+    </div>
+
+<script>
+    
+const workflowData = [
+  {
+    title: "1. Pre-Design",
+    desc: "Strategic Definition & Discovery",
+    tasks: [
+      {
+        title: "Client Intake & Programming",
+        desc: "Visioning workshops, user-needs surveys, and developing room data sheets/adjacency matrices.",
+        ais: [
+          { name: "Excel / Data Tools", type: "Management", desc: "Managing functional requirements and square footage targets.", price: "Standard", pro: "Structured brief", con: "Manual data entry", link: "#", target: "_blank" },
+          { name: "Digital Blue Foam", type: "CAD/BIM/Technical", desc: "Web-based generative design for sustainable feasibility studies.", price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/", target: "_blank" },
+          { name: "Crosby Studios", type: "Image/Video Gen", desc: "Generative interior design concepts.", price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/", target: "_blank" },
+          { name: "ReimagineHome", type: "Image/Video Gen", desc: "AI for virtual staging and renovation ideas from photos.", price: "Freemium", pro: "Instant renovation ideas", con: "2D only", link: "https://www.reimaginehome.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Site & Regulatory Analysis",
+        desc: "Topographic review, solar/climate analysis, and detailed zoning audit (FAR, setbacks, height).",
+        ais: [
+          { name: "UpCodes Copilot", type: "Text/Code/Regs", desc: "AI assistant that answers building code questions and compliance checks.", price: "$59/mo", pro: "Instant code answers", con: "US/Code specific", link: "https://up.codes/", target: "_blank" },
+          { name: "Autodesk Forma", type: "CAD/BIM/Technical", desc: "Real-time environmental analysis (wind, noise, sun) & conceptual site planning.", price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma", target: "_blank" },
+          { name: "Polycam", type: "Reality Capture", desc: "LiDAR scanning app to capture site conditions into 3D models.", price: "Freemium / $27/mo", pro: "Fast site context", con: "Phone hardware dep.", link: "https://poly.cam/", target: "_blank" },
+          { name: "Luma AI", type: "Reality Capture", desc: "Capture photorealistic 3D scenes (NeRFs) from video.", price: "Free / Sub", pro: "Photorealism", con: "Heavy mesh files", link: "https://lumalabs.ai/", target: "_blank" },
+          { name: "Archistar", type: "Text/Code/Regs", desc: "Property intelligence platform for checking zoning compliance instantly.", price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/", target: "_blank" },
+          { name: "Aurivus", type: "Reality Capture", desc: "AI that processes laser scans (point clouds) into BIM geometry automatically.", price: "Quote", pro: "Scan-to-BIM automation", con: "Complex setup", link: "https://aurivus.com/", target: "_blank" },
+          { name: "Pointly", type: "Reality Capture", desc: "Cloud-based AI for classifying and segmenting 3D point clouds.", price: "~€99/mo", pro: "Fast classification", con: "Storage limits", link: "https://pointly.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Feasibility & Budgeting",
+        desc: "Developing Rough Order of Magnitude (ROM) cost models and testing project viability.",
+        ais: [
+          { name: "Giraffe", type: "CAD/BIM/Technical", desc: "Geospatial planning tool for rapid urban feasibility.", price: "$45/mo", pro: "Map-based logic", con: "Learning curve", link: "https://www.giraffe.build/", target: "_blank" },
+          { name: "TestFit", type: "CAD/BIM/Technical", desc: "Real-time generative deal solving and yield analysis.", price: "$5,000/yr", pro: "Instant ROI math", con: "Boxy geometry", link: "https://www.testfit.io/", target: "_blank" },
+          { name: "Maket", type: "CAD/BIM/Technical", desc: "Generative residential design for quick layout iterations.", price: "Free Tier / Sub", pro: "Fast residential", con: "Less complex commercial", link: "https://www.maket.ai/", target: "_blank" },
+          { name: "qbiq", type: "CAD/BIM/Technical", desc: "AI office layout planning and 3D virtual tours for test fits.", price: "Subscription", pro: "High speed layouts", con: "Office focused", link: "https://www.qbiq.ai/", target: "_blank" },
+          { name: "Hypar", type: "CAD/BIM/Technical", desc: "Open platform for generating building systems and functions via code.", price: "$25/mo", pro: "Extremely flexible", con: "Requires logic setup", link: "https://hypar.io/", target: "_blank" },
+          { name: "ARK (Automated Residential Kits)", type: "CAD/BIM/Technical", desc: "Automated feasibility and schematic design for multi-family housing.", price: "Quote", pro: "Detail rich output", con: "Residential focus", link: "https://ark.design/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "2. Schematic Design",
+    desc: "Concept Formulation & Form",
+    tasks: [
+      {
+        title: "Parti & Concept Generation",
+        desc: "Creating guiding organizational principles, sketches, and mood boards to establish design intent.",
+        ais: [
+          { name: "Vizcom", type: "Image/Video Gen", desc: "Turn hand sketches into photorealistic renders in seconds.", price: "$49/mo", pro: "Retains design intent", con: "Requires sketching", link: "https://www.vizcom.ai/", target: "_blank" },
+          { name: "Midjourney", type: "Image/Video Gen", desc: "AI-driven atmospheric concept art for client visioning.", price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/", target: "_blank" },
+          { name: "Adobe Firefly", type: "Image/Video Gen", desc: "Ethical generative AI integrated into Photoshop for textures/concepts.", price: "Part of CC", pro: "Safe for commercial", con: "Less 'artistic' than MJ", link: "https://www.adobe.com/sensei/generative-ai/firefly.html", target: "_blank" },
+          { name: "Krea.ai", type: "Image/Video Gen", desc: "Real-time generation that updates renders as you move shapes.", price: "Freemium", pro: "Instant feedback", con: "Web-based", link: "https://www.krea.ai/", target: "_blank" },
+          { name: "LookX", type: "Image/Video Gen", desc: "AI tailored for architecture to generate renderings from massing models.", price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/", target: "_blank" },
+          { name: "mnml.ai", type: "Image/Video Gen", desc: "Renders architecture sketches and massing models into various styles.", price: "$19/mo", pro: "Wide style variety", con: "Image-to-image only", link: "https://mnml.ai/", target: "_blank" },
+          { name: "PromeAI", type: "Image/Video Gen", desc: "Sketch-to-render tool with specific modes for architecture and interiors.", price: "Freemium", pro: "Controllable output", con: "Web interface", link: "https://www.promeai.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Massing & Spatial Studies",
+        desc: "Drafting preliminary single-line plans and testing building scale/volume on site.",
+        ais: [
+          { name: "Snaptrude", type: "CAD/BIM/Technical", desc: "Collaborative browser-based BIM for concept design.", price: "$100/mo", pro: "Google Docs for BIM", con: "New ecosystem", link: "https://www.snaptrude.com/", target: "_blank" },
+          { name: "Finch 3D", type: "CAD/BIM/Technical", desc: "Graph-based generative design for optimizing floor plans.", price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/", target: "_blank" },
+          { name: "ARCHITEChTURES", type: "CAD/BIM/Technical", desc: "AI-powered residential building design generator.", price: "Subscription", pro: "Full building generation", con: "Strict parameters", link: "https://architechtures.com/", target: "_blank" },
+          { name: "Conix", type: "CAD/BIM/Technical", desc: "AI for residential zoning and planning optimization.", price: "Subscription", pro: "Zoning logic", con: "Region specific roots", link: "https://conix.ai/", target: "_blank" },
+          { name: "PlanFinder", type: "CAD/BIM/Technical", desc: "Plugin for Rhino/Revit to generate apartment layouts.", price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/", target: "_blank" },
+          { name: "Rayon", type: "CAD/BIM/Technical", desc: "Collaborative space planning tool with smart AI fill and furniture logic.", price: "Freemium", pro: "Fast 2D workflow", con: "2D focused", link: "https://www.rayon.so/", target: "_blank" },
+          { name: "Laiout", type: "CAD/BIM/Technical", desc: "Generates floor plan options tailored to specific architectural constraints.", price: "Subscription", pro: "Rapid iteration", con: "Early stage", link: "https://laiout.co/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Visualization & VR",
+        desc: "Producing renderings and VR walkthroughs to secure early client buy-in.",
+        ais: [
+          { name: "Magnific AI", type: "Image/Video Gen", desc: "Upscales and adds massive detail to low-res renders.", price: "$39/mo", pro: "Incredible detail", con: "Can hallucinate details", link: "https://magnific.ai/", target: "_blank" },
+          { name: "Veras (EvolveLAB)", type: "Image/Video Gen", desc: "AI rendering plugin directly inside Revit/Rhino.", price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras", target: "_blank" },
+          { name: "Runway", type: "Image/Video Gen", desc: "Generate cinematic fly-through videos from static images.", price: "Subscription", pro: "Video generation", con: "Abstract motion", link: "https://runwayml.com/", target: "_blank" },
+          { name: "Enscape", type: "Image/Video Gen", desc: "Real-time rendering integrated into the design workflow.", price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/", target: "_blank" },
+          { name: "ArkoAI", type: "Image/Video Gen", desc: "Cloud-based rendering plugin for Rhino, Revit, and SketchUp.", price: "$25/mo", pro: "Fast cloud render", con: "Less control than local", link: "https://arko.ai/", target: "_blank" },
+          { name: "SketchUp Diffusion", type: "Image/Video Gen", desc: "Native Stable Diffusion integration for SketchUp.", price: "Free for Subscribers", pro: "Native workflow", con: "Basic control", link: "https://www.sketchup.com/", target: "_blank" },
+          { name: "D5 Render", type: "Image/Video Gen", desc: "Real-time renderer with AI atmosphere and material scattering.", price: "Free / $30/mo", pro: "Raytracing quality", con: "Hardware intensive", link: "https://www.d5render.com/", target: "_blank" },
+          { name: "Graphisoft AI Visualizer", type: "Image/Video Gen", desc: "Stable Diffusion tool built directly into Archicad.", price: "Free for Subscribers", pro: "BIM integration", con: "Archicad only", link: "https://graphisoft.com/", target: "_blank" },
+          { name: "Arkio", type: "CAD/BIM/Technical", desc: "Collaborative VR design with pass-through modeling features.", price: "Freemium", pro: "Immersive design", con: "VR headset needed", link: "https://www.arkio.is/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "3. Design Development",
+    desc: "Technical Refinement & Systems",
+    tasks: [
+      {
+        title: "Federated Modeling & Analytics",
+        desc: "Integrating Structural and MEP models and running performance analysis.",
+        ais: [
+          { name: "Cove.tool", type: "CAD/BIM/Technical", desc: "Automated energy, daylight, and carbon analysis.", price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/", target: "_blank" },
+          { name: "Autodesk Revit", type: "CAD/BIM/Technical", desc: "Core BIM authoring and information management.", price: "$2,500/yr", pro: "Fully integrated", con: "Steep learning", link: "https://www.autodesk.com/products/revit/overview", target: "_blank" },
+          { name: "BricsCAD BIM", type: "CAD/BIM/Technical", desc: "AI-driven BIM that classifies geometry automatically.", price: "Perpetual/Sub", pro: "Smart classification", con: "Market share", link: "https://www.bricsys.com/bricscad-bim", target: "_blank" },
+          { name: "Augmenta", type: "CAD/BIM/Technical", desc: "AI for automated electrical and systems design.", price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/", target: "_blank" },
+          { name: "One Click LCA", type: "CAD/BIM/Technical", desc: "Automated life-cycle carbon assessment from BIM data.", price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/", target: "_blank" },
+        ]
+      },
+      {
+        title: "Envelope & Interior Detailing",
+        desc: "Refining wall sections, interior elevations, millwork, and waterproofing strategies.",
+        ais: [
+          { name: "Kaedim", type: "CAD/BIM/Technical", desc: "Convert 2D images into 3D models for detailed assets.", price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/", target: "_blank" },
+          { name: "Sloyd", type: "CAD/BIM/Technical", desc: "Generative 3D asset creation for props and details.", price: "Freemium", pro: "Fast assets", con: "Game-dev focus", link: "https://www.sloyd.ai/", target: "_blank" },
+          { name: "Adobe Substance 3D Sampler", type: "Reality Capture", desc: "AI photogrammetry to turn physical material scans into 3D textures.", price: "$50/mo", pro: "High fidelity mats", con: "Part of Adobe suite", link: "https://www.adobe.com/products/substance3d-sampler.html", target: "_blank" },
+          { name: "Stylib", type: "Management", desc: "AI-powered search engine for architectural materials and products.", price: "Free / Brand driven", pro: "Visual search", con: "Inventory limited", link: "https://www.stylib.com/", target: "_blank" },
+          { name: "Homestyler", type: "CAD/BIM/Technical", desc: "AI interior design tool for rapid room layout and furniture placement.", price: "Freemium / Sub", pro: "User friendly", con: "Not BIM native", link: "https://www.homestyler.com/", target: "_blank" },
+          { name: "Oda Studio", type: "Image/Video Gen", desc: "AI for home staging and high-fidelity interior renders.", price: "$30/mo", pro: "Real estate focus", con: "Web based", link: "https://www.odastudio.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Specifications Refinement",
+        desc: "Selecting specific products and creating Outline Specifications for key assemblies.",
+        ais: [
+          { name: "Specright", type: "Management", desc: "Specification data management to ensure product accuracy.", price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/", target: "_blank" },
+          { name: "Deltek Specpoint", type: "Management", desc: "Modern specification writing tool linked to BIM.", price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "4. Construction Docs",
+    desc: "Technical Execution & Permitting",
+    tasks: [
+      {
+        title: "Production Drafting",
+        desc: "Creating fully dimensioned and annotated working drawings for legal construction.",
+        ais: [
+          { name: "Swapp", type: "CAD/BIM/Technical", desc: "AI that automates construction documents from models.", price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/", target: "_blank" },
+          { name: "Glyph (EvolveLAB)", type: "CAD/BIM/Technical", desc: "Automating documentation tasks in Revit (tagging, dimensioning).", price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph", target: "_blank" },
+          { name: "BlacksmithSoft", type: "Management", desc: "Connects BIM models to schedules to manage constraints.", price: "Quote", pro: "AWP logic", con: "Complex setup", link: "https://blacksmithsoft.com/", target: "_blank" },
+          { name: "Vectorworks AI Visualizer", type: "CAD/BIM/Technical", desc: "Integrated AI for visualization and line drawing stylization.", price: "Sub/Perpetual", pro: "Integrated CAD/BIM", con: "Vectorworks only", link: "https://www.vectorworks.net/", target: "_blank" }
+        ]
+      },
+      {
+        title: "The Project Manual",
+        desc: "Writing technical specifications using CSI MasterFormat to define quality standards.",
+        ais: [
+          { name: "Pype AutoSpecs", type: "Management", desc: "Scans spec manuals to automatically generate submittal logs.", price: "Quote", pro: "Compliance safety", con: "Post-doc focused", link: "https://pype.io/", target: "_blank" },
+          { name: "Document Crunch", type: "Text/Code/Regs", desc: "AI review of contracts and specifications for risk.", price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "QA/QC & Permitting",
+        desc: "Internal redline reviews and submission to Authorities Having Jurisdiction (AHJ).",
+        ais: [
+          { name: "Bluebeam Revu", type: "Management", desc: "Advanced PDF markup and document coordination.", price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "5. Bidding & Negotiation",
+    desc: "Procurement & Contracts",
+    tasks: [
+      {
+        title: "Bid Management",
+        desc: "Issuing bid sets, conducting pre-bid conferences, and managing bidder RFIs.",
+        ais: [
+          { name: "Downtobid", type: "Bidding/Finance", desc: "AI scans plans to detect scope and create bid packages.", price: "Subscription", pro: "Scope detection", con: "GC focused", link: "https://downtobid.com/", target: "_blank" },
+          { name: "SmartBid", type: "Bidding/Finance", desc: "Construction bid management software for GCs.", price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/", target: "_blank" },
+          { name: "Procore", type: "Management", desc: "Construction management and bid package tracking.", price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Bid Leveling & Analysis",
+        desc: "Analyzing contractor bids to ensure a fair 'apples-to-apples' comparison.",
+        ais: [
+          { name: "Alice Technologies", type: "Management", desc: "Generative construction scheduling for option analysis.", price: "Quote", pro: "Schedule optimization", con: "Complex input", link: "https://www.alicetechnologies.com/", target: "_blank" },
+          { name: "Togal.AI", type: "Bidding/Finance", desc: "AI-powered estimating and takeoff from plans.", price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/", target: "_blank" },
+          { name: "Pelles.ai", type: "Bidding/Finance", desc: "AI for preconstruction and estimating.", price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Value Engineering (VE)",
+        desc: "Identifying cost-saving alternatives without compromising essential design intent.",
+        ais: [
+          { name: "Drawer AI", type: "Bidding/Finance", desc: "AI for electrical estimating and optimization.", price: "Subscription", pro: "Trade specific", con: "Niche", link: "https://drawer.ai/", target: "_blank" },
+          { name: "OpenCost", type: "Bidding/Finance", desc: "Open source cost monitoring.", price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/", target: "_blank" }
+        ]
+      }
+    ]
+  },
+  {
+    title: "6. Construction Admin",
+    desc: "Construction Realization",
+    tasks: [
+      {
+        title: "Site Observation & Reports",
+        desc: "Regular site visits to verify work conforms to the Construction Documents.",
+        ais: [
+          { name: "Disperse", type: "Reality Capture", desc: "Uses site photos to track work-in-place and progress.", price: "Quote", pro: "Productivity data", con: "Service heavy", link: "https://www.disperse.io/", target: "_blank" },
+          { name: "StructionSite", type: "Reality Capture", desc: "360° reality capture mapped to floor plans automatically.", price: "Quote", pro: "Easy walk-throughs", con: "Data storage", link: "https://structionsite.com/", target: "_blank" },
+          { name: "OpenSpace", type: "Reality Capture", desc: "360-degree photo documentation mapped to plans.", price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/", target: "_blank" },
+          { name: "PlanGrid", type: "Management", desc: "Mobile access to drawings and site reporting.", price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Submittals & Shop Drawings",
+        desc: "Reviewing contractor samples and technical drawings for design intent.",
+        ais: [
+          { name: "Newforma Konekt", type: "Management", desc: "AI-driven PIM for managing RFIs and emails.", price: "Quote", pro: "Finding info", con: "Enterprise scale", link: "https://www.newforma.com/", target: "_blank" },
+          { name: "Part3", type: "Management", desc: "Automating the workflow for RFIs and submittals.", price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/", target: "_blank" },
+          { name: "Nyfty.ai", type: "Management", desc: "AI bots that automate Procore administrative tasks.", price: "Subscription", pro: "Admin automation", con: "Procore dependent", link: "https://www.nyfty.ai/", target: "_blank" }
+        ]
+      },
+      {
+        title: "Project Closeout",
+        desc: "Managing the Punch List and issuing the Certificate of Substantial Completion.",
+        ais: [
+          { name: "Trunk Tools", type: "Management", desc: "AI for construction workflow and incentives.", price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/", target: "_blank" },
+          { name: "Civils.ai", type: "Text/Code/Regs", desc: "Construction data AI for managing project records.", price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/", target: "_blank" }
+        ]
+      }
+    ]
+  }
+];
+
+    /* --- STATE --- */
+    const state = {
+        scale: 1,
+        panning: false,
+        pointX: 0,
+        pointY: 0,
+        startX: 0,
+        startY: 0,
+        openStep: null,
+        openTask: { step: null, task: null },
+        introComplete: false,
+        personalWorkflow: {} // Key: StepIndex, Value: Array of {aiData, taskIdx}
+    };
+
+    const root = document.getElementById('workflow-root');
+    const svgLayer = document.getElementById('connections-layer');
+    const personalLayer = document.getElementById('personal-workflow-layer');
+    const dividerLayer = document.getElementById('workflow-divider');
+    const introOverlay = document.getElementById('intro-overlay');
+    const mainUi = document.getElementById('main-ui');
+    const canvasWrapper = document.getElementById('canvas-wrapper');
+
+    const STEP_WIDTH = 240;
+    const STEP_GAP = 150;
+    const TASK_OFFSET_Y = 120;
+    const PERSONAL_BASE_GAP = 350; 
+    const PERSONAL_CARD_HEIGHT = 160; 
+
+    /* --- INIT & RENDER --- */
+    function init() {
+        renderNodes();
+        
+        const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
+        state.pointX = (window.innerWidth / 2) - (totalWidth / 2);
+        state.pointY = (window.innerHeight / 2); 
+
+        // Set Divider Width
+        dividerLayer.style.width = `${totalWidth}px`;
+        dividerLayer.style.top = `-${PERSONAL_BASE_GAP / 2}px`; // Center in gap
+
+        updateTransform();
+        runIntroSequence();
+    }
+
+    /* --- ANIMATION SEQUENCE --- */
+    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+    async function runIntroSequence() {
+        const textEl = document.querySelector('.terminal-text');
+        textEl.innerHTML = `LOADING SYSTEM...<span class="cursor"></span>`;
+        await sleep(600);
+        textEl.innerHTML = `BUILDING NODES...<span class="cursor"></span>`;
+        await sleep(600);
+        
+        introOverlay.classList.add('finished');
+        canvasWrapper.classList.add('visible');
+        await sleep(400); 
+
+        for (let i = 0; i < workflowData.length; i++) {
+            const node = document.getElementById(`step-${i}`);
+            node.classList.add('intro-active');
+            
+            // Also reveal mirrored nodes
+            const mirror = document.getElementById(`mirror-step-${i}`);
+            mirror.classList.add('intro-active');
+
+            if (i > 0) {
+                const prev = document.getElementById(`step-${i-1}`);
+                const x1 = parseInt(prev.style.left) + STEP_WIDTH;
+                const y1 = parseInt(prev.style.top) + 50; 
+                const x2 = parseInt(node.style.left); 
+                const y2 = y1; 
+                
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `M ${x1} ${y1} L ${x2} ${y2}`; 
+                path.setAttribute("d", d);
+                path.classList.add('intro-path');
+                svgLayer.appendChild(path);
+            }
+
+            await sleep(250); 
+        }
+
+        mainUi.classList.remove('ui-hidden');
+        await sleep(500);
+        
+        state.introComplete = true;
+        
+        setTimeout(() => {
+             introOverlay.style.display = 'none';
+        }, 100);
+    }
+
+
+    function renderNodes() {
+        workflowData.forEach((step, index) => {
+            // 1. MAIN STEP NODE
+            const stepEl = document.createElement('div');
+            stepEl.className = 'step-node';
+            stepEl.id = `step-${index}`;
+            stepEl.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
+            stepEl.style.top = `0px`; 
+            stepEl.innerHTML = `
+                <div class="step-header">${step.title}</div>
+                <div class="step-desc">${step.desc}</div>
+            `;
+            stepEl.onclick = (e) => toggleStep(index, e);
+            root.appendChild(stepEl);
+
+            // 2. MIRRORED STEP NODE (Personal Base)
+            const mirrorEl = document.createElement('div');
+            mirrorEl.className = 'step-node mirrored';
+            mirrorEl.id = `mirror-step-${index}`;
+            mirrorEl.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
+            mirrorEl.style.top = `-${PERSONAL_BASE_GAP}px`; // Fixed position above
+            mirrorEl.innerHTML = `
+                <div class="step-header" style="opacity:0.6">${step.title}</div>
+                <div class="step-desc" style="opacity:0.6">(Personal Workflow)</div>
+            `;
+            root.appendChild(mirrorEl);
+
+            // 3. TASK GROUPS
+            const taskGroup = document.createElement('div');
+            taskGroup.className = 'task-group';
+            taskGroup.id = `taskgroup-${index}`;
+            taskGroup.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
+            taskGroup.style.top = `${TASK_OFFSET_Y}px`;
+
+            step.tasks.forEach((task, tIndex) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task-node';
+                taskEl.id = `task-${index}-${tIndex}`;
+                taskEl.innerHTML = `
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-desc">${task.desc}</div>
+                `;
+                taskEl.onmouseenter = () => hoverTask(index, tIndex);
+                taskEl.onclick = (e) => { e.stopPropagation(); hoverTask(index, tIndex); };
+
+                // AI Group
+                const aiGroup = document.createElement('div');
+                aiGroup.className = 'ai-group';
+                aiGroup.id = `aigroup-${index}-${tIndex}`;
+                
+                task.ais.forEach(ai => {
+                    let typeColor = 'var(--text-color)';
+                    if(ai.type === "Image/Video Gen") typeColor = 'var(--cat-gen)';
+                    if(ai.type === "CAD/BIM/Technical") typeColor = 'var(--cat-tech)';
+                    if(ai.type === "Text/Code/Regs") typeColor = 'var(--cat-text)';
+                    if(ai.type === "Management") typeColor = 'var(--cat-mgmt)';
+                    if(ai.type === "Bidding/Finance") typeColor = 'var(--cat-bid)';
+                    if(ai.type === "Reality Capture") typeColor = 'var(--cat-scan)';
+
+                    const aiEl = document.createElement('div');
+                    aiEl.className = 'ai-node';
+                    aiEl.style.borderLeftColor = typeColor;
+                    
+                    aiEl.innerHTML = `
+                        <div class="ai-type-badge" style="background:${typeColor}">${ai.type}</div>
+                        <div class="ai-header">
+                            <div class="ai-logo"></div>
+                            <div class="ai-name">${ai.name}</div>
+                        </div>
+                        <div class="ai-desc">${ai.desc}</div>
+                        <div class="ai-meta">
+                            <span class="pro">+ ${ai.pro}</span>
+                            <span class="con">- ${ai.con}</span>
+                            <span class="price">${ai.price}</span>
+                        </div>
+                        <div class="ai-link" style="opacity:0.6">Click for Details</div> 
+                    `;
+                    aiEl.onclick = (e) => {
+                        e.stopPropagation();
+                        openDetailOverlay(ai);
+                    };
+                    
+                    aiEl.oncontextmenu = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addToPersonalWorkflow(index, tIndex, ai, typeColor);
+                    };
+                    
+                    aiGroup.appendChild(aiEl);
+                });
+                
+                taskEl.appendChild(aiGroup);
+                taskGroup.appendChild(taskEl);
+            });
+
+            root.appendChild(taskGroup);
+        });
+    }
+
+    /* --- PERSONAL WORKFLOW LOGIC --- */
+    function addToPersonalWorkflow(stepIdx, taskIdx, aiData, typeColor) {
+        if (!state.personalWorkflow[stepIdx]) {
+            state.personalWorkflow[stepIdx] = [];
+        }
+
+        const column = state.personalWorkflow[stepIdx];
+        const existingIndex = column.findIndex(item => item.taskIdx === taskIdx);
+        const newItem = { ...aiData, taskIdx, typeColor };
+
+        if (existingIndex > -1) {
+            column[existingIndex] = newItem;
+        } else {
+            column.push(newItem);
+        }
+
+        renderPersonalWorkflow();
+    }
+
+    function removeFromPersonalWorkflow(stepIdx, itemIndex) {
+        if(state.personalWorkflow[stepIdx]) {
+            state.personalWorkflow[stepIdx].splice(itemIndex, 1);
+            if(state.personalWorkflow[stepIdx].length === 0) {
+                delete state.personalWorkflow[stepIdx];
+            }
+        }
+        renderPersonalWorkflow();
+    }
+
+    function renderPersonalWorkflow() {
+        personalLayer.innerHTML = '';
+        
+        Object.keys(state.personalWorkflow).forEach(key => {
+            const stepIdx = parseInt(key);
+            const items = state.personalWorkflow[stepIdx];
+
+            items.forEach((item, idx) => {
+                const node = document.createElement('div');
+                node.className = 'ai-node personal-node';
+                node.style.borderLeftColor = item.typeColor;
+                node.style.left = `${stepIdx * (STEP_WIDTH + STEP_GAP)}px`;
+                
+                // Stack upwards starting from the Mirrored Step position
+                const yPos = -(PERSONAL_BASE_GAP + (idx * PERSONAL_CARD_HEIGHT));
+                node.style.top = `${yPos}px`;
+
+                node.innerHTML = `
+                    <div class="ai-type-badge" style="background:${item.typeColor}">${item.type}</div>
+                    <div class="ai-header">
+                        <div class="ai-logo"></div>
+                        <div class="ai-name">${item.name}</div>
+                    </div>
+                    <div class="ai-desc">${item.desc}</div>
+                `;
+
+                node.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeFromPersonalWorkflow(stepIdx, idx);
+                };
+                
+                node.onclick = (e) => {
+                    e.stopPropagation();
+                    openDetailOverlay(item);
+                }
+
+                personalLayer.appendChild(node);
+            });
+        });
+
+        // REMOVED updateGhostMode call
+        drawLines(); 
+    }
+
+
+    /* --- OVERLAY INTERACTIONS --- */
+    function openDetailOverlay(aiData) {
+        document.getElementById('ov-title').innerText = aiData.name;
+        document.getElementById('ov-type').innerText = aiData.type; 
+        document.getElementById('ov-desc').innerText = aiData.desc;
+        document.getElementById('ov-price').innerText = aiData.price;
+        document.getElementById('ov-pro').innerText = aiData.pro;
+        document.getElementById('ov-con').innerText = aiData.con;
+        document.getElementById('ov-link').href = aiData.link;
+        
+        document.getElementById('detail-overlay').classList.add('active');
+    }
+
+    function closeDetailOverlay(e) {
+        document.getElementById('detail-overlay').classList.remove('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if(e.key === "Escape") closeDetailOverlay();
+    });
+
+
+    /* --- INTERACTIONS --- */
+    function toggleStep(index, e) {
+        if(!state.introComplete) return; 
+        
+        e.stopPropagation();
+        const group = document.getElementById(`taskgroup-${index}`);
+        
+        if (state.openStep === index) {
+            group.classList.remove('visible');
+            state.openStep = null;
+            state.openTask = { step: null, task: null };
+            group.querySelectorAll('.ai-group').forEach(el => el.classList.remove('visible'));
+        } else {
+            if (state.openStep !== null) {
+                const prev = document.getElementById(`taskgroup-${state.openStep}`);
+                if(prev) {
+                    prev.classList.remove('visible');
+                    prev.querySelectorAll('.ai-group').forEach(el => el.classList.remove('visible'));
+                }
+            }
+            state.openStep = index;
+            group.classList.add('visible');
+        }
+        setTimeout(drawLines, 50); 
+    }
+
+    function hoverTask(stepIdx, taskIdx) {
+        if(!state.introComplete) return;
+        
+        const group = document.getElementById(`taskgroup-${stepIdx}`);
+        group.querySelectorAll('.ai-group').forEach(el => el.classList.remove('visible'));
+
+        const target = document.getElementById(`aigroup-${stepIdx}-${taskIdx}`);
+        target.classList.add('visible');
+        
+        state.openTask = { step: stepIdx, task: taskIdx };
+        drawLines();
+    }
+
+    /* --- CANVAS & ZOOM --- */
+    const wrapper = document.getElementById('canvas-wrapper');
+
+    wrapper.addEventListener('mousedown', (e) => {
+        if(e.target.closest('.step-node') || e.target.closest('.task-node') || e.target.closest('.ai-node')) return;
+        state.panning = true;
+        state.startX = e.clientX - state.pointX;
+        state.startY = e.clientY - state.pointY;
+        wrapper.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mouseup', () => {
+        state.panning = false;
+        wrapper.style.cursor = 'grab';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!state.panning) return;
+        e.preventDefault();
+        state.pointX = e.clientX - state.startX;
+        state.pointY = e.clientY - state.startY;
+        updateTransform();
+    });
+
+   wrapper.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const xs = (e.clientX - state.pointX) / state.scale;
+    const ys = (e.clientY - state.pointY) / state.scale;
+    const delta = -e.deltaY;
+    const factor = delta > 0 ? 1.1 : 0.9; 
+    const nextScale = Math.min(Math.max(0.1, state.scale * factor), 4);
+    state.pointX = e.clientX - xs * nextScale;
+    state.pointY = e.clientY - ys * nextScale;
+    state.scale = nextScale;
+    updateTransform();
+}, { passive: false });
+
+    function updateTransform() {
+        root.style.transform = `translate(${state.pointX}px, ${state.pointY}px) scale(${state.scale})`;
+    }
+
+    function resetView() {
+        state.scale = 1;
+        const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
+        state.pointX = (window.innerWidth / 2) - (totalWidth / 2);
+        state.pointY = (window.innerHeight / 2);
+        updateTransform();
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    /* --- SVG CONNECTIONS --- */
+    function drawLines() {
+        svgLayer.innerHTML = ''; 
+        
+        // 1. Horizontal Step Lines (Main Workflow)
+        for(let i=0; i<workflowData.length-1; i++) {
+            const curr = document.getElementById(`step-${i}`);
+            const next = document.getElementById(`step-${i+1}`);
+            
+            const x1 = parseInt(curr.style.left) + STEP_WIDTH;
+            const y1 = parseInt(curr.style.top) + 50; 
+            const x2 = parseInt(next.style.left); 
+            const y2 = y1; 
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const d = `M ${x1} ${y1} L ${x2} ${y2}`; 
+            path.setAttribute("d", d);
+            svgLayer.appendChild(path);
+        }
+
+        // 2. Vertical Task Lines
+        if(state.openStep !== null) {
+            const stepEl = document.getElementById(`step-${state.openStep}`);
+            const taskGroup = document.getElementById(`taskgroup-${state.openStep}`);
+            const tasks = taskGroup.children;
+
+            const startX = parseInt(stepEl.style.left) + STEP_WIDTH/2;
+            const startY = parseInt(stepEl.style.top) + stepEl.offsetHeight;
+
+            Array.from(tasks).forEach(task => {
+                const tX = parseInt(taskGroup.style.left); 
+                const tY = parseInt(taskGroup.style.top) + task.offsetTop + task.offsetHeight/2;
+                
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `M ${startX} ${startY} L ${startX} ${tY} L ${tX} ${tY}`;
+                path.setAttribute("d", d);
+                svgLayer.appendChild(path);
+            });
+        }
+
+        // 3. Horizontal AI Lines
+        if(state.openTask.step !== null && state.openTask.task !== null) {
+            const tStep = state.openTask.step;
+            const tIdx = state.openTask.task;
+            const taskEl = document.getElementById(`task-${tStep}-${tIdx}`);
+            const aiGroup = document.getElementById(`aigroup-${tStep}-${tIdx}`);
+            
+            if(aiGroup && aiGroup.classList.contains('visible')) {
+                const ais = aiGroup.querySelectorAll('.ai-node');
+                
+                const taskRect = taskEl.getBoundingClientRect();
+                const rootRect = root.getBoundingClientRect();
+
+                const x1 = (taskRect.right - rootRect.left) / state.scale;
+                const y1 = (taskRect.top + taskRect.height / 2 - rootRect.top) / state.scale;
+
+                ais.forEach(ai => {
+                    const aiRect = ai.getBoundingClientRect();
+                    const x2 = (aiRect.left - rootRect.left) / state.scale;
+                    const y2 = (aiRect.top + aiRect.height / 2 - rootRect.top) / state.scale;
+                    createPath(x1, y1, x2, y2, true);
+                });
+            }
+        }
+
+        // 4. PERSONAL WORKFLOW LINES (Many-to-Many)
+        const sortedSteps = Object.keys(state.personalWorkflow).map(k => parseInt(k)).sort((a,b) => a-b);
+        if(sortedSteps.length > 1) {
+             for(let i=0; i<sortedSteps.length-1; i++) {
+                const currIdx = sortedSteps[i];
+                const nextIdx = sortedSteps[i+1];
+
+                if (nextIdx === currIdx + 1) {
+                    const currCol = state.personalWorkflow[currIdx];
+                    const nextCol = state.personalWorkflow[nextIdx];
+                    
+                    currCol.forEach((itemA, idxA) => {
+                        nextCol.forEach((itemB, idxB) => {
+                             const yA = -(PERSONAL_BASE_GAP + (idxA * PERSONAL_CARD_HEIGHT)) + 50; 
+                             const yB = -(PERSONAL_BASE_GAP + (idxB * PERSONAL_CARD_HEIGHT)) + 50;
+                             
+                             const xA = (currIdx * (STEP_WIDTH + STEP_GAP)) + STEP_WIDTH;
+                             const xB = (nextIdx * (STEP_WIDTH + STEP_GAP));
+
+                             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                             const d = `M ${xA} ${yA} C ${xA+50} ${yA}, ${xB-50} ${yB}, ${xB} ${yB}`; 
+                             path.setAttribute("d", d);
+                             path.classList.add('personal-path');
+                             svgLayer.appendChild(path);
+                        });
+                    });
+                }
+             }
+        }
+    }
+
+    function createPath(x1, y1, x2, y2, isAI) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        let d = "";
+        if(isAI) {
+            d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
+            path.classList.add('line-active');
+        } else {
+            d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
+        }
+        path.setAttribute("d", d);
+        svgLayer.appendChild(path);
+    }
+
+    window.addEventListener('resize', () => { resetView(); });
+
+    /* --- HELPER TO GET IMAGE DATA URL --- */
+    function imgToDataURL(imgElement) {
+        const canvas = document.createElement("canvas");
+        canvas.width = imgElement.width;
+        canvas.height = imgElement.height;
+        const ctx = canvas.getContext("2d");
+        
+        // Check if image is actually loaded
+        if (imgElement.complete && imgElement.naturalHeight !== 0) {
+             ctx.drawImage(imgElement, 0, 0);
+             return canvas.toDataURL("image/png");
+        } else {
+             // Fallback or error handling if logo isn't loaded
+             console.warn("Logo image not fully loaded for PDF export.");
+             return null;
+        }
+    }
+
+    /* --- EXPORT TO PDF FUNCTIONALITY --- */
+    async function exportPersonalWorkflow() {
+        const { jsPDF } = window.jspdf;
+        
+        if(Object.keys(state.personalWorkflow).length === 0) {
+            alert("Your personal workflow is empty. Right-click some AI nodes to add them first!");
+            return;
+        }
+
+        // 1. Get Logo Data
+        const logoImg = document.getElementById('header-logo-img');
+        const logoDataUrl = imgToDataURL(logoImg);
+
+        // 2. Prepare UI for Capture (Enter Capturing Mode)
+        const ui = document.getElementById('main-ui');
+        document.body.classList.add('capturing-mode'); // Add class to hide non-personal items
+        ui.classList.add('ui-hidden');
+        document.body.style.cursor = 'wait';
+
+        // Calculate bounds of personal workflow to center it optimally
+        let minY = 0;
+        let maxStack = 0;
+        const sortedSteps = Object.keys(state.personalWorkflow).map(k => parseInt(k)).sort((a,b) => a-b);
+        const minStep = sortedSteps[0];
+        const maxStep = sortedSteps[sortedSteps.length-1];
+
+        Object.values(state.personalWorkflow).forEach(col => {
+             maxStack = Math.max(maxStack, col.length);
+        });
+        // Top most point (highest stack)
+        minY = -(PERSONAL_BASE_GAP + (maxStack * PERSONAL_CARD_HEIGHT));
+        // Bottom most point (mirrored step)
+        const maxY = -PERSONAL_BASE_GAP + 100; // +100 is approx height of step node
+        
+        const contentWidth = (maxStep - minStep + 1) * (STEP_WIDTH + STEP_GAP);
+        const contentHeight = Math.abs(minY - maxY) + 200; // Add padding
+
+        // Force view to center on the personal block
+        state.scale = Math.min(window.innerWidth / contentWidth, window.innerHeight / contentHeight, 0.8); // Zoom to fit
+        // Calculate center point of content relative to root origin
+        const centerX = (minStep * (STEP_WIDTH + STEP_GAP)) + (contentWidth / 2);
+        const centerY = minY + (contentHeight / 2);
+        
+        state.pointX = (window.innerWidth / 2) - (centerX * state.scale);
+        state.pointY = (window.innerHeight / 2) - (centerY * state.scale);
+        
+        updateTransform();
+        await sleep(800); // Wait for transition and redraw
+
+        // 3. Capture the Canvas
+        const canvasElement = document.getElementById('canvas-wrapper');
+        const canvasShot = await html2canvas(canvasElement, {
+            backgroundColor: document.body.getAttribute('data-theme') === 'dark' ? '#121212' : '#e6e6e6',
+            scale: 2, // Higher resolution
+            logging: false,
+            useCORS: true // Important for images
+        });
+        
+        const imgData = canvasShot.toDataURL('image/png');
+
+        // 4. Restore View
+        document.body.classList.remove('capturing-mode');
+        ui.classList.remove('ui-hidden');
+        document.body.style.cursor = 'default';
+        state.scale = 1; 
+        resetView(); 
+
+        // 5. Generate PDF
+        const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+        let yPos = margin;
+
+        // -- Header (Logo & Branding) --
+        if(logoDataUrl) {
+             doc.addImage(logoDataUrl, 'PNG', margin, yPos, 15, 15); // Adjust logo size
+             doc.setFont("helvetica", "bold");
+             doc.setFontSize(18);
+             doc.setTextColor(0,0,0);
+             doc.text("DouweDoesDesign", margin + 20, yPos + 10);
+             yPos += 25;
+        } else {
+             yPos += 10;
+        }
+
+        // -- Title --
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.text("Personal Architecture Workflow", margin, yPos);
+        yPos += 8;
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100,100,100);
+        doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, yPos);
+        yPos += 15;
+
+        // -- Visual Snapshot --
+        const imgProps = doc.getImageProperties(imgData);
+        const pdfImgWidth = pageWidth - (margin * 2);
+        const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
+        
+        // Cap image height if it's too tall relative to width
+        const maxImgHeight = 130; 
+        const finalHeight = Math.min(pdfImgHeight, maxImgHeight);
+
+        doc.addImage(imgData, 'PNG', margin, yPos, pdfImgWidth, finalHeight);
+        yPos += finalHeight + 15;
+
+        // -- Detailed List --
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0,0,0);
+        doc.text("Selected Tool Stack", margin, yPos);
+        yPos += 10;
+
+        sortedSteps.forEach(stepIdx => {
+            const stepName = workflowData[stepIdx].title;
+            const items = state.personalWorkflow[stepIdx];
+
+            if(yPos > pageHeight - 30) { doc.addPage(); yPos = 20; }
+
+            // Step Header
+            doc.setFillColor(240, 240, 240);
+            doc.rect(margin, yPos - 6, pageWidth - (margin * 2), 8, 'F');
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text(stepName, margin + 2, yPos);
+            yPos += 10;
+
+            // Tools
+            items.forEach(item => {
+                if(yPos > pageHeight - 30) { doc.addPage(); yPos = 20; }
+
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(50, 50, 50);
+                doc.text(`• ${item.name}`, margin + 5, yPos);
+                
+                doc.setFont("courier", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`[${item.type}]`, margin + 70, yPos);
+
+                yPos += 5;
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(60, 60, 60);
+                
+                const descLines = doc.splitTextToSize(item.desc, pageWidth - (margin * 2) - 10);
+                doc.text(descLines, margin + 10, yPos);
+                yPos += (descLines.length * 5);
+
+                doc.setTextColor(74, 144, 226);
+                doc.textWithLink("Visit Website", margin + 10, yPos, { url: item.link });
+                doc.setTextColor(0);
+                
+                yPos += 10;
+            });
+            yPos += 5;
+        });
+
+        doc.save("DDD_Personal_Workflow.pdf");
+    }
+
+    init();
+
+</script>
+</body>
+</html>
