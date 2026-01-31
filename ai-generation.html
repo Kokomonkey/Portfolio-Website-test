@@ -4,25 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
-    <title>AI Architecture Hub | DouweDoesDesign</title>
+    <title>AI Design Framework | DouweDoesDesign</title>
     <style>
         /* --- CSS VARIABLES & RESET --- */
         :root {
             --bg-color: #000000;
             --accent-color: #ffffff;
-            --transition-speed: 0.3s;
-            
-            /* DYNAMIC SIZING */
-            /* 3 wide means roughly 30vw, leaving room for borders */
-            --square-size: min(30vw, 40vh); 
-            --header-height: 15vh;
+            --dim-color: #444444;
+            /* Adjusted size to fit 6 squares + text on screen */
+            --square-size: min(28vw, 28vh); 
+            --header-height: 10vh;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
@@ -31,50 +25,62 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh; 
-            overflow: hidden; 
+            justify-content: flex-start; /* Changed from center to allow scrolling if needed */
+            min-height: 100vh;
+            padding-top: 2vh;
+            padding-bottom: 5vh;
         }
 
-        /* --- BACK BUTTON --- */
-        .back-btn {
-            position: fixed;
-            top: 2vh;
-            left: 2vh;
-            text-decoration: none;
-            z-index: 100;
-            border: 1px solid var(--accent-color);
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            padding: 10px 20px;
-            font-weight: 400;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
-        }
-
-        .back-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-        }
-
-        /* --- HEADER --- */
+        /* --- HEADER & LOGO --- */
         header {
-            height: var(--header-height);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             margin-bottom: 2vh;
+            width: 100%;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 1px solid var(--accent-color);
         }
 
         h1 {
-            font-size: 2.5rem; 
-            letter-spacing: -1px;
+            font-size: 1.8rem; 
+            letter-spacing: 3px;
             text-transform: uppercase;
             font-weight: 300;
             border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 10px;
+            padding-bottom: 5px;
+        }
+
+        /* --- INTRO SECTION (Above Grid) --- */
+        .intro-section {
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 4vh;
+            padding: 0 20px;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .intro-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--dim-color);
+            margin-bottom: 10px;
+            letter-spacing: 1.5px;
+        }
+
+        .intro-p {
+            font-size: 1rem;
+            line-height: 1.6;
+            font-weight: 300;
+            color: var(--accent-color);
         }
 
         /* --- THE GRID --- */
@@ -86,57 +92,41 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Wide */
+            grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(2, 1fr);    
             gap: 0; 
             width: fit-content;
             border: 2px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(255,255,255,0.05);
         }
 
-        /* --- INTERACTIVE GRID ITEMS --- */
+        /* --- GRID ITEMS --- */
         .grid-item {
-            display: block; 
-            text-decoration: none;
-            width: var(--square-size);
-            height: var(--square-size);
-            position: relative;
-            border: 1px solid var(--accent-color);
-            overflow: hidden; 
-            background-color: var(--bg-color);
-            
-            /* ENTRY ANIMATION */
-            opacity: 0; 
-            animation: fadeInGrid 0.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
-        }
-
-        /* --- CONTENT & HOVER LOGIC --- */
-
-        /* The Image behind the text */
-        .bg-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.2; /* Dim by default */
-            filter: grayscale(100%);
-            transition: all 0.4s ease;
-            z-index: 0;
-        }
-
-        .square-content {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 10%;
+            width: var(--square-size);
+            height: var(--square-size);
+            position: relative;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+            padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
+        }
+
+        /* TEXT STYLING */
+        .number-tag {
+            font-size: 0.8rem;
+            color: var(--dim-color);
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-family: 'Courier New', monospace;
+            transition: color 0.3s;
         }
 
         .square-text {
@@ -144,112 +134,93 @@
             font-weight: 700;
             text-transform: uppercase;
             font-size: 1.2rem;
-            letter-spacing: 1px;
-            background-color: var(--bg-color); /* Box around text */
-            padding: 10px 15px;
-            border: 1px solid var(--accent-color);
-            transition: inherit;
+            letter-spacing: 2px;
+            z-index: 2;
+            transition: color 0.3s;
         }
 
         /* --- HOVER EFFECTS --- */
-        
-        .grid-item:hover .bg-image {
-            opacity: 1; /* Reveal image */
-            filter: grayscale(0%); /* Add color (if image has it) */
-            transform: scale(1.1); /* Slow zoom */
+        .grid-item:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.02); /* Slight pop out */
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .grid-item:hover .square-text {
-            background-color: var(--accent-color);
             color: var(--bg-color);
-            border-color: var(--bg-color);
-            transform: scale(1.05);
         }
 
-        /* --- ANIMATION KEYFRAMES --- */
-        @keyframes fadeInGrid {
+        .grid-item:hover .number-tag {
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .grid-item { opacity: 0; animation: fadeInGrid 0.8s forwards; }
+        @keyframes fadeInGrid { 
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-
-        /* Staggered Delays */
-        .grid-item:nth-child(1) { animation-delay: 0.0s; }
-        .grid-item:nth-child(2) { animation-delay: 0.1s; }
-        .grid-item:nth-child(3) { animation-delay: 0.2s; }
-        .grid-item:nth-child(4) { animation-delay: 0.3s; }
-        .grid-item:nth-child(5) { animation-delay: 0.4s; }
-        .grid-item:nth-child(6) { animation-delay: 0.5s; }
-
-        /* IMAGE LABEL (For placeholder clarity) */
-        .img-label {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            font-size: 0.6rem;
-            color: white;
-            opacity: 0.5;
-            z-index: 2;
-        }
+        
+        /* Staggered entry */
+        .grid-item:nth-child(1) { animation-delay: 0.1s; }
+        .grid-item:nth-child(2) { animation-delay: 0.2s; }
+        .grid-item:nth-child(3) { animation-delay: 0.3s; }
+        .grid-item:nth-child(4) { animation-delay: 0.4s; }
+        .grid-item:nth-child(5) { animation-delay: 0.5s; }
+        .grid-item:nth-child(6) { animation-delay: 0.6s; }
 
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="back-btn">← Main Menu</a>
-
     <header>
-        <h1>AI Methodology</h1>
+        <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="logo">
+        <h1>AI Framework</h1>
     </header>
+
+    <section class="intro-section">
+        <div class="intro-title">Philosophy & Methodology</div>
+        <p class="intro-p">
+            The integration of AI into architectural design is not about automation, but augmentation. 
+            This framework explores the transition from raw data to realized form through six distinct phases.
+        </p>
+    </section>
 
     <main>
         <div class="grid-container">
 
-            <a href="AIExplainedA.html" class="grid-item">
-                <img src="path/to/placeholder1.jpg" class="bg-image" alt="Abstract AI Art">
-                <span class="img-label">[IMG: Abstract Shapes]</span>
-                <div class="square-content">
-                    <span class="square-text">Generating</span>
-                </div>
+            <a href="prompting.html" class="grid-item">
+                <span class="number-tag">1.0</span>
+                <span class="square-text">Prompting</span>
             </a>
 
-            <a href="AIExplainedB.html" class="grid-item">
-                <img src="path/to/placeholder2.jpg" class="bg-image" alt="Sketch to Render">
-                <span class="img-label">[IMG: Sketch overlay]</span>
-                <div class="square-content">
-                    <span class="square-text">Rendering</span>
-                </div>
+            <a href="ideation.html" class="grid-item">
+                <span class="number-tag">2.0</span>
+                <span class="square-text">Ideation</span>
             </a>
 
-            <a href="AIExplainedC.html" class="grid-item">
-                <img src="path/to/placeholder3.jpg" class="bg-image" alt="Material Texture">
-                <span class="img-label">[IMG: Concrete/Wood Texture]</span>
-                <div class="square-content">
-                    <span class="square-text">Texturing</span>
-                </div>
+            <a href="synthesis.html" class="grid-item">
+                <span class="number-tag">3.0</span>
+                <span class="square-text">Synthesis</span>
             </a>
 
-            <a href="AIExplainedD.html" class="grid-item">
-                <img src="path/to/placeholder4.jpg" class="bg-image" alt="Presentation Board">
-                <span class="img-label">[IMG: Client Meeting/Board]</span>
-                <div class="square-content">
-                    <span class="square-text">Presenting</span>
-                </div>
+            <a href="refinement.html" class="grid-item">
+                <span class="number-tag">4.0</span>
+                <span class="square-text">Refinement</span>
             </a>
 
-            <a href="AIExplainedE.html" class="grid-item">
-                <img src="path/to/placeholder5.jpg" class="bg-image" alt="Code/Text Prompt">
-                <span class="img-label">[IMG: Text/Code Strings]</span>
-                <div class="square-content">
-                    <span class="square-text">Prompting</span>
-                </div>
+            <a href="deployment.html" class="grid-item">
+                <span class="number-tag">5.0</span>
+                <span class="square-text">Deployment</span>
             </a>
 
-            <a href="Workflow.html" class="grid-item">
-                <img src="path/to/placeholder6.jpg" class="bg-image" alt="Flowchart">
-                <span class="img-label">[IMG: Complex Diagram]</span>
-                <div class="square-content">
-                    <span class="square-text">Workflow</span>
-                </div>
+            <a href="workflow.html" class="grid-item">
+                <span class="number-tag">6.0</span>
+                <span class="square-text">Workflow</span>
             </a>
 
         </div>
