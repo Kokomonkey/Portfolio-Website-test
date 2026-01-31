@@ -532,18 +532,19 @@
 
     <div id="start-screen">
         <div class="start-content">
-            <div class="start-title">Build Your AI Workflow</div>
+            <div class="start-title">Build Your own AI Workflow</div>
             <p class="start-desc">
-                Welcome to the interactive Architecture AI Map. <br>
-                Explore the industry standard tools, verify their functions, and 
-                build your own custom technology stack for your next project.
+                Welcome to the personal Architecture AI Workflow creator. <br> 
+                Explore the industry standard tools, the new online AI's, and 
+                build your own custom workflow for your next project. <br>
+                Don't forget to export it when your done.
             </p>
             
             <div class="start-controls-list">
-                <div class="ctrl-item"><span class="key">L-Click</span> Expand Steps & View Details</div>
-                <div class="ctrl-item"><span class="key">R-Click</span> Add AI to Your Stack</div>
+                <div class="ctrl-item"><span class="key">Left-Click</span> Expand Steps & View Options</div>
+                <div class="ctrl-item"><span class="key">Right-Click</span> Add AI's to Your Workflow</div>
                 <div class="ctrl-item"><span class="key">Scroll</span> Zoom In / Out</div>
-                <div class="ctrl-item"><span class="key">Drag</span> Pan Canvas</div>
+                <div class="ctrl-item"><span class="key">Drag</span> Move Around</div>
             </div>
 
             <button class="btn-start" onclick="startExperience()">Start Creating</button>
@@ -603,7 +604,7 @@
         
         <div class="header-container">
             <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo" id="header-logo-img">
-            <h1>AI in Architecture</h1>
+            <h1>Custom Architecture AI Workflow Creator</h1>
         </div>
 
         <div class="legend-container">
@@ -1149,18 +1150,7 @@ const workflowData = [
     /* --- PERSONAL WORKFLOW LOGIC --- */
     function addToPersonalWorkflow(stepIdx, taskIdx, aiData) {
         // 1. First Interaction Check
-        if (!state.hasAddedFirstItem) {
-            state.hasAddedFirstItem = true;
-            
-            // Camera Move: Pan to the personal workflow area above the current step
-            // We use the new OFFSET variables here to fine tune the position
-            const targetX = (stepIdx * (STEP_WIDTH + STEP_GAP)) + (STEP_WIDTH/2) + CAMERA_ADJUST_X;
-            // Target Y is negative (above origin)
-            const targetY = -(PERSONAL_BASE_GAP + CAMERA_ADJUST_Y); 
-            
-            // Smoothly move view
-            smoothPanTo(targetX, targetY);
-        }
+        
 
         if (!state.personalWorkflow[stepIdx]) {
             state.personalWorkflow[stepIdx] = [];
@@ -1533,7 +1523,7 @@ const workflowData = [
                 canvas.height = img.naturalHeight;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0);
-                resolve(canvas.toDataURL("image/PNG"));
+                resolve(canvas.toDataURL("image/jpeg"));
             };
             img.onerror = () => {
                 console.warn("Could not load logo image. Using fallback.");
@@ -1543,190 +1533,228 @@ const workflowData = [
         });
     }
 
-    /* --- REBUILT PDF EXPORT --- */
     /* --- FINAL REVISED PDF EXPORT --- */
-async function exportPersonalWorkflow() {
-    try {
-        const { jsPDF } = window.jspdf;
-        
-        if(Object.keys(state.personalWorkflow).length === 0) {
-            alert("Your workflow is empty! \n\nTry right-clicking any AI node in the list to add it to your personal stack.");
-            return;
-        }
-
-        const exHint = document.getElementById('hint-export');
-        if(exHint) exHint.classList.remove('visible');
-
-        document.body.style.cursor = 'wait';
-
-        // 1. Load Logo and Invert it (Reverse)
-        const rawLogo = await imgToDataURL("Recourses/Logos/DDD.jpg");
-        let invertedLogo = null;
-        
-        if (rawLogo) {
-            invertedLogo = await new Promise((resolve) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement("canvas");
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext("2d");
-                    
-                    // Draw inverted
-                    ctx.filter = 'invert(1)';
-                    ctx.drawImage(img, 0, 0);
-                    resolve(canvas.toDataURL("image/jpeg"));
-                };
-                img.src = rawLogo;
-            });
-        }
-
-        // 2. Prepare Staging Area
-        const staging = document.getElementById('pdf-staging');
-        staging.innerHTML = '';
-        staging.style.position = 'fixed';
-        staging.style.left = '0';
-        staging.style.top = '0';
-        staging.style.zIndex = '-1000';
-        staging.style.background = "#121212";
-        
-        const sortedSteps = Object.keys(state.personalWorkflow).map(k => parseInt(k)).sort((a,b) => a-b);
-        const flowContainer = document.createElement('div');
-        flowContainer.className = 'pdf-flow-container';
-        staging.appendChild(flowContainer);
-
-        sortedSteps.forEach((stepIdx, arrayIndex) => {
-             const col = document.createElement('div');
-             col.className = 'pdf-column';
-             const title = document.createElement('div');
-             title.className = 'pdf-step-title';
-             title.innerText = workflowData[stepIdx].title;
-             col.appendChild(title);
-
-             state.personalWorkflow[stepIdx].forEach(item => {
-                 const node = document.createElement('div');
-                 node.className = 'ai-node';
-                 node.style.background = "#1e1e1e";
-                 node.style.border = "1px solid #444";
-                 node.style.borderLeft = `5px solid ${item.funcColor}`;
-                 node.style.color = "#e0e0e0";
-                 node.innerHTML = `
-                    <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${item.name}</div>
-                    <div style="font-size:10px; color:#aaa;">${item.intLabel} | ${item.function}</div>
-                 `;
-                 col.appendChild(node);
-             });
-             flowContainer.appendChild(col);
-             if (arrayIndex < sortedSteps.length - 1) {
-                 const arrowBox = document.createElement('div');
-                 arrowBox.className = 'pdf-arrow-column';
-                 arrowBox.innerHTML = `<div class="pdf-arrow-line"></div>`;
-                 flowContainer.appendChild(arrowBox);
-             }
-        });
-
-        const canvasShot = await html2canvas(staging, {
-            scale: 2, 
-            backgroundColor: '#121212',
-            useCORS: true
-        });
-        const imgData = canvasShot.toDataURL('image/png');
-        staging.style.left = '-9999px';
-
-        // 3. Generate Dark Mode PDF
-        const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-        const margin = 15;
-
-        const drawHeaderFooter = (pageNum) => {
-             // Fill Dark Background
-             doc.setFillColor(18, 18, 18);
-             doc.rect(0, 0, pageWidth, pageHeight, 'F');
-             
-             // Top Left Header: Inverted Logo + Website Name
-             if(invertedLogo) {
-                 doc.addImage(invertedLogo, 'JPEG', margin, 15, 10, 10);
-             }
-             doc.setFont("helvetica", "bold");
-             doc.setFontSize(16);
-             doc.setTextColor(255, 51, 51); // Red Accent
-             doc.text("DouweDoesDesign", margin + 15, 22);
-
-             // Bottom Left Page Number (Logo removed from Bottom Right)
-             doc.setFontSize(8);
-             doc.setTextColor(150);
-             doc.text(`Page ${pageNum}`, margin, pageHeight - 15);
-        };
-
-        // PAGE 1: Intro & Visual Flow
-        drawHeaderFooter(1);
-        doc.setFontSize(24);
-        doc.setTextColor(255, 255, 255);
-        doc.text("Personal Architecture Workflow", margin, 40);
-        
-        doc.setFontSize(10);
-        doc.setTextColor(180, 180, 180);
-        doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 50);
-
-        const imgProps = doc.getImageProperties(imgData);
-        const pdfImgWidth = pageWidth - (margin * 2);
-        const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
-        const finalHeight = Math.min(pdfImgHeight, 130);
-        doc.addImage(imgData, 'PNG', margin, 60, pdfImgWidth, finalHeight);
-        
-        // PAGE 2+: Details
-        doc.addPage();
-        drawHeaderFooter(2);
-        let yPos = 40;
-        doc.setFontSize(18);
-        doc.setTextColor(255, 255, 255);
-        doc.text("Selected Tool Stack Details", margin, yPos);
-        yPos += 15;
-
-        let pageNum = 2;
-        sortedSteps.forEach(stepIdx => {
-            const items = state.personalWorkflow[stepIdx];
-            if(yPos > pageHeight - 40) { 
-                doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
+    async function exportPersonalWorkflow() {
+        try {
+            const { jsPDF } = window.jspdf;
+            
+            if(Object.keys(state.personalWorkflow).length === 0) {
+                alert("Your workflow is empty! \n\nTry right-clicking any AI node in the list to add it to your personal stack.");
+                return;
             }
-            doc.setFillColor(40, 40, 40);
-            doc.rect(margin, yPos - 6, pageWidth - (margin * 2), 10, 'F');
-            doc.setFontSize(12);
-            doc.setTextColor(255, 51, 51);
-            doc.text(workflowData[stepIdx].title, margin + 2, yPos + 1);
+
+            const exHint = document.getElementById('hint-export');
+            if(exHint) exHint.classList.remove('visible');
+
+            document.body.style.cursor = 'wait';
+
+            // 1. Load Logo and Invert it
+            const rawLogo = await imgToDataURL("Recourses/Logos/DDD.jpg");
+            let invertedLogo = null;
+            
+            if (rawLogo) {
+                invertedLogo = await new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext("2d");
+                        
+                        // Draw inverted
+                        ctx.filter = 'invert(1)';
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL("image/jpeg"));
+                    };
+                    img.src = rawLogo;
+                });
+            }
+
+            // 2. Prepare Staging Area
+            const staging = document.getElementById('pdf-staging');
+            staging.innerHTML = '';
+            staging.style.position = 'fixed';
+            staging.style.left = '0';
+            staging.style.top = '0';
+            staging.style.zIndex = '-1000';
+            staging.style.background = "#121212";
+            
+            const flowContainer = document.createElement('div');
+            flowContainer.className = 'pdf-flow-container';
+            staging.appendChild(flowContainer);
+
+            // Loop through ALL steps (not just selected)
+            workflowData.forEach((stepData, stepIdx) => {
+                 const col = document.createElement('div');
+                 col.className = 'pdf-column';
+                 
+                 const title = document.createElement('div');
+                 title.className = 'pdf-step-title';
+                 title.innerText = stepData.title;
+                 col.appendChild(title);
+
+                 const items = state.personalWorkflow[stepIdx];
+
+                 if (items && items.length > 0) {
+                     items.forEach(item => {
+                         const node = document.createElement('div');
+                         node.className = 'ai-node';
+                         node.style.background = "#1e1e1e";
+                         node.style.border = "1px solid #444";
+                         node.style.borderLeft = `5px solid ${item.funcColor}`;
+                         node.style.color = "#e0e0e0";
+                         node.innerHTML = `
+                            <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${item.name}</div>
+                            <div style="font-size:10px; color:#aaa;">${item.intLabel} | ${item.function}</div>
+                         `;
+                         col.appendChild(node);
+                     });
+                 } else {
+                     // Manual Labor Placeholder
+                     const node = document.createElement('div');
+                     node.className = 'ai-node';
+                     node.style.background = "#252525";
+                     node.style.border = "1px dashed #555";
+                     node.style.borderLeft = `5px solid #777`;
+                     node.style.color = "#888";
+                     node.innerHTML = `
+                        <div style="font-weight:bold; font-size:14px; margin-bottom:5px; font-style:italic;">Manual Workflow</div>
+                        <div style="font-size:10px; color:#666;">Traditional Execution</div>
+                     `;
+                     col.appendChild(node);
+                 }
+
+                 flowContainer.appendChild(col);
+
+                 if (stepIdx < workflowData.length - 1) {
+                     const arrowBox = document.createElement('div');
+                     arrowBox.className = 'pdf-arrow-column';
+                     arrowBox.innerHTML = `<div class="pdf-arrow-line"></div>`;
+                     flowContainer.appendChild(arrowBox);
+                 }
+            });
+
+            const canvasShot = await html2canvas(staging, {
+                scale: 2, 
+                backgroundColor: '#121212',
+                useCORS: true
+            });
+            const imgData = canvasShot.toDataURL('image/png');
+            staging.style.left = '-9999px';
+
+            // 3. Generate Dark Mode PDF
+            const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 15;
+
+            const drawHeaderFooter = (pageNum) => {
+                 doc.setFillColor(18, 18, 18);
+                 doc.rect(0, 0, pageWidth, pageHeight, 'F');
+                 
+                 // Inverted Logo Top Left
+                 if(invertedLogo) {
+                     doc.addImage(invertedLogo, 'JPEG', margin, 15, 10, 10);
+                 }
+                 doc.setFont("helvetica", "bold");
+                 doc.setFontSize(16);
+                 doc.setTextColor(255, 51, 51); // Red Accent
+                 doc.text("DouweDoesDesign", margin + 15, 22);
+
+                 doc.setFontSize(8);
+                 doc.setTextColor(150);
+                 doc.text(`Page ${pageNum}`, margin, pageHeight - 15);
+            };
+
+            // PAGE 1: Intro & Visual Flow
+            drawHeaderFooter(1);
+            doc.setFontSize(24);
+            doc.setTextColor(255, 255, 255);
+            doc.text("Personal Architecture Workflow", margin, 40);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(180, 180, 180);
+            doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 50);
+
+            const imgProps = doc.getImageProperties(imgData);
+            const pdfImgWidth = pageWidth - (margin * 2);
+            const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
+            const finalHeight = Math.min(pdfImgHeight, 130);
+            doc.addImage(imgData, 'PNG', margin, 60, pdfImgWidth, finalHeight);
+            
+            // PAGE 2+: Details
+            doc.addPage();
+            drawHeaderFooter(2);
+            let yPos = 40;
+            doc.setFontSize(18);
+            doc.setTextColor(255, 255, 255);
+            doc.text("Selected Tool Stack Details", margin, yPos);
             yPos += 15;
 
-            items.forEach(item => {
-                if(yPos > pageHeight - 30) { 
+            let pageNum = 2;
+            
+            // Loop through ALL steps for the details list too
+            workflowData.forEach((stepData, stepIdx) => {
+                const items = state.personalWorkflow[stepIdx];
+
+                if(yPos > pageHeight - 40) { 
                     doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
                 }
+                
+                // Step Header
+                doc.setFillColor(40, 40, 40);
+                doc.rect(margin, yPos - 6, pageWidth - (margin * 2), 10, 'F');
                 doc.setFontSize(12);
-                doc.setTextColor(230, 230, 230);
-                doc.text(`• ${item.name}`, margin + 5, yPos);
-                doc.setFont("courier", "normal");
-                doc.setFontSize(10);
-                doc.setTextColor(150, 150, 150);
-                doc.text(`[${item.intLabel} | ${item.function}]`, margin + 80, yPos);
-                yPos += 6;
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.setTextColor(180, 180, 180);
-                const descLines = doc.splitTextToSize(item.desc, pageWidth - (margin * 2) - 10);
-                doc.text(descLines, margin + 10, yPos);
-                yPos += (descLines.length * 5) + 8;
+                doc.setTextColor(255, 51, 51);
+                doc.text(stepData.title, margin + 2, yPos + 1);
+                yPos += 15;
+
+                if (items && items.length > 0) {
+                    items.forEach(item => {
+                        if(yPos > pageHeight - 30) { 
+                            doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
+                        }
+                        doc.setFontSize(12);
+                        doc.setTextColor(230, 230, 230);
+                        doc.text(`• ${item.name}`, margin + 5, yPos);
+                        doc.setFont("courier", "normal");
+                        doc.setFontSize(10);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text(`[${item.intLabel} | ${item.function}]`, margin + 80, yPos);
+                        yPos += 6;
+                        doc.setFont("helvetica", "normal");
+                        doc.setFontSize(10);
+                        doc.setTextColor(180, 180, 180);
+                        const descLines = doc.splitTextToSize(item.desc, pageWidth - (margin * 2) - 10);
+                        doc.text(descLines, margin + 10, yPos);
+                        yPos += (descLines.length * 5) + 8;
+                    });
+                } else {
+                    if(yPos > pageHeight - 30) { 
+                         doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
+                    }
+                    doc.setFontSize(11);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(`• Standard / Manual Workflow`, margin + 5, yPos);
+                    yPos += 6;
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(10);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("No specific AI tools selected for this phase. Relying on traditional methods.", margin + 10, yPos);
+                    yPos += 15;
+                }
             });
-        });
 
-        doc.save("DDD_Personal_Workflow.pdf");
+            doc.save("DDD_Personal_Workflow.pdf");
 
-    } catch (error) {
-        console.error("Export Error:", error);
-        alert("Export failed. Ensure you are running this via a local server (e.g., Live Server).");
-    } finally {
-        document.body.style.cursor = 'default';
+        } catch (error) {
+            console.error("Export Error:", error);
+            alert("Export failed. Ensure you are running this via a local server (e.g., Live Server).");
+        } finally {
+            document.body.style.cursor = 'default';
+        }
     }
-}
+
     init();
 
 </script>
