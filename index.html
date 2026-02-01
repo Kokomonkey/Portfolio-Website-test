@@ -129,6 +129,11 @@
             animation-timing-function: cubic-bezier(0.16, 1, 0.5, 1); 
             animation-fill-mode: forwards;
         }
+        
+        /* Style for WIP triggers to look clickable */
+        .wip-trigger {
+            cursor: pointer;
+        }
 
         .square {
             /* SIZE BASED ON HEIGHT NOW */
@@ -155,11 +160,11 @@
         
         /* UPDATED: If using IMG tag for icon */
         .square-img {
-            width: 100%;         /* Changed from 50% to fill square */
-            height: 100%;        /* Changed from auto to fill square */
-            object-fit: cover;   /* Ensures image fills without stretching */
+            width: 100%;        /* Changed from 50% to fill square */
+            height: 100%;       /* Changed from auto to fill square */
+            object-fit: cover;  /* Ensures image fills without stretching */
             transition: all var(--transition-speed) ease;
-            filter: invert(1);   /* Assuming black PNGs/JPGs */
+            filter: invert(1);  /* Assuming black PNGs/JPGs */
         }
 
         .square-text {
@@ -169,15 +174,18 @@
             width: 100%;
             text-align: center;
             z-index: 10;
-            color: var(--bg-color); 
+            
+            /* UPDATED: Default color is White (accent) */
+            color: var(--accent-color); 
             font-weight: bold;
             text-transform: uppercase;
             
             /* Text size relative to the square height */
             font-size: calc(var(--square-size) / 9);
             
-            opacity: 0;
-            transform: translateY(10px); 
+            /* UPDATED: Visible by default */
+            opacity: 1;
+            transform: translateY(0); 
             transition: all var(--transition-speed) ease;
         }
 
@@ -200,8 +208,75 @@
         }
 
         .grid-item:hover .square-text {
+            /* UPDATED: Invert text color to Black (bg-color) on hover */
+            color: var(--bg-color);
             opacity: 1; 
             transform: translateY(0);
+        }
+
+        /* --- MODAL (POPUP) STYLES --- */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; 
+            z-index: 200; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent-color);
+            padding: 4vh;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            animation: slideFromBottom 0.5s ease;
+        }
+
+        .close-btn {
+            color: var(--accent-color);
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #ccc;
+        }
+
+        .modal-text {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            margin-bottom: 3vh;
+            line-height: 1.5;
+        }
+
+        .modal-contact-btn {
+            display: inline-block;
+            padding: 1vh 3vh;
+            border: 2px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .modal-contact-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
         }
 
         /* --- ANIMATION KEYFRAMES --- */
@@ -211,27 +286,27 @@
         @keyframes slideFromRight { 0% { transform: translateX(100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
         /* --- VISITOR COUNTER --- */
-.visitor-counter {
-    position: fixed;
-    bottom: 2vh;
-    right: 2vh;
-    color: var(--accent-color);
-    background-color: var(--bg-color);
-    border: 2px solid var(--accent-color);
-    padding: 1vh 2vh;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 1vh; 
-    z-index: 100;
-    display: flex;
-    gap: 1vh;
-    transition: all var(--transition-speed) ease;
-}
+        .visitor-counter {
+            position: fixed;
+            bottom: 2vh;
+            right: 2vh;
+            color: var(--accent-color);
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent-color);
+            padding: 1vh 2vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1vh; 
+            z-index: 100;
+            display: flex;
+            gap: 1vh;
+            transition: all var(--transition-speed) ease;
+        }
 
-.visitor-counter:hover {
-    background-color: var(--accent-color);
-    color: var(--bg-color);
-}
+        .visitor-counter:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
 
         /* --- MOBILE RESPONSIVENESS (Add this at the bottom of your CSS) --- */
         @media (max-width: 768px) {
@@ -282,9 +357,10 @@
                 opacity: 1;             /* Always show text */
                 transform: translateY(0);
                 font-size: 0.8rem;
-                background: rgba(0,0,0,0.6); /* Semi-transparent background for readability */
-                bottom: 0;
-                padding: 5px 0;
+                /* Background removed to match requested style, 
+                   but keeping text contrast is important */
+                bottom: 5%;
+                color: black; /* Inverted due to square filter on mobile */
             }
             
             /* Optional: Adjust image visibility if text covers it */
@@ -349,19 +425,19 @@
                 </div>
             </a>
 
-            <a href="imageGallery.html" class="grid-item">
+            <div class="grid-item wip-trigger">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/ImageGallery.jpg" alt="Archive Logo" class="square-img">
-                    <span class="square-text">Image Gallery</span>
+                    <img src="Recourses/Logos/Index/Playground.jpg" alt="Archive Logo" class="square-img">
+                    <span class="square-text">W.I.P.</span>
                 </div>
-            </a>
+            </div>
 
-            <a href="playground.html" class="grid-item">
+            <div class="grid-item wip-trigger">
                 <div class="square">
                     <img src="Recourses/Logos/Index/Playground.jpg" alt="Playground Logo" class="square-img">
-                    <span class="square-text">Playground</span>
+                    <span class="square-text">W.I.P.</span>
                 </div>
-            </a>
+            </div>
 
             <a href="updates.html" class="grid-item">
                 <div class="square">
@@ -374,17 +450,24 @@
     </main>
 
     <div class="visitor-counter">
-    <span>Visitor-count:</span>
-    <span id="visit-count">...</span>
+        <span>Visitor-count:</span>
+        <span id="visit-count">...</span>
+    </div>
 
-</div>
+    <div id="wip-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <p class="modal-text">This page is yet to be added, do you have any ideas of what to place here? Then please contact me personally.</p>
+            <a href="contact.html" class="modal-contact-btn">Contact Me</a>
+        </div>
+    </div>
 
 </body>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
-        // --- 1. GRID ANIMATION LOGIC (Your existing code) ---
+        // --- 1. GRID ANIMATION LOGIC ---
         const squares = document.querySelectorAll('.grid-item');
         const animations = [
             'slideFromTop', 
@@ -398,12 +481,58 @@
             square.style.animationName = animations[randomIndex];
         });
 
-        // --- 2. VISITOR COUNTER LOGIC (New code) ---
+        // --- 2. POPUP LOGIC ---
+        const modal = document.getElementById("wip-modal");
+        const triggers = document.querySelectorAll(".wip-trigger");
+        const closeBtn = document.querySelector(".close-btn");
+
+        if (modal && triggers.length > 0) {
+            triggers.forEach(trigger => {
+                trigger.addEventListener("click", () => {
+                    modal.style.display = "flex";
+                });
+            });
+            closeBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+            window.addEventListener("click", (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+        }
+
+        // --- 3. SMART UNIQUE VISITOR COUNTER ---
         const counterDisplay = document.getElementById('visit-count');
+        const namespace = 'douwedoesdesign';
+        const key = 'homepage';
         
-        // We use a specific namespace 'douwedoesdesign' and key 'homepage'
-        // The '/up' at the end tells the API to add +1 immediately
-        fetch('https://api.counterapi.dev/v1/douwedoesdesign/homepage/up')
+        // Get today's date as a string (e.g., "2023-10-27")
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Check local storage for the last visit date
+        const lastVisitDate = localStorage.getItem('ddd_last_visit');
+
+        let apiUrl = '';
+
+        if (lastVisitDate === today) {
+            // CASE A: They have already visited today.
+            // We use the READ-ONLY endpoint (no '/up' at the end)
+            // This gets the number without adding to it.
+            apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/`;
+            console.log("Welcome back! Not counting you twice today.");
+        } else {
+            // CASE B: First visit of the day (or ever).
+            // We use the '/up' endpoint to increment the count.
+            apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
+            
+            // Save today's date so we don't count them again until tomorrow
+            localStorage.setItem('ddd_last_visit', today);
+            console.log("New visitor (or new day)! Count incremented.");
+        }
+        
+        // Execute the Fetch
+        fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
                 counterDisplay.innerText = data.count;
