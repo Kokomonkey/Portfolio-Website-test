@@ -26,19 +26,19 @@
             --line-personal: #4a90e2; 
             
             /* --- FUNCTION COLORS --- */
-            --cat-gen: #9b59b6;    
-            --cat-tech: #2980b9;   
-            --cat-text: #27ae60;   
-            --cat-mgmt: #f39c12;   
-            --cat-bid: #c0392b;    
-            --cat-scan: #16a085;   
-            --cat-data: #8e44ad; 
+            --cat-gen: #9b59b6;     
+            --cat-tech: #2980b9;    
+            --cat-text: #27ae60;    
+            --cat-mgmt: #f39c12;    
+            --cat-bid: #c0392b;     
+            --cat-scan: #16a085;    
+            --cat-data: #8e44ad;    
 
             /* --- INTEGRATION COLORS --- */
             --int-integrated: #d35400; 
-            --int-tool: #7f8c8d;       
-            --int-service: #2c3e50;    
-            --int-manual: #000000;     
+            --int-tool: #7f8c8d;        
+            --int-service: #2c3e50;     
+            --int-manual: #000000;      
             
             --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             --font-mono: 'Courier New', Courier, monospace;
@@ -158,52 +158,47 @@
         }
         .btn-start:hover { transform: scale(1.05); background: #ff5555; }
 
-        /* --- PDF STAGING (HIDDEN BUT STRUCTURED) --- */
+        /* --- PDF STAGING --- */
         #pdf-staging {
             position: fixed;
             top: 0; left: -9999px;
-            width: 1600px; /* Wide enough for horizontal flow */
-            background: #121212; /* Dark background for capture */
+            width: 1800px; /* Wider for header */
+            background: #121212; 
             padding: 50px;
-            display: flex; /* Flexbox for flow chart */
+            padding-top: 250px; /* LARGE PADDING to prevent overlap with Legend */
+            display: flex;
             flex-direction: column;
             gap: 20px;
             z-index: 9999;
             color: white;
         }
 
-        /* The Flow Chart Container */
+        /* PDF Flow Container */
         .pdf-flow-container {
             display: flex;
             align-items: flex-start;
-            gap: 0; /* Gaps handled by arrows */
+            justify-content: space-between; 
+            gap: 40px; 
+            position: relative;
+        }
+
+        #pdf-svg-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
         }
 
         .pdf-column {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            width: 220px;
+            width: 220px; 
             min-height: 100px;
             position: relative;
-        }
-
-        .pdf-arrow-column {
-            width: 60px;
-            display: flex;
-            justify-content: center;
-            padding-top: 50px;
-        }
-        
-        .pdf-arrow-line {
-            width: 100%; height: 2px;
-            background: #444;
-            position: relative;
-        }
-        .pdf-arrow-line::after {
-            content: '>';
-            position: absolute; right: -5px; top: -10px;
-            color: #444; font-family: monospace; font-size: 20px;
+            z-index: 1;
         }
 
         .pdf-step-title {
@@ -219,13 +214,34 @@
 
         #pdf-staging .ai-node {
             background: #1e1e1e;
-            border: 1px solid #444;
+            border: 1px solid #444; 
             color: #e0e0e0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             width: 100%;
             height: auto;
             position: relative;
             transform: none !important;
+            padding: 12px;
+            border-radius: 4px;
+        }
+        
+        #pdf-staging .badge-row {
+            display: flex; gap: 4px; margin-bottom: 8px;
+        }
+        #pdf-staging .ai-tag {
+            font-size: 8px; padding: 3px 5px; border-radius: 3px; color: white; font-weight: bold; text-transform: uppercase;
+        }
+
+        /* PDF Legend Inject Position - BIGGER AND TOP RIGHT */
+        .pdf-legend-inject {
+            position: absolute;
+            top: 50px; 
+            right: 50px;
+            transform: scale(1.3); 
+            transform-origin: top right;
+            border: 2px solid #333;
+            background: #1a1a1a;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         /* --- UI ELEMENTS --- */
@@ -261,11 +277,23 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .site-logo {
-            height: 30px; width: auto;
-            filter: invert(100%);
-            background: var(--text-color);
-        }
+/* LIGHT MODE (Daytime) */
+.site-logo {
+    height: 30px; 
+    width: auto;
+    /* This makes the white parts of your JPG transparent against the header */
+    mix-blend-mode: multiply; 
+    transition: all 0.3s ease;
+}
+
+/* DARK MODE (Nighttime) */
+[data-theme="dark"] .site-logo {
+    /* Multiply doesn't work on dark backgrounds, so we switch to Invert */
+    mix-blend-mode: normal; 
+    filter: invert(100%);
+    /* We also want to ensure the background of the img doesn't stay white */
+    background: none; 
+}
 
         h1 {
             font-size: 1.2rem; text-transform: uppercase;
@@ -311,6 +339,7 @@
         .legend-item {
             display: flex; align-items: center; gap: 8px;
             font-size: 0.65rem; font-family: var(--font-mono); font-weight: 600;
+            color: var(--text-color); 
         }
 
         .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
@@ -374,7 +403,7 @@
         }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        /* --- INTRO OVERLAY --- */
+        /* --- INTRO OVERLAY (RESTORED) --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--bg-color); z-index: 2000;
@@ -400,11 +429,15 @@
             display: flex; flex-direction: column; justify-content: center; 
             background: var(--container-bg); border: 2px solid var(--accent-color);
             border-radius: 12px; padding: 20px; cursor: pointer;
-            z-index: 10; user-select: none; opacity: 0;
+            z-index: 10; user-select: none; 
+            /* Hidden by default for Terminal Intro */
+            opacity: 0;
             transform: translateY(50px) scale(0.9);
             transition: opacity 0.6s, transform 0.6s, background-color 0.3s, border-color 0.3s;
         }
+        /* Reveal class for Terminal Intro */
         .step-node.intro-active { opacity: 1; transform: translateY(0) scale(1); }
+
         .step-node.mirrored {
             border-style: dashed; border-color: var(--line-personal);
             background: transparent; opacity: 0.7; pointer-events: none; z-index: 5;
@@ -503,10 +536,10 @@
             align-items: center; cursor: pointer; z-index: 100; border: none;
         }
         .close-btn:hover { background: var(--accent-color); color: white; }
-        .detail-left { width: 40%; padding: 60px; border-right: 1px solid #333; display: flex; flex-direction: column; justify-content: center; }
+        .detail-left { width: 40%; padding: 60px; border-right: 1px solid #333; display: flex; flex-direction: column; justify-content: center; overflow-y: auto;}
         .detail-right { width: 60%; background: #000; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
         .ov-title { font-size: 3rem; font-weight: 300; text-transform: uppercase; margin-bottom: 20px; line-height: 1; letter-spacing: -1px; }
-        .ov-desc { font-size: 1.2rem; color: #ccc; margin-bottom: 40px; font-weight: 300; line-height: 1.5; }
+        .ov-desc { font-size: 1.1rem; color: #ccc; margin-bottom: 40px; font-weight: 300; line-height: 1.6; font-style: italic; border-left: 3px solid var(--accent-color); padding-left: 20px; }
         .ov-meta { margin-top: auto; border-top: 1px solid #333; padding-top: 20px; font-family: var(--font-mono); font-size: 0.9rem; }
         .ov-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .ov-label { color: #666; }
@@ -607,7 +640,7 @@
             <h1>Custom Architecture AI Workflow Creator</h1>
         </div>
 
-        <div class="legend-container">
+        <div class="legend-container" id="main-legend">
             <div class="legend-note-header">Right-Click AI to Add/Remove</div>
             
             <div class="legend-columns">
@@ -633,6 +666,7 @@
         </div>
 
         <div class="controls">
+            <button class="btn-ui" style="border-color: #27ae60; color: #27ae60;" onclick="devPopulateRandom()">Dev: Randomize</button>
             <button class="btn-ui" onclick="toggleTheme()">Dark/Light</button>
             <button class="btn-ui" onclick="resetView()">Reset View</button>
             <button class="btn-ui btn-main" onclick="exportPersonalWorkflow()">EXPORT PDF</button>
@@ -661,29 +695,75 @@ const workflowData = [
         title: "Client Intake & Programming",
         desc: "Visioning workshops, user-needs surveys, and developing room data sheets.",
         ais: [
-          { name: "Microsoft Copilot", integration: "Integrated", host: "M365", function: "Text/Code/Regs", desc: "Integrated AI in Word/Excel to summarize briefs and organize requirements.", price: "Subscription", pro: "Ecosystem native", con: "Generalist model", link: "https://www.microsoft.com/en-us/microsoft-365/copilot", target: "_blank" },
-          { name: "Digital Blue Foam", integration: "Service", function: "CAD/BIM/Technical", desc: "Web-based generative design for sustainable feasibility studies.", price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/", target: "_blank" },
-          { name: "Crosby Studios", integration: "Service", function: "Image/Video Gen", desc: "Generative interior design concepts.", price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/", target: "_blank" },
-          { name: "ReimagineHome", integration: "Service", function: "Image/Video Gen", desc: "AI for virtual staging and renovation ideas from photos.", price: "Freemium", pro: "Instant renovation ideas", con: "2D only", link: "https://www.reimaginehome.ai/", target: "_blank" }
+          { name: "Microsoft Copilot", integration: "Integrated", host: "M365", function: "Text/Code/Regs", 
+            desc: "Integrated AI in Word/Excel to summarize briefs.", 
+            longDesc: "Welcome to the ubiquitous assistant, Microsoft Copilot. It sits not in a separate gallery, but embedded within the very walls of your Office suite. Feel invited to lean on it as it weaves through your briefs and spreadsheets, summarizing client desires into coherent narratives without you ever leaving the document.",
+            price: "Subscription", pro: "Ecosystem native", con: "Generalist model", link: "https://www.microsoft.com/en-us/microsoft-365/copilot", target: "_blank" },
+          
+          { name: "Digital Blue Foam", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "Web-based generative design for sustainable feasibility.", 
+            longDesc: "Step closer to Digital Blue Foam, a web-based artisan of feasibility. It sketches not just with lines, but with carbon data and sustainability metrics. It invites you to explore the viability of your site in mere moments, balancing the pragmatic with the ecological in a dance of generative design.",
+            price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/", target: "_blank" },
+          
+          { name: "Crosby Studios", integration: "Service", function: "Image/Video Gen", 
+            desc: "Generative interior design concepts.", 
+            longDesc: "Here we have Crosby Studios, a purely aesthetic exhibition. It asks you to suspend disbelief and let the AI hallucinate interior possibilities. It is less a technical tool and more a dream machine, painting vivid, avant-garde interior concepts that challenge the mundane.",
+            price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/", target: "_blank" },
+          
+          { name: "ReimagineHome", integration: "Service", function: "Image/Video Gen", 
+            desc: "AI for virtual staging and renovation ideas.", 
+            longDesc: "Look at ReimagineHome. It takes the existing reality of a photograph and overlays a new narrative of renovation. It is a storyteller for real estate, allowing you to instantly rewrite the history of a room with new furniture and finishes, effectively staging the future.",
+            price: "Freemium", pro: "Instant renovation ideas", con: "2D only", link: "https://www.reimaginehome.ai/", target: "_blank" }
         ]
       },
       {
         title: "Site & Regulatory Analysis",
         desc: "Topographic review, solar/climate analysis, and zoning audits.",
         ais: [
-          { name: "UpCodes Copilot", integration: "Service", function: "Text/Code/Regs", desc: "AI assistant that answers building code questions and compliance checks.", price: "$59/mo", pro: "Instant code answers", con: "US/Code specific", link: "https://up.codes/", target: "_blank" },
-          { name: "Autodesk Forma", integration: "Integrated", host: "Revit", function: "Data Interpretation", desc: "Real-time environmental analysis (wind, noise, sun) & conceptual site planning.", price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma", target: "_blank" },
-          { name: "Polycam", integration: "Tool", function: "Reality Capture", desc: "Local processing LiDAR scanning app to capture site conditions.", price: "Freemium / $27/mo", pro: "Fast site context", con: "Phone hardware dep.", link: "https://poly.cam/", target: "_blank" },
-          { name: "Archistar", integration: "Service", function: "Data Interpretation", desc: "Property intelligence platform for checking zoning compliance instantly.", price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/", target: "_blank" },
-          { name: "Aurivus", integration: "Tool", function: "Reality Capture", desc: "AI that processes laser scans (point clouds) into BIM geometry automatically.", price: "Quote", pro: "Scan-to-BIM automation", con: "Complex setup", link: "https://aurivus.com/", target: "_blank" }
+          { name: "TestFit", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "Real-time generative feasibility and zoning.", 
+            longDesc: "TestFit is the solver of the parking lot puzzle and the multifamily matrix. It instantly generates compliant building massings based on zoning constraints, calculating yield in milliseconds. It turns the math of development into a visual playground.",
+            price: "Subscription", pro: "Instant yield calc", con: "Parametric constraints", link: "https://www.testfit.io/", target: "_blank" },
+
+          { name: "UpCodes Copilot", integration: "Service", function: "Text/Code/Regs", 
+            desc: "AI assistant for building codes.", 
+            longDesc: "On your right, you'll find UpCodes Copilot. Think of it as the wise librarian of regulation. It reads the dense, uninviting texts of building codes and translates them into plain answers. It invites you to ask complex compliance questions and receive immediate, citation-backed guidance.",
+            price: "$59/mo", pro: "Instant code answers", con: "US/Code specific", link: "https://up.codes/", target: "_blank" },
+          
+          { name: "Autodesk Forma", integration: "Integrated", host: "Revit", function: "Data Interpretation", 
+            desc: "Real-time environmental analysis & site planning.", 
+            longDesc: "Behold Autodesk Forma, formerly Spacemaker. This is a heavy lifter in the gallery of site analysis. It sculpts the invisible forces of wind, noise, and sun into visible gradients on your screen, allowing you to shape your building blocks in harmony with the environment from day one.",
+            price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma", target: "_blank" },
+          
+          { name: "Polycam", integration: "Tool", function: "Reality Capture", 
+            desc: "LiDAR scanning app for site context.", 
+            longDesc: "In your pocket lies Polycam. It transforms your phone into a survey instrument, capturing the chaotic reality of a construction site and freezing it into a digital mesh. It allows you to take the site home with you, preserving the truth of the physical world in 3D.",
+            price: "Freemium / $27/mo", pro: "Fast site context", con: "Phone hardware dep.", link: "https://poly.cam/", target: "_blank" },
+          
+          { name: "Archistar", integration: "Service", function: "Data Interpretation", 
+            desc: "Property intelligence for zoning compliance.", 
+            longDesc: "Archistar acts as a zoning oracle. With a few clicks, it reveals the hidden potential of a plot, instantly checking against the rigid constraints of local planning laws. It tells you what could be, before you ever draw a line.",
+            price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/", target: "_blank" },
+          
+          { name: "Aurivus", integration: "Tool", function: "Reality Capture", 
+            desc: "AI processing for point clouds to BIM.", 
+            longDesc: "Aurivus performs a kind of digital alchemy. It takes the raw, dumb points of a laser scan and intelligently classifies them into building elements. It attempts to automate the tedious translation of 'dots' into 'walls', saving you from the manual labor of tracing reality.",
+            price: "Quote", pro: "Scan-to-BIM automation", con: "Complex setup", link: "https://aurivus.com/", target: "_blank" }
         ]
       },
       {
         title: "Environmental Benchmarking",
         desc: "Early stage carbon and climate data analysis.",
         ais: [
-            { name: "Preoptima", integration: "Service", function: "Data Interpretation", desc: "AI for whole life carbon assessment and optimization.", price: "Subscription", pro: "Carbon logic", con: "Data heavy", link: "https://www.preoptima.com/", target: "_blank" },
-            { name: "ClimateStudio", integration: "Integrated", host: "Rhino", function: "Data Interpretation", desc: "Fast environmental simulation and lighting analysis.", price: "License", pro: "High accuracy", con: "Rhino dependent", link: "https://www.solemma.com/climatestudio", target: "_blank" }
+            { name: "Preoptima", integration: "Service", function: "Data Interpretation", 
+              desc: "AI for whole life carbon assessment.", 
+              longDesc: "Preoptima stands as a guardian of our carbon footprint. It invites us to look at the 'Whole Life Carbon' of our structures, not just as an afterthought, but as a primary design driver. It uses AI to optimize structures for a lighter touch on the planet.",
+              price: "Subscription", pro: "Carbon logic", con: "Data heavy", link: "https://www.preoptima.com/", target: "_blank" },
+            
+            { name: "ClimateStudio", integration: "Integrated", host: "Rhino", function: "Data Interpretation", 
+              desc: "Fast environmental simulation.", 
+              longDesc: "Embedded within Rhino, ClimateStudio offers speed. It simulates light and energy with a rapidity that allows for iteration. It is a tool for those who wish to sculpt with daylight, ensuring that the sun is always a considered guest in your design.",
+              price: "License", pro: "High accuracy", con: "Rhino dependent", link: "https://www.solemma.com/climatestudio", target: "_blank" }
         ]
       }
     ]
@@ -696,37 +776,95 @@ const workflowData = [
         title: "Parti & Concept Generation",
         desc: "Creating guiding organizational principles, sketches, and mood boards.",
         ais: [
-          { name: "Stable Diffusion (Local)", integration: "Tool", function: "Image/Video Gen", desc: "Locally hosted generative AI for unlimited, private image generation.", price: "Free (Open Source)", pro: "Privacy/Zero Cost", con: "Requires powerful GPU", link: "https://github.com/AUTOMATIC1111/stable-diffusion-webui", target: "_blank" },
-          { name: "Midjourney", integration: "Service", function: "Image/Video Gen", desc: "AI-driven atmospheric concept art for client visioning.", price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/", target: "_blank" },
-          { name: "Adobe Firefly", integration: "Integrated", host: "Photoshop", function: "Image/Video Gen", desc: "Generative fill and expansion integrated directly into Photoshop.", price: "Part of CC", pro: "Workflow seamless", con: "Less 'creative' models", link: "https://www.adobe.com/sensei/generative-ai/firefly.html", target: "_blank" },
-          { name: "LookX", integration: "Service", function: "Image/Video Gen", desc: "AI tailored for architecture to generate renderings from massing models.", price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/", target: "_blank" }
+          { name: "Stable Diffusion", integration: "Tool", function: "Image/Video Gen", 
+            desc: "Local generative AI for unlimited image generation.", 
+            longDesc: "For the privacy-conscious artist, we have Stable Diffusion. Hosting this on your own machine is like having a private studio assistant who never sleeps. It generates unlimited variations of your wildest concepts without ever sending your data to the cloud. A truly sovereign creative tool.",
+            price: "Free (Open Source)", pro: "Privacy/Zero Cost", con: "Requires powerful GPU", link: "https://github.com/AUTOMATIC1111/stable-diffusion-webui", target: "_blank" },
+          
+          { name: "Midjourney", integration: "Service", function: "Image/Video Gen", 
+            desc: "AI-driven atmospheric concept art.", 
+            longDesc: "Lets discuss the popular virtuoso, Midjourney. This tool has defined the aesthetic of the AI era. It invites you to input poetic prompts and receive back atmospheric, painterly visualizations that capture the *feeling* of a space before you have resolved the *fact* of it.",
+            price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/", target: "_blank" },
+          
+          { name: "Adobe Firefly", integration: "Integrated", host: "Photoshop", function: "Image/Video Gen", 
+            desc: "Generative fill integrated into Photoshop.", 
+            longDesc: "Firefly is Adobe's seamless integration of magic. It lives inside Photoshop, allowing you to expand the canvas of your renderings or magically erase unwanted elements. It is the polite, commercially safe artist that ensures your collages are filled with copyright-cleared content.",
+            price: "Part of CC", pro: "Workflow seamless", con: "Less 'creative' models", link: "https://www.adobe.com/sensei/generative-ai/firefly.html", target: "_blank" },
+          
+          { name: "LookX", integration: "Service", function: "Image/Video Gen", 
+            desc: "AI tailored for architecture renderings.", 
+            longDesc: "LookX is a specialist in our gallery. Unlike generalist image generators, it understands the language of architecture. It takes your crude massing models and wraps them in realistic materials and context, bridging the gap between a block model and a finished render.",
+            price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/", target: "_blank" }
         ]
       },
       {
         title: "Computational Optimization",
         desc: "Using evolutionary solvers to find optimal form logic.",
         ais: [
-            { name: "Wallacei", integration: "Integrated", host: "Rhino/GH", function: "Data Interpretation", desc: "Evolutionary engine for multi-objective optimization.", price: "Free", pro: "Data visualization", con: "Steep learning curve", link: "https://www.wallacei.com/", target: "_blank" },
-            { name: "Finch 3D", integration: "Integrated", host: "Rhino/GH", function: "CAD/BIM/Technical", desc: "Graph-based generative design for optimizing floor plans.", price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/", target: "_blank" }
+            { name: "Hypar", integration: "Service", function: "CAD/BIM/Technical", 
+              desc: "Open platform for modular building generators.", 
+              longDesc: "Hypar is the app store for architectural logic. It decouples the code from the tool, allowing you to stack different 'functions'—like a roof generator, a column grid placer, and a facade tool—into a custom workflow. It is the democratization of computational design.",
+              price: "Freemium", pro: "Modular logic", con: "Web-based", link: "https://hypar.io/", target: "_blank" },
+
+            { name: "Wallacei", integration: "Integrated", host: "Rhino/GH", function: "Data Interpretation", 
+              desc: "Evolutionary engine for multi-objective optimization.", 
+              longDesc: "Wallacei is the Darwinist of the design world. It runs thousands of simulations, breeding the 'fittest' design solutions based on your criteria. It invites you to step back and act as the selector, choosing the best performing options from a lineage of digital evolution.",
+              price: "Free", pro: "Data visualization", con: "Steep learning curve", link: "https://www.wallacei.com/", target: "_blank" },
+            
+            { name: "Finch 3D", integration: "Integrated", host: "Rhino/GH", function: "CAD/BIM/Technical", 
+              desc: "Graph-based generative design for plans.", 
+              longDesc: "Finch 3D automates the logic of the floor plan. It understands that a bedroom needs a window and a door. It uses graph theory to optimize layouts, ensuring that your residential footprints are not just compliant, but mathematically efficient.",
+              price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/", target: "_blank" }
         ]
       },
       {
         title: "Massing & Spatial Studies",
         desc: "Drafting preliminary single-line plans and testing building scale.",
         ais: [
-          { name: "Snaptrude", integration: "Service", function: "CAD/BIM/Technical", desc: "Collaborative browser-based BIM for concept design.", price: "$100/mo", pro: "Google Docs for BIM", con: "New ecosystem", link: "https://www.snaptrude.com/", target: "_blank" },
-          { name: "PlanFinder", integration: "Integrated", host: "Revit/Rhino", function: "CAD/BIM/Technical", desc: "Plugin for Rhino/Revit to generate apartment layouts.", price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/", target: "_blank" },
-          { name: "Rayon", integration: "Service", function: "CAD/BIM/Technical", desc: "Collaborative space planning tool with smart AI fill and furniture logic.", price: "Freemium", pro: "Fast 2D workflow", con: "2D focused", link: "https://www.rayon.so/", target: "_blank" }
+          { name: "Snaptrude", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "Collaborative browser-based BIM.", 
+            longDesc: "Snaptrude is attempting to be the 'Google Docs' of BIM. It invites collaboration in the browser, allowing you to sketch massing and space plans that instantly carry data. It breaks down the silos of desktop software, inviting the whole team to model together in the cloud.",
+            price: "$100/mo", pro: "Google Docs for BIM", con: "New ecosystem", link: "https://www.snaptrude.com/", target: "_blank" },
+          
+          { name: "PlanFinder", integration: "Integrated", host: "Revit/Rhino", function: "CAD/BIM/Technical", 
+            desc: "Plugin to generate apartment layouts.", 
+            longDesc: "PlanFinder is a niche specialist. It looks at the empty shell of an apartment unit and proposes furniture layouts and partition arrangements. It speeds up the repetitive task of 'fitting' units into a core, acting as a rapid prototyping tool for residential architects.",
+            price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/", target: "_blank" },
+          
+          { name: "Rayon", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "Collaborative space planning tool.", 
+            longDesc: "Rayon brings the speed of 2D drafting back to the web. It is light, fast, and collaborative. It uses 'smart' fills and furniture blocks to make space planning feel less like drafting and more like sketching, but with the precision of CAD.",
+            price: "Freemium", pro: "Fast 2D workflow", con: "2D focused", link: "https://www.rayon.so/", target: "_blank" }
         ]
       },
       {
         title: "Visualization & VR",
         desc: "Producing renderings and VR walkthroughs.",
         ais: [
-          { name: "Veras (EvolveLAB)", integration: "Integrated", host: "Revit/Rhino", function: "Image/Video Gen", desc: "AI rendering plugin directly inside Revit/Rhino.", price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras", target: "_blank" },
-          { name: "Enscape", integration: "Integrated", host: "Revit/Rhino", function: "Image/Video Gen", desc: "Real-time rendering integrated into the design workflow.", price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/", target: "_blank" },
-          { name: "D5 Render", integration: "Tool", function: "Image/Video Gen", desc: "Local real-time renderer with AI atmosphere and material scattering.", price: "Free / $30/mo", pro: "Raytracing quality", con: "Hardware intensive", link: "https://www.d5render.com/", target: "_blank" },
-          { name: "Arkio", integration: "Tool", function: "CAD/BIM/Technical", desc: "Collaborative VR design with pass-through modeling features.", price: "Freemium", pro: "Immersive design", con: "VR headset needed", link: "https://www.arkio.is/", target: "_blank" }
+          { name: "Krea.ai", integration: "Service", function: "Image/Video Gen", 
+            desc: "Real-time AI upscaling and enhancement.", 
+            longDesc: "Krea.ai sits on the bleeding edge of real-time generation. It allows you to feed a rough, blocky massing model from your screen and see it 'painted' over with realistic textures in real-time. It is the bridge between a low-res thought and a high-res vision.",
+            price: "Freemium", pro: "Instant enhancement", con: "Cloud dependent", link: "https://www.krea.ai/", target: "_blank" },
+
+          { name: "Veras (EvolveLAB)", integration: "Integrated", host: "Revit/Rhino", function: "Image/Video Gen", 
+            desc: "AI rendering plugin inside Revit/Rhino.", 
+            longDesc: "Veras sits directly inside your heavy BIM software, offering a window into a rendered future. It allows you to visualize your Revit model in different seasons and styles without ever exporting. It is a tool for rapid internal visualization, keeping the workflow tight and integrated.",
+            price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras", target: "_blank" },
+          
+          { name: "Enscape", integration: "Integrated", host: "Revit/Rhino", function: "Image/Video Gen", 
+            desc: "Real-time rendering workflow.", 
+            longDesc: "Enscape has changed how we see our models. It provides a real-time, walk-through experience that is tethered to your BIM. It invites you and your client to walk through the project as it is being designed, removing the abstraction of 2D plans.",
+            price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/", target: "_blank" },
+          
+          { name: "D5 Render", integration: "Tool", function: "Image/Video Gen", 
+            desc: "Local real-time renderer with AI atmosphere.", 
+            longDesc: "D5 Render is the challenger, offering ray-tracing quality that rivals high-end cinema tools. It uses AI to handle noise and atmosphere, creating hyper-realistic lighting effects. It is for those who want to push the visual fidelity of their work to the maximum.",
+            price: "Free / $30/mo", pro: "Raytracing quality", con: "Hardware intensive", link: "https://www.d5render.com/", target: "_blank" },
+          
+          { name: "Arkio", integration: "Tool", function: "CAD/BIM/Technical", 
+            desc: "Collaborative VR design.", 
+            longDesc: "Arkio invites you to step inside the model literally. Using VR, you can model with your hands at 1:1 scale. It brings a physicality back to digital design, allowing you to feel the scale of a room before it is built.",
+            price: "Freemium", pro: "Immersive design", con: "VR headset needed", link: "https://www.arkio.is/", target: "_blank" }
         ]
       }
     ]
@@ -739,34 +877,75 @@ const workflowData = [
         title: "Federated Modeling",
         desc: "Integrating Structural and MEP models.",
         ais: [
-          { name: "BricsCAD BIM", integration: "Tool", function: "CAD/BIM/Technical", desc: "AI-driven BIM that classifies geometry automatically.", price: "Perpetual/Sub", pro: "Smart classification", con: "Market share", link: "https://www.bricsys.com/bricscad-bim", target: "_blank" },
-          { name: "Augmenta", integration: "Integrated", host: "Revit", function: "CAD/BIM/Technical", desc: "AI for automated electrical and systems design.", price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/", target: "_blank" }
+          { name: "Skema", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "Concept to BIM automation.", 
+            longDesc: "Skema proposes to skip the drafting phase entirely. It takes conceptual massing schemas and reuses previous BIM data to 'inflate' them into fully detailed Revit models. It is about reusing intelligence rather than redrawing geometry.",
+            price: "Quote", pro: "Rapid BIM creation", con: "Revit dependent", link: "https://www.skema.ai/", target: "_blank" },
+
+          { name: "BricsCAD BIM", integration: "Tool", function: "CAD/BIM/Technical", 
+            desc: "AI-driven BIM classification.", 
+            longDesc: "BricsCAD BIM takes a different approach. It allows you to model freely with solids, and then uses AI to 'classify' those solids into building elements (walls, slabs, columns). It respects the geometry first, and adds the intelligence second.",
+            price: "Perpetual/Sub", pro: "Smart classification", con: "Market share", link: "https://www.bricsys.com/bricscad-bim", target: "_blank" },
+          
+          { name: "Augmenta", integration: "Integrated", host: "Revit", function: "CAD/BIM/Technical", 
+            desc: "AI for automated electrical design.", 
+            longDesc: "Augmenta is the automated engineer. It takes the tedious task of routing electrical systems and hands it over to algorithms. It ensures that conduits and trays are routed efficiently and without clash, turning a week's worth of drafting into a few hours of processing.",
+            price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/", target: "_blank" }
         ]
       },
       {
         title: "System Analysis",
         desc: "Energy, Carbon and Lighting performance validation.",
         ais: [
-             { name: "Cove.tool", integration: "Service", function: "Data Interpretation", desc: "Automated energy, daylight, and carbon analysis.", price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/", target: "_blank" },
-             { name: "One Click LCA", integration: "Integrated", host: "Revit", function: "Data Interpretation", desc: "Automated life-cycle carbon assessment from BIM data.", price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/", target: "_blank" }
+             { name: "Cove.tool", integration: "Service", function: "Data Interpretation", 
+               desc: "Automated energy & carbon analysis.", 
+               longDesc: "Cove.tool is the automated consultant. It provides a suite of analysis tools—energy, daylight, carbon—in a web platform. It is designed to validate your design decisions quickly, ensuring you are on track for performance targets without needing a PhD in building physics.",
+               price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/", target: "_blank" },
+             
+             { name: "One Click LCA", integration: "Integrated", host: "Revit", function: "Data Interpretation", 
+               desc: "Automated life-cycle carbon assessment.", 
+               longDesc: "One Click LCA is the accountant of carbon. It tallies the environmental cost of every material in your BIM model. It is the industry standard for proving that your building is not just beautiful, but responsible.",
+               price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/", target: "_blank" }
         ]
       },
       {
         title: "Envelope & Interior Detailing",
         desc: "Refining wall sections, interior elevations, millwork, and waterproofing.",
         ais: [
-          { name: "Kaedim", integration: "Service", function: "CAD/BIM/Technical", desc: "Convert 2D images into 3D models for detailed assets.", price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/", target: "_blank" },
-          { name: "Adobe Substance 3D", integration: "Tool", function: "Reality Capture", desc: "AI photogrammetry to turn physical material scans into 3D textures.", price: "$50/mo", pro: "High fidelity mats", con: "Part of Adobe suite", link: "https://www.adobe.com/products/substance3d-sampler.html", target: "_blank" },
-          { name: "Stylib", integration: "Service", function: "Management", desc: "AI-powered search engine for architectural materials and products.", price: "Free / Brand driven", pro: "Visual search", con: "Inventory limited", link: "https://www.stylib.com/", target: "_blank" },
-          { name: "Homestyler", integration: "Service", function: "CAD/BIM/Technical", desc: "AI interior design tool for rapid room layout and furniture placement.", price: "Freemium / Sub", pro: "User friendly", con: "Not BIM native", link: "https://www.homestyler.com/", target: "_blank" }
+          { name: "Kaedim", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "Convert 2D images into 3D models.", 
+            longDesc: "Kaedim is a bridge between 2D and 3D. It takes a flat image of an object—a chair, a lamp, a moulding—and puffs it up into a 3D model. It accelerates the creation of detailed assets, filling your scenes with custom furniture without the hours of modeling.",
+            price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/", target: "_blank" },
+          
+          { name: "Adobe Substance 3D", integration: "Tool", function: "Reality Capture", 
+            desc: "AI photogrammetry for materials.", 
+            longDesc: "Substance 3D Sampler uses AI to digitize the physical world. You can feed it a photo of a fabric or a stone, and it extracts the texture, bump, and gloss maps needed to recreate that material perfectly in 3D.",
+            price: "$50/mo", pro: "High fidelity mats", con: "Part of Adobe suite", link: "https://www.adobe.com/products/substance3d-sampler.html", target: "_blank" },
+          
+          { name: "Stylib", integration: "Service", function: "Management", 
+            desc: "AI product search engine.", 
+            longDesc: "Stylib is a visual search engine for the specifier. Instead of typing keywords, you can search with images. It finds real-world products that match your design intent, connecting the aesthetic dream with the commercial reality of the supply chain.",
+            price: "Free / Brand driven", pro: "Visual search", con: "Inventory limited", link: "https://www.stylib.com/", target: "_blank" },
+          
+          { name: "Homestyler", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "AI interior design & layout.", 
+            longDesc: "Homestyler is the rapid interior decorator. It allows for extremely fast room layouts and furniture swapping. While not a heavy BIM tool, it serves the purpose of communicating interior intent to clients with speed and ease.",
+            price: "Freemium / Sub", pro: "User friendly", con: "Not BIM native", link: "https://www.homestyler.com/", target: "_blank" }
         ]
       },
       {
         title: "Specifications",
         desc: "Selecting specific products and creating Outline Specifications.",
         ais: [
-          { name: "Specright", integration: "Service", function: "Management", desc: "Specification data management to ensure product accuracy.", price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/", target: "_blank" },
-          { name: "Deltek Specpoint", integration: "Integrated", host: "Revit", function: "Management", desc: "Modern specification writing tool linked to BIM.", price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint", target: "_blank" }
+          { name: "Specright", integration: "Service", function: "Management", 
+            desc: "Specification data management.", 
+            longDesc: "Specright manages the data behind the products. It ensures that the 'spec' is not just a text document, but a data-driven record of exactly what is being bought and installed. It brings order to the chaos of product data.",
+            price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/", target: "_blank" },
+          
+          { name: "Deltek Specpoint", integration: "Integrated", host: "Revit", function: "Management", 
+            desc: "Modern specification writing linked to BIM.", 
+            longDesc: "Specpoint is the modern evolution of the spec book. It links the written requirement directly to the BIM element. It tries to ensure that the drawing and the book are telling the same story, reducing the risk of conflicting information.",
+            price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint", target: "_blank" }
         ]
       }
     ]
@@ -779,32 +958,60 @@ const workflowData = [
         title: "Model Auditing & Clash",
         desc: "Checking the model for geometric conflicts and data integrity.",
         ais: [
-            { name: "Solibri", integration: "Tool", function: "Data Interpretation", desc: "Rule-based model checking and quality assurance.", price: "License", pro: "Deep audit capability", con: "Complex ruleset", link: "https://www.solibri.com/", target: "_blank" },
-            { name: "Navisworks (Plugins)", integration: "Tool", function: "CAD/BIM/Technical", desc: "Clash detection and 4D simulation coordination.", price: "License", pro: "Industry standard", con: "Manual clash grouping", link: "https://www.autodesk.com/products/navisworks/overview", target: "_blank" }
+            { name: "Solibri", integration: "Tool", function: "Data Interpretation", 
+              desc: "Rule-based model checking.", 
+              longDesc: "Solibri is the gatekeeper of quality. It runs rigorous checks on your model, looking for everything from geometric clashes to missing fire ratings. It is the stern auditor that ensures your model is buildable before it leaves the office.",
+              price: "License", pro: "Deep audit capability", con: "Complex ruleset", link: "https://www.solibri.com/", target: "_blank" },
+            
+            { name: "Navisworks", integration: "Tool", function: "CAD/BIM/Technical", 
+              desc: "Clash detection and 4D simulation.", 
+              longDesc: "Navisworks is the industry standard for coordination. It aggregates models from all trades—mechanical, structural, architectural—and finds where they conflict. It is the digital rehearsal of construction, finding problems on screen so they don't happen on site.",
+              price: "License", pro: "Industry standard", con: "Manual clash grouping", link: "https://www.autodesk.com/products/navisworks/overview", target: "_blank" }
         ]
       },
       {
         title: "Production Drafting",
         desc: "Creating fully dimensioned and annotated working drawings.",
         ais: [
-          { name: "Swapp", integration: "Service", function: "CAD/BIM/Technical", desc: "AI that automates construction documents from models.", price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/", target: "_blank" },
-          { name: "Glyph (EvolveLAB)", integration: "Integrated", host: "Revit", function: "CAD/BIM/Technical", desc: "Automating documentation tasks in Revit (tagging, dimensioning).", price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph", target: "_blank" },
-          { name: "Vectorworks AI", integration: "Integrated", host: "Vectorworks", function: "CAD/BIM/Technical", desc: "Integrated AI for visualization and line drawing stylization.", price: "Sub/Perpetual", pro: "Integrated CAD/BIM", con: "Vectorworks only", link: "https://www.vectorworks.net/", target: "_blank" }
+          { name: "Swapp", integration: "Service", function: "CAD/BIM/Technical", 
+            desc: "Automates construction documents.", 
+            longDesc: "Swapp proposes a radical shift: the automation of the drawing set. It uses AI to place dimensions, tags, and notes. It promises to take the drudgery out of documentation, allowing architects to focus on design while the AI handles the annotation.",
+            price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/", target: "_blank" },
+          
+          { name: "Glyph", integration: "Integrated", host: "Revit", function: "CAD/BIM/Technical", 
+            desc: "Automating documentation tasks in Revit.", 
+            longDesc: "Glyph works within Revit to automate the tedious. It can auto-dimension a plan or auto-tag a section. It is a productivity multiplier, removing the need for thousands of manual clicks when preparing sheets.",
+            price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph", target: "_blank" },
+          
+          { name: "Vectorworks AI", integration: "Integrated", host: "Vectorworks", function: "CAD/BIM/Technical", 
+            desc: "Integrated AI for stylization.", 
+            longDesc: "Vectorworks has begun embedding AI directly into its CAD engine. It offers tools that help stylized visualizations and smart object recognition, keeping the AI assistant right at the tip of your cursor.",
+            price: "Sub/Perpetual", pro: "Integrated CAD/BIM", con: "Vectorworks only", link: "https://www.vectorworks.net/", target: "_blank" }
         ]
       },
       {
         title: "The Project Manual",
         desc: "Writing technical specifications using CSI MasterFormat.",
         ais: [
-          { name: "Pype AutoSpecs", integration: "Service", function: "Data Interpretation", desc: "Scans spec manuals to automatically generate submittal logs.", price: "Quote", pro: "Compliance safety", con: "Post-doc focused", link: "https://pype.io/", target: "_blank" },
-          { name: "Document Crunch", integration: "Service", function: "Data Interpretation", desc: "AI review of contracts and specifications for risk.", price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/", target: "_blank" }
+          { name: "Pype AutoSpecs", integration: "Service", function: "Data Interpretation", 
+            desc: "Scans spec manuals for submittals.", 
+            longDesc: "Pype AutoSpecs reads the project manual so you don't have to. It scans the thousands of pages of specs and extracts a log of every required submittal and test. It ensures that no requirement is missed in the transition to construction.",
+            price: "Quote", pro: "Compliance safety", con: "Post-doc focused", link: "https://pype.io/", target: "_blank" },
+          
+          { name: "Document Crunch", integration: "Service", function: "Data Interpretation", 
+            desc: "AI review of contracts and specs.", 
+            longDesc: "Document Crunch acts as a legal assistant. It reviews contracts and specifications to highlight risky clauses and onerous requirements. It helps you understand exactly what you are signing up for.",
+            price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/", target: "_blank" }
         ]
       },
       {
         title: "QA/QC & Permitting",
-        desc: "Internal redline reviews and submission to Authorities Having Jurisdiction.",
+        desc: "Internal redline reviews and submission to Authorities.",
         ais: [
-          { name: "Bluebeam Revu", integration: "Tool", function: "Management", desc: "Advanced PDF markup and document coordination.", price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/", target: "_blank" }
+          { name: "Bluebeam Revu", integration: "Tool", function: "Management", 
+            desc: "Advanced PDF markup and coordination.", 
+            longDesc: "Bluebeam Revu is the digital red pen. It is the standard for marking up PDF drawing sets. While not 'AI' in the generative sense, its advanced batch processing and visual search tools make it indispensable for checking quality.",
+            price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/", target: "_blank" }
         ]
       }
     ]
@@ -815,28 +1022,57 @@ const workflowData = [
     tasks: [
       {
         title: "Bid Management",
-        desc: "Issuing bid sets, conducting pre-bid conferences, and managing bidder RFIs.",
+        desc: "Issuing bid sets and managing bidder RFIs.",
         ais: [
-          { name: "Downtobid", integration: "Service", function: "Bidding/Finance", desc: "AI scans plans to detect scope and create bid packages.", price: "Subscription", pro: "Scope detection", con: "GC focused", link: "https://downtobid.com/", target: "_blank" },
-          { name: "SmartBid", integration: "Service", function: "Bidding/Finance", desc: "Construction bid management software for GCs.", price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/", target: "_blank" },
-          { name: "Procore", integration: "Service", function: "Management", desc: "Construction management and bid package tracking.", price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/", target: "_blank" }
+          { name: "Downtobid", integration: "Service", function: "Bidding/Finance", 
+            desc: "AI scans plans to create bid packages.", 
+            longDesc: "Downtobid uses AI to slice up a drawing set. It recognizes which pages belong to the plumber and which to the electrician, automatically creating bid packages. It ensures the right trades see the right drawings.",
+            price: "Subscription", pro: "Scope detection", con: "GC focused", link: "https://downtobid.com/", target: "_blank" },
+          
+          { name: "SmartBid", integration: "Service", function: "Bidding/Finance", 
+            desc: "Construction bid management.", 
+            longDesc: "SmartBid organizes the chaos of the tender process. It maintains the database of subcontractors and tracks who has seen the drawings and who has submitted a price. It is the central nervous system of procurement.",
+            price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/", target: "_blank" },
+          
+          { name: "Procore", integration: "Service", function: "Management", 
+            desc: "Construction management hub.", 
+            longDesc: "Procore is the titan of construction management. It hosts everything from bids to drawings to daily logs. It is the single source of truth for the construction team, ensuring everyone is building from the same information.",
+            price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/", target: "_blank" }
         ]
       },
       {
         title: "Bid Leveling & Analysis",
-        desc: "Analyzing contractor bids to ensure a fair 'apples-to-apples' comparison.",
+        desc: "Analyzing contractor bids for comparison.",
         ais: [
-          { name: "Alice Technologies", integration: "Service", function: "Data Interpretation", desc: "Generative construction scheduling for option analysis.", price: "Quote", pro: "Schedule optimization", con: "Complex input", link: "https://www.alicetechnologies.com/", target: "_blank" },
-          { name: "Togal.AI", integration: "Service", function: "Bidding/Finance", desc: "AI-powered estimating and takeoff from plans.", price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/", target: "_blank" },
-          { name: "Pelles.ai", integration: "Service", function: "Bidding/Finance", desc: "AI for preconstruction and estimating.", price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/", target: "_blank" }
+          { name: "Alice Technologies", integration: "Service", function: "Data Interpretation", 
+            desc: "Generative construction scheduling.", 
+            longDesc: "Alice Technologies brings generative design to the schedule. It simulates thousands of ways to build the project—changing crane locations, crew sizes, and sequences—to find the fastest or cheapest path to completion.",
+            price: "Quote", pro: "Schedule optimization", con: "Complex input", link: "https://www.alicetechnologies.com/", target: "_blank" },
+          
+          { name: "Togal.AI", integration: "Service", function: "Bidding/Finance", 
+            desc: "AI-powered estimating and takeoff.", 
+            longDesc: "Togal.AI automates the 'takeoff'. It looks at a 2D floor plan and automatically highlights and measures the square footage of rooms. It turns hours of clicking and tracing into a few seconds of processing.",
+            price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/", target: "_blank" },
+          
+          { name: "Pelles.ai", integration: "Service", function: "Bidding/Finance", 
+            desc: "AI for preconstruction.", 
+            longDesc: "Pelles.ai focuses on the early stage of construction planning. It uses AI to help estimate costs and plan logistics before the shovel hits the ground, helping to reduce the risk of the unknown.",
+            price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/", target: "_blank" }
         ]
       },
       {
         title: "Value Engineering (VE)",
-        desc: "Identifying cost-saving alternatives without compromising design intent.",
+        desc: "Identifying cost-saving alternatives.",
         ais: [
-          { name: "Join.build", integration: "Service", function: "Management", desc: "Collaborative platform for decision-making on VE items.", price: "Quote", pro: "Transparency", con: "Requires GC buy-in", link: "https://join.build/", target: "_blank" },
-          { name: "OpenCost", integration: "Tool", function: "Bidding/Finance", desc: "Open source cost monitoring.", price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/", target: "_blank" }
+          { name: "Join.build", integration: "Service", function: "Management", 
+            desc: "Collaborative platform for VE decisions.", 
+            longDesc: "Join.build turns the painful process of Value Engineering into a collaborative dashboard. It tracks every cost-saving idea and its impact, allowing the owner, architect, and contractor to make informed decisions about where to cut and where to keep.",
+            price: "Quote", pro: "Transparency", con: "Requires GC buy-in", link: "https://join.build/", target: "_blank" },
+          
+          { name: "OpenCost", integration: "Tool", function: "Bidding/Finance", 
+            desc: "Open source cost monitoring.", 
+            longDesc: "OpenCost offers a transparent way to track project costs. It is an open-standard approach to understanding where the money is going, favoring data visibility over proprietary lock-in.",
+            price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/", target: "_blank" }
         ]
       }
     ]
@@ -847,40 +1083,67 @@ const workflowData = [
     tasks: [
       {
         title: "Site Observation",
-        desc: "Regular site visits to verify work conforms to Documents.",
+        desc: "Regular site visits to verify work.",
         ais: [
-          { name: "Disperse", integration: "Service", function: "Reality Capture", desc: "Uses site photos to track work-in-place and progress.", price: "Quote", pro: "Productivity data", con: "Service heavy", link: "https://www.disperse.io/", target: "_blank" },
-          { name: "OpenSpace", integration: "Service", function: "Reality Capture", desc: "360-degree photo documentation mapped to plans.", price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/", target: "_blank" },
-          { name: "PlanGrid", integration: "Service", function: "Management", desc: "Mobile access to drawings and site reporting.", price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/", target: "_blank" }
+          { name: "Disperse", integration: "Service", function: "Reality Capture", 
+            desc: "Site photos to track work-in-place.", 
+            longDesc: "Disperse sends photographers to the site to capture 360 images, and then uses AI to track progress. It tells you exactly what has been built versus what was scheduled, providing an undeniable record of reality.",
+            price: "Quote", pro: "Productivity data", con: "Service heavy", link: "https://www.disperse.io/", target: "_blank" },
+          
+          { name: "OpenSpace", integration: "Service", function: "Reality Capture", 
+            desc: "360-degree photo documentation.", 
+            longDesc: "OpenSpace is like a time machine for the job site. You strap a camera to your hard hat and walk. The AI maps your walk to the floor plan. Later, you can travel back to any date and see exactly what was behind that wall before it was closed up.",
+            price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/", target: "_blank" },
+          
+          { name: "PlanGrid", integration: "Service", function: "Management", 
+            desc: "Mobile access to drawings.", 
+            longDesc: "PlanGrid put the blueprints on the iPad. It revolutionized the field by ensuring that the foreman always has the latest revision in their hand, not an old roll of paper in the trailer.",
+            price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/", target: "_blank" }
         ]
       },
       {
         title: "Predictive Risk",
-        desc: "Analyzing site data to prevent accidents or delays.",
+        desc: "Analyzing site data to prevent accidents.",
         ais: [
-            { name: "Newmetrix", integration: "Service", function: "Data Interpretation", desc: "AI that analyzes site photos to predict safety risks.", price: "Quote", pro: "Safety focus", con: "Data volume req.", link: "https://www.oracle.com/construction-engineering/construction-intelligence-cloud-service/", target: "_blank" }
+            { name: "Newmetrix", integration: "Service", function: "Data Interpretation", 
+              desc: "AI that predicts safety risks.", 
+              longDesc: "Newmetrix analyzes the visual data of the site—photos and videos—to spot safety hazards. It detects a worker without a vest or a puddle near a cable, predicting accidents before they happen.",
+              price: "Quote", pro: "Safety focus", con: "Data volume req.", link: "https://www.oracle.com/construction-engineering/construction-intelligence-cloud-service/", target: "_blank" }
         ]
       },
       {
         title: "Submittals & RFIs",
-        desc: "Reviewing contractor samples and technical drawings.",
+        desc: "Reviewing contractor samples and drawings.",
         ais: [
-          { name: "Newforma Konekt", integration: "Service", function: "Management", desc: "AI-driven PIM for managing RFIs and emails.", price: "Quote", pro: "Finding info", con: "Enterprise scale", link: "https://www.newforma.com/", target: "_blank" },
-          { name: "Part3", integration: "Service", function: "Management", desc: "Automating the workflow for RFIs and submittals.", price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/", target: "_blank" }
+          { name: "Newforma Konekt", integration: "Service", function: "Management", 
+            desc: "AI-driven PIM for RFIs.", 
+            longDesc: "Newforma Konekt indexes the massive stream of project emails and files. It helps you find that one decision made six months ago in a buried email thread, acting as the project's digital memory.",
+            price: "Quote", pro: "Finding info", con: "Enterprise scale", link: "https://www.newforma.com/", target: "_blank" },
+          
+          { name: "Part3", integration: "Service", function: "Management", 
+            desc: "Automating RFIs and submittals.", 
+            longDesc: "Part3 is designed by architects to tame the paperwork of CA. It streamlines the creation and logging of RFIs and Change Orders, allowing you to spend more time on site and less time on administration.",
+            price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/", target: "_blank" }
         ]
       },
       {
         title: "Project Closeout",
-        desc: "Managing the Punch List and issuing the Certificate of Substantial Completion.",
+        desc: "Punch List and Completion.",
         ais: [
-          { name: "Trunk Tools", integration: "Service", function: "Management", desc: "AI for construction workflow and incentives.", price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/", target: "_blank" },
-          { name: "Civils.ai", integration: "Service", function: "Data Interpretation", desc: "Construction data AI for managing project records.", price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/", target: "_blank" }
+          { name: "Trunk Tools", integration: "Service", function: "Management", 
+            desc: "AI for construction incentives.", 
+            longDesc: "Trunk Tools focuses on the workforce. It uses AI to manage incentives and payouts, keeping the skilled labor motivated and aligned with the project goals to ensure a strong finish.",
+            price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/", target: "_blank" },
+          
+          { name: "Civils.ai", integration: "Service", function: "Data Interpretation", 
+            desc: "Construction data AI.", 
+            longDesc: "Civils.ai organizes the unstructured data of civil engineering projects. It helps finding geotechnical reports and project records, acting as a search engine for the ground beneath our feet.",
+            price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/", target: "_blank" }
         ]
       }
     ]
   }
 ];
-
     /* --- STATE --- */
     const state = {
         scale: 1,
@@ -913,6 +1176,18 @@ const workflowData = [
 
     /* --- INIT & RENDER --- */
     function init() {
+
+        // --- AUTOMATIC THEME MODIFIER ---
+    const now = new Date();
+    const hour = now.getHours();
+
+    // Light mode between 7am (inclusive) and 8pm (exclusive)
+    if (hour >= 7 && hour < 20) {
+        document.body.setAttribute('data-theme', 'light');
+    } else {
+        document.body.setAttribute('data-theme', 'dark');
+    }
+
         renderNodes();
         
         // --- ZOOM TO FIT CALCULATION ---
@@ -949,11 +1224,12 @@ const workflowData = [
         // Wait for fade out, then run terminal intro
         setTimeout(() => {
             startScreen.style.display = 'none';
+            // TERMINAL INTRO
             runIntroSequence();
         }, 500);
     }
 
-    /* --- ANIMATION SEQUENCE --- */
+    /* --- ANIMATION SEQUENCE (TERMINAL RESTORED) --- */
     function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
     async function runIntroSequence() {
@@ -1059,7 +1335,8 @@ const workflowData = [
                     name: "Manual Workflow",
                     integration: "Manual",
                     function: "Management",
-                    desc: "Traditional manual execution of this task without AI assistance.",
+                    desc: "Traditional manual execution.",
+                    longDesc: "This is the path of tradition. It relies on the manual craft, the phone call, and the spreadsheet. Sometimes, the most intelligent tool is simply human intuition and experience.",
                     price: "Time Cost",
                     pro: "Full Control",
                     con: "Slow/Laborious",
@@ -1147,11 +1424,50 @@ const workflowData = [
         });
     }
 
+    /* --- DEV TOOL --- */
+    function devPopulateRandom() {
+        state.personalWorkflow = {};
+
+        workflowData.forEach((step, sIdx) => {
+            step.tasks.forEach((task, tIdx) => {
+                const randomIndex = Math.floor(Math.random() * task.ais.length);
+                const selectedAi = task.ais[randomIndex];
+
+                let funcColor = 'var(--text-color)';
+                if(selectedAi.function === "Image/Video Gen") funcColor = 'var(--cat-gen)';
+                if(selectedAi.function === "CAD/BIM/Technical") funcColor = 'var(--cat-tech)';
+                if(selectedAi.function === "Text/Code/Regs") funcColor = 'var(--cat-text)';
+                if(selectedAi.function === "Management") funcColor = 'var(--cat-mgmt)';
+                if(selectedAi.function === "Bidding/Finance") funcColor = 'var(--cat-bid)';
+                if(selectedAi.function === "Reality Capture") funcColor = 'var(--cat-scan)';
+                if(selectedAi.function === "Data Interpretation") funcColor = 'var(--cat-data)';
+
+                let intColor = 'var(--int-service)';
+                let intLabel = selectedAi.integration;
+                if(selectedAi.integration === "Integrated") {
+                    intColor = 'var(--int-integrated)';
+                    if(selectedAi.host) intLabel = `INTEGRATED (${selectedAi.host})`;
+                } else if(selectedAi.integration === "Tool") {
+                    intColor = 'var(--int-tool)';
+                    intLabel = "TOOL (LOCAL)";
+                } else if(selectedAi.integration === "Manual") {
+                    intColor = 'var(--int-manual)';
+                }
+
+                const aiForPersonal = {
+                    ...selectedAi,
+                    funcColor: funcColor,
+                    intColor: intColor,
+                    intLabel: intLabel
+                };
+
+                addToPersonalWorkflow(sIdx, tIdx, aiForPersonal);
+            });
+        });
+    }
+
     /* --- PERSONAL WORKFLOW LOGIC --- */
     function addToPersonalWorkflow(stepIdx, taskIdx, aiData) {
-        // 1. First Interaction Check
-        
-
         if (!state.personalWorkflow[stepIdx]) {
             state.personalWorkflow[stepIdx] = [];
         }
@@ -1281,7 +1597,10 @@ const workflowData = [
     function openDetailOverlay(aiData) {
         document.getElementById('ov-title').innerText = aiData.name;
         document.getElementById('ov-type').innerText = aiData.type; 
-        document.getElementById('ov-desc').innerText = aiData.desc;
+        
+        // Use longDesc if available (the user style narrative), fallback to standard desc
+        document.getElementById('ov-desc').innerText = aiData.longDesc || aiData.desc;
+        
         document.getElementById('ov-price').innerText = aiData.price;
         document.getElementById('ov-pro').innerText = aiData.pro;
         document.getElementById('ov-con').innerText = aiData.con;
@@ -1579,14 +1898,23 @@ const workflowData = [
             staging.style.zIndex = '-1000';
             staging.style.background = "#121212";
             
+            
+
             const flowContainer = document.createElement('div');
             flowContainer.className = 'pdf-flow-container';
             staging.appendChild(flowContainer);
+
+            // Create SVG Layer inside Flow Container
+            const svgNS = "http://www.w3.org/2000/svg";
+            const pdfSvg = document.createElementNS(svgNS, "svg");
+            pdfSvg.id = "pdf-svg-layer";
+            flowContainer.appendChild(pdfSvg);
 
             // Loop through ALL steps (not just selected)
             workflowData.forEach((stepData, stepIdx) => {
                  const col = document.createElement('div');
                  col.className = 'pdf-column';
+                 col.id = `pdf-col-${stepIdx}`; // Add ID for connection logic
                  
                  const title = document.createElement('div');
                  title.className = 'pdf-step-title';
@@ -1596,43 +1924,88 @@ const workflowData = [
                  const items = state.personalWorkflow[stepIdx];
 
                  if (items && items.length > 0) {
-                     items.forEach(item => {
-                         const node = document.createElement('div');
-                         node.className = 'ai-node';
-                         node.style.background = "#1e1e1e";
-                         node.style.border = "1px solid #444";
-                         node.style.borderLeft = `5px solid ${item.funcColor}`;
-                         node.style.color = "#e0e0e0";
-                         node.innerHTML = `
+                      items.forEach((item, idx) => {
+                          const node = document.createElement('div');
+                          node.className = 'ai-node';
+                          node.id = `pdf-node-${stepIdx}-${idx}`; // Add ID for logic
+                          node.style.background = "#1e1e1e";
+                          node.style.border = "1px solid #444";
+                          node.style.borderLeft = `5px solid ${item.funcColor}`;
+                          node.style.color = "#e0e0e0";
+                          
+                          // --- UPDATED BADGES IN PDF (REVERSED ORDER: Function THEN Integration) ---
+                          node.innerHTML = `
+                            <div class="badge-row">
+                                <div class="ai-tag" style="background:${item.funcColor}">${item.function}</div>
+                                <div class="ai-tag" style="background:${item.intColor}">${item.intLabel}</div>
+                            </div>
                             <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${item.name}</div>
-                            <div style="font-size:10px; color:#aaa;">${item.intLabel} | ${item.function}</div>
-                         `;
-                         col.appendChild(node);
-                     });
+                          `;
+                          col.appendChild(node);
+                      });
                  } else {
-                     // Manual Labor Placeholder
-                     const node = document.createElement('div');
-                     node.className = 'ai-node';
-                     node.style.background = "#252525";
-                     node.style.border = "1px dashed #555";
-                     node.style.borderLeft = `5px solid #777`;
-                     node.style.color = "#888";
-                     node.innerHTML = `
+                      // Manual Labor Placeholder
+                      const node = document.createElement('div');
+                      node.className = 'ai-node';
+                      node.id = `pdf-node-${stepIdx}-manual`;
+                      node.style.background = "#252525";
+                      node.style.border = "1px dashed #555";
+                      node.style.borderLeft = `5px solid #777`;
+                      node.style.color = "#888";
+                      node.innerHTML = `
                         <div style="font-weight:bold; font-size:14px; margin-bottom:5px; font-style:italic;">Manual Workflow</div>
                         <div style="font-size:10px; color:#666;">Traditional Execution</div>
-                     `;
-                     col.appendChild(node);
+                      `;
+                      col.appendChild(node);
                  }
 
                  flowContainer.appendChild(col);
-
-                 if (stepIdx < workflowData.length - 1) {
-                     const arrowBox = document.createElement('div');
-                     arrowBox.className = 'pdf-arrow-column';
-                     arrowBox.innerHTML = `<div class="pdf-arrow-line"></div>`;
-                     flowContainer.appendChild(arrowBox);
-                 }
             });
+
+            // --- DRAW CONNECTIONS IN STAGING (Wait for render) ---
+            await new Promise(r => setTimeout(r, 100)); // Allow DOM to settle
+
+            const containerRect = flowContainer.getBoundingClientRect();
+            // Match SVG to container size
+            pdfSvg.style.width = containerRect.width + 'px';
+            pdfSvg.style.height = containerRect.height + 'px';
+            pdfSvg.setAttribute("width", containerRect.width);
+            pdfSvg.setAttribute("height", containerRect.height);
+
+            // Draw Curved Lines between Columns
+            for(let i=0; i < workflowData.length - 1; i++) {
+                const colA = document.getElementById(`pdf-col-${i}`);
+                const colB = document.getElementById(`pdf-col-${i+1}`);
+                
+                // Get all nodes (AI or Manual)
+                const nodesA = Array.from(colA.querySelectorAll('.ai-node'));
+                const nodesB = Array.from(colB.querySelectorAll('.ai-node'));
+
+                nodesA.forEach(nodeA => {
+                    const rectA = nodeA.getBoundingClientRect();
+                    // Start point: Right Center relative to container
+                    const xA = (rectA.right - containerRect.left);
+                    const yA = (rectA.top + rectA.height/2 - containerRect.top);
+
+                    nodesB.forEach(nodeB => {
+                        const rectB = nodeB.getBoundingClientRect();
+                        // End Point: Left Center
+                        const xB = (rectB.left - containerRect.left);
+                        const yB = (rectB.top + rectB.height/2 - containerRect.top);
+
+                        const path = document.createElementNS(svgNS, "path");
+                        // Bezier Curve
+                        const d = `M ${xA} ${yA} C ${xA+50} ${yA}, ${xB-50} ${yB}, ${xB} ${yB}`; 
+                        path.setAttribute("d", d);
+                        path.setAttribute("stroke", "#4a90e2"); // Personal Blue Line
+                        path.setAttribute("stroke-width", "2");
+                        path.setAttribute("fill", "none");
+                        path.setAttribute("opacity", "0.5");
+                        
+                        pdfSvg.appendChild(path);
+                    });
+                });
+            }
 
             const canvasShot = await html2canvas(staging, {
                 scale: 2, 
@@ -1711,28 +2084,43 @@ const workflowData = [
 
                 if (items && items.length > 0) {
                     items.forEach(item => {
-                        if(yPos > pageHeight - 30) { 
-                            doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
+                        if(yPos > pageHeight - 40) { 
+                           doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
                         }
+                        doc.setFont("helvetica", "bold");
                         doc.setFontSize(12);
                         doc.setTextColor(230, 230, 230);
                         doc.text(`• ${item.name}`, margin + 5, yPos);
+                        
                         doc.setFont("courier", "normal");
                         doc.setFontSize(10);
                         doc.setTextColor(150, 150, 150);
-                        doc.text(`[${item.intLabel} | ${item.function}]`, margin + 80, yPos);
+                        doc.text(`[${item.function} | ${item.intLabel}]`, margin + 80, yPos);
                         yPos += 6;
+                        
+                        // --- LINK PRINTING ---
+                        if(item.link && item.link !== "#") {
+                            doc.setFont("helvetica", "normal");
+                            doc.setFontSize(9);
+                            doc.setTextColor(74, 144, 226); // Blue color for link
+                            doc.textWithLink(item.link, margin + 10, yPos, { url: item.link });
+                            yPos += 6;
+                        }
+
+                        // --- DESCRIPTION PRINTING ---
                         doc.setFont("helvetica", "normal");
                         doc.setFontSize(10);
                         doc.setTextColor(180, 180, 180);
-                        const descLines = doc.splitTextToSize(item.desc, pageWidth - (margin * 2) - 10);
+                        const descText = item.longDesc || item.desc;
+                        const descLines = doc.splitTextToSize(descText, pageWidth - (margin * 2) - 10);
                         doc.text(descLines, margin + 10, yPos);
-                        yPos += (descLines.length * 5) + 8;
+                        yPos += (descLines.length * 5) + 12;
                     });
                 } else {
                     if(yPos > pageHeight - 30) { 
                          doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
                     }
+                    doc.setFont("helvetica", "normal");
                     doc.setFontSize(11);
                     doc.setTextColor(150, 150, 150);
                     doc.text(`• Standard / Manual Workflow`, margin + 5, yPos);
