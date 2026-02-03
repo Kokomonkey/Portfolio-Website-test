@@ -654,6 +654,29 @@
             100% { opacity: 0; transform: translateY(-10px); }
         }
 
+        /* --- VISITOR COUNTER STYLE --- */
+.counter-box {
+    background: var(--container-bg);
+    border: 2px solid var(--container-border);
+    color: var(--text-color);
+    padding: 12px 20px;
+    font-family: var(--font-mono); 
+    font-weight: 800;
+    text-transform: uppercase; 
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1); 
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    cursor: default; /* Shows it's info, not a button */
+}
+
+/* Optional: Make the number color pop (using your accent color) */
+#workflow-visit-count {
+    color: var(--accent-color);
+}
+
     </style>
 </head>
 <body data-theme="dark"> 
@@ -768,11 +791,15 @@
         </div>
 
         <div class="controls">
-            <button class="btn-ui" style="border-color: #27ae60; color: #27ae60;" onclick="devPopulateRandom()">Dev: Randomize</button>
-            <button class="btn-ui" onclick="toggleTheme()">Dark/Light</button>
-            <button class="btn-ui" onclick="resetView()">Reset View</button>
-            <button class="btn-ui btn-main" onclick="exportPersonalWorkflow()">EXPORT PDF</button>
-        </div>
+    <div class="counter-box">
+        <span>VISITORS:</span>
+        <span id="workflow-visit-count">...</span>
+    </div>
+    <button class="btn-ui" style="border-color: #27ae60; color: #27ae60;" onclick="devPopulateRandom()">Dev: Randomize</button>
+    <button class="btn-ui" onclick="toggleTheme()">Dark/Light</button>
+    <button class="btn-ui" onclick="resetView()">Reset View</button>
+    <button class="btn-ui btn-main" onclick="exportPersonalWorkflow()">EXPORT PDF</button>
+</div>
     </div>
 
     <div id="canvas-wrapper">
@@ -2311,6 +2338,42 @@ const workflowData = [
             if(msg.parentNode) msg.remove();
         }, 8000);
     }
+
+    /* --- SMART VISITOR COUNTER LOGIC --- */
+document.addEventListener("DOMContentLoaded", function() {
+    const counterDisplay = document.getElementById('workflow-visit-count');
+    const namespace = 'douwedoesdesign';
+    
+    // I changed the key to 'workflow_page' so it tracks this specific page 
+    // distinct from your homepage counter.
+    const key = 'Workflow.html'; 
+    
+    const today = new Date().toISOString().split('T')[0];
+    const lastVisitDate = localStorage.getItem('ddd_workflow_last_visit');
+
+    let apiUrl = '';
+
+    if (lastVisitDate === today) {
+        // User already visited today: Read-only check
+        apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/`;
+        console.log("Welcome back to the Workflow! Not counting you twice.");
+    } else {
+        // New visitor or new day: Increment count
+        apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
+        localStorage.setItem('ddd_workflow_last_visit', today);
+        console.log("New workflow user! Count incremented.");
+    }
+    
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            counterDisplay.innerText = data.count;
+        })
+        .catch(error => {
+            console.error('Error loading counter:', error);
+            counterDisplay.innerText = "ERR";
+        });
+});
 
 </script>
 </body>
