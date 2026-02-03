@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+    <title>Performance Intelligence | [DOUWEDOESDESIGN]</title>
+    <style>
+        /* --- VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --dim-color: #666666;
+            --accent-color: #ffffff;
+            --line-color: #333333;
+            
+            --font-ui: 'Courier New', Courier, monospace;
+            --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            
+            --block-spacing: 5vh; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+
+            /* Architectural Grid Background */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .back-btn {
+            position: fixed; top: 30px; left: 30px;
+            text-decoration: none;
+            border: 1px solid var(--text-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 8px 15px;
+            font-family: var(--font-ui);
+            font-weight: bold;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background-color: var(--text-color); color: var(--bg-color); }
+
+        /* --- HEADER --- */
+        header {
+            min-height: 35vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-bottom: 1px solid var(--line-color);
+            margin-bottom: var(--block-spacing);
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: invert(1);
+            mix-blend-mode: screen;
+        }
+
+        header::after {
+            content: '';
+            position: absolute; bottom: 0; left: 50%;
+            width: 1px; height: 30px;
+            background-color: var(--accent-color);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 300;
+            margin-bottom: 15px;
+            font-family: var(--font-ui);
+        }
+
+        .subtitle {
+            font-family: var(--font-ui);
+            color: var(--dim-color);
+            font-size: 0.85rem;
+            max-width: 750px;
+            line-height: 1.6;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        main {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 5vh;
+            position: relative;
+        }
+
+        /* Central Axis Line */
+        main::before {
+            content: '';
+            position: absolute; top: 0; left: 50%;
+            width: 1px; height: 100%;
+            background-color: var(--line-color);
+            z-index: -1;
+        }
+
+        /* --- CONTENT BLOCKS --- */
+        .content-block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 450px; 
+            padding: 30px 0;
+            gap: 50px;
+            margin-bottom: var(--block-spacing);
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards;
+            position: relative;
+        }
+
+        .content-block::after {
+            content: '';
+            position: absolute;
+            bottom: calc(var(--block-spacing) * -0.5);
+            left: 20%; width: 60%; height: 1px;
+            background-color: var(--line-color);
+        }
+        .content-block:last-of-type::after { display: none; }
+
+        .content-block:nth-child(odd) { flex-direction: row; }
+        .content-block:nth-child(even) { flex-direction: row-reverse; }
+
+        /* --- TEXT & IMAGE --- */
+        .text-wrapper {
+            width: 48%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            background-color: var(--bg-color);
+            border: 1px solid transparent; 
+        }
+
+        .block-num {
+            font-family: var(--font-ui);
+            color: var(--dim-color);
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            display: block;
+            border-left: 2px solid var(--accent-color);
+            padding-left: 12px;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            line-height: 1.3;
+        }
+
+        p {
+            font-size: 0.95rem;
+            color: #bbbbbb;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        /* Citation Styles */
+        .cite-ref {
+            vertical-align: super;
+            font-size: 0.6em;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-left: 2px;
+            border-bottom: 1px dotted var(--dim-color);
+            transition: all 0.3s;
+        }
+        .cite-ref:hover { color: #ff0000; border-color: #ff0000; }
+
+        .image-wrapper {
+            width: 45%;
+            height: 380px;
+            position: relative;
+            border: 1px solid var(--line-color);
+            overflow: hidden;
+            background-color: #111;
+        }
+
+        .image-wrapper::before {
+            content: '+';
+            position: absolute; top: 10px; right: 10px;
+            color: var(--text-color); font-family: var(--font-ui);
+            font-weight: 100; z-index: 2;
+        }
+
+        .image-wrapper img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.1);
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.6s ease;
+        }
+
+        .image-wrapper:hover img {
+            transform: scale(1.03);
+            filter: grayscale(0%) contrast(1);
+        }
+
+        /* --- NAVIGATION --- */
+        .nav-footer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 50px 0;
+            border-top: 1px solid var(--line-color);
+            margin-top: 40px;
+            background: linear-gradient(to bottom, var(--bg-color), #050505);
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 180px;
+            height: 90px;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-family: var(--font-ui);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn span { margin-top: 8px; font-size: 1.2rem; }
+        .nav-btn:hover { background-color: var(--text-color); color: var(--bg-color); transform: translateY(-3px); }
+
+        /* --- REFERENCES SECTION --- */
+        .citations-section {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            font-family: var(--font-ui);
+            font-size: 0.7rem;
+            color: var(--dim-color);
+            text-align: left;
+            border-top: 1px dashed var(--line-color);
+            margin-bottom: 60px;
+        }
+        
+        .citations-title {
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            color: var(--text-color);
+            letter-spacing: 2px;
+        }
+
+        .cite-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .cite-entry {
+            display: flex;
+            gap: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #151515;
+        }
+
+        .cite-num {
+            color: var(--text-color);
+            font-weight: bold;
+            min-width: 25px;
+        }
+
+        .cite-text { color: #999; line-height: 1.4; }
+        .cite-source { 
+            display: block; 
+            margin-top: 4px; 
+            color: var(--dim-color); 
+            font-style: italic; 
+        }
+        
+        @media (max-width: 900px) {
+            header { min-height: auto; padding: 60px 20px; }
+            h1 { font-size: 1.8rem; }
+            .subtitle { font-size: 0.8rem; max-width: 100%; }
+            main::before { display: none; }
+            .content-block { flex-direction: column !important; gap: 20px; padding: 0 20px; margin-bottom: 80px; }
+            .content-block::after { left: 0; width: 100%; }
+            .text-wrapper, .image-wrapper { width: 100%; }
+            .image-wrapper { height: 280px; order: -1; }
+            .cite-list { grid-template-columns: 1fr; }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="ai-limitations.html" class="back-btn">← Back</a>
+
+    <header>
+        <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="header-logo">
+        
+        <h1>Performance Intelligence</h1>
+        <div class="subtitle">
+            Optimization has shifted from static, post-design validation to dynamic, real-time generation. 
+            AI "Surrogate Models" now replace slow physics-based simulations with lightning-fast approximations, 
+            no longer needing the processing power to check every single possibility.
+        </div>
+    </header>
+
+    <main>
+        
+        <section class="content-block">
+            <div class="image-wrapper">
+                <img src="https://placehold.co/800x600/111/444?text=Surrogate+Models" alt="Surrogate Models">
+            </div>
+            <div class="text-wrapper">
+                <span class="block-num">01 // CURRENT PROFICIENCY</span>
+                <h2>Surrogate Modeling & Speed</h2>
+                <p>
+                    AI now acts as a "Surrogate Model" (or Metamodel) to bypass computational bottlenecks. 
+                    Trained on synthetic datasets from engines like EnergyPlus, these models (using MLP or XGBoost) can predict Energy Use Intensity (EUI) with an R² accuracy of 0.998. <a href="#ref-1" class="cite-ref">[1]</a>
+                </p>
+                <p>
+                    Critically, they run approximately 340 times faster than traditional physics-based simulations, 
+                    enabling iterative "Topological Optimization" where thousands of design variants are tested in real-time. <a href="#ref-1" class="cite-ref">[1]</a>
+                </p>
+            </div>
+        </section>
+
+        <section class="content-block">
+            <div class="image-wrapper">
+                <img src="https://placehold.co/800x600/151515/444?text=Deep+RL" alt="Deep RL">
+            </div>
+            <div class="text-wrapper">
+                <span class="block-num">02 // RESEARCH FRONTIER</span>
+                <h2>Deep Reinforcement Learning (DRL)</h2>
+                <p>
+                    The frontier lies in "operating" the building optimally. Deep Reinforcement Learning (DRL) agents, such as Maskable Proximal Policy Optimization (MPPO), can control HVAC systems by learning complex policies that traditional PID controllers cannot. <a href="#ref-2" class="cite-ref">[2]</a>
+                </p>
+                <p>
+                    Recent field implementations have demonstrated up to 36% energy savings while maintaining occupant comfort, effectively treating the building as a playable game of efficiency. <a href="#ref-2" class="cite-ref">[2]</a>
+                </p>
+            </div>
+        </section>
+
+        <section class="content-block">
+            <div class="image-wrapper">
+                <img src="https://placehold.co/800x600/1a1a1a/444?text=Autonomic+Building" alt="Autonomic Building">
+            </div>
+            <div class="text-wrapper">
+                <span class="block-num">03 // THEORETICAL HORIZON</span>
+                <h2>The Autonomic Building</h2>
+                <p>
+                    The theoretical endpoint is the "Zero-Energy Autonomic Building"—a structure with a self-managing metabolism. 
+                    Utilizing predictive self-healing models, such a building would detect faults (FDD) and re-calibrate its own systems without human intervention. <a href="#ref-3" class="cite-ref">[3]</a>
+                </p>
+                <p>
+                    This extends to programmable matter, where the physical envelope itself could morph to optimize acoustic and thermal properties dynamically. <a href="#ref-4" class="cite-ref">[4]</a>
+                </p>
+            </div>
+        </section>
+
+        <section class="content-block">
+            <div class="image-wrapper">
+                <img src="https://placehold.co/800x600/1f1f1f/444?text=Sim-to-Real" alt="Sim to Real Gap">
+            </div>
+            <div class="text-wrapper">
+                <span class="block-num">04 // OPERATIONAL FLAWS</span>
+                <h2>The "Sim-to-Real" Gap</h2>
+                <p>
+                    A major flaw is the "Sim-to-Real" gap. Models trained in perfect digital environments often fail when deployed in buildings with "dirty data," noisy sensors, or unpredictable human behavior. <a href="#ref-2" class="cite-ref">[2]</a>
+                </p>
+                <p>
+                    Furthermore, optimization faces "Pareto Complexity"—the difficulty of balancing qualitative values (like acoustic privacy) against quantitative metrics (like energy efficiency) which AI struggles to weigh. <a href="#ref-5" class="cite-ref">[5]</a>
+                </p>
+            </div>
+        </section>
+
+        <section class="content-block">
+            <div class="image-wrapper">
+                <img src="https://placehold.co/800x600/222/444?text=Safety+Codes" alt="Safety Codes">
+            </div>
+            <div class="text-wrapper">
+                <span class="block-num">05 // FUNDAMENTAL LIMITS</span>
+                <h2>Safety-Critical Constraints</h2>
+                <p>
+                    AI lacks "Common Sense" and cannot handle "Black Swan" events. It cannot be allowed to override safety codes (e.g., locking doors to save heat during a fire alarm). 
+                </p>
+                <p>
+                    Because it optimizes for the variables it is given, it poses a risk in safety-critical scenarios where unmodeled variables (like emergency egress) are paramount. <a href="#ref-5" class="cite-ref">[5]</a>
+                </p>
+            </div>
+        </section>
+
+        <div class="nav-footer">
+            <a href="LimitationText.html" class="nav-btn">
+                Cognitive (LLM)
+                <span>&swarr;</span>
+            </a>
+            <a href="LimitationDigital.html" class="nav-btn">
+                Execution
+                <span>&searr;</span>
+            </a>
+        </div>
+
+        <div class="citations-section">
+            <div class="citations-title">References</div>
+            <div class="cite-list">
+                
+                <div class="cite-entry" id="ref-1">
+                    <div class="cite-num">[1]</div>
+                    <div class="cite-text">
+                        Surrogate Modeling for Building Design: Energy and Cost Prediction Compared to Simulation-Based Methods.
+                        <span class="cite-source">MDPI, 2025. [Ref 18 in Source]</span>
+                    </div>
+                </div>
+
+                <div class="cite-entry" id="ref-2">
+                    <div class="cite-num">[2]</div>
+                    <div class="cite-text">
+                        A trustworthy reinforcement learning framework for autonomous control of a large-scale complex heating system.
+                        <span class="cite-source">Applied Energy, 2025. [Ref 20 in Source]</span>
+                    </div>
+                </div>
+
+                <div class="cite-entry" id="ref-3">
+                    <div class="cite-num">[3]</div>
+                    <div class="cite-text">
+                        Self-learning and Self-repairing Technologies to Establish Autonomous Building Maintenance.
+                        <span class="cite-source">MATEC Web of Conferences, 2019/2026. [Ref 35 in Source]</span>
+                    </div>
+                </div>
+
+                <div class="cite-entry" id="ref-4">
+                    <div class="cite-num">[4]</div>
+                    <div class="cite-text">
+                        Programmable Matter: Materials That Morph On Demand.
+                        <span class="cite-source">Quantum Zeitgeist / Wikipedia. [Ref 37/38 in Source]</span>
+                    </div>
+                </div>
+
+                <div class="cite-entry" id="ref-5">
+                    <div class="cite-num">[5]</div>
+                    <div class="cite-text">
+                        A machine learning-based surrogate model to approximate optimal building retrofit solutions (Pareto Complexity).
+                        <span class="cite-source">ResearchGate, 2025. [Ref 23 in Source]</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

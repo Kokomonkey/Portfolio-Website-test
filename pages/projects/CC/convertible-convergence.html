@@ -10,18 +10,16 @@
         :root {
             --bg-color: #000000;
             --accent-color: #ffffff;
-            --transition-speed: 0.1s; /* Instant, mechanical feel */
+            --transition-speed: 0.1s;
+            --transition-curve: cubic-bezier(0.76, 0, 0.24, 1);
             
-            /* DYNAMIC SIZING */
-            --square-size: min(22vw, 35vh); 
-            --header-height: 15vh;
+            /* SIZING */
+            --square-size: min(20vw, 30vh); 
+            --header-height: 12vh;
+            --sidebar-width: 120px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
@@ -33,79 +31,7 @@
             height: 100vh; 
             overflow: hidden; 
             justify-content: center;
-        }
-
-        /* --- POPUP STYLES --- */
-        .popup-overlay {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .popup-box {
-            background-color: var(--bg-color);
-            border: 2px solid var(--accent-color);
-            padding: 30px;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .popup-box p {
-            font-size: 1rem;
-            margin-bottom: 20px;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        .close-btn {
-            background: var(--accent-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 10px 20px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
-        .close-btn:hover {
-            background: #333;
-            color: #fff;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-
-        /* --- BACK BUTTON --- */
-        .back-btn {
-            position: fixed;
-            top: 2vh;
-            left: 2vh;
-            text-decoration: none;
-            z-index: 100;
-            border: 2px solid var(--accent-color);
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            padding: 1vh 2vh;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 2vh; 
-            transition: all 0.2s ease;
-        }
-
-        .back-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
+            transition: all 0.5s ease;
         }
 
         /* --- HEADER --- */
@@ -116,53 +42,90 @@
             align-items: center;
             justify-content: center;
             gap: 2vh;
-            margin-bottom: 2vh; 
             flex-shrink: 0;
+            transition: all 0.6s var(--transition-curve);
+            z-index: 50;
         }
 
         .logo-placeholder {
-            height: 10vh; 
-            width: 10vh; 
+            height: 8vh; width: 8vh; 
             background-color: var(--accent-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
             filter: invert(1);
+            transition: inherit;
         }
-        
-        .logo-placeholder img {
-            max-height: 100%;
-            width: auto;
-        }
+        .logo-placeholder img { max-height: 100%; width: auto; }
 
         h1 {
-            font-size: 4vh; 
+            font-size: 3.5vh; 
             letter-spacing: 0.5vh;
             text-transform: uppercase;
             font-weight: 700;
+            transition: inherit;
         }
 
-        /* --- THE MONOLITH GRID --- */
+        /* --- BUTTONS --- */
+        .back-btn {
+            position: fixed;
+            top: 2vh; left: 2vh;
+            text-decoration: none;
+            z-index: 1000;
+            border: 2px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 1vh 2vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.8vh; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        .poster-btn {
+            background: transparent;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 10px 30px;
+            margin-bottom: 2vh; 
+            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase;
+            font-size: 1.5vh;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 60;
+        }
+        .poster-btn:hover {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            letter-spacing: 4px;
+        }
+
+        /* --- MAIN LAYOUT --- */
         main {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-grow: 1;
             width: 100%;
-            overflow-y: auto;
+            position: relative;
         }
 
+        /* --- THE GRID --- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr); 
             grid-template-rows: repeat(2, 1fr);    
-            gap: 0; /* TOUCHING */
+            gap: 0;
             width: fit-content;
             border: 2px solid var(--accent-color);
             margin-bottom: 20px;
+            transition: all 0.8s var(--transition-curve);
+            position: relative;
+            z-index: 100;
         }
 
-        /* --- INTERACTIVE GRID ITEMS --- */
         .grid-item {
             display: block; 
             text-decoration: none;
@@ -172,26 +135,25 @@
             border: 1px solid var(--accent-color);
             overflow: hidden; 
             cursor: pointer;
-            
-            /* BROKEN ROBOT ANIMATION */
+            background-color: var(--bg-color);
+            transition: all 0.5s ease;
+        }
+
+        .grid-item.animate-in {
             opacity: 0; 
             animation: brokenRobot 0.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
         }
 
         .square-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             background-color: var(--bg-color);
-            transition: all var(--transition-speed) ease; 
+            transition: all 0.3s ease;
         }
 
         .square-icon {
-            width: 40%;
-            height: 40%;
+            width: 40%; height: 40%;
             background-color: var(--accent-color);
             margin-bottom: 10%;
             transition: inherit;
@@ -206,7 +168,11 @@
             transition: inherit;
         }
 
-        /* --- BROKEN ROBOT KEYFRAMES --- */
+        .grid-item:hover .square-content { transform: scale(0.85); border: 2px solid var(--accent-color); }
+        .grid-item:hover { background-color: var(--accent-color); }
+        .grid-item:hover .square-icon { background-color: var(--accent-color); }
+        .grid-item:hover .square-text { color: var(--accent-color); letter-spacing: 2px; }
+
         @keyframes brokenRobot {
             0% { opacity: 0; transform: translateX(-50px); }
             5% { opacity: 1; transform: translateX(0); }
@@ -220,8 +186,6 @@
             80% { transform: scale(0.98); }
             100% { opacity: 1; transform: scale(1); }
         }
-
-        /* Staggered Delays for Chaos */
         .grid-item:nth-child(1) { animation-delay: 0.0s; }
         .grid-item:nth-child(2) { animation-delay: 0.2s; }
         .grid-item:nth-child(3) { animation-delay: 0.1s; }
@@ -232,70 +196,180 @@
         .grid-item:nth-child(8) { animation-delay: 0.25s; }
 
 
-        /* OPTION 3: ARCHITECTURAL SECTION */
+        /* --- GALLERY MODE --- */
+        body.gallery-mode header {
+            position: absolute; top: 20px; right: 40px;
+            height: auto; width: auto;
+            flex-direction: row; margin: 0;
+        }
+        body.gallery-mode h1 { font-size: 1.5rem; letter-spacing: 0; border: none; }
+        body.gallery-mode .logo-placeholder { height: 40px; width: 40px; }
+        body.gallery-mode .poster-btn { display: none; }
 
-        .grid-item:hover .square-content {
-            /* Shrink the black box inside the white container */
-            transform: scale(0.85); 
-            background-color: var(--bg-color); /* Stays Black */
-            border: 2px solid var(--accent-color); /* Adds inner border */
+        body.gallery-mode .grid-container {
+            position: fixed; top: 0; left: 0;
+            width: var(--sidebar-width); height: 100vh;
+            margin: 0; border: none; border-right: 1px solid #333;
+            display: flex; flex-direction: column; justify-content: center;
+            background: var(--bg-color); padding: 10vh 0;
         }
 
-        /* The background behind the shrunk box becomes white */
-        .grid-item:hover {
-            background-color: var(--accent-color);
+        body.gallery-mode .grid-item.static-link { display: none; }
+        
+        body.gallery-mode .grid-item.gallery-trigger {
+            width: 100%; height: 10vh;
+            border: none; border-top: 1px solid #222; border-bottom: 1px solid #222;
+            animation: none; opacity: 1; transform: none;
+        }
+        body.gallery-mode .grid-item.gallery-trigger .square-icon { display: none; }
+        body.gallery-mode .grid-item.gallery-trigger .square-content { background-color: transparent; transform: none; border: none; }
+        body.gallery-mode .grid-item.gallery-trigger .square-text { font-size: 0.8rem; color: #666; letter-spacing: 1px; }
+
+        body.gallery-mode .grid-item.gallery-trigger.active-category {
+            height: 40vh; background: var(--bg-color);
+            border-right: 1px solid white; margin-right: -1px; z-index: 101;
+        }
+        body.gallery-mode .grid-item.gallery-trigger.active-category .square-text {
+            writing-mode: vertical-rl; transform: rotate(180deg);
+            font-size: 1.5rem; letter-spacing: 5px; color: white;
         }
 
-        .grid-item:hover .square-icon {
-            background-color: var(--accent-color); /* Stays White */
+        .image-feed {
+            position: absolute; top: 0; left: var(--sidebar-width);
+            width: calc(100vw - var(--sidebar-width)); height: 100%;
+            overflow-y: auto; display: none; justify-content: center;
+            padding: 50px 0; opacity: 0; transform: translateY(20px);
+            transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+        }
+        body.gallery-mode .image-feed { display: flex; opacity: 1; transform: translateY(0); }
+
+        .feed-grid {
+            width: 100%; max-width: 1400px; padding: 0 60px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-auto-rows: 250px; gap: 20px;
+        }
+        .gallery-thumb { width: 100%; height: 100%; background-color: #111; cursor: pointer; border: 1px solid transparent; transition: border-color 0.2s; overflow: hidden; }
+        .gallery-thumb:hover { border-color: var(--accent-color); }
+        .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.3s, transform 0.5s; filter: grayscale(100%); }
+        .gallery-thumb:hover img { opacity: 1; transform: scale(1.1); filter: grayscale(0%); }
+
+        /* --- POPUPS & MODALS --- */
+        .popup-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); z-index: 2000;
+            justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);
+        }
+        .popup-box {
+            background-color: var(--bg-color); border: 2px solid var(--accent-color);
+            padding: 30px; max-width: 400px; text-align: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); animation: fadeIn 0.3s ease;
+        }
+        .close-btn { background: var(--accent-color); color: var(--bg-color); border: none; padding: 10px 20px; font-family: inherit; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- GALLERY PRESENTATION MODAL --- */
+        .presentation-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: black; z-index: 3000; display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .presentation-modal.active { opacity: 1; pointer-events: all; }
+        .stage-area { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        
+        /* --- FIXED ZOOM CSS --- */
+.presentation-img { 
+    max-height: 80vh; 
+    max-width: 90vw; 
+    object-fit: contain; 
+    cursor: zoom-in; 
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+    transform: scale(1);
+    z-index: 1;
+}
+
+/* When zoomed, we override the constraints and remove transitions for smooth panning */
+.presentation-img.zoomed { 
+    cursor: zoom-out; 
+    max-height: none; /* Allow it to exceed the viewport height */
+    max-width: none;  /* Allow it to exceed the viewport width */
+    transform: scale(2.5); 
+    transition: none !important; 
+    z-index: 5;
+}
+
+        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); font-size: 3rem; color: white; background: none; border: none; cursor: pointer; padding: 20px; opacity: 0.3; transition: opacity 0.2s; z-index: 10; }
+        .nav-arrow:hover { opacity: 1; }
+        .nav-arrow.left { left: 10px; } .nav-arrow.right { right: 10px; }
+        .control-bar { height: 15vh; background: #111; border-top: 1px solid #333; display: flex; flex-direction: column; }
+        .caption-overlay { background: #222; color: #aaa; padding: 10px; text-align: center; font-size: 0.8rem; border-bottom: 1px solid #333; }
+        .strip-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 5px; overflow-x: auto; padding: 0 10px; }
+        .strip-thumb { height: 70%; aspect-ratio: 1/1; opacity: 0.3; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; flex-shrink: 0; }
+        .strip-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .strip-thumb.active { opacity: 1; border-color: white; }
+        .close-modal-icon { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; cursor: pointer; z-index: 3001; width: 40px; height: 40px; text-align: center; line-height: 40px; border: 1px solid #666; border-radius: 50%; background: rgba(0,0,0,0.5); }
+
+        /* --- POSTER MODAL --- */
+        .poster-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color); z-index: 5000;
+            display: none; flex-direction: column; align-items: center;
         }
 
-        .grid-item:hover .square-text {
-            color: var(--accent-color); /* Stays White */
-            letter-spacing: 2px; /* Text expands slightly */
+        .poster-header-bar {
+            width: 100%; height: 15vh;
+            display: flex; justify-content: center; align-items: center;
+            gap: 20px; z-index: 5002;
+            background: rgba(0,0,0,0.8);
+            position: absolute; top: 0; left: 0;
+            pointer-events: none; 
+        }
+        .poster-header-bar * { pointer-events: auto; } 
+
+        .poster-viewport {
+            width: 100%; height: 100%;
+            overflow: hidden; cursor: grab;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .poster-viewport:active { cursor: grabbing; }
+
+        .full-poster-img {
+            max-width: 90%; max-height: 90%;
+            transition: transform 0.1s linear;
+            box-shadow: 0 0 50px rgba(255,255,255,0.1);
         }
 
-        /* --- MOBILE ADAPTATION --- */
+        /* --- MOBILE --- */
         @media (max-width: 768px) {
-            body {
-                height: auto;
-                min-height: 100vh;
-                padding-bottom: 50px;
-                justify-content: flex-start;
-            }
-
-            header {
-                margin-top: 80px;
-                flex-direction: column;
-                height: auto;
-                gap: 15px;
-            }
-            
+            body { height: auto; min-height: 100vh; padding-bottom: 50px; justify-content: flex-start; }
+            header { margin-top: 80px; flex-direction: column; height: auto; gap: 15px; }
             .logo-placeholder { height: 70px; width: 70px; }
             h1 { font-size: 1.5rem; text-align: center; line-height: 1.2; }
 
-            .grid-container {
-                /* Change from 4x2 to 2x4 on mobile */
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(4, 1fr);
-            }
+            .poster-btn { margin-bottom: 40px; font-size: 1rem; }
 
-            .grid-item {
-                /* Adjust size based on width for phone screens */
-                width: 40vw;
-                height: 40vw;
-            }
+            .grid-container { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); }
+            .grid-item { width: 40vw; height: 40vw; }
+            .square-text { font-size: 0.8rem; }
 
-            .square-text {
-                font-size: 0.8rem;
+            body.gallery-mode .grid-container {
+                width: 100vw; height: 60px; position: fixed; top: 80px; left: 0;
+                flex-direction: row; padding: 0; border-right: none; border-bottom: 1px solid #333;
             }
+            body.gallery-mode .grid-item.gallery-trigger { height: 100%; width: 25%; border: none; border-right: 1px solid #222; display: flex; justify-content: center; align-items: center; padding: 0; }
+            body.gallery-mode .grid-item.gallery-trigger.active-category { height: 100%; width: 25%; margin: 0; border-right: 1px solid #222; border-bottom: 2px solid white; }
+            body.gallery-mode .grid-item.gallery-trigger .square-text { writing-mode: horizontal-tb; transform: none; font-size: 0.6rem; }
+            body.gallery-mode header { top: 0; right: 0; width: 100%; height: 80px; flex-direction: row; background: var(--bg-color); }
+            body.gallery-mode .logo-placeholder { height: 40px; width: 40px; }
+            
+            .image-feed { left: 0; width: 100vw; padding-top: 150px; }
+            .feed-grid { grid-template-columns: 1fr; padding: 0 20px; }
         }
 
     </style>
 </head>
 <body>
 
-    <a href="../../../projects.html" class="back-btn">← Back</a>
+    <button class="back-btn" id="mainBackBtn" onclick="handleBack()">← Back</button>
 
     <header>
         <div class="logo-placeholder">
@@ -304,65 +378,69 @@
         <h1>Convertible Convergence</h1>
     </header>
 
+    <button class="poster-btn" onclick="openPoster()">[ The Whole Poster ]</button>
+
     <main>
-        <div class="grid-container">
-
-            <a href="Floorplans.html" class="grid-item">
-                <div class="square-content">
-                    <div class="square-icon" style="clip-path: polygon(0% 0%, 100% 0%, 100% 10%, 50% 10%, 50% 90%, 100% 90%, 100% 100%, 0% 100%, 0% 60%, 40% 60%, 40% 40%, 0% 40%);"></div>
-                    <span class="square-text">Floorplans</span>
-                </div>
-            </a>
-
-            <div onclick="openPopup(event)" class="grid-item">
-                <div class="square-content">
-                    <div class="square-icon" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: linear-gradient(45deg, transparent 48%, white 48%, white 52%, transparent 52%), linear-gradient(-45deg, transparent 48%, white 48%, white 52%, transparent 52%); background-color: white;"></div>
-                    <span class="square-text">3D Model</span>
-                </div>
-            </div>
-
-            <div onclick="openPopup(event)" class="grid-item">
+        <div class="grid-container" id="gridContainer">
+            <div class="grid-item gallery-trigger animate-in" id="trigger-sketches" onclick="openCategory('sketches')">
                 <div class="square-content">
                     <div class="square-icon" style="clip-path: circle(40% at 50% 40%); border-bottom: 10px solid white;"></div>
-                    <span class="square-text">The Site</span>
+                    <span class="square-text">Sketches & Drawings</span>
                 </div>
             </div>
 
-            <div onclick="openPopup(event)" class="grid-item">
+            <div class="grid-item gallery-trigger animate-in" id="trigger-furniture" onclick="openCategory('furniture')">
                 <div class="square-content">
                     <div class="square-icon" style="clip-path: polygon(20% 100%, 20% 60%, 20% 40%, 20% 20%, 80% 20%, 80% 40%, 80% 60%, 80% 100%, 70% 100%, 70% 60%, 30% 60%, 30% 100%);"></div>
                     <span class="square-text">Furniture</span>
                 </div>
             </div>
 
-            <div onclick="openPopup(event)" class="grid-item">
+            <a href="Floorplans.html" class="grid-item static-link animate-in">
+                <div class="square-content">
+                    <div class="square-icon" style="clip-path: polygon(0% 0%, 100% 0%, 100% 10%, 50% 10%, 50% 90%, 100% 90%, 100% 100%, 0% 100%, 0% 60%, 40% 60%, 40% 40%, 0% 40%);"></div>
+                    <span class="square-text">Floorplans</span>
+                </div>
+            </a>
+
+            <div onclick="openPopup(event)" class="grid-item static-link animate-in">
+                <div class="square-content">
+                    <div class="square-icon" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: linear-gradient(45deg, transparent 48%, white 48%, white 52%, transparent 52%), linear-gradient(-45deg, transparent 48%, white 48%, white 52%, transparent 52%); background-color: white;"></div>
+                    <span class="square-text">3D Model</span>
+                </div>
+            </div>
+
+            <div class="grid-item gallery-trigger animate-in" id="trigger-details" onclick="openCategory('details')">
                 <div class="square-content">
                     <div class="square-icon" style="clip-path: polygon(0% 0%, 30% 0%, 30% 10%, 10% 10%, 10% 30%, 0% 30%, 0% 100%, 30% 100%, 30% 90%, 10% 90%, 10% 70%, 100% 70%, 100% 0%);"></div>
                     <span class="square-text">Details</span>
                 </div>
             </div>
 
-            <a href="workflow.html" class="grid-item">
-                <div class="square-content">
-                    <div class="square-icon" style="clip-path: polygon(0% 40%, 60% 40%, 60% 10%, 100% 50%, 60% 90%, 60% 60%, 0% 60%);"></div>
-                    <span class="square-text">Workflow</span>
-                </div>
-            </a>
-
-            <a href="dynamic-facade.html" class="grid-item">
-               <div class="square-content">
-                 <div class="square-icon" style="clip-path: polygon(10% 0%, 20% 0%, 20% 100%, 10% 100%, 40% 0%, 50% 0%, 50% 100%, 40% 100%, 70% 0%, 80% 0%, 80% 100%, 70% 100%);"></div>
-               <span class="square-text">Dynamic Façade</span>
-             </div>
-            </a>
-
-            <a href="Renders.html" class="grid-item">
+            <a href="#" onclick="openCategory('renders'); return false;" class="grid-item gallery-trigger animate-in" id="trigger-renders">
                 <div class="square-content">
                     <div class="square-icon" style="clip-path: polygon(0% 100%, 30% 40%, 50% 70%, 70% 20%, 100% 100%);"></div>
                     <span class="square-text">Renders</span>
                 </div>
             </a>
 
+            <a href="#" onclick="openSingleView('Recourses/Workflow.jpg', 'Workflow Process'); return false;" class="grid-item gallery-trigger animate-in" id="trigger-workflow">
+                <div class="square-content">
+                    <div class="square-icon" style="clip-path: polygon(0% 40%, 60% 40%, 60% 10%, 100% 50%, 60% 90%, 60% 60%, 0% 60%);"></div>
+                    <span class="square-text">Workflow</span>
+                </div>
+            </a>
+
+            <a href="dynamic-facade.html" class="grid-item static-link animate-in">
+               <div class="square-content">
+                 <div class="square-icon" style="clip-path: polygon(10% 0%, 20% 0%, 20% 100%, 10% 100%, 40% 0%, 50% 0%, 50% 100%, 40% 100%, 70% 0%, 80% 0%, 80% 100%, 70% 100%);"></div>
+               <span class="square-text">Dynamic Façade</span>
+             </div>
+            </a>
+        </div>
+
+        <div class="image-feed" id="imageFeed">
+            <div class="feed-grid" id="feedContent"></div>
         </div>
     </main>
 
@@ -373,25 +451,324 @@
         </div>
     </div>
 
+    <div class="presentation-modal" id="modal">
+        <div class="close-modal-icon" onclick="closeModal()">×</div>
+        <div class="stage-area" id="stageArea">
+            <button class="nav-arrow left" onclick="changeSlide(-1)">&#8249;</button>
+            <img src="" class="presentation-img" id="mainImage">
+            <button class="nav-arrow right" onclick="changeSlide(1)">&#8250;</button>
+        </div>
+        <div class="control-bar">
+            <div class="caption-overlay" id="imageCaption"></div>
+            <div class="strip-container" id="thumbStrip"></div>
+        </div>
+    </div>
+
+    <div id="posterModal" class="poster-modal">
+        <div class="poster-header-bar">
+            <button class="back-btn" onclick="closePoster()" style="position: relative; top: auto; left: auto;">← Back</button>
+            <div class="logo-placeholder" style="height: 50px; width: 50px;">
+                <img src="../../../Recourses/Logos/CC.jpg" />
+            </div>
+            <h1 style="font-size: 1.5rem; border: none;">Convertible Convergence</h1>
+        </div>
+        
+        <div class="poster-viewport" id="posterViewport">
+            <img src="Recourses/CCPoster.jpg" class="full-poster-img" id="posterImage" />
+        </div>
+    </div>
+
     <script>
-        // POPUP LOGIC
-        function openPopup(event) {
-            // Prevent default link behavior if inside an anchor tag (though we used div for these)
-            if (event) event.preventDefault();
-            document.getElementById('popup').style.display = 'flex';
-        }
+    // --- DATA CONFIGURATION ---
+    const categories = {
+        'sketches': [
+            { id: 1, url: 'Recourses/Site.jpg', thumb: 'Recourses/Site.jpg', desc: 'Site Analysis & Context' },
+        ],
+        'furniture': [
+             { id: 1, url: 'Recourses/SlidingBookcase.jpg', thumb: 'Recourses/SlidingBookcase.jpg', desc: 'Sliding Bookcase Mechanism' },
+             { id: 2, url: 'Recourses/MovableChairs.jpg', thumb: 'Recourses/MovableChairs.jpg', desc: 'Movable Chair Configuration' },
+             { id: 3, url: 'Recourses/FodableTable.jpg', thumb: 'Recourses/FodableTable.jpg', desc: 'Foldable Table Prototype' },
+             { id: 4, url: 'Recourses/BendableBookcase.jpg', thumb: 'Recourses/BendableBookcase.jpg', desc: 'Bendable Bookcase Detail' },
+        ],
+        'details': [
+             { id: 1, url: 'Recourses/DetailBig.jpg', thumb: 'Recourses/DetailBig.jpg', desc: '1:5 Structural Detail' },
+             { id: 2, url: 'Recourses/DetailsSmall.jpg', thumb: 'Recourses/DetailsSmall.jpg', desc: 'Joinery & Connections' },
+             { id: 3, url: 'Recourses/DetailFacade.jpg', thumb: 'Recourses/DetailFacade.jpg', desc: 'Dynamic Façade Section' },
+        ], 
+        'renders': [
+             { id: 1, url: 'Recourses/Render1.jpg', thumb: 'Recourses/Render1.jpg', desc: 'Interior Perspective' },
+             { id: 2, url: 'Recourses/Render2.jpg', thumb: 'Recourses/Render2.jpg', desc: 'Courtyard View' },
+             { id: 3, url: 'Recourses/Render31.jpg', thumb: 'Recourses/Render31.jpg', desc: 'Night Context' },
+        ], 
+    };
 
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-        }
+    // --- STATE VARIABLES ---
+    let currentCategoryKey = null;
+    let currentIndex = 0;
+    let isGalleryMode = false;
+    
+    // Zoom State
+    let zoomState = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
 
-        // Close popup if clicking outside the box
-        document.getElementById('popup').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePopup();
+    // DOM Elements
+    const body = document.body;
+    const feed = document.getElementById('imageFeed');
+    const feedContent = document.getElementById('feedContent');
+    const modal = document.getElementById('modal');
+    const mainImg = document.getElementById('mainImage');
+    const caption = document.getElementById('imageCaption');
+    const strip = document.getElementById('thumbStrip');
+    const backBtn = document.getElementById('mainBackBtn');
+    const stage = document.getElementById('stageArea');
+    
+    const triggerIds = ['trigger-sketches', 'trigger-furniture', 'trigger-details', 'trigger-renders', 'trigger-workflow'];
+
+    // --- NAVIGATION ---
+    function openCategory(key) {
+        isGalleryMode = true;
+        body.classList.add('gallery-mode');
+        currentCategoryKey = key;
+        backBtn.innerText = "← MENU";
+        
+        triggerIds.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                if(id === 'trigger-' + key) el.classList.add('active-category');
+                else el.classList.remove('active-category');
             }
         });
-    </script>
+        
+        if(categories[key]) renderFeed(categories[key]);
+    }
 
+    function handleBack() {
+        if (modal.classList.contains('active')) {
+            closeModal();
+        } else if (isGalleryMode) {
+            body.classList.remove('gallery-mode');
+            isGalleryMode = false;
+            backBtn.innerText = "← Back";
+            triggerIds.forEach(id => {
+               const el = document.getElementById(id);
+               if(el) el.classList.remove('active-category');
+            });
+        } else if (document.getElementById('posterModal').style.display === 'flex') {
+            closePoster();
+        } else {
+            window.location.href = '../../../projects.html';
+        }
+    }
+
+    // --- GALLERY ---
+    function renderFeed(data) {
+        feed.style.opacity = '0';
+        setTimeout(() => {
+            feedContent.innerHTML = ''; 
+            data.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'gallery-thumb';
+                div.innerHTML = `<img src="${item.thumb}" loading="lazy" alt="Thumb">`;
+                div.onclick = () => openModal(index);
+                feedContent.appendChild(div);
+            });
+            feed.style.opacity = '1';
+        }, 300);
+    }
+
+    function openModal(index) {
+        currentIndex = index;
+        updateModalContent();
+        modal.classList.add('active');
+        renderStrip();
+    }
+    
+    function closeModal() {
+        modal.classList.remove('active');
+        resetZoom();
+    }
+
+    function updateModalContent() {
+        const data = categories[currentCategoryKey][currentIndex];
+        mainImg.src = data.url;
+        caption.innerText = data.desc;
+        
+        const thumbs = document.querySelectorAll('.strip-thumb');
+        thumbs.forEach((t, i) => {
+            if(i === currentIndex) t.classList.add('active');
+            else t.classList.remove('active');
+        });
+
+        resetZoom();
+    }
+
+    function renderStrip() {
+        strip.innerHTML = '';
+        categories[currentCategoryKey].forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = `strip-thumb ${idx === currentIndex ? 'active' : ''}`;
+            div.innerHTML = `<img src="${item.thumb}">`;
+            div.onclick = () => { currentIndex = idx; updateModalContent(); };
+            strip.appendChild(div);
+        });
+    }
+
+    function changeSlide(dir) {
+        const list = categories[currentCategoryKey];
+        currentIndex += dir;
+        if(currentIndex < 0) currentIndex = list.length - 1;
+        if(currentIndex >= list.length) currentIndex = 0;
+        updateModalContent();
+    }
+
+    // --- UNIFIED DRAG & ZOOM LOGIC (Gallery & Poster) ---
+    function resetZoom() {
+        zoomState = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+        mainImg.classList.remove('zoomed');
+        mainImg.style.transform = `translate(0px, 0px) scale(1)`;
+        mainImg.style.cursor = 'zoom-in';
+    }
+
+    function applyTransform(element) {
+        // Apply translation and scale
+        element.style.transform = `translate(${zoomState.pointX}px, ${zoomState.pointY}px) scale(${zoomState.scale})`;
+    }
+
+    // 1. CLICK TO ACTIVATE ZOOM
+    stage.addEventListener('click', (e) => {
+        if(e.target.classList.contains('nav-arrow')) return; // Ignore arrows
+
+        if(zoomState.scale === 1) {
+            // Zoom In
+            zoomState.scale = 2.5; 
+            mainImg.classList.add('zoomed');
+            mainImg.style.cursor = 'grab';
+        } else {
+            // Zoom Out
+            resetZoom();
+        }
+        applyTransform(mainImg);
+    });
+
+    // 2. DRAG TO PAN (Mouse Down)
+    stage.addEventListener('mousedown', (e) => {
+        if(zoomState.scale > 1) {
+            e.preventDefault();
+            zoomState.panning = true;
+            zoomState.startX = e.clientX - zoomState.pointX;
+            zoomState.startY = e.clientY - zoomState.pointY;
+            mainImg.style.cursor = 'grabbing';
+        }
+    });
+
+    // 3. DRAG MOVING (Mouse Move)
+    window.addEventListener('mousemove', (e) => {
+        if (!zoomState.panning) return;
+        e.preventDefault();
+        zoomState.pointX = e.clientX - zoomState.startX;
+        zoomState.pointY = e.clientY - zoomState.startY;
+        applyTransform(mainImg);
+    });
+
+    // 4. STOP DRAG (Mouse Up)
+    window.addEventListener('mouseup', () => {
+        if(zoomState.panning) {
+            zoomState.panning = false;
+            mainImg.style.cursor = 'grab';
+        }
+    });
+
+    // 5. WHEEL ZOOM
+    stage.addEventListener('wheel', (e) => {
+        if(!mainImg.classList.contains('zoomed')) return;
+        e.preventDefault();
+        
+        const xs = (e.clientX - zoomState.pointX) / zoomState.scale;
+        const ys = (e.clientY - zoomState.pointY) / zoomState.scale;
+        const delta = -e.deltaY;
+
+        (delta > 0) ? (zoomState.scale *= 1.1) : (zoomState.scale /= 1.1);
+        
+        // Limits
+        if(zoomState.scale < 1) { zoomState.scale = 1; resetZoom(); return; }
+        if(zoomState.scale > 5) zoomState.scale = 5;
+
+        zoomState.pointX = e.clientX - xs * zoomState.scale;
+        zoomState.pointY = e.clientY - ys * zoomState.scale;
+
+        applyTransform(mainImg);
+    });
+
+    // --- SINGLE VIEW / POSTER LOGIC (Reusing same variables) ---
+    const posterModal = document.getElementById('posterModal');
+    const posterViewport = document.getElementById('posterViewport');
+    const posterImg = document.getElementById('posterImage');
+    const posterTitle = document.querySelector('.poster-header-bar h1');
+
+    let posterState = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+
+    function openPoster() { openSingleView('Recourses/CCPoster.jpg', 'Convertible Convergence'); }
+    
+    function openSingleView(imagePath, titleText) {
+        posterImg.src = imagePath; 
+        posterTitle.innerText = titleText; 
+        posterModal.style.display = 'flex';
+        posterState = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+        posterImg.style.transform = `translate(0px, 0px) scale(1)`;
+    }
+    
+    function closePoster() { posterModal.style.display = 'none'; }
+
+    function updatePosterTransform() {
+        posterImg.style.transform = `translate(${posterState.pointX}px, ${posterState.pointY}px) scale(${posterState.scale})`;
+    }
+
+    // Attach Poster Events (Similar to Gallery but separate elements)
+    posterViewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const xs = (e.clientX - posterState.pointX) / posterState.scale;
+        const ys = (e.clientY - posterState.pointY) / posterState.scale;
+        const delta = -e.deltaY;
+        (delta > 0) ? (posterState.scale *= 1.1) : (posterState.scale /= 1.1);
+        if(posterState.scale < 0.5) posterState.scale = 0.5;
+        if(posterState.scale > 5) posterState.scale = 5;
+        posterState.pointX = e.clientX - xs * posterState.scale;
+        posterState.pointY = e.clientY - ys * posterState.scale;
+        updatePosterTransform();
+    });
+
+    posterViewport.addEventListener('mousedown', (e) => {
+        posterState.panning = true;
+        posterState.startX = e.clientX - posterState.pointX;
+        posterState.startY = e.clientY - posterState.pointY;
+    });
+
+    window.addEventListener('mouseup', () => { posterState.panning = false; });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!posterState.panning) return;
+        e.preventDefault();
+        posterState.pointX = e.clientX - posterState.startX;
+        posterState.pointY = e.clientY - posterState.startY;
+        updatePosterTransform();
+    });
+
+    // --- KEYBOARD & POPUPS ---
+    document.addEventListener('keydown', (e) => {
+        if(modal.classList.contains('active')) {
+            if(e.key === 'ArrowLeft') changeSlide(-1);
+            if(e.key === 'ArrowRight') changeSlide(1);
+            if(e.key === 'Escape') closeModal();
+        } else if (posterModal.style.display === 'flex' && e.key === 'Escape') {
+            closePoster();
+        } else if (isGalleryMode && e.key === 'Escape') {
+            handleBack();
+        }
+    });
+
+    function openPopup(event) { if (event) event.preventDefault(); document.getElementById('popup').style.display = 'flex'; }
+    function closePopup() { document.getElementById('popup').style.display = 'none'; }
+    document.getElementById('popup').addEventListener('click', function(e) { if (e.target === this) closePopup(); });
+
+</script>
 </body>
 </html>

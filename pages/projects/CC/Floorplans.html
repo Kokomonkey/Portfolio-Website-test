@@ -6,25 +6,14 @@
     <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
     <title>Floorplans | [DOUWEDOESDESIGN]</title>
     <style>
-        /* --- CSS VARIABLES & RESET --- */
         :root {
             --bg-color: #000000;
             --accent-color: #ffffff;
             --alert-color: #ff0000;
             --ui-font: 'Courier New', Courier, monospace;
-            
-            /* SIZING LOGIC - PORTRAIT */
-            /* Height is the primary constraint now to prevent text overlap */
-            --container-height: 65vh; 
-            --container-ratio: 0.707; /* Portrait A-Series Ratio (1 / 1.414) */
-            --container-width: calc(var(--container-height) * var(--container-ratio));
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
@@ -32,16 +21,16 @@
             font-family: var(--ui-font);
             height: 100vh;
             overflow: hidden;
+            /* Layout: Flex Row to arrange Text - Image - Slider */
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 5vw; /* Space between elements */
         }
 
         /* --- BACK BUTTON --- */
         .back-btn {
-            position: fixed;
-            top: 40px;
-            left: 40px;
+            position: fixed; top: 40px; left: 40px;
             text-decoration: none;
             border: 2px solid var(--accent-color);
             background-color: var(--bg-color);
@@ -52,183 +41,125 @@
             z-index: 100;
             transition: all 0.2s ease;
         }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
 
-        .back-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-        }
-
-        /* --- INFO PANEL --- */
+        /* --- INFO PANEL (LEFT) --- */
         .info-panel {
-            position: absolute;
-            right: 18%; /* Pushed further left to avoid slider overlap */
-            width: 280px;
+            width: 250px;
+            flex-shrink: 0; /* Prevent text from squishing */
             text-align: left;
-            z-index: 10;
+            margin-left: 5vw; /* Push slightly from left edge */
         }
 
         h2 {
-            font-size: 1.8rem;
-            text-transform: uppercase;
+            font-size: 1.5rem; text-transform: uppercase;
             border-bottom: 2px solid var(--alert-color);
-            margin-bottom: 15px;
-            display: block;
+            margin-bottom: 15px; display: block;
         }
 
-        p {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: #aaaaaa;
-        }
+        p { font-size: 0.85rem; line-height: 1.6; color: #aaaaaa; }
 
-        /* --- CENTRAL VIEWPORT (PORTRAIT) --- */
+        /* --- CENTRAL VIEWPORT (IMAGE FRAME) --- */
         .plan-viewport {
-            width: var(--container-width);
-            height: var(--container-height);
+            height: 75vh; /* Max height constraint */
+            width: 100%;  /* Fill available space */
+            
+            /* KEY CHANGE: Limit width so it doesn't push UI elements off screen */
+            max-width: 65vw; 
+
+            /* Using grid to stack images perfectly on top of each other */
+            display: grid; 
+            grid-template-areas: "stack";
             border: 1px solid var(--alert-color);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            /* Subtle drafting grid */
+            
+            /* Background Grid */
             background-image: 
                 linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 30px 30px;
         }
 
+        /* Layers stack in the same grid cell */
         .plan-layer {
-            position: absolute;
+            grid-area: stack;
+            display: none; /* Hide inactive */
+            align-items: center;
+            justify-content: center;
             width: 100%;
             height: 100%;
-            display: none;
-            padding: 20px;
+            overflow: hidden; /* Ensure image doesn't spill out */
         }
 
         .plan-layer.active {
             display: flex;
-            flex-direction: column;
-            animation: layerShift 0.3s ease-out forwards;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .placeholder-box {
-    width: 100%;
-    height: 100%;
-    border: 1px dashed #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* ensures no spillover */
-}
+        /* KEY CHANGE: Object-fit logic to constrain image size */
+        .plan-layer img {
+            width: 100%;      /* Fill container width */
+            height: 100%;     /* Fill container height */
+            object-fit: contain; /* Scale image to fit WITHOUT cropping or stretching */
+            display: block;
+        }
 
-.placeholder-box img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain; /* scales image while preserving aspect ratio */
-}
-
-
-        /* --- VERTICAL SLIDER SYSTEM --- */
+        /* --- VERTICAL SLIDER SYSTEM (RIGHT) --- */
         .slider-wrapper {
-            position: fixed;
-            right: 5vw;
             height: 50vh;
+            flex-shrink: 0; /* Prevent slider from shrinking */
             display: flex;
-            flex-direction: row; /* Labels next to slider */
-            align-items: center; /* Vertical alignment of items */
-            gap: 20px;
+            flex-direction: row; /* Slider Left, Labels Right */
+            align-items: center;
+            gap: 15px;
+            margin-right: 5vw;
+        }
+
+        .slider-container {
+            width: 30px; /* Constrain width so rotated input stays neat */
+            height: 100%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Rotated Slider */
+        input[type=range] {
+            -webkit-appearance: none; appearance: none;
+            width: 50vh; /* Visual height */
+            height: 4px;
+            background: #222;
+            outline: none;
+            transform: rotate(-90deg);
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 30px; height: 15px;
+            background: var(--alert-color);
+            border: 1px solid white;
+            cursor: pointer;
         }
 
         .slider-labels {
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Spreads labels across the 50vh height */
-            text-align: right;
+            justify-content: space-between;
+            text-align: left;
             padding: 10px 0;
-            margin-left: 20px;
         }
 
         .label {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #333;
-            transition: color 0.3s;
+            font-weight: bold; font-size: 1.2rem;
+            color: #333; transition: color 0.3s;
         }
+        .label.active { color: var(--alert-color); }
 
-        .label.active {
-            color: var(--alert-color);
-        }
-
-        /* Vertical Slider Styling */
-        input[type=range] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 50vh; /* Width becomes height when rotated */
-            height: 4px;
-            background: #222;
-            outline: none;
-            /* Rotate to make it vertical */
-            transform: rotate(-90deg);
-            cursor: pointer;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 30px;
-            height: 15px;
-            background: var(--alert-color);
-            border: 1px solid white;
-            cursor: pointer;
-        }
-
-        @keyframes layerShift {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <a href="convertible-convergence.html" class="back-btn">← Back</a>
-
-    <div class="plan-viewport">
-        <div class="plan-layer active" id="layer-3">
-            <div class="placeholder-box">
-                <img src="Recourses/Drawings/Level2.jpg" />
-            </div>
-        </div>
-        <div class="plan-layer" id="layer-2">
-            <div class="placeholder-box">
-                <img src="Recourses/Drawings/Level1.jpg" />
-            </div>
-        </div>
-        <div class="plan-layer" id="layer-1">
-            <div class="placeholder-box">
-                <img src="Recourses/Drawings/Level0.jpg" />
-            </div>
-        </div>
-        <div class="plan-layer" id="layer-0">
-            <div class="placeholder-box">
-                <img src="Recourses/Drawings/Level-1.jpg" />
-            </div>
-        </div>
-    </div>
-
-    <div id="lightbox" class="hidden">
-         <div class="viewer-container">
-      <img id="zoomed-image" src="" alt="Plan View">
-    
-         <button id="prev-btn" class="nav-arrow left">←</button>
-         <button id="next-btn" class="nav-arrow right">→</button>
-
-          <button id="close-btn">×</button>
-        </div>
-    </div>
 
     <div class="info-panel">
         <h2>Floorplans</h2>
@@ -239,15 +170,31 @@
         </p>
     </div>
 
+    <div class="plan-viewport">
+        <div class="plan-layer active" id="layer-3">
+            <img src="Recourses/Level2.jpg" alt="Level 2 Plan" />
+        </div>
+        <div class="plan-layer" id="layer-2">
+            <img src="Recourses/Level1.jpg" alt="Level 1 Plan" />
+        </div>
+        <div class="plan-layer" id="layer-1">
+            <img src="Recourses/Level0.jpg" alt="Level 0 Plan" />
+        </div>
+        <div class="plan-layer" id="layer-0">
+            <img src="Recourses/Level-1.jpg" alt="Level -1 Plan" />
+        </div>
+    </div>
+
     <div class="slider-wrapper">
+        <div class="slider-container">
+            <input type="range" min="0" max="3" value="3" step="1" id="levelSlider">
+        </div>
         <div class="slider-labels">
             <span class="label" data-index="3">2</span>
             <span class="label" data-index="2">1</span>
             <span class="label" data-index="1">0</span>
             <span class="label" data-index="0">-1</span>
         </div>
-        
-        <input type="range" min="0" max="3" value="3" step="1" id="levelSlider">
     </div>
 
     <script>
@@ -256,12 +203,12 @@
         const labels = document.querySelectorAll('.label');
 
         function updateView(val) {
-            // Toggle Layers
+            // 1. Toggle Active Layer
             layers.forEach(layer => layer.classList.remove('active'));
             const targetLayer = document.getElementById(`layer-${val}`);
             if(targetLayer) targetLayer.classList.add('active');
             
-            // Toggle Label Highlights
+            // 2. Highlight Number
             labels.forEach(label => {
                 label.classList.remove('active');
                 if(label.getAttribute('data-index') === val) {
@@ -274,11 +221,8 @@
             updateView(e.target.value);
         });
 
-        // Initial state
+        // Initialize
         updateView("3");
-
-
-        
     </script>
 </body>
 </html>

@@ -25,10 +25,39 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Changed from center to allow scrolling if needed */
+            justify-content: flex-start;
             min-height: 100vh;
             padding-top: 2vh;
             padding-bottom: 5vh;
+
+            /* Architectural Touch: Subtle Graph Paper Background */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            text-decoration: none;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 10px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
         }
 
         /* --- HEADER & LOGO --- */
@@ -42,12 +71,10 @@
         }
 
         .logo {
-            width: 50px;
+            width: 60px;
             height: 50px;
-            border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 10px;
-            border: 1px solid var(--accent-color);
+            filter: invert();
         }
 
         h1 {
@@ -83,13 +110,15 @@
             color: var(--accent-color);
         }
 
-        /* --- THE GRID --- */
+        /* --- MAIN LAYOUT --- */
         main {
             display: flex;
-            justify-content: center;
+            flex-direction: column; /* Stack Grid and Button */
             align-items: center;
+            position: relative;
         }
 
+        /* --- THE GRID --- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -98,7 +127,20 @@
             width: fit-content;
             border: 2px solid var(--accent-color);
             box-shadow: 0 0 20px rgba(255,255,255,0.05);
+            position: relative;
         }
+
+        /* Architectural Touch: Corner Registration Marks (+) */
+        .grid-container::before, .grid-container::after {
+            content: '+';
+            position: absolute;
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px;
+            font-weight: 100;
+        }
+        .grid-container::before { top: -13px; left: -6px; }
+        .grid-container::after { bottom: -13px; right: -6px; }
 
         /* --- GRID ITEMS --- */
         .grid-item {
@@ -142,18 +184,65 @@
         /* --- HOVER EFFECTS --- */
         .grid-item:hover {
             background-color: var(--accent-color);
-            transform: scale(1.02); /* Slight pop out */
+            transform: scale(1.02);
             z-index: 10;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .grid-item:hover .square-text {
-            color: var(--bg-color);
+        .grid-item:hover .square-text { color: var(--bg-color); }
+        .grid-item:hover .number-tag { color: var(--bg-color); font-weight: bold; }
+
+        /* --- CONNECTING LINE (Decoration) --- */
+        .connector-line {
+            height: 4vh;
+            width: 1px;
+            border-left: 1px dashed var(--dim-color);
+            margin: 0 auto;
         }
 
-        .grid-item:hover .number-tag {
-            color: var(--bg-color);
+        /* --- NEW WORKFLOW BUTTON --- */
+        .workflow-btn {
+            /* Width matches the squares exactly */
+            width: var(--square-size);
+            padding: 15px 10px;
+            
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
             font-weight: bold;
+            transition: all 0.3s ease;
+            
+            /* Architectural markings */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Small stylistic brackets on the button */
+        .workflow-btn::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; bottom: 4px; right: 4px;
+            border: 1px solid var(--dim-color);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .workflow-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border-color: var(--accent-color);
+        }
+
+        .workflow-btn:hover::before {
+            border-color: var(--bg-color);
+            opacity: 1;
         }
 
         /* --- ANIMATIONS --- */
@@ -172,10 +261,18 @@
         .grid-item:nth-child(4) { animation-delay: 0.4s; }
         .grid-item:nth-child(5) { animation-delay: 0.5s; }
         .grid-item:nth-child(6) { animation-delay: 0.6s; }
+        
+        /* Fade in button last */
+        .connector-line, .workflow-btn {
+            opacity: 0;
+            animation: fadeIn 1s forwards 1s; /* 1s delay */
+        }
 
     </style>
 </head>
 <body>
+
+    <a href="index.html" class="back-btn">← Back</a>
 
     <header>
         <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="logo">
@@ -183,47 +280,53 @@
     </header>
 
     <section class="intro-section">
-        <div class="intro-title">Philosophy & Methodology</div>
+        <div class="intro-title">Capabilities & Limitations</div>
         <p class="intro-p">
-            The integration of AI into architectural design is not about automation, but augmentation. 
-            This framework explores the transition from raw data to realized form through six distinct phases.
+            This page is dedicated to keeping an accurate record of the capabilities & limitations of AI in the field of architecture.
         </p>
     </section>
 
     <main>
         <div class="grid-container">
 
-            <a href="prompting.html" class="grid-item">
+            <a href="LimitationImage.html" class="grid-item">
                 <span class="number-tag">1.0</span>
-                <span class="square-text">Prompting</span>
+                <span class="square-text">Image Generation</span>
             </a>
 
-            <a href="ideation.html" class="grid-item">
+            <a href="LimitationText.html" class="grid-item">
                 <span class="number-tag">2.0</span>
-                <span class="square-text">Ideation</span>
+                <span class="square-text">Text Generation</span>
             </a>
 
-            <a href="synthesis.html" class="grid-item">
+            <a href="LimitationOptimizing.html" class="grid-item">
                 <span class="number-tag">3.0</span>
-                <span class="square-text">Synthesis</span>
+                <span class="square-text">Optimizing</span>
             </a>
 
-            <a href="refinement.html" class="grid-item">
+            <a href="LimitationDigital.html" class="grid-item">
                 <span class="number-tag">4.0</span>
-                <span class="square-text">Refinement</span>
+                <span class="square-text">Digital Execution Intelligence</span>
             </a>
 
-            <a href="deployment.html" class="grid-item">
+            <a href="LimitationTemporal.html" class="grid-item">
                 <span class="number-tag">5.0</span>
-                <span class="square-text">Deployment</span>
+                <span class="square-text">Temporal & Cinematic Generation</span>
             </a>
 
-            <a href="workflow.html" class="grid-item">
+            <a href="LimitationAutonomous.html" class="grid-item">
                 <span class="number-tag">6.0</span>
-                <span class="square-text">Workflow</span>
+                <span class="square-text">Autonomous Materiality & Construction</span>
             </a>
 
         </div>
+
+        <div class="connector-line"></div>
+
+        <a href="Workflow.html" class="workflow-btn">
+            Create your own Ai Workflow
+        </a>
+
     </main>
 
 </body>

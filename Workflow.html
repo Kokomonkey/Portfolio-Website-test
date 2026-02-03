@@ -26,7 +26,7 @@
             --line-personal: #4a90e2; 
             
             /* --- FUNCTION COLORS --- */
-            --cat-gen: #9b59b6;     
+            --cat-gen: #9b59b6;      
             --cat-tech: #2980b9;    
             --cat-text: #27ae60;    
             --cat-mgmt: #f39c12;    
@@ -37,7 +37,7 @@
             /* --- INTEGRATION COLORS --- */
             --int-integrated: #d35400; 
             --int-tool: #7f8c8d;        
-            --int-service: #2c3e50;     
+            --int-service: #2c3e50;      
             --int-manual: #000000;      
             
             --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -247,7 +247,8 @@
         /* --- UI ELEMENTS --- */
         .bg-pattern {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
             background-size: 25px 25px;
             z-index: -1;
@@ -256,7 +257,8 @@
 
         .ui-layer {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 1000;
             transition: opacity 0.5s ease;
@@ -277,23 +279,20 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-/* LIGHT MODE (Daytime) */
-.site-logo {
-    height: 30px; 
-    width: auto;
-    /* This makes the white parts of your JPG transparent against the header */
-    mix-blend-mode: multiply; 
-    transition: all 0.3s ease;
-}
+        /* LIGHT MODE (Daytime) */
+        .site-logo {
+            height: 30px; 
+            width: auto;
+            mix-blend-mode: multiply; 
+            transition: all 0.3s ease;
+        }
 
-/* DARK MODE (Nighttime) */
-[data-theme="dark"] .site-logo {
-    /* Multiply doesn't work on dark backgrounds, so we switch to Invert */
-    mix-blend-mode: normal; 
-    filter: invert(100%);
-    /* We also want to ensure the background of the img doesn't stay white */
-    background: none; 
-}
+        /* DARK MODE (Nighttime) */
+        [data-theme="dark"] .site-logo {
+            mix-blend-mode: normal; 
+            filter: invert(100%);
+            background: none; 
+        }
 
         h1 {
             font-size: 1.2rem; text-transform: uppercase;
@@ -326,6 +325,59 @@
             min-width: 300px; z-index: 1000;
         }
 
+        /* --- NEW LIMITATIONS BOX --- */
+        .limitations-container {
+            pointer-events: auto;
+            position: absolute; 
+            bottom: 80px; 
+            /* Positioned to the left of the legend (Right: 30px + ~310px width + gap) */
+            right: 360px; 
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 200px;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .limit-title {
+            font-size: 0.7rem; font-weight: 800;
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+        }
+
+        .limit-divider {
+            height: 1px;
+            background-color: var(--line-color);
+            width: 100%;
+            opacity: 0.3;
+        }
+
+        .btn-explore {
+            background: var(--bg-color);
+            border: 2px solid var(--accent-color);
+            color: var(--text-color);
+            padding: 8px 0;
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            display: block;
+        }
+        .btn-explore:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* --- LEGEND INTERNALS --- */
         .legend-columns { display: flex; flex-direction: row; gap: 20px; }
         .legend-section { display: flex; flex-direction: column; gap: 5px; flex: 1; }
         .legend-section:first-child { border-right: 1px dashed var(--line-color); padding-right: 15px; }
@@ -550,7 +602,7 @@
             transition: 0.3s; text-align: center;
         }
         .ov-btn:hover { background: #fff; color: #000; }
-        .grid-square { border: 1px solid #333; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
+        .grid-square { border: 1px solid #333; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 30px; overflow: hidden;}
         .sq-title {
             position: relative; z-index: 2; font-size: 1.2rem; font-weight: 700;
             text-transform: uppercase; border-bottom: 2px solid white;
@@ -558,6 +610,50 @@
         }
         .sq-txt { position: relative; z-index: 2; font-size: 0.9rem; color: #aaa; }
         .sq-center { align-items: center; text-align: center; }
+
+        /* --- NOTIFICATIONS (NEW) --- */
+        #notification-area {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column; /* Stack messages */
+            gap: 10px;
+            z-index: 10000;
+            pointer-events: none; /* Allows clicking through the empty area */
+        }
+
+        .term-msg {
+            background-color: #000000;
+            color: #eeeeee;
+            border: 1px dotted rgba(255, 255, 255, 0.6);
+            padding: 12px 18px;
+            font-family: var(--font-mono); /* Uses your existing courier font */
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+            
+            /* Animation Logic */
+            opacity: 0;
+            animation: msg-sequence 7s forwards; 
+        }
+
+        /* The "Code" Prefix styling */
+        .term-msg::before {
+            content: ">> ";
+            color: var(--accent-color);
+            margin-right: 5px;
+        }
+
+        @keyframes msg-sequence {
+            0% { opacity: 0; transform: translateY(10px); }
+            5% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+
     </style>
 </head>
 <body data-theme="dark"> 
@@ -614,19 +710,19 @@
             <div class="detail-right">
                 <div class="grid-square">
                     <span class="sq-title">01. Workflow</span>
-                    <p class="sq-txt">Integration method and API capabilities within the current pipeline architecture.</p>
+                    <p id="ov-workflow-text" class="sq-txt">Integration method and API capabilities within the current pipeline architecture.</p>
                 </div>
                 <div class="grid-square">
-                    <div style="background:#222; width:100%; height:100%; position:absolute; top:0; left:0;"></div>
-                    <span class="sq-title" style="margin-top: auto;">[Visual Output]</span>
+                    <div id="ov-grid-visual" style="background:#222; width:100%; height:100%; position:absolute; top:0; left:0; background-size: cover; background-position: center;"></div>
+                    <span class="sq-title" style="margin-top: auto;"></span>
                 </div>
                 <div class="grid-square">
-                    <div style="background:#1a1a1a; width:100%; height:100%; position:absolute; top:0; left:0;"></div>
-                    <span class="sq-title" style="margin-top: auto;">[Data Model]</span>
+                    <div id="ov-grid-data" style="background:#1a1a1a; width:100%; height:100%; position:absolute; top:0; left:0; background-size: cover; background-position: center;"></div>
+                    <span class="sq-title" style="margin-top: auto;"></span>
                 </div>
                 <div class="grid-square sq-center">
                     <span class="sq-title">02. Efficiency</span>
-                    <p class="sq-txt">Estimated time savings based on task automation parameters.</p>
+                    <p id="ov-efficiency-text" class="sq-txt">Estimated time savings based on task automation parameters.</p>
                 </div>
             </div>
         </div>
@@ -638,6 +734,12 @@
         <div class="header-container">
             <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo" id="header-logo-img">
             <h1>Custom Architecture AI Workflow Creator</h1>
+        </div>
+
+        <div class="limitations-container">
+            <div class="limit-title">Explore the Limitations of AI</div>
+            <div class="limit-divider"></div>
+            <a href="ai-limitations.html" class="btn-explore">Explore</a>
         </div>
 
         <div class="legend-container" id="main-legend">
@@ -681,6 +783,8 @@
         </div>
     </div>
 
+<div id="notification-area"></div>
+
 <script>
 // --- CAMERA SETTINGS ---
 const CAMERA_ADJUST_X = 0; 
@@ -697,8 +801,14 @@ const workflowData = [
         ais: [
           { name: "Microsoft Copilot", integration: "Integrated", host: "M365", function: "Text/Code/Regs", 
             desc: "Integrated AI in Word/Excel to summarize briefs.", 
-            longDesc: "Welcome to the ubiquitous assistant, Microsoft Copilot. It sits not in a separate gallery, but embedded within the very walls of your Office suite. Feel invited to lean on it as it weaves through your briefs and spreadsheets, summarizing client desires into coherent narratives without you ever leaving the document.",
-            price: "Subscription", pro: "Ecosystem native", con: "Generalist model", link: "https://www.microsoft.com/en-us/microsoft-365/copilot", target: "_blank" },
+            longDesc: "Microsoft Copilot is an AI-assistant designed to be connected throughout your pc. It is able to pull information from any documents, agenda's and emails within the microsoft workspace. It can therefore improve the efficiency of any logistic tasks.",
+            price: "Subscription", pro: "Ecosystem native", con: "Generalist model", link: "https://www.microsoft.com/en-us/microsoft-365/copilot", target: "_blank",
+            // --- UPDATED EXAMPLE: CUSTOM IMAGES AND TEXT ---
+            workflowText: "Connects directly to Outlook and Word, scraping client emails for requirements.",
+            efficiencyText: "Saves time by automatically planning, wharing and annotating meetings",
+            visualImage: "Recourses/Images/Workflow/wf1.1.1.png",
+            dataImage: "Recourses/Images/Workflow/wf1.1.2.png" 
+          },
           
           { name: "Digital Blue Foam", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Web-based generative design for sustainable feasibility.", 
@@ -897,15 +1007,15 @@ const workflowData = [
         title: "System Analysis",
         desc: "Energy, Carbon and Lighting performance validation.",
         ais: [
-             { name: "Cove.tool", integration: "Service", function: "Data Interpretation", 
-               desc: "Automated energy & carbon analysis.", 
-               longDesc: "Cove.tool is the automated consultant. It provides a suite of analysis tools—energy, daylight, carbon—in a web platform. It is designed to validate your design decisions quickly, ensuring you are on track for performance targets without needing a PhD in building physics.",
-               price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/", target: "_blank" },
-             
-             { name: "One Click LCA", integration: "Integrated", host: "Revit", function: "Data Interpretation", 
-               desc: "Automated life-cycle carbon assessment.", 
-               longDesc: "One Click LCA is the accountant of carbon. It tallies the environmental cost of every material in your BIM model. It is the industry standard for proving that your building is not just beautiful, but responsible.",
-               price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/", target: "_blank" }
+              { name: "Cove.tool", integration: "Service", function: "Data Interpretation", 
+                desc: "Automated energy & carbon analysis.", 
+                longDesc: "Cove.tool is the automated consultant. It provides a suite of analysis tools—energy, daylight, carbon—in a web platform. It is designed to validate your design decisions quickly, ensuring you are on track for performance targets without needing a PhD in building physics.",
+                price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/", target: "_blank" },
+               
+              { name: "One Click LCA", integration: "Integrated", host: "Revit", function: "Data Interpretation", 
+                desc: "Automated life-cycle carbon assessment.", 
+                longDesc: "One Click LCA is the accountant of carbon. It tallies the environmental cost of every material in your BIM model. It is the industry standard for proving that your building is not just beautiful, but responsible.",
+                price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/", target: "_blank" }
         ]
       },
       {
@@ -1468,19 +1578,24 @@ const workflowData = [
 
     /* --- PERSONAL WORKFLOW LOGIC --- */
     function addToPersonalWorkflow(stepIdx, taskIdx, aiData) {
+        // ... existing code ...
+        
         if (!state.personalWorkflow[stepIdx]) {
             state.personalWorkflow[stepIdx] = [];
         }
 
         const column = state.personalWorkflow[stepIdx];
         const existingIndex = column.findIndex(item => item.taskIdx === taskIdx);
-        // Include colors in stored object
         const newItem = { ...aiData, taskIdx };
 
         if (existingIndex > -1) {
             column[existingIndex] = newItem;
+            // TRIGGER UPDATE
+            triggerNotification(`Module Swapped: ${newItem.name}`);
         } else {
             column.push(newItem);
+            // TRIGGER UPDATE
+            triggerNotification(`Module Integrated: ${newItem.name}`);
         }
 
         renderPersonalWorkflow();
@@ -1536,7 +1651,14 @@ const workflowData = [
 
     function removeFromPersonalWorkflow(stepIdx, itemIndex) {
         if(state.personalWorkflow[stepIdx]) {
+            // Get name for notification before deleting
+            const removedName = state.personalWorkflow[stepIdx][itemIndex].name;
+            
             state.personalWorkflow[stepIdx].splice(itemIndex, 1);
+            
+            // TRIGGER UPDATE
+            triggerNotification(`Module Removed: ${removedName}`);
+
             if(state.personalWorkflow[stepIdx].length === 0) {
                 delete state.personalWorkflow[stepIdx];
             }
@@ -1605,6 +1727,31 @@ const workflowData = [
         document.getElementById('ov-pro').innerText = aiData.pro;
         document.getElementById('ov-con').innerText = aiData.con;
         document.getElementById('ov-link').href = aiData.link;
+
+        // --- NEW CUSTOM TEXT AND IMAGE LOGIC ---
+        // 1. Text Fields
+        document.getElementById('ov-workflow-text').innerText = aiData.workflowText || "Integration method and API capabilities within the current pipeline architecture.";
+        document.getElementById('ov-efficiency-text').innerText = aiData.efficiencyText || "Estimated time savings based on task automation parameters.";
+
+        // 2. Images
+        const visualImg = document.getElementById('ov-grid-visual');
+        const dataImg = document.getElementById('ov-grid-data');
+
+        if(aiData.visualImage) {
+            visualImg.style.backgroundImage = `url('${aiData.visualImage}')`;
+            visualImg.style.backgroundColor = 'transparent';
+        } else {
+            visualImg.style.backgroundImage = 'none';
+            visualImg.style.backgroundColor = '#222';
+        }
+
+        if(aiData.dataImage) {
+            dataImg.style.backgroundImage = `url('${aiData.dataImage}')`;
+            dataImg.style.backgroundColor = 'transparent';
+        } else {
+            dataImg.style.backgroundImage = 'none';
+            dataImg.style.backgroundColor = '#1a1a1a';
+        }
         
         document.getElementById('detail-overlay').classList.add('active');
     }
@@ -1854,6 +2001,8 @@ const workflowData = [
 
     /* --- FINAL REVISED PDF EXPORT --- */
     async function exportPersonalWorkflow() {
+        triggerNotification("System: Initializing PDF Export Sequence...");
+
         try {
             const { jsPDF } = window.jspdf;
             
@@ -1924,39 +2073,39 @@ const workflowData = [
                  const items = state.personalWorkflow[stepIdx];
 
                  if (items && items.length > 0) {
-                      items.forEach((item, idx) => {
-                          const node = document.createElement('div');
-                          node.className = 'ai-node';
-                          node.id = `pdf-node-${stepIdx}-${idx}`; // Add ID for logic
-                          node.style.background = "#1e1e1e";
-                          node.style.border = "1px solid #444";
-                          node.style.borderLeft = `5px solid ${item.funcColor}`;
-                          node.style.color = "#e0e0e0";
-                          
-                          // --- UPDATED BADGES IN PDF (REVERSED ORDER: Function THEN Integration) ---
-                          node.innerHTML = `
-                            <div class="badge-row">
-                                <div class="ai-tag" style="background:${item.funcColor}">${item.function}</div>
-                                <div class="ai-tag" style="background:${item.intColor}">${item.intLabel}</div>
-                            </div>
-                            <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${item.name}</div>
-                          `;
-                          col.appendChild(node);
-                      });
+                     items.forEach((item, idx) => {
+                         const node = document.createElement('div');
+                         node.className = 'ai-node';
+                         node.id = `pdf-node-${stepIdx}-${idx}`; // Add ID for logic
+                         node.style.background = "#1e1e1e";
+                         node.style.border = "1px solid #444";
+                         node.style.borderLeft = `5px solid ${item.funcColor}`;
+                         node.style.color = "#e0e0e0";
+                         
+                         // --- UPDATED BADGES IN PDF (REVERSED ORDER: Function THEN Integration) ---
+                         node.innerHTML = `
+                           <div class="badge-row">
+                               <div class="ai-tag" style="background:${item.funcColor}">${item.function}</div>
+                               <div class="ai-tag" style="background:${item.intColor}">${item.intLabel}</div>
+                           </div>
+                           <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${item.name}</div>
+                         `;
+                         col.appendChild(node);
+                     });
                  } else {
-                      // Manual Labor Placeholder
-                      const node = document.createElement('div');
-                      node.className = 'ai-node';
-                      node.id = `pdf-node-${stepIdx}-manual`;
-                      node.style.background = "#252525";
-                      node.style.border = "1px dashed #555";
-                      node.style.borderLeft = `5px solid #777`;
-                      node.style.color = "#888";
-                      node.innerHTML = `
-                        <div style="font-weight:bold; font-size:14px; margin-bottom:5px; font-style:italic;">Manual Workflow</div>
-                        <div style="font-size:10px; color:#666;">Traditional Execution</div>
-                      `;
-                      col.appendChild(node);
+                     // Manual Labor Placeholder
+                     const node = document.createElement('div');
+                     node.className = 'ai-node';
+                     node.id = `pdf-node-${stepIdx}-manual`;
+                     node.style.background = "#252525";
+                     node.style.border = "1px dashed #555";
+                     node.style.borderLeft = `5px solid #777`;
+                     node.style.color = "#888";
+                     node.innerHTML = `
+                       <div style="font-weight:bold; font-size:14px; margin-bottom:5px; font-style:italic;">Manual Workflow</div>
+                       <div style="font-size:10px; color:#666;">Traditional Execution</div>
+                     `;
+                     col.appendChild(node);
                  }
 
                  flowContainer.appendChild(col);
@@ -2144,6 +2293,24 @@ const workflowData = [
     }
 
     init();
+
+/* --- NOTIFICATION SYSTEM --- */
+    function triggerNotification(text) {
+        const area = document.getElementById('notification-area');
+        const msg = document.createElement('div');
+        msg.className = 'term-msg';
+        
+        // Add timestamp for extra code-feel
+        const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        msg.innerText = `[${time}] ${text}`;
+        
+        area.appendChild(msg);
+
+        // Remove element from DOM after animation finishes (8 seconds to be safe)
+        setTimeout(() => {
+            if(msg.parentNode) msg.remove();
+        }, 8000);
+    }
 
 </script>
 </body>
