@@ -1,5 +1,5 @@
 /* --- database.js --- */
-const aiDatabase = [
+window.aiDatabase = [
     // --- 1. PRE-DESIGN ---
     {
         id: "microsoft_copilot",
