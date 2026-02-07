@@ -1,0 +1,1470 @@
+const workflowData = [
+  {
+    title: "1. Pre-Design",
+    desc: "Strategic Definition & Discovery",
+    tasks: [
+      {
+        title: "Client Intake & Programming",
+        desc: "Visioning workshops and requirements gathering.",
+        ais: [
+          { 
+            id: "ai_copilot",
+            slug: "microsoft-copilot",
+            name: "Microsoft Copilot",
+            logo_path: "Resources/Logos/microsoft-copilot.png",
+            
+            io: { input: "text_prompt", output: "text_doc" },
+
+            pricing: {
+                model: "subscription",
+                cost: 30,
+                currency: "USD",
+                period: "month",
+                business_model: "per_user",
+                credits_included: "unlimited"
+            },
+
+            efficiency: {
+                uses_per_project: 20,
+                manual_time_minutes: 60,
+                ai_time_minutes: 5,
+                benchmark_score: 8.5
+            },
+
+            advice: {
+                short: "Medium - Large",
+                long: "Best suited for organizations already entrenched in the Microsoft 365 ecosystem. The cost per user adds up, making it less efficient for solo practitioners who don't use Outlook/Teams heavily."
+            },
+
+            details: {
+                tag_line: "The Ecosystem Integrator",
+                short_desc: "Summarizes emails/meetings into briefs.",
+                long_desc: "Microsoft Copilot connects directly to your Outlook/Teams data. It creates meeting minutes instantly, drafts emails, and organizes project requirements.",
+                pros: ["Native Office 365 integration", "Enterprise security"],
+                cons: ["Generalist model", "Expensive for small teams"],
+                website_link: "https://www.microsoft.com/en-us/microsoft-365/copilot",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/microsoft-copilot_1.jpg",
+                    "Resources/Images/microsoft-copilot_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_dbf",
+            slug: "digital-blue-foam",
+            name: "Digital Blue Foam",
+            logo_path: "Resources/Logos/digital-blue-foam.png",
+            
+            io: { input: "map_data", output: "3d_massing" },
+
+            pricing: {
+                model: "subscription",
+                cost: 150, 
+                currency: "USD",
+                period: "month",
+                business_model: "seat",
+                credits_included: "unlimited"
+            },
+
+            efficiency: {
+                uses_per_project: 5,
+                manual_time_minutes: 240,
+                ai_time_minutes: 15,
+                benchmark_score: 7.8
+            },
+
+            advice: {
+                short: "Small - Large",
+                long: "Ideal for firms focusing on sustainability and rapid feasibility studies. The cost is high for solo users but pays off in time saved for development teams."
+            },
+
+            details: {
+                tag_line: "Feasibility at Speed",
+                short_desc: "Web-based generative sustainable feasibility.",
+                long_desc: "DBF balances pragmatic floor area requirements with carbon data and sustainability metrics.",
+                pros: ["Sustainability metrics", "Browser-based"],
+                cons: ["Schematic geometry only", "High cost"],
+                website_link: "https://www.digitalbluefoam.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/digital-blue-foam_1.jpg",
+                    "Resources/Images/digital-blue-foam_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_crosby",
+            slug: "crosby-studios",
+            name: "Crosby Studios",
+            logo_path: "Resources/Logos/crosby-studios.png",
+            io: { input: "text_prompt", output: "raster_image" },
+            pricing: { model: "freemium", cost: 0, currency: "USD", period: "month", business_model: "user", credits_included: 0 },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 120, ai_time_minutes: 2, benchmark_score: 6.5 },
+            advice: {
+                short: "Solo - Small",
+                long: "Best for avant-garde interior concepts where technical accuracy is secondary to vibe and aesthetic. Not suitable for construction documentation."
+            },
+            details: {
+                tag_line: "Avant-Garde Interiors",
+                short_desc: "Generative interior design concepts.",
+                long_desc: "A purely aesthetic tool for hallucinating interior possibilities. Less technical, more dream machine.",
+                pros: ["Unique aesthetic", "Fast concepts"],
+                cons: ["Niche style", "Non-technical"],
+                website_link: "https://crosbystudios.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/crosby-studios_1.jpg",
+                    "Resources/Images/crosby-studios_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: false }
+          },
+          { 
+            id: "ai_reimagine",
+            slug: "reimagine-home",
+            name: "ReimagineHome",
+            logo_path: "Resources/Logos/reimagine-home.png",
+            io: { input: "raster_image", output: "raster_image" },
+            pricing: { model: "freemium", cost: 0, currency: "USD", period: "month", business_model: "user", credits_included: 30 },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 60, ai_time_minutes: 1, benchmark_score: 7.0 },
+            advice: {
+                short: "Solo - Small",
+                long: "Excellent for real estate agents or architects doing small renovation pitches. It handles 'messy' input photos well."
+            },
+            details: {
+                tag_line: "Virtual Staging",
+                short_desc: "AI for renovation ideas and staging.",
+                long_desc: "Overlays new furniture and finishes onto existing photos. Great for renovation projects.",
+                pros: ["Instant renovation", "Easy to use"],
+                cons: ["2D only", "No 3D export"],
+                website_link: "https://www.reimaginehome.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/reimagine-home_1.jpg",
+                    "Resources/Images/reimagine-home_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Site & Regulatory",
+        desc: "Zoning and Context Analysis.",
+        ais: [
+          { 
+            id: "ai_testfit",
+            slug: "testfit",
+            name: "TestFit",
+            logo_path: "Resources/Logos/testfit.png",
+            io: { input: "map_data", output: "3d_massing" },
+            pricing: { model: "subscription", cost: 400, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 300, ai_time_minutes: 10, benchmark_score: 9.0 },
+            advice: {
+                short: "Medium - Large",
+                long: "A powerhouse for multi-family developers. The high subscription cost makes it difficult to justify for single-family residential architects or small firms."
+            },
+            details: {
+                tag_line: "The Zoning Solver",
+                short_desc: "Real-time generative feasibility.",
+                long_desc: "Instantly generates compliant building massings based on zoning constraints. Calculates yield in milliseconds.",
+                pros: ["Instant yield calc", "Parametric"],
+                cons: ["Expensive", "Steep learning curve"],
+                website_link: "https://www.testfit.io/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/testfit_1.jpg",
+                    "Resources/Images/testfit_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_upcodes",
+            slug: "upcodes-copilot",
+            name: "UpCodes Copilot",
+            logo_path: "Resources/Logos/upcodes.png",
+            io: { input: "text_prompt", output: "text_code" },
+            pricing: { model: "subscription", cost: 59, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 50, manual_time_minutes: 20, ai_time_minutes: 1, benchmark_score: 9.5 },
+            advice: {
+                short: "Solo - Large",
+                long: "Essential for anyone working in the US market. The time saved searching PDF code books justifies the cost immediately."
+            },
+            details: {
+                tag_line: "The Code Librarian",
+                short_desc: "AI assistant for building codes.",
+                long_desc: "Translates dense building codes into plain answers. Citation-backed guidance.",
+                pros: ["Instant answers", "Citation backed"],
+                cons: ["US Specific", "Subscription"],
+                website_link: "https://up.codes/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/upcodes_1.jpg",
+                    "Resources/Images/upcodes_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_forma",
+            slug: "autodesk-forma",
+            name: "Autodesk Forma",
+            logo_path: "Resources/Logos/forma.png",
+            io: { input: "map_data", output: "bim_model" },
+            pricing: { model: "included", cost: 0, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 180, ai_time_minutes: 10, benchmark_score: 8.8 },
+            advice: {
+                short: "Medium - Large",
+                long: "If you already pay for the Autodesk AEC Collection, this is free. Use it for early stage site analysis to save hours of manual setup."
+            },
+            details: {
+                tag_line: "Environmental Analysis",
+                short_desc: "Real-time wind/sun/noise analysis.",
+                long_desc: "Sculpts invisible forces of wind and sun into visible gradients. Helps shape buildings in harmony with the environment.",
+                pros: ["Revit interoperability", "Included in AEC"],
+                cons: ["Cloud dependent", "Abstract geometry"],
+                website_link: "https://www.autodesk.com/eu/products/forma",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/forma_1.jpg",
+                    "Resources/Images/forma_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_polycam",
+            slug: "polycam",
+            name: "Polycam",
+            logo_path: "Resources/Logos/polycam.png",
+            io: { input: "raster_image", output: "scan_data" },
+            pricing: { model: "subscription", cost: 15, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 2, manual_time_minutes: 120, ai_time_minutes: 10, benchmark_score: 9.2 },
+            advice: {
+                short: "Solo - Medium",
+                long: "Indispensable for small projects or renovations where hiring a professional survey crew is out of budget."
+            },
+            details: {
+                tag_line: "Pocket LiDAR",
+                short_desc: "LiDAR scanning app for site context.",
+                long_desc: "Transforms your phone into a survey instrument. Captures reality into a digital mesh.",
+                pros: ["Fast context", "Cheap"],
+                cons: ["Phone hardware dependent", "Mesh cleanup needed"],
+                website_link: "https://poly.cam/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/polycam_1.jpg",
+                    "Resources/Images/polycam_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_aurivus",
+            slug: "aurivus",
+            name: "Aurivus",
+            logo_path: "Resources/Logos/aurivus.png",
+            io: { input: "scan_data", output: "bim_model" },
+            pricing: { model: "quote", cost: 500, currency: "USD", period: "project", business_model: "project", credits_included: 1 },
+            efficiency: { uses_per_project: 1, manual_time_minutes: 600, ai_time_minutes: 60, benchmark_score: 7.5 },
+            advice: {
+                short: "Medium - Large",
+                long: "Only worth it for complex retrofit projects where the manual modeling time exceeds 40 hours. Otherwise, it may be overkill."
+            },
+            details: {
+                tag_line: "Scan to BIM",
+                short_desc: "AI processing for point clouds.",
+                long_desc: "Classifies raw point clouds into building elements (walls, slabs) automatically.",
+                pros: ["Saves tracing time", "High accuracy"],
+                cons: ["Complex setup", "Expensive"],
+                website_link: "https://aurivus.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/aurivus_1.jpg",
+                    "Resources/Images/aurivus_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Environmental Benchmarking",
+        desc: "Early stage carbon and climate data.",
+        ais: [
+            { 
+              id: "ai_preoptima",
+              slug: "preoptima",
+              name: "Preoptima",
+              logo_path: "Resources/Logos/preoptima.png",
+              io: { input: "3d_massing", output: "data_sheet" },
+              pricing: { model: "subscription", cost: 100, currency: "GBP", period: "month", business_model: "seat", credits_included: "unlimited" },
+              efficiency: { uses_per_project: 3, manual_time_minutes: 120, ai_time_minutes: 5, benchmark_score: 8.0 },
+              advice: {
+                  short: "Medium - Large",
+                  long: "Critical for UK-based firms facing strict carbon regulations. Helps make decisions before the design is locked in."
+              },
+              details: {
+                  tag_line: "Carbon Optimization",
+                  short_desc: "Whole life carbon assessment.",
+                  long_desc: "Optimizes structures for a lighter carbon footprint early in the design phase.",
+                  pros: ["Carbon logic", "Early intervention"],
+                  cons: ["Data heavy", "UK focused"],
+                  website_link: "https://www.preoptima.com/",
+                  affiliate_link: "",
+                  gallery: [
+                      "Resources/Images/preoptima_1.jpg",
+                      "Resources/Images/preoptima_2.jpg"
+                  ]
+              },
+              features: { api_compatible: false, export_compatible: true }
+            },
+            { 
+              id: "ai_climatestudio",
+              slug: "climatestudio",
+              name: "ClimateStudio",
+              logo_path: "Resources/Logos/climatestudio.png",
+              io: { input: "3d_mesh", output: "data_sheet" },
+              pricing: { model: "license", cost: 500, currency: "USD", period: "year", business_model: "seat", credits_included: "unlimited" },
+              efficiency: { uses_per_project: 10, manual_time_minutes: 60, ai_time_minutes: 2, benchmark_score: 9.0 },
+              advice: {
+                  short: "Small - Large",
+                  long: "The industry standard for Rhino users. Highly accurate but requires technical knowledge of daylighting metrics."
+              },
+              details: {
+                  tag_line: "Fast Simulation",
+                  short_desc: "Rhino-integrated environmental sim.",
+                  long_desc: "Simulates light and energy with rapidity, allowing for iteration inside Rhino.",
+                  pros: ["High accuracy", "Rhino native"],
+                  cons: ["Requires Rhino", "Learning curve"],
+                  website_link: "https://www.solemma.com/climatestudio",
+                  affiliate_link: "",
+                  gallery: [
+                      "Resources/Images/climatestudio_1.jpg",
+                      "Resources/Images/climatestudio_2.jpg"
+                  ]
+              },
+              features: { api_compatible: false, export_compatible: true }
+            }
+        ]
+      }
+    ]
+  },
+  {
+    title: "2. Schematic Design",
+    desc: "Concept Formulation & Form",
+    tasks: [
+      {
+        title: "Concept Generation",
+        desc: "Sketches and mood boards.",
+        ais: [
+          { 
+            id: "ai_sd",
+            slug: "stable-diffusion",
+            name: "Stable Diffusion",
+            logo_path: "Resources/Logos/stable-diffusion.png",
+            io: { input: "text_prompt", output: "raster_image" },
+            pricing: { model: "free", cost: 0, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 50, manual_time_minutes: 30, ai_time_minutes: 1, benchmark_score: 8.0 },
+            advice: {
+                short: "Solo - Large (Tech Savvy)",
+                long: "The best option for privacy-conscious firms or those needing specific control. Requires a powerful GPU and technical setup knowledge."
+            },
+            details: {
+                tag_line: "Local Privacy",
+                short_desc: "Local generative AI for unlimited images.",
+                long_desc: "Runs locally on your GPU. Zero cost, zero privacy risk, unlimited control.",
+                pros: ["Privacy/Zero Cost", "ControlNet"],
+                cons: ["Requires GPU", "Technical setup"],
+                website_link: "https://github.com/AUTOMATIC1111/stable-diffusion-webui",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/stable-diffusion_1.jpg",
+                    "Resources/Images/stable-diffusion_2.jpg"
+                ]
+            },
+            features: { api_compatible: true, export_compatible: true }
+          },
+          { 
+            id: "ai_midjourney",
+            slug: "midjourney",
+            name: "Midjourney",
+            logo_path: "Resources/Logos/midjourney.png",
+            io: { input: "text_prompt", output: "raster_image" },
+            pricing: { model: "subscription", cost: 30, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 50, manual_time_minutes: 45, ai_time_minutes: 1, benchmark_score: 9.5 },
+            advice: {
+                short: "Solo - Medium",
+                long: "Perfect for concept designers and solo architects needing high-fidelity visuals fast. Enterprise adoption is tricky due to the Discord interface."
+            },
+            details: {
+                tag_line: "Atmospheric Art",
+                short_desc: "AI-driven atmospheric concept art.",
+                long_desc: "The aesthetic leader. Generates painterly, high-fidelity concepts from simple text prompts.",
+                pros: ["Best aesthetics", "Easy to use"],
+                cons: ["Discord interface", "Public by default"],
+                website_link: "https://www.midjourney.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/midjourney_1.jpg",
+                    "Resources/Images/midjourney_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_firefly",
+            slug: "adobe-firefly",
+            name: "Adobe Firefly",
+            logo_path: "Resources/Logos/firefly.png",
+            io: { input: "raster_image", output: "raster_image" },
+            pricing: { model: "included", cost: 0, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 20, manual_time_minutes: 15, ai_time_minutes: 1, benchmark_score: 8.0 },
+            advice: {
+                short: "Solo - Large",
+                long: "Essential for any firm that already uses Photoshop. It is the only 'safe' AI for commercial work due to Adobe's copyright guarantees."
+            },
+            details: {
+                tag_line: "Photoshop Integrated",
+                short_desc: "Generative fill inside Photoshop.",
+                long_desc: "Safe, copyright-cleared generative fill. Perfect for expanding renders or removing objects.",
+                pros: ["Workflow seamless", "Copyright safe"],
+                cons: ["Less creative", "Censorship"],
+                website_link: "https://www.adobe.com/sensei/generative-ai/firefly.html",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/firefly_1.jpg",
+                    "Resources/Images/firefly_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_lookx",
+            slug: "lookx",
+            name: "LookX",
+            logo_path: "Resources/Logos/lookx.png",
+            io: { input: "3d_massing", output: "raster_image" },
+            pricing: { model: "subscription", cost: 25, currency: "USD", period: "month", business_model: "user", credits_included: 500 },
+            efficiency: { uses_per_project: 15, manual_time_minutes: 60, ai_time_minutes: 2, benchmark_score: 7.5 },
+            advice: {
+                short: "Solo - Medium",
+                long: "A good middle-ground for architects who want more control than Midjourney but less setup than Stable Diffusion."
+            },
+            details: {
+                tag_line: "Architectural Specialist",
+                short_desc: "AI tailored for architecture renderings.",
+                long_desc: "Trained specifically on architecture. Understands massing models better than generalist AIs.",
+                pros: ["Architect-centric", "Control"],
+                cons: ["Learning curve", "Niche"],
+                website_link: "https://www.lookx.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/lookx_1.jpg",
+                    "Resources/Images/lookx_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Optimization",
+        desc: "Evolutionary solvers.",
+        ais: [
+          { 
+            id: "ai_hypar",
+            slug: "hypar",
+            name: "Hypar",
+            logo_path: "Resources/Logos/hypar.png",
+            io: { input: "parameters", output: "bim_model" },
+            pricing: { model: "freemium", cost: 75, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 240, ai_time_minutes: 10, benchmark_score: 8.5 },
+            advice: {
+                short: "Medium - Large",
+                long: "Great for computational designers who want to deploy scripts to the web for non-technical team members."
+            },
+            details: {
+                tag_line: "Modular Generators",
+                short_desc: "Open platform for building generators.",
+                long_desc: "Stack 'functions' like roof generators and grid placers into a custom workflow.",
+                pros: ["Modular logic", "Web-based"],
+                cons: ["Code knowledge helpful", "Abstract"],
+                website_link: "https://hypar.io/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/hypar_1.jpg",
+                    "Resources/Images/hypar_2.jpg"
+                ]
+            },
+            features: { api_compatible: true, export_compatible: true }
+          },
+          { 
+            id: "ai_wallacei",
+            slug: "wallacei",
+            name: "Wallacei",
+            logo_path: "Resources/Logos/wallacei.png",
+            io: { input: "parameters", output: "data_sheet" },
+            pricing: { model: "free", cost: 0, currency: "USD", period: "forever", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 2, manual_time_minutes: 480, ai_time_minutes: 60, benchmark_score: 9.0 },
+            advice: {
+                short: "Small - Large (Academic)",
+                long: "The academic standard for evolutionary solving. Free, powerful, but requires deep knowledge of Grasshopper."
+            },
+            details: {
+                tag_line: "Evolutionary Engine",
+                short_desc: "Multi-objective optimization for Rhino.",
+                long_desc: "Runs thousands of simulations to breed the 'fittest' design solutions.",
+                pros: ["Visual analytics", "Free"],
+                cons: ["Steep learning curve", "Grasshopper req."],
+                website_link: "https://www.wallacei.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/wallacei_1.jpg",
+                    "Resources/Images/wallacei_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_finch",
+            slug: "finch-3d",
+            name: "Finch 3D",
+            logo_path: "Resources/Logos/finch.png",
+            io: { input: "drawing_any", output: "drawing_plan" },
+            pricing: { model: "subscription", cost: 50, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 60, ai_time_minutes: 2, benchmark_score: 8.8 },
+            advice: {
+                short: "Small - Medium",
+                long: "Best for residential architects doing multi-unit feasibility. Saves hours of dragging walls in Revit."
+            },
+            details: {
+                tag_line: "Graph-Based Layouts",
+                short_desc: "Generative design for floor plans.",
+                long_desc: "Uses graph theory to optimize layouts, ensuring compliance and efficiency.",
+                pros: ["Optimization logic", "Interactive"],
+                cons: ["Beta access", "Residential focused"],
+                website_link: "https://finch3d.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/finch_1.jpg",
+                    "Resources/Images/finch_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Massing & Spatial",
+        desc: "Drafting preliminary plans.",
+        ais: [
+          { 
+            id: "ai_snaptrude",
+            slug: "snaptrude",
+            name: "Snaptrude",
+            logo_path: "Resources/Logos/snaptrude.png",
+            io: { input: "drawing_any", output: "bim_model" },
+            pricing: { model: "subscription", cost: 100, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 180, ai_time_minutes: 30, benchmark_score: 8.2 },
+            advice: {
+                short: "Small - Large",
+                long: "A strong contender for firms wanting to move away from SketchUp for early phase work but keep BIM connectivity."
+            },
+            details: {
+                tag_line: "Google Docs for BIM",
+                short_desc: "Collaborative browser-based BIM.",
+                long_desc: "Sketch massing and space plans in the browser with real-time collaboration.",
+                pros: ["Collaboration", "Easy entry"],
+                cons: ["New ecosystem", "Not full Revit replacement"],
+                website_link: "https://www.snaptrude.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/snaptrude_1.jpg",
+                    "Resources/Images/snaptrude_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_planfinder",
+            slug: "planfinder",
+            name: "PlanFinder",
+            logo_path: "Resources/Logos/planfinder.png",
+            io: { input: "drawing_any", output: "drawing_plan" },
+            pricing: { model: "subscription", cost: 20, currency: "EUR", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 20, manual_time_minutes: 30, ai_time_minutes: 1, benchmark_score: 9.0 },
+            advice: {
+                short: "Solo - Large",
+                long: "A no-brainer plugin for anyone doing residential work in Revit or Rhino. Pays for itself in one project."
+            },
+            details: {
+                tag_line: "Fit-Out Generator",
+                short_desc: "Plugin to generate apartment layouts.",
+                long_desc: "Proposes furniture layouts and partitions for apartment shells instantly.",
+                pros: ["Direct plugin", "Fast iterations"],
+                cons: ["Residential only", "Generic styles"],
+                website_link: "https://www.planfinder.xyz/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/planfinder_1.jpg",
+                    "Resources/Images/planfinder_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_rayon",
+            slug: "rayon",
+            name: "Rayon",
+            logo_path: "Resources/Logos/rayon.png",
+            io: { input: "drawing_any", output: "drawing_any" },
+            pricing: { model: "freemium", cost: 0, currency: "EUR", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 60, ai_time_minutes: 10, benchmark_score: 8.5 },
+            advice: {
+                short: "Solo - Medium",
+                long: "Perfect for interior designers or rapid space planning where full BIM is too heavy."
+            },
+            details: {
+                tag_line: "Smart 2D CAD",
+                short_desc: "Collaborative space planning.",
+                long_desc: "Light, fast, and collaborative 2D drafting in the browser with 'smart' features.",
+                pros: ["Fast 2D", "Collaboration"],
+                cons: ["2D focused", "Not BIM"],
+                website_link: "https://www.rayon.so/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/rayon_1.jpg",
+                    "Resources/Images/rayon_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Visualization & VR",
+        desc: "Renderings and walkthroughs.",
+        ais: [
+          { 
+            id: "ai_krea",
+            slug: "krea-ai",
+            name: "Krea.ai",
+            logo_path: "Resources/Logos/krea.png",
+            io: { input: "3d_massing", output: "raster_image" },
+            pricing: { model: "freemium", cost: 10, currency: "USD", period: "month", business_model: "user", credits_included: "limited" },
+            efficiency: { uses_per_project: 20, manual_time_minutes: 60, ai_time_minutes: 1, benchmark_score: 8.8 },
+            advice: {
+                short: "Solo - Medium",
+                long: "Best for 'live' design sessions with clients, enhancing block models into realistic views instantly."
+            },
+            details: {
+                tag_line: "Real-time Enhancement",
+                short_desc: "AI upscaling and live painting.",
+                long_desc: "Feed a blocky model and see it 'painted' with textures in real-time.",
+                pros: ["Instant results", "Creative control"],
+                cons: ["Cloud dependent", "Subscription"],
+                website_link: "https://www.krea.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/krea_1.jpg",
+                    "Resources/Images/krea_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_veras",
+            slug: "veras",
+            name: "Veras (EvolveLAB)",
+            logo_path: "Resources/Logos/veras.png",
+            io: { input: "bim_model", output: "raster_image" },
+            pricing: { model: "subscription", cost: 49, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 15, manual_time_minutes: 90, ai_time_minutes: 5, benchmark_score: 8.2 },
+            advice: {
+                short: "Small - Large",
+                long: "Excellent for keeping the workflow inside Revit, avoiding the need to export to external renderers for quick studies."
+            },
+            details: {
+                tag_line: "BIM Integrated",
+                short_desc: "AI rendering inside Revit/Rhino.",
+                long_desc: "Visualize your Revit model in different seasons and styles without exporting.",
+                pros: ["In-model rendering", "Geometry aware"],
+                cons: ["Abstract results", "Less control than Max"],
+                website_link: "https://www.evolvelab.io/veras",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/veras_1.jpg",
+                    "Resources/Images/veras_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_enscape",
+            slug: "enscape",
+            name: "Enscape",
+            logo_path: "Resources/Logos/enscape.png",
+            io: { input: "bim_model", output: "raster_image" },
+            pricing: { model: "subscription", cost: 50, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 100, manual_time_minutes: 10, ai_time_minutes: 0, benchmark_score: 9.5 },
+            advice: {
+                short: "Solo - Large",
+                long: "The industry standard for real-time BIM visualization. If you have a good GPU, this is essential."
+            },
+            details: {
+                tag_line: "Real-Time Walkthrough",
+                short_desc: "Real-time rendering workflow.",
+                long_desc: "Walk through the project as it is being designed. No export needed.",
+                pros: ["Instant visuals", "Easy"],
+                cons: ["GPU heavy", "Generic assets"],
+                website_link: "https://enscape3d.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/enscape_1.jpg",
+                    "Resources/Images/enscape_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_d5",
+            slug: "d5-render",
+            name: "D5 Render",
+            logo_path: "Resources/Logos/d5.png",
+            io: { input: "3d_mesh", output: "raster_image" },
+            pricing: { model: "freemium", cost: 30, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 120, ai_time_minutes: 10, benchmark_score: 9.0 },
+            advice: {
+                short: "Solo - Large",
+                long: "The best free/cheap alternative to Lumion, offering high-end raytracing for a fraction of the cost."
+            },
+            details: {
+                tag_line: "Raytracing Powerhouse",
+                short_desc: "Local real-time renderer with AI atmosphere.",
+                long_desc: "Offers ray-tracing quality rivaling cinema tools with AI atmosphere handling.",
+                pros: ["Raytracing quality", "Free version good"],
+                cons: ["Hardware intensive", "Separate app"],
+                website_link: "https://www.d5render.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/d5_1.jpg",
+                    "Resources/Images/d5_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_arkio",
+            slug: "arkio",
+            name: "Arkio",
+            logo_path: "Resources/Logos/arkio.png",
+            io: { input: "bim_model", output: "3d_massing" },
+            pricing: { model: "freemium", cost: 60, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 60, ai_time_minutes: 30, benchmark_score: 8.0 },
+            advice: {
+                short: "Small - Large",
+                long: "Great for client engagement and design reviews if you have VR hardware available."
+            },
+            details: {
+                tag_line: "Immersive VR",
+                short_desc: "Collaborative VR design.",
+                long_desc: "Model with your hands at 1:1 scale in VR/AR.",
+                pros: ["Immersive", "Intuitive"],
+                cons: ["VR headset needed", "Low fidelity"],
+                website_link: "https://www.arkio.is/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/arkio_1.jpg",
+                    "Resources/Images/arkio_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    title: "3. Design Development",
+    desc: "Technical Refinement",
+    tasks: [
+      {
+        title: "Federated Modeling",
+        desc: "Integration of systems.",
+        ais: [
+          { 
+            id: "ai_skema",
+            slug: "skema",
+            name: "Skema",
+            logo_path: "Resources/Logos/skema.png",
+            io: { input: "3d_massing", output: "bim_model" },
+            pricing: { model: "quote", cost: 0, currency: "USD", period: "project", business_model: "project", credits_included: 0 },
+            efficiency: { uses_per_project: 1, manual_time_minutes: 1200, ai_time_minutes: 60, benchmark_score: 8.0 },
+            advice: {
+                short: "Large",
+                long: "Enterprise solution for large firms with repetitive building typologies (housing, hotels)."
+            },
+            details: {
+                tag_line: "Concept to BIM",
+                short_desc: "Automates BIM creation from massing.",
+                long_desc: "Reuses previous BIM data to 'inflate' conceptual massing into detailed models.",
+                pros: ["Rapid BIM", "Reusability"],
+                cons: ["Quote only", "Revit dependent"],
+                website_link: "https://www.skema.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/skema_1.jpg",
+                    "Resources/Images/skema_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_bricscad",
+            slug: "bricscad-bim",
+            name: "BricsCAD BIM",
+            logo_path: "Resources/Logos/bricscad.png",
+            io: { input: "3d_mesh", output: "bim_model" },
+            pricing: { model: "license", cost: 1500, currency: "EUR", period: "year", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 60, ai_time_minutes: 5, benchmark_score: 8.5 },
+            advice: {
+                short: "Small - Medium",
+                long: "Good alternative to Revit for firms that prefer DWG-based workflows but need BIM smarts."
+            },
+            details: {
+                tag_line: "Smart Classification",
+                short_desc: "AI-driven BIM classification.",
+                long_desc: "Model freely with solids, then use AI to 'classify' them into BIM elements automatically.",
+                pros: ["Flexible modeling", "Smartify tool"],
+                cons: ["Market share low", "Learning curve"],
+                website_link: "https://www.bricsys.com/bricscad-bim",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/bricscad_1.jpg",
+                    "Resources/Images/bricscad_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_augmenta",
+            slug: "augmenta",
+            name: "Augmenta",
+            logo_path: "Resources/Logos/augmenta.png",
+            io: { input: "bim_model", output: "bim_model" },
+            pricing: { model: "subscription", cost: 100, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 1, manual_time_minutes: 480, ai_time_minutes: 30, benchmark_score: 8.0 },
+            advice: {
+                short: "Large",
+                long: "Highly specialized for MEP engineers. Not relevant for pure architectural design firms."
+            },
+            details: {
+                tag_line: "Auto-Routing",
+                short_desc: "AI for automated electrical design.",
+                long_desc: "Routes conduits and trays efficiently and clash-free automatically.",
+                pros: ["Systems automation", "Clash free"],
+                cons: ["Specialized (MEP)", "Beta"],
+                website_link: "https://www.augmenta.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/augmenta_1.jpg",
+                    "Resources/Images/augmenta_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "System Analysis",
+        desc: "Performance validation.",
+        ais: [
+          { 
+            id: "ai_covetool",
+            slug: "covetool",
+            name: "Cove.tool",
+            logo_path: "Resources/Logos/covetool.png",
+            io: { input: "bim_model", output: "data_sheet" },
+            pricing: { model: "quote", cost: 200, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 240, ai_time_minutes: 15, benchmark_score: 9.0 },
+            advice: {
+                short: "Medium - Large",
+                long: "Excellent for democratizing energy analysis, allowing architects to do it without hiring a specialized consultant."
+            },
+            details: {
+                tag_line: "Automated Consultant",
+                short_desc: "Energy, daylight, and carbon analysis.",
+                long_desc: "Validates design decisions against performance targets without needing a physics PhD.",
+                pros: ["Speed", "Holistic"],
+                cons: ["Separate platform", "Cost"],
+                website_link: "https://cove.inc/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/covetool_1.jpg",
+                    "Resources/Images/covetool_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_oneclick",
+            slug: "one-click-lca",
+            name: "One Click LCA",
+            logo_path: "Resources/Logos/oneclick.png",
+            io: { input: "bim_model", output: "data_sheet" },
+            pricing: { model: "quote", cost: 300, currency: "EUR", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 2, manual_time_minutes: 600, ai_time_minutes: 30, benchmark_score: 9.2 },
+            advice: {
+                short: "Medium - Large",
+                long: "The gold standard for Life Cycle Assessment. Necessary for projects seeking BREEAM or LEED certification."
+            },
+            details: {
+                tag_line: "Carbon Accountant",
+                short_desc: "Automated life-cycle carbon assessment.",
+                long_desc: "The industry standard for calculating environmental cost of materials from BIM.",
+                pros: ["Standard compliance", "Deep database"],
+                cons: ["Data heavy", "Expensive"],
+                website_link: "https://www.oneclicklca.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/oneclick_1.jpg",
+                    "Resources/Images/oneclick_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Detailing & Specs",
+        desc: "Interior and Spec writing.",
+        ais: [
+          { 
+            id: "ai_kaedim",
+            slug: "kaedim",
+            name: "Kaedim",
+            logo_path: "Resources/Logos/kaedim.png",
+            io: { input: "raster_image", output: "3d_mesh" },
+            pricing: { model: "subscription", cost: 150, currency: "USD", period: "month", business_model: "user", credits_included: 10 },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 120, ai_time_minutes: 10, benchmark_score: 7.0 },
+            advice: {
+                short: "Small - Large",
+                long: "Useful for creating custom furniture or decorative assets from photos, but not accurate enough for technical detailing."
+            },
+            details: {
+                tag_line: "2D to 3D",
+                short_desc: "Convert 2D images into 3D models.",
+                long_desc: "Turns flat images of furniture into 3D assets to populate scenes.",
+                pros: ["Fast assets", "Simple input"],
+                cons: ["Not CAD precise", "Cost per model"],
+                website_link: "https://www.kaedim3d.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/kaedim_1.jpg",
+                    "Resources/Images/kaedim_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_substance",
+            slug: "adobe-substance",
+            name: "Adobe Substance 3D",
+            logo_path: "Resources/Logos/substance.png",
+            io: { input: "raster_image", output: "raster_image" },
+            pricing: { model: "subscription", cost: 50, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 60, ai_time_minutes: 5, benchmark_score: 9.5 },
+            advice: {
+                short: "Solo - Large",
+                long: "A must-have for high-end visualization specialists. It saves hours of searching for the perfect texture by letting you scan real-world materials."
+            },
+            details: {
+                tag_line: "Material Digitizer",
+                short_desc: "AI photogrammetry for materials.",
+                long_desc: "Extracts texture, bump, and gloss maps from a single photo of a material.",
+                pros: ["High fidelity", "Adobe ecosystem"],
+                cons: ["Learning curve", "Subscription"],
+                website_link: "https://www.adobe.com/products/substance3d-sampler.html",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/substance_1.jpg",
+                    "Resources/Images/substance_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_stylib",
+            slug: "stylib",
+            name: "Stylib",
+            logo_path: "Resources/Logos/stylib.png",
+            io: { input: "raster_image", output: "text_doc" },
+            pricing: { model: "free", cost: 0, currency: "USD", period: "forever", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 30, ai_time_minutes: 1, benchmark_score: 7.5 },
+            advice: {
+                short: "Solo - Medium",
+                long: "Great for identifying products from mood boards, but availability depends on their vendor network (mostly UK/EU)."
+            },
+            details: {
+                tag_line: "Visual Spec Search",
+                short_desc: "AI product search engine.",
+                long_desc: "Search for real-world products using images instead of keywords.",
+                pros: ["Visual search", "Real products"],
+                cons: ["Inventory limited", "UK focus"],
+                website_link: "https://www.stylib.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/stylib_1.jpg",
+                    "Resources/Images/stylib_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_specright",
+            slug: "specright",
+            name: "Specright",
+            logo_path: "Resources/Logos/specright.png",
+            io: { input: "text_doc", output: "data_sheet" },
+            pricing: { model: "quote", cost: 500, currency: "USD", period: "month", business_model: "enterprise", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 1, manual_time_minutes: 300, ai_time_minutes: 10, benchmark_score: 8.0 },
+            advice: {
+                short: "Large",
+                long: "Enterprise-grade solution for managing product data across large organizations."
+            },
+            details: {
+                tag_line: "Data Management",
+                short_desc: "Specification data management.",
+                long_desc: "Ensures specs are data-driven records, not just text documents.",
+                pros: ["Data standard", "Organization"],
+                cons: ["Enterprise only", "Setup time"],
+                website_link: "https://www.specright.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/specright_1.jpg",
+                    "Resources/Images/specright_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    title: "4. Construction Docs",
+    desc: "Execution & Permitting",
+    tasks: [
+      {
+        title: "Auditing & Clash",
+        desc: "Quality control.",
+        ais: [
+          { 
+            id: "ai_solibri",
+            slug: "solibri",
+            name: "Solibri",
+            logo_path: "Resources/Logos/solibri.png",
+            io: { input: "bim_model", output: "data_sheet" },
+            pricing: { model: "license", cost: 200, currency: "EUR", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 3, manual_time_minutes: 240, ai_time_minutes: 10, benchmark_score: 9.0 },
+            advice: {
+                short: "Medium - Large",
+                long: "The most rigorous model checker available. Essential for BIM coordinators on large complex projects."
+            },
+            details: {
+                tag_line: "Quality Gatekeeper",
+                short_desc: "Rule-based model checking.",
+                long_desc: "Runs rigorous checks for geometric clashes and missing data.",
+                pros: ["Deep audit", "Industry standard"],
+                cons: ["Complex rules", "Cost"],
+                website_link: "https://www.solibri.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/solibri_1.jpg",
+                    "Resources/Images/solibri_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_navisworks",
+            slug: "navisworks",
+            name: "Navisworks",
+            logo_path: "Resources/Logos/navisworks.png",
+            io: { input: "bim_model", output: "data_sheet" },
+            pricing: { model: "subscription", cost: 100, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 120, ai_time_minutes: 5, benchmark_score: 8.5 },
+            advice: {
+                short: "Medium - Large",
+                long: "Standard for construction coordination. While the UI is dated, it's the common language of contractors."
+            },
+            details: {
+                tag_line: "Clash Detective",
+                short_desc: "Clash detection and 4D simulation.",
+                long_desc: "Aggregates models from all trades to find conflicts before construction.",
+                pros: ["Standard", "4D Sim"],
+                cons: ["Manual grouping", "Old UI"],
+                website_link: "https://www.autodesk.com/products/navisworks/overview",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/navisworks_1.jpg",
+                    "Resources/Images/navisworks_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Production Drafting",
+        desc: "Annotation and Dimensions.",
+        ais: [
+          { 
+            id: "ai_swapp",
+            slug: "swapp",
+            name: "Swapp",
+            logo_path: "Resources/Logos/swapp.png",
+            io: { input: "bim_model", output: "drawing_set" },
+            pricing: { model: "quote", cost: 1000, currency: "USD", period: "month", business_model: "enterprise", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 1, manual_time_minutes: 2400, ai_time_minutes: 60, benchmark_score: 8.0 },
+            advice: {
+                short: "Large",
+                long: "A game changer for large firms willing to give up control over the drafting process in exchange for massive speed."
+            },
+            details: {
+                tag_line: "Auto-Documentation",
+                short_desc: "Automates construction documents.",
+                long_desc: "Uses AI to place dimensions, tags, and notes, automating the drawing set.",
+                pros: ["Massive time save", "Consistency"],
+                cons: ["Loss of control", "Enterprise"],
+                website_link: "https://swapp.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/swapp_1.jpg",
+                    "Resources/Images/swapp_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_glyph",
+            slug: "glyph",
+            name: "Glyph",
+            logo_path: "Resources/Logos/glyph.png",
+            io: { input: "bim_model", output: "drawing_plan" },
+            pricing: { model: "subscription", cost: 75, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 50, manual_time_minutes: 5, ai_time_minutes: 0.1, benchmark_score: 9.0 },
+            advice: {
+                short: "Small - Large",
+                long: "Highly recommended for any Revit user. The ability to auto-tag views saves dozens of hours of tedious clicking."
+            },
+            details: {
+                tag_line: "Revit Automation",
+                short_desc: "Automating documentation tasks in Revit.",
+                long_desc: "Auto-dimensioning and tagging to remove manual clicks.",
+                pros: ["Task automation", "Revit native"],
+                cons: ["Revit only", "Setup"],
+                website_link: "https://www.evolvelab.io/glyph",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/glyph_1.jpg",
+                    "Resources/Images/glyph_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Project Manual",
+        desc: "Specs and Contracts.",
+        ais: [
+          { 
+            id: "ai_pype",
+            slug: "pype-autospecs",
+            name: "Pype AutoSpecs",
+            logo_path: "Resources/Logos/pype.png",
+            io: { input: "text_doc", output: "data_sheet" },
+            pricing: { model: "quote", cost: 200, currency: "USD", period: "month", business_model: "project", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 1, manual_time_minutes: 480, ai_time_minutes: 10, benchmark_score: 9.2 },
+            advice: {
+                short: "Medium - Large",
+                long: "Saves massive headaches during Construction Admin by ensuring no submittal requirement is missed."
+            },
+            details: {
+                tag_line: "Submittal Scanner",
+                short_desc: "Scans spec manuals for submittals.",
+                long_desc: "Extracts a log of every required submittal from the spec book automatically.",
+                pros: ["Compliance safety", "Speed"],
+                cons: ["Post-doc focus", "Cost"],
+                website_link: "https://pype.io/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/pype_1.jpg",
+                    "Resources/Images/pype_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_docscrunch",
+            slug: "document-crunch",
+            name: "Document Crunch",
+            logo_path: "Resources/Logos/documentcrunch.png",
+            io: { input: "text_doc", output: "text_summary" },
+            pricing: { model: "subscription", cost: 50, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 60, ai_time_minutes: 2, benchmark_score: 8.5 },
+            advice: {
+                short: "Small - Large",
+                long: "Acts as a second pair of eyes on contracts. Good for small firms who can't afford a full-time legal counsel."
+            },
+            details: {
+                tag_line: "Contract Review",
+                short_desc: "AI review of contracts and specs.",
+                long_desc: "Highlights risky clauses and requirements in construction contracts.",
+                pros: ["Risk mitigation", "Legal focus"],
+                cons: ["Niche", "Advice only"],
+                website_link: "https://www.documentcrunch.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/documentcrunch_1.jpg",
+                    "Resources/Images/documentcrunch_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    title: "5. Bidding & Negotiation",
+    desc: "Procurement",
+    tasks: [
+      {
+        title: "Bid Management",
+        desc: "Packages and RFIs.",
+        ais: [
+          { 
+            id: "ai_downtobid",
+            slug: "downtobid",
+            name: "Downtobid",
+            logo_path: "Resources/Logos/downtobid.png",
+            io: { input: "drawing_set", output: "data_sheet" },
+            pricing: { model: "subscription", cost: 150, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 1, manual_time_minutes: 300, ai_time_minutes: 15, benchmark_score: 8.8 },
+            advice: {
+                short: "Medium - Large",
+                long: "Targeted at General Contractors or Design-Build firms to speed up the pre-construction phase."
+            },
+            details: {
+                tag_line: "Scope Detector",
+                short_desc: "AI scans plans to create bid packages.",
+                long_desc: "Slices drawing sets by trade automatically (plumbing, electric) for bidders.",
+                pros: ["Scope detection", "Fast packaging"],
+                cons: ["GC focused", "Plan quality dep."],
+                website_link: "https://downtobid.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/downtobid_1.jpg",
+                    "Resources/Images/downtobid_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Analysis & Takeoff",
+        desc: "Cost estimation.",
+        ais: [
+          { 
+            id: "ai_togal",
+            slug: "togal-ai",
+            name: "Togal.AI",
+            logo_path: "Resources/Logos/togal.png",
+            io: { input: "drawing_plan", output: "data_sheet" },
+            pricing: { model: "subscription", cost: 250, currency: "USD", period: "month", business_model: "seat", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 180, ai_time_minutes: 5, benchmark_score: 9.0 },
+            advice: {
+                short: "Small - Large",
+                long: "Dramatically reduces the time spent clicking and tracing areas on PDFs. Essential for cost estimators."
+            },
+            details: {
+                tag_line: "Auto Takeoff",
+                short_desc: "AI-powered estimating and takeoff.",
+                long_desc: "Automatically highlights and measures square footage of rooms from PDF plans.",
+                pros: ["Fast takeoffs", "Visual overlay"],
+                cons: ["2D focus", "Cost"],
+                website_link: "https://www.togal.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/togal_1.jpg",
+                    "Resources/Images/togal_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_alice",
+            slug: "alice-technologies",
+            name: "Alice Tech",
+            logo_path: "Resources/Logos/alice.png",
+            io: { input: "parameters", output: "data_sheet" },
+            pricing: { model: "quote", cost: 1000, currency: "USD", period: "month", business_model: "project", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 3, manual_time_minutes: 480, ai_time_minutes: 30, benchmark_score: 8.5 },
+            advice: {
+                short: "Large",
+                long: "For mega-projects where a 1% schedule optimization saves millions. Overkill for anything smaller than a high-rise."
+            },
+            details: {
+                tag_line: "Schedule Optioneering",
+                short_desc: "Generative construction scheduling.",
+                long_desc: "Simulates thousands of build sequences to find the fastest/cheapest path.",
+                pros: ["Schedule optimization", "ROI clear"],
+                cons: ["Complex input", "Enterprise"],
+                website_link: "https://www.alicetechnologies.com/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/alice_1.jpg",
+                    "Resources/Images/alice_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    title: "6. Construction Admin",
+    desc: "Realization",
+    tasks: [
+      {
+        title: "Site Observation",
+        desc: "Progress tracking.",
+        ais: [
+          { 
+            id: "ai_openspace",
+            slug: "openspace",
+            name: "OpenSpace",
+            logo_path: "Resources/Logos/openspace.png",
+            io: { input: "raster_image", output: "map_data" },
+            pricing: { model: "quote", cost: 500, currency: "USD", period: "month", business_model: "project", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 20, manual_time_minutes: 60, ai_time_minutes: 5, benchmark_score: 9.5 },
+            advice: {
+                short: "Medium - Large",
+                long: "The industry standard for photo documentation. Highly effective for dispute resolution."
+            },
+            details: {
+                tag_line: "Time Machine",
+                short_desc: "360-degree photo documentation.",
+                long_desc: "Maps 360-video walks to the floorplan automatically. 'Google Street View' for the site.",
+                pros: ["Visual record", "Easy capture"],
+                cons: ["Hardware cost", "Data volume"],
+                website_link: "https://www.openspace.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/openspace_1.jpg",
+                    "Resources/Images/openspace_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_disperse",
+            slug: "disperse",
+            name: "Disperse",
+            logo_path: "Resources/Logos/disperse.png",
+            io: { input: "raster_image", output: "data_sheet" },
+            pricing: { model: "quote", cost: 800, currency: "USD", period: "month", business_model: "project", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 4, manual_time_minutes: 120, ai_time_minutes: 10, benchmark_score: 8.8 },
+            advice: {
+                short: "Large",
+                long: "Best for high-rise construction where tracking progress manually is impossible."
+            },
+            details: {
+                tag_line: "Productivity Tracking",
+                short_desc: "Site photos to track work-in-place.",
+                long_desc: "Detects installed elements from photos to update the schedule automatically.",
+                pros: ["Productivity data", "Objective"],
+                cons: ["Service heavy", "Cost"],
+                website_link: "https://www.disperse.io/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/disperse_1.jpg",
+                    "Resources/Images/disperse_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      },
+      {
+        title: "Risk & Closeout",
+        desc: "Safety and Handover.",
+        ais: [
+          { 
+            id: "ai_newmetrix",
+            slug: "newmetrix",
+            name: "Newmetrix",
+            logo_path: "Resources/Logos/newmetrix.png",
+            io: { input: "raster_image", output: "data_sheet" },
+            pricing: { model: "quote", cost: 300, currency: "USD", period: "month", business_model: "project", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 10, manual_time_minutes: 30, ai_time_minutes: 1, benchmark_score: 8.0 },
+            advice: {
+                short: "Large",
+                long: "Part of the Oracle suite. Only relevant for large construction firms managing safety risk portfolios."
+            },
+            details: {
+                tag_line: "Safety AI",
+                short_desc: "AI that predicts safety risks.",
+                long_desc: "Analyzes site photos to spot safety hazards (no PPE, trip hazards).",
+                pros: ["Safety focus", "Predictive"],
+                cons: ["Data volume req", "Oracle ecosystem"],
+                website_link: "https://www.oracle.com/construction-engineering/construction-intelligence-cloud-service/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/newmetrix_1.jpg",
+                    "Resources/Images/newmetrix_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          },
+          { 
+            id: "ai_civils",
+            slug: "civils-ai",
+            name: "Civils.ai",
+            logo_path: "Resources/Logos/civils.png",
+            io: { input: "text_doc", output: "map_data" },
+            pricing: { model: "subscription", cost: 50, currency: "USD", period: "month", business_model: "user", credits_included: "unlimited" },
+            efficiency: { uses_per_project: 5, manual_time_minutes: 60, ai_time_minutes: 5, benchmark_score: 7.5 },
+            advice: {
+                short: "Small - Large",
+                long: "Excellent for geotechnical engineers and civil works. Helps organize chaotic site data."
+            },
+            details: {
+                tag_line: "Ground Data",
+                short_desc: "Construction data AI.",
+                long_desc: "Search engine for geotechnical reports and project records.",
+                pros: ["Data search", "Civil focus"],
+                cons: ["Niche", "Data availability"],
+                website_link: "https://civils.ai/",
+                affiliate_link: "",
+                gallery: [
+                    "Resources/Images/civils_1.jpg",
+                    "Resources/Images/civils_2.jpg"
+                ]
+            },
+            features: { api_compatible: false, export_compatible: true }
+          }
+        ]
+      }
+    ]
+  }
+];

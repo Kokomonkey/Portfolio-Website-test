@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DDD Expanded Master Plan</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #2c3e50; color: #ecf0f1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { text-align: center; border: 1px solid #34495e; padding: 60px; border-radius: 15px; background: #34495e; box-shadow: 0 15px 40px rgba(0,0,0,0.5); max-width: 700px; }
+        .btn { padding: 20px 40px; font-size: 18px; font-weight: bold; background: #e74c3c; color: #fff; border: none; cursor: pointer; border-radius: 8px; margin-top: 30px; transition: transform 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn:hover { transform: translateY(-2px); background: #c0392b; }
+        h1 { margin-bottom: 10px; color: #e74c3c; font-size: 2.5rem; }
+        p { color: #bdc3c7; font-size: 1.1rem; margin-bottom: 30px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expanded Master Plan</h1>
+        <p>Generating a detailed technical breakdown with subtasks, implementation details, and phase logic.</p>
+        <button class="btn" onclick="generatePDF()">DOWNLOAD BLUEPRINT .PDF</button>
+    </div>
+
+    <script>
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const margin = 15;
+            let y = 20;
+
+            function checkPage(height = 10) {
+                if (y + height > 280) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+
+            function header(text) {
+                checkPage(20);
+                y += 10;
+                doc.setFillColor(231, 76, 60); // Red Header
+                doc.rect(margin - 2, y - 6, 180, 10, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                doc.setTextColor(255, 255, 255);
+                doc.text(text.toUpperCase(), margin, y);
+                y += 12;
+            }
+
+            function task(text) {
+                checkPage(10);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                doc.text("• " + text, margin + 5, y);
+                y += 5;
+            }
+
+            function subtask(text) {
+                checkPage(6);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(80, 80, 80);
+                doc.text("   - " + text, margin + 5, y);
+                y += 5;
+            }
+
+            // COVER
+            doc.setFontSize(26);
+            doc.setFont("helvetica", "bold");
+            doc.text("PROJECT BLUEPRINT", margin, y);
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(100, 100, 100);
+            doc.text("DouweDoesDesign: AI Architecture Workflow", margin, y);
+            y += 20;
+
+            // PHASE 1
+            header("PHASE 1: DATA CORE & LOGIC");
+            task("Global Configuration");
+            subtask("Create 'config.js' with feature flags (ENABLE_API, DEBUG_MODE).");
+            task("JSON Schema Restructure");
+            subtask("Convert Pricing to Object {cost, currency, model}.");
+            subtask("Add strict 'input_type' and 'output_type' fields.");
+            task("Connection Logic Engine");
+            subtask("Update drawLines(): if (Out != In) render 'Manual Container'.");
+            task("Smart Caching System");
+            subtask("Write save wrapper: { timestamp: Date.now(), data: ... }.");
+            subtask("On load: Check if timestamp > 24h. If so, clear cache.");
+
+            // PHASE 2
+            header("PHASE 2: UI & MOBILE UX");
+            task("Node Visual Upgrade");
+            subtask("Add CSS classes for Colored Dots based on I/O type.");
+            task("Mobile Layout Locking");
+            subtask("CSS: Force Controls/Legend to 'position: fixed' with high z-index.");
+            task("Mobile Mini-Modal");
+            subtask("Logic: If screen < 768px, click opens 'Bottom Sheet' not Overlay.");
+            task("Auto-Theme Detection");
+            subtask("JS: Use 'window.matchMedia' to detect OS Dark Mode preference.");
+
+            // PHASE 3
+            header("PHASE 3: THE 13 FEATURES (1-6)");
+            task("Feature 1: API Connector");
+            subtask("Build 'fetchAI' client. Store keys in sessionStorage only.");
+            task("Feature 2: Syllabus Export");
+            subtask("Clone PDF Gen. Loop data as Text Table instead of Graph.");
+            task("Feature 3: Community Wall");
+            subtask("DB: Add 'is_public' flag. UI: Grid view of public workflows.");
+            task("Feature 4: ROI Calculator");
+            subtask("Math: (Manual_Time - AI_Time) * Hourly_Rate.");
+            task("Feature 5: Plugins");
+            subtask("Code 'pyRevit' script to open WebView pointing to site.");
+            task("Feature 6: Version History");
+            subtask("JS: Array 'historyStack'. Push state on every change.");
+
+            // PHASE 3 CONTINUED
+            header("PHASE 3: THE 13 FEATURES (7-13)");
+            task("Feature 7: Affiliate System");
+            subtask("Render Logic: Use 'affiliate_link' if present.");
+            task("Feature 8: Guest Mode");
+            subtask("URL Parser: Read '?workflowID=xyz' and load Read-Only mode.");
+            task("New 1: Carbon Estimator");
+            subtask("Math: (GPU_Watts * Time) vs (Commute_Km * Car_Emission).");
+            task("New 2: Timeline View");
+            subtask("UI: Toggle CSS Grid to render nodes as Gantt bars.");
+            task("New 3: Embed Widget");
+            subtask("Create 'widget.html'. Minimal UI (No controls, just graph).");
+
+            // PHASE 4
+            header("PHASE 4: BACKEND & COMPLIANCE");
+            task("Firebase Configuration");
+            subtask("Init Project in 'europe-west' region (GDPR req).");
+            task("Auth Sync Logic");
+            subtask("Login: Detect Local Data. Prompt 'Merge or Overwrite?'.");
+            task("GDPR Compliance");
+            subtask("Settings: Add 'Delete Account' button (Firebase Wipe).");
+            subtask("UI: Add Cookie Consent Banner (Required for Login).");
+
+            doc.save("DDD_Expanded_Blueprint.pdf");
+        }
+    </script>
+</body>
+</html>

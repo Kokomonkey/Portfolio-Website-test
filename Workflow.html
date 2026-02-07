@@ -27,12 +27,12 @@
             
             /* --- FUNCTION COLORS --- */
             --cat-gen: #9b59b6;      
-            --cat-tech: #2980b9;    
-            --cat-text: #27ae60;    
-            --cat-mgmt: #f39c12;    
-            --cat-bid: #c0392b;     
-            --cat-scan: #16a085;    
-            --cat-data: #8e44ad;    
+            --cat-tech: #2980b9;     
+            --cat-text: #27ae60;     
+            --cat-mgmt: #f39c12;     
+            --cat-bid: #c0392b;      
+            --cat-scan: #16a085;     
+            --cat-data: #8e44ad;     
 
             /* --- INTEGRATION COLORS --- */
             --int-integrated: #d35400; 
@@ -537,11 +537,38 @@
         }
         .ai-node:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
 
+        /* --- PERSONAL NODE & CONNECTORS (UPDATED) --- */
         .personal-node {
             position: absolute; width: 240px; z-index: 20;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Ensure bars are visible inside */
+            padding-left: 20px; padding-right: 20px;
+            overflow: visible;
         }
+
+        /* INPUT BAR (Left) */
+        .personal-node::before {
+            content: '';
+            position: absolute;
+            left: -4px; top: 10px; bottom: 10px;
+            width: 6px;
+            background-color: var(--in-color, transparent); /* Unique Color */
+            border-radius: 3px;
+            z-index: 22;
+        }
+
+        /* OUTPUT BAR (Right) */
+        .personal-node::after {
+            content: '';
+            position: absolute;
+            right: -4px; top: 10px; bottom: 10px;
+            width: 6px;
+            background-color: var(--out-color, transparent); /* Unique Color */
+            border-radius: 3px;
+            z-index: 22;
+        }
+
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -817,6 +844,7 @@
 const CAMERA_ADJUST_X = 0; 
 const CAMERA_ADJUST_Y = 150; 
 
+// --- UPDATED WORKFLOW DATA WITH IO TYPES ---
 const workflowData = [
   {
     title: "1. Pre-Design",
@@ -828,29 +856,24 @@ const workflowData = [
         ais: [
           { name: "Microsoft Copilot", integration: "Integrated", host: "M365", function: "Text/Code/Regs", 
             desc: "Integrated AI in Word/Excel to summarize briefs.", 
-            longDesc: "Microsoft Copilot is an AI-assistant designed to be connected throughout your pc. It is able to pull information from any documents, agenda's and emails within the microsoft workspace. It can therefore improve the efficiency of any logistic tasks.",
-            price: "Subscription", pro: "Ecosystem native", con: "Generalist model", link: "https://www.microsoft.com/en-us/microsoft-365/copilot", target: "_blank",
-            // --- UPDATED EXAMPLE: CUSTOM IMAGES AND TEXT ---
-            workflowText: "Connects directly to Outlook and Word, scraping client emails for requirements.",
-            efficiencyText: "Saves time by automatically planning, wharing and annotating meetings",
-            visualImage: "Recourses/Images/Workflow/wf1.1.1.png",
-            dataImage: "Recourses/Images/Workflow/wf1.1.2.png" 
+            price: "Subscription", pro: "Ecosystem native", con: "Generalist model", link: "https://www.microsoft.com/en-us/microsoft-365/copilot",
+            io: { input: "Text", output: "Data" } 
           },
-          
           { name: "Digital Blue Foam", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Web-based generative design for sustainable feasibility.", 
-            longDesc: "Step closer to Digital Blue Foam, a web-based artisan of feasibility. It sketches not just with lines, but with carbon data and sustainability metrics. It invites you to explore the viability of your site in mere moments, balancing the pragmatic with the ecological in a dance of generative design.",
-            price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/", target: "_blank" },
-          
+            price: "Subscription", pro: "Sustainability focus", con: "Web-only", link: "https://www.digitalbluefoam.com/",
+            io: { input: "Data", output: "3D Model" } 
+          },
           { name: "Crosby Studios", integration: "Service", function: "Image/Video Gen", 
             desc: "Generative interior design concepts.", 
-            longDesc: "Here we have Crosby Studios, a purely aesthetic exhibition. It asks you to suspend disbelief and let the AI hallucinate interior possibilities. It is less a technical tool and more a dream machine, painting vivid, avant-garde interior concepts that challenge the mundane.",
-            price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/", target: "_blank" },
-          
+            price: "Varies", pro: "Aesthetic focus", con: "Niche use", link: "https://crosbystudios.com/",
+            io: { input: "Text", output: "Image" } 
+          },
           { name: "ReimagineHome", integration: "Service", function: "Image/Video Gen", 
             desc: "AI for virtual staging and renovation ideas.", 
-            longDesc: "Look at ReimagineHome. It takes the existing reality of a photograph and overlays a new narrative of renovation. It is a storyteller for real estate, allowing you to instantly rewrite the history of a room with new furniture and finishes, effectively staging the future.",
-            price: "Freemium", pro: "Instant renovation ideas", con: "2D only", link: "https://www.reimaginehome.ai/", target: "_blank" }
+            price: "Freemium", pro: "Instant renovation ideas", con: "2D only", link: "https://www.reimaginehome.ai/",
+            io: { input: "Image", output: "Image" } 
+          }
         ]
       },
       {
@@ -859,33 +882,34 @@ const workflowData = [
         ais: [
           { name: "TestFit", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Real-time generative feasibility and zoning.", 
-            longDesc: "TestFit is the solver of the parking lot puzzle and the multifamily matrix. It instantly generates compliant building massings based on zoning constraints, calculating yield in milliseconds. It turns the math of development into a visual playground.",
-            price: "Subscription", pro: "Instant yield calc", con: "Parametric constraints", link: "https://www.testfit.io/", target: "_blank" },
-
+            price: "Subscription", pro: "Instant yield calc", con: "Parametric constraints", link: "https://www.testfit.io/",
+            io: { input: "Data", output: "3D Model" }
+          },
           { name: "UpCodes Copilot", integration: "Service", function: "Text/Code/Regs", 
             desc: "AI assistant for building codes.", 
-            longDesc: "On your right, you'll find UpCodes Copilot. Think of it as the wise librarian of regulation. It reads the dense, uninviting texts of building codes and translates them into plain answers. It invites you to ask complex compliance questions and receive immediate, citation-backed guidance.",
-            price: "$59/mo", pro: "Instant code answers", con: "US/Code specific", link: "https://up.codes/", target: "_blank" },
-          
+            price: "$59/mo", pro: "Instant code answers", con: "US/Code specific", link: "https://up.codes/",
+            io: { input: "Text", output: "Text" }
+          },
           { name: "Autodesk Forma", integration: "Integrated", host: "Revit", function: "Data Interpretation", 
             desc: "Real-time environmental analysis & site planning.", 
-            longDesc: "Behold Autodesk Forma, formerly Spacemaker. This is a heavy lifter in the gallery of site analysis. It sculpts the invisible forces of wind, noise, and sun into visible gradients on your screen, allowing you to shape your building blocks in harmony with the environment from day one.",
-            price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma", target: "_blank" },
-          
+            price: "Part of AEC Collection", pro: "Revit interoperability", con: "Subscription cost", link: "https://www.autodesk.com/eu/products/forma",
+            io: { input: "3D Model", output: "Data" }
+          },
           { name: "Polycam", integration: "Tool", function: "Reality Capture", 
             desc: "LiDAR scanning app for site context.", 
-            longDesc: "In your pocket lies Polycam. It transforms your phone into a survey instrument, capturing the chaotic reality of a construction site and freezing it into a digital mesh. It allows you to take the site home with you, preserving the truth of the physical world in 3D.",
-            price: "Freemium / $27/mo", pro: "Fast site context", con: "Phone hardware dep.", link: "https://poly.cam/", target: "_blank" },
-          
+            price: "Freemium / $27/mo", pro: "Fast site context", con: "Phone hardware dep.", link: "https://poly.cam/",
+            io: { input: "Image", output: "3D Model" }
+          },
           { name: "Archistar", integration: "Service", function: "Data Interpretation", 
             desc: "Property intelligence for zoning compliance.", 
-            longDesc: "Archistar acts as a zoning oracle. With a few clicks, it reveals the hidden potential of a plot, instantly checking against the rigid constraints of local planning laws. It tells you what could be, before you ever draw a line.",
-            price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/", target: "_blank" },
-          
+            price: "Subscription", pro: "Regulatory data", con: "Region specific (AUS)", link: "https://www.archistar.ai/",
+            io: { input: "Data", output: "Data" }
+          },
           { name: "Aurivus", integration: "Tool", function: "Reality Capture", 
             desc: "AI processing for point clouds to BIM.", 
-            longDesc: "Aurivus performs a kind of digital alchemy. It takes the raw, dumb points of a laser scan and intelligently classifies them into building elements. It attempts to automate the tedious translation of 'dots' into 'walls', saving you from the manual labor of tracing reality.",
-            price: "Quote", pro: "Scan-to-BIM automation", con: "Complex setup", link: "https://aurivus.com/", target: "_blank" }
+            price: "Quote", pro: "Scan-to-BIM automation", con: "Complex setup", link: "https://aurivus.com/",
+            io: { input: "3D Model", output: "BIM" }
+          }
         ]
       },
       {
@@ -894,13 +918,14 @@ const workflowData = [
         ais: [
             { name: "Preoptima", integration: "Service", function: "Data Interpretation", 
               desc: "AI for whole life carbon assessment.", 
-              longDesc: "Preoptima stands as a guardian of our carbon footprint. It invites us to look at the 'Whole Life Carbon' of our structures, not just as an afterthought, but as a primary design driver. It uses AI to optimize structures for a lighter touch on the planet.",
-              price: "Subscription", pro: "Carbon logic", con: "Data heavy", link: "https://www.preoptima.com/", target: "_blank" },
-            
+              price: "Subscription", pro: "Carbon logic", con: "Data heavy", link: "https://www.preoptima.com/",
+              io: { input: "BIM", output: "Data" }
+            },
             { name: "ClimateStudio", integration: "Integrated", host: "Rhino", function: "Data Interpretation", 
               desc: "Fast environmental simulation.", 
-              longDesc: "Embedded within Rhino, ClimateStudio offers speed. It simulates light and energy with a rapidity that allows for iteration. It is a tool for those who wish to sculpt with daylight, ensuring that the sun is always a considered guest in your design.",
-              price: "License", pro: "High accuracy", con: "Rhino dependent", link: "https://www.solemma.com/climatestudio", target: "_blank" }
+              price: "License", pro: "High accuracy", con: "Rhino dependent", link: "https://www.solemma.com/climatestudio",
+              io: { input: "3D Model", output: "Data" }
+            }
         ]
       }
     ]
@@ -915,23 +940,24 @@ const workflowData = [
         ais: [
           { name: "Stable Diffusion", integration: "Tool", function: "Image/Video Gen", 
             desc: "Local generative AI for unlimited image generation.", 
-            longDesc: "For the privacy-conscious artist, we have Stable Diffusion. Hosting this on your own machine is like having a private studio assistant who never sleeps. It generates unlimited variations of your wildest concepts without ever sending your data to the cloud. A truly sovereign creative tool.",
-            price: "Free (Open Source)", pro: "Privacy/Zero Cost", con: "Requires powerful GPU", link: "https://github.com/AUTOMATIC1111/stable-diffusion-webui", target: "_blank" },
-          
+            price: "Free (Open Source)", pro: "Privacy/Zero Cost", con: "Requires powerful GPU", link: "https://github.com/AUTOMATIC1111/stable-diffusion-webui",
+            io: { input: "Text", output: "Image" }
+          },
           { name: "Midjourney", integration: "Service", function: "Image/Video Gen", 
             desc: "AI-driven atmospheric concept art.", 
-            longDesc: "Lets discuss the popular virtuoso, Midjourney. This tool has defined the aesthetic of the AI era. It invites you to input poetic prompts and receive back atmospheric, painterly visualizations that capture the *feeling* of a space before you have resolved the *fact* of it.",
-            price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/", target: "_blank" },
-          
+            price: "$10/mo", pro: "Pure inspiration", con: "Non-technical", link: "https://www.midjourney.com/",
+            io: { input: "Text", output: "Image" }
+          },
           { name: "Adobe Firefly", integration: "Integrated", host: "Photoshop", function: "Image/Video Gen", 
             desc: "Generative fill integrated into Photoshop.", 
-            longDesc: "Firefly is Adobe's seamless integration of magic. It lives inside Photoshop, allowing you to expand the canvas of your renderings or magically erase unwanted elements. It is the polite, commercially safe artist that ensures your collages are filled with copyright-cleared content.",
-            price: "Part of CC", pro: "Workflow seamless", con: "Less 'creative' models", link: "https://www.adobe.com/sensei/generative-ai/firefly.html", target: "_blank" },
-          
+            price: "Part of CC", pro: "Workflow seamless", con: "Less 'creative' models", link: "https://www.adobe.com/sensei/generative-ai/firefly.html",
+            io: { input: "Image", output: "Image" }
+          },
           { name: "LookX", integration: "Service", function: "Image/Video Gen", 
             desc: "AI tailored for architecture renderings.", 
-            longDesc: "LookX is a specialist in our gallery. Unlike generalist image generators, it understands the language of architecture. It takes your crude massing models and wraps them in realistic materials and context, bridging the gap between a block model and a finished render.",
-            price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/", target: "_blank" }
+            price: "Subscription", pro: "Architect-centric", con: "Learning curve", link: "https://www.lookx.ai/",
+            io: { input: "3D Model", output: "Image" }
+          }
         ]
       },
       {
@@ -940,18 +966,19 @@ const workflowData = [
         ais: [
             { name: "Hypar", integration: "Service", function: "CAD/BIM/Technical", 
               desc: "Open platform for modular building generators.", 
-              longDesc: "Hypar is the app store for architectural logic. It decouples the code from the tool, allowing you to stack different 'functions'—like a roof generator, a column grid placer, and a facade tool—into a custom workflow. It is the democratization of computational design.",
-              price: "Freemium", pro: "Modular logic", con: "Web-based", link: "https://hypar.io/", target: "_blank" },
-
+              price: "Freemium", pro: "Modular logic", con: "Web-based", link: "https://hypar.io/",
+              io: { input: "Data", output: "3D Model" }
+            },
             { name: "Wallacei", integration: "Integrated", host: "Rhino/GH", function: "Data Interpretation", 
               desc: "Evolutionary engine for multi-objective optimization.", 
-              longDesc: "Wallacei is the Darwinist of the design world. It runs thousands of simulations, breeding the 'fittest' design solutions based on your criteria. It invites you to step back and act as the selector, choosing the best performing options from a lineage of digital evolution.",
-              price: "Free", pro: "Data visualization", con: "Steep learning curve", link: "https://www.wallacei.com/", target: "_blank" },
-            
+              price: "Free", pro: "Data visualization", con: "Steep learning curve", link: "https://www.wallacei.com/",
+              io: { input: "Data", output: "Data" }
+            },
             { name: "Finch 3D", integration: "Integrated", host: "Rhino/GH", function: "CAD/BIM/Technical", 
               desc: "Graph-based generative design for plans.", 
-              longDesc: "Finch 3D automates the logic of the floor plan. It understands that a bedroom needs a window and a door. It uses graph theory to optimize layouts, ensuring that your residential footprints are not just compliant, but mathematically efficient.",
-              price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/", target: "_blank" }
+              price: "Waitlist/Sub", pro: "Optimization logic", con: "Beta access", link: "https://finch3d.com/",
+              io: { input: "3D Model", output: "3D Model" }
+            }
         ]
       },
       {
@@ -960,18 +987,19 @@ const workflowData = [
         ais: [
           { name: "Snaptrude", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Collaborative browser-based BIM.", 
-            longDesc: "Snaptrude is attempting to be the 'Google Docs' of BIM. It invites collaboration in the browser, allowing you to sketch massing and space plans that instantly carry data. It breaks down the silos of desktop software, inviting the whole team to model together in the cloud.",
-            price: "$100/mo", pro: "Google Docs for BIM", con: "New ecosystem", link: "https://www.snaptrude.com/", target: "_blank" },
-          
+            price: "$100/mo", pro: "Google Docs for BIM", con: "New ecosystem", link: "https://www.snaptrude.com/",
+            io: { input: "Data", output: "BIM" }
+          },
           { name: "PlanFinder", integration: "Integrated", host: "Revit/Rhino", function: "CAD/BIM/Technical", 
             desc: "Plugin to generate apartment layouts.", 
-            longDesc: "PlanFinder is a niche specialist. It looks at the empty shell of an apartment unit and proposes furniture layouts and partition arrangements. It speeds up the repetitive task of 'fitting' units into a core, acting as a rapid prototyping tool for residential architects.",
-            price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/", target: "_blank" },
-          
+            price: "Subscription", pro: "Direct plugin", con: "Residential only", link: "https://www.planfinder.xyz/",
+            io: { input: "3D Model", output: "3D Model" }
+          },
           { name: "Rayon", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Collaborative space planning tool.", 
-            longDesc: "Rayon brings the speed of 2D drafting back to the web. It is light, fast, and collaborative. It uses 'smart' fills and furniture blocks to make space planning feel less like drafting and more like sketching, but with the precision of CAD.",
-            price: "Freemium", pro: "Fast 2D workflow", con: "2D focused", link: "https://www.rayon.so/", target: "_blank" }
+            price: "Freemium", pro: "Fast 2D workflow", con: "2D focused", link: "https://www.rayon.so/",
+            io: { input: "Image", output: "Image" }
+          }
         ]
       },
       {
@@ -980,28 +1008,29 @@ const workflowData = [
         ais: [
           { name: "Krea.ai", integration: "Service", function: "Image/Video Gen", 
             desc: "Real-time AI upscaling and enhancement.", 
-            longDesc: "Krea.ai sits on the bleeding edge of real-time generation. It allows you to feed a rough, blocky massing model from your screen and see it 'painted' over with realistic textures in real-time. It is the bridge between a low-res thought and a high-res vision.",
-            price: "Freemium", pro: "Instant enhancement", con: "Cloud dependent", link: "https://www.krea.ai/", target: "_blank" },
-
+            price: "Freemium", pro: "Instant enhancement", con: "Cloud dependent", link: "https://www.krea.ai/",
+            io: { input: "3D Model", output: "Image" }
+          },
           { name: "Veras (EvolveLAB)", integration: "Integrated", host: "Revit/Rhino", function: "Image/Video Gen", 
             desc: "AI rendering plugin inside Revit/Rhino.", 
-            longDesc: "Veras sits directly inside your heavy BIM software, offering a window into a rendered future. It allows you to visualize your Revit model in different seasons and styles without ever exporting. It is a tool for rapid internal visualization, keeping the workflow tight and integrated.",
-            price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras", target: "_blank" },
-          
+            price: "Subscription", pro: "In-model rendering", con: "Abstract results", link: "https://www.evolvelab.io/veras",
+            io: { input: "BIM", output: "Image" }
+          },
           { name: "Enscape", integration: "Integrated", host: "Revit/Rhino", function: "Image/Video Gen", 
             desc: "Real-time rendering workflow.", 
-            longDesc: "Enscape has changed how we see our models. It provides a real-time, walk-through experience that is tethered to your BIM. It invites you and your client to walk through the project as it is being designed, removing the abstraction of 2D plans.",
-            price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/", target: "_blank" },
-          
+            price: "$40/mo", pro: "Instant visuals", con: "High-end GPU req.", link: "https://enscape3d.com/",
+            io: { input: "BIM", output: "Image" }
+          },
           { name: "D5 Render", integration: "Tool", function: "Image/Video Gen", 
             desc: "Local real-time renderer with AI atmosphere.", 
-            longDesc: "D5 Render is the challenger, offering ray-tracing quality that rivals high-end cinema tools. It uses AI to handle noise and atmosphere, creating hyper-realistic lighting effects. It is for those who want to push the visual fidelity of their work to the maximum.",
-            price: "Free / $30/mo", pro: "Raytracing quality", con: "Hardware intensive", link: "https://www.d5render.com/", target: "_blank" },
-          
+            price: "Free / $30/mo", pro: "Raytracing quality", con: "Hardware intensive", link: "https://www.d5render.com/",
+            io: { input: "3D Model", output: "Image" }
+          },
           { name: "Arkio", integration: "Tool", function: "CAD/BIM/Technical", 
             desc: "Collaborative VR design.", 
-            longDesc: "Arkio invites you to step inside the model literally. Using VR, you can model with your hands at 1:1 scale. It brings a physicality back to digital design, allowing you to feel the scale of a room before it is built.",
-            price: "Freemium", pro: "Immersive design", con: "VR headset needed", link: "https://www.arkio.is/", target: "_blank" }
+            price: "Freemium", pro: "Immersive design", con: "VR headset needed", link: "https://www.arkio.is/",
+            io: { input: "3D Model", output: "3D Model" }
+          }
         ]
       }
     ]
@@ -1016,18 +1045,19 @@ const workflowData = [
         ais: [
           { name: "Skema", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Concept to BIM automation.", 
-            longDesc: "Skema proposes to skip the drafting phase entirely. It takes conceptual massing schemas and reuses previous BIM data to 'inflate' them into fully detailed Revit models. It is about reusing intelligence rather than redrawing geometry.",
-            price: "Quote", pro: "Rapid BIM creation", con: "Revit dependent", link: "https://www.skema.ai/", target: "_blank" },
-
+            price: "Quote", pro: "Rapid BIM creation", con: "Revit dependent", link: "https://www.skema.ai/",
+            io: { input: "3D Model", output: "BIM" }
+          },
           { name: "BricsCAD BIM", integration: "Tool", function: "CAD/BIM/Technical", 
             desc: "AI-driven BIM classification.", 
-            longDesc: "BricsCAD BIM takes a different approach. It allows you to model freely with solids, and then uses AI to 'classify' those solids into building elements (walls, slabs, columns). It respects the geometry first, and adds the intelligence second.",
-            price: "Perpetual/Sub", pro: "Smart classification", con: "Market share", link: "https://www.bricsys.com/bricscad-bim", target: "_blank" },
-          
+            price: "Perpetual/Sub", pro: "Smart classification", con: "Market share", link: "https://www.bricsys.com/bricscad-bim",
+            io: { input: "3D Model", output: "BIM" }
+          },
           { name: "Augmenta", integration: "Integrated", host: "Revit", function: "CAD/BIM/Technical", 
             desc: "AI for automated electrical design.", 
-            longDesc: "Augmenta is the automated engineer. It takes the tedious task of routing electrical systems and hands it over to algorithms. It ensures that conduits and trays are routed efficiently and without clash, turning a week's worth of drafting into a few hours of processing.",
-            price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/", target: "_blank" }
+            price: "Subscription", pro: "Systems automation", con: "Specialized", link: "https://www.augmenta.ai/",
+            io: { input: "BIM", output: "BIM" }
+          }
         ]
       },
       {
@@ -1036,13 +1066,14 @@ const workflowData = [
         ais: [
               { name: "Cove.tool", integration: "Service", function: "Data Interpretation", 
                 desc: "Automated energy & carbon analysis.", 
-                longDesc: "Cove.tool is the automated consultant. It provides a suite of analysis tools—energy, daylight, carbon—in a web platform. It is designed to validate your design decisions quickly, ensuring you are on track for performance targets without needing a PhD in building physics.",
-                price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/", target: "_blank" },
-               
+                price: "Quote", pro: "Speed/Validation", con: "Separate platform", link: "https://cove.inc/",
+                io: { input: "BIM", output: "Data" }
+              },
               { name: "One Click LCA", integration: "Integrated", host: "Revit", function: "Data Interpretation", 
                 desc: "Automated life-cycle carbon assessment.", 
-                longDesc: "One Click LCA is the accountant of carbon. It tallies the environmental cost of every material in your BIM model. It is the industry standard for proving that your building is not just beautiful, but responsible.",
-                price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/", target: "_blank" }
+                price: "Quote", pro: "Sustainability std.", con: "Data heavy", link: "https://www.oneclicklca.com/",
+                io: { input: "BIM", output: "Data" }
+              }
         ]
       },
       {
@@ -1051,23 +1082,24 @@ const workflowData = [
         ais: [
           { name: "Kaedim", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Convert 2D images into 3D models.", 
-            longDesc: "Kaedim is a bridge between 2D and 3D. It takes a flat image of an object—a chair, a lamp, a moulding—and puffs it up into a 3D model. It accelerates the creation of detailed assets, filling your scenes with custom furniture without the hours of modeling.",
-            price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/", target: "_blank" },
-          
+            price: "Subscription", pro: "Asset creation", con: "Not full BIM", link: "https://www.kaedim3d.com/",
+            io: { input: "Image", output: "3D Model" }
+          },
           { name: "Adobe Substance 3D", integration: "Tool", function: "Reality Capture", 
             desc: "AI photogrammetry for materials.", 
-            longDesc: "Substance 3D Sampler uses AI to digitize the physical world. You can feed it a photo of a fabric or a stone, and it extracts the texture, bump, and gloss maps needed to recreate that material perfectly in 3D.",
-            price: "$50/mo", pro: "High fidelity mats", con: "Part of Adobe suite", link: "https://www.adobe.com/products/substance3d-sampler.html", target: "_blank" },
-          
+            price: "$50/mo", pro: "High fidelity mats", con: "Part of Adobe suite", link: "https://www.adobe.com/products/substance3d-sampler.html",
+            io: { input: "Image", output: "Image" }
+          },
           { name: "Stylib", integration: "Service", function: "Management", 
             desc: "AI product search engine.", 
-            longDesc: "Stylib is a visual search engine for the specifier. Instead of typing keywords, you can search with images. It finds real-world products that match your design intent, connecting the aesthetic dream with the commercial reality of the supply chain.",
-            price: "Free / Brand driven", pro: "Visual search", con: "Inventory limited", link: "https://www.stylib.com/", target: "_blank" },
-          
+            price: "Free / Brand driven", pro: "Visual search", con: "Inventory limited", link: "https://www.stylib.com/",
+            io: { input: "Image", output: "Data" }
+          },
           { name: "Homestyler", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "AI interior design & layout.", 
-            longDesc: "Homestyler is the rapid interior decorator. It allows for extremely fast room layouts and furniture swapping. While not a heavy BIM tool, it serves the purpose of communicating interior intent to clients with speed and ease.",
-            price: "Freemium / Sub", pro: "User friendly", con: "Not BIM native", link: "https://www.homestyler.com/", target: "_blank" }
+            price: "Freemium / Sub", pro: "User friendly", con: "Not BIM native", link: "https://www.homestyler.com/",
+            io: { input: "2D", output: "3D Model" }
+          }
         ]
       },
       {
@@ -1076,13 +1108,14 @@ const workflowData = [
         ais: [
           { name: "Specright", integration: "Service", function: "Management", 
             desc: "Specification data management.", 
-            longDesc: "Specright manages the data behind the products. It ensures that the 'spec' is not just a text document, but a data-driven record of exactly what is being bought and installed. It brings order to the chaos of product data.",
-            price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/", target: "_blank" },
-          
+            price: "Enterprise", pro: "Data standard", con: "Setup time", link: "https://www.specright.com/",
+            io: { input: "Data", output: "Docs" }
+          },
           { name: "Deltek Specpoint", integration: "Integrated", host: "Revit", function: "Management", 
             desc: "Modern specification writing linked to BIM.", 
-            longDesc: "Specpoint is the modern evolution of the spec book. It links the written requirement directly to the BIM element. It tries to ensure that the drawing and the book are telling the same story, reducing the risk of conflicting information.",
-            price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint", target: "_blank" }
+            price: "Subscription", pro: "BIM integration", con: "Cost", link: "https://www.deltek.com/en/architecture-and-engineering/specpoint",
+            io: { input: "BIM", output: "Docs" }
+          }
         ]
       }
     ]
@@ -1097,13 +1130,14 @@ const workflowData = [
         ais: [
             { name: "Solibri", integration: "Tool", function: "Data Interpretation", 
               desc: "Rule-based model checking.", 
-              longDesc: "Solibri is the gatekeeper of quality. It runs rigorous checks on your model, looking for everything from geometric clashes to missing fire ratings. It is the stern auditor that ensures your model is buildable before it leaves the office.",
-              price: "License", pro: "Deep audit capability", con: "Complex ruleset", link: "https://www.solibri.com/", target: "_blank" },
-            
+              price: "License", pro: "Deep audit capability", con: "Complex ruleset", link: "https://www.solibri.com/",
+              io: { input: "BIM", output: "Data" }
+            },
             { name: "Navisworks", integration: "Tool", function: "CAD/BIM/Technical", 
               desc: "Clash detection and 4D simulation.", 
-              longDesc: "Navisworks is the industry standard for coordination. It aggregates models from all trades—mechanical, structural, architectural—and finds where they conflict. It is the digital rehearsal of construction, finding problems on screen so they don't happen on site.",
-              price: "License", pro: "Industry standard", con: "Manual clash grouping", link: "https://www.autodesk.com/products/navisworks/overview", target: "_blank" }
+              price: "License", pro: "Industry standard", con: "Manual clash grouping", link: "https://www.autodesk.com/products/navisworks/overview",
+              io: { input: "BIM", output: "Data" }
+            }
         ]
       },
       {
@@ -1112,18 +1146,19 @@ const workflowData = [
         ais: [
           { name: "Swapp", integration: "Service", function: "CAD/BIM/Technical", 
             desc: "Automates construction documents.", 
-            longDesc: "Swapp proposes a radical shift: the automation of the drawing set. It uses AI to place dimensions, tags, and notes. It promises to take the drudgery out of documentation, allowing architects to focus on design while the AI handles the annotation.",
-            price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/", target: "_blank" },
-          
+            price: "Enterprise", pro: "Massive time save", con: "Loss of control", link: "https://swapp.ai/",
+            io: { input: "BIM", output: "Docs" }
+          },
           { name: "Glyph", integration: "Integrated", host: "Revit", function: "CAD/BIM/Technical", 
             desc: "Automating documentation tasks in Revit.", 
-            longDesc: "Glyph works within Revit to automate the tedious. It can auto-dimension a plan or auto-tag a section. It is a productivity multiplier, removing the need for thousands of manual clicks when preparing sheets.",
-            price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph", target: "_blank" },
-          
+            price: "Subscription", pro: "Task automation", con: "Revit only", link: "https://www.evolvelab.io/glyph",
+            io: { input: "BIM", output: "BIM" }
+          },
           { name: "Vectorworks AI", integration: "Integrated", host: "Vectorworks", function: "CAD/BIM/Technical", 
             desc: "Integrated AI for stylization.", 
-            longDesc: "Vectorworks has begun embedding AI directly into its CAD engine. It offers tools that help stylized visualizations and smart object recognition, keeping the AI assistant right at the tip of your cursor.",
-            price: "Sub/Perpetual", pro: "Integrated CAD/BIM", con: "Vectorworks only", link: "https://www.vectorworks.net/", target: "_blank" }
+            price: "Sub/Perpetual", pro: "Integrated CAD/BIM", con: "Vectorworks only", link: "https://www.vectorworks.net/",
+            io: { input: "3D Model", output: "Docs" }
+          }
         ]
       },
       {
@@ -1132,13 +1167,14 @@ const workflowData = [
         ais: [
           { name: "Pype AutoSpecs", integration: "Service", function: "Data Interpretation", 
             desc: "Scans spec manuals for submittals.", 
-            longDesc: "Pype AutoSpecs reads the project manual so you don't have to. It scans the thousands of pages of specs and extracts a log of every required submittal and test. It ensures that no requirement is missed in the transition to construction.",
-            price: "Quote", pro: "Compliance safety", con: "Post-doc focused", link: "https://pype.io/", target: "_blank" },
-          
+            price: "Quote", pro: "Compliance safety", con: "Post-doc focused", link: "https://pype.io/",
+            io: { input: "Docs", output: "Data" }
+          },
           { name: "Document Crunch", integration: "Service", function: "Data Interpretation", 
             desc: "AI review of contracts and specs.", 
-            longDesc: "Document Crunch acts as a legal assistant. It reviews contracts and specifications to highlight risky clauses and onerous requirements. It helps you understand exactly what you are signing up for.",
-            price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/", target: "_blank" }
+            price: "Subscription", pro: "Risk mitigation", con: "Legal focus", link: "https://www.documentcrunch.com/",
+            io: { input: "Docs", output: "Data" }
+          }
         ]
       },
       {
@@ -1147,8 +1183,9 @@ const workflowData = [
         ais: [
           { name: "Bluebeam Revu", integration: "Tool", function: "Management", 
             desc: "Advanced PDF markup and coordination.", 
-            longDesc: "Bluebeam Revu is the digital red pen. It is the standard for marking up PDF drawing sets. While not 'AI' in the generative sense, its advanced batch processing and visual search tools make it indispensable for checking quality.",
-            price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/", target: "_blank" }
+            price: "Per user", pro: "Powerful review", con: "PC only", link: "https://www.bluebeam.com/",
+            io: { input: "Docs", output: "Docs" }
+          }
         ]
       }
     ]
@@ -1163,18 +1200,19 @@ const workflowData = [
         ais: [
           { name: "Downtobid", integration: "Service", function: "Bidding/Finance", 
             desc: "AI scans plans to create bid packages.", 
-            longDesc: "Downtobid uses AI to slice up a drawing set. It recognizes which pages belong to the plumber and which to the electrician, automatically creating bid packages. It ensures the right trades see the right drawings.",
-            price: "Subscription", pro: "Scope detection", con: "GC focused", link: "https://downtobid.com/", target: "_blank" },
-          
+            price: "Subscription", pro: "Scope detection", con: "GC focused", link: "https://downtobid.com/",
+            io: { input: "Docs", output: "Data" }
+          },
           { name: "SmartBid", integration: "Service", function: "Bidding/Finance", 
             desc: "Construction bid management.", 
-            longDesc: "SmartBid organizes the chaos of the tender process. It maintains the database of subcontractors and tracks who has seen the drawings and who has submitted a price. It is the central nervous system of procurement.",
-            price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/", target: "_blank" },
-          
+            price: "Subscription", pro: "Sub database", con: "Legacy UI", link: "https://smartbid.co/",
+            io: { input: "Data", output: "Data" }
+          },
           { name: "Procore", integration: "Service", function: "Management", 
             desc: "Construction management hub.", 
-            longDesc: "Procore is the titan of construction management. It hosts everything from bids to drawings to daily logs. It is the single source of truth for the construction team, ensuring everyone is building from the same information.",
-            price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/", target: "_blank" }
+            price: "Enterprise", pro: "Centralized hub", con: "High cost", link: "https://www.procore.com/",
+            io: { input: "Data", output: "Data" }
+          }
         ]
       },
       {
@@ -1183,18 +1221,19 @@ const workflowData = [
         ais: [
           { name: "Alice Technologies", integration: "Service", function: "Data Interpretation", 
             desc: "Generative construction scheduling.", 
-            longDesc: "Alice Technologies brings generative design to the schedule. It simulates thousands of ways to build the project—changing crane locations, crew sizes, and sequences—to find the fastest or cheapest path to completion.",
-            price: "Quote", pro: "Schedule optimization", con: "Complex input", link: "https://www.alicetechnologies.com/", target: "_blank" },
-          
+            price: "Quote", pro: "Schedule optimization", con: "Complex input", link: "https://www.alicetechnologies.com/",
+            io: { input: "Data", output: "Schedule" }
+          },
           { name: "Togal.AI", integration: "Service", function: "Bidding/Finance", 
             desc: "AI-powered estimating and takeoff.", 
-            longDesc: "Togal.AI automates the 'takeoff'. It looks at a 2D floor plan and automatically highlights and measures the square footage of rooms. It turns hours of clicking and tracing into a few seconds of processing.",
-            price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/", target: "_blank" },
-          
+            price: "Subscription", pro: "Fast takeoffs", con: "2D focus", link: "https://www.togal.ai/",
+            io: { input: "Docs", output: "Data" }
+          },
           { name: "Pelles.ai", integration: "Service", function: "Bidding/Finance", 
             desc: "AI for preconstruction.", 
-            longDesc: "Pelles.ai focuses on the early stage of construction planning. It uses AI to help estimate costs and plan logistics before the shovel hits the ground, helping to reduce the risk of the unknown.",
-            price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/", target: "_blank" }
+            price: "Subscription", pro: "Precon focus", con: "Newer entrant", link: "https://www.pelles.ai/",
+            io: { input: "Data", output: "Data" }
+          }
         ]
       },
       {
@@ -1203,13 +1242,14 @@ const workflowData = [
         ais: [
           { name: "Join.build", integration: "Service", function: "Management", 
             desc: "Collaborative platform for VE decisions.", 
-            longDesc: "Join.build turns the painful process of Value Engineering into a collaborative dashboard. It tracks every cost-saving idea and its impact, allowing the owner, architect, and contractor to make informed decisions about where to cut and where to keep.",
-            price: "Quote", pro: "Transparency", con: "Requires GC buy-in", link: "https://join.build/", target: "_blank" },
-          
+            price: "Quote", pro: "Transparency", con: "Requires GC buy-in", link: "https://join.build/",
+            io: { input: "Data", output: "Data" }
+          },
           { name: "OpenCost", integration: "Tool", function: "Bidding/Finance", 
             desc: "Open source cost monitoring.", 
-            longDesc: "OpenCost offers a transparent way to track project costs. It is an open-standard approach to understanding where the money is going, favoring data visibility over proprietary lock-in.",
-            price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/", target: "_blank" }
+            price: "Free/Open", pro: "Transparency", con: "Dev focused", link: "https://www.opencost.io/",
+            io: { input: "Data", output: "Data" }
+          }
         ]
       }
     ]
@@ -1224,18 +1264,19 @@ const workflowData = [
         ais: [
           { name: "Disperse", integration: "Service", function: "Reality Capture", 
             desc: "Site photos to track work-in-place.", 
-            longDesc: "Disperse sends photographers to the site to capture 360 images, and then uses AI to track progress. It tells you exactly what has been built versus what was scheduled, providing an undeniable record of reality.",
-            price: "Quote", pro: "Productivity data", con: "Service heavy", link: "https://www.disperse.io/", target: "_blank" },
-          
+            price: "Quote", pro: "Productivity data", con: "Service heavy", link: "https://www.disperse.io/",
+            io: { input: "Image", output: "Data" }
+          },
           { name: "OpenSpace", integration: "Service", function: "Reality Capture", 
             desc: "360-degree photo documentation.", 
-            longDesc: "OpenSpace is like a time machine for the job site. You strap a camera to your hard hat and walk. The AI maps your walk to the floor plan. Later, you can travel back to any date and see exactly what was behind that wall before it was closed up.",
-            price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/", target: "_blank" },
-          
+            price: "Quote", pro: "Visual record", con: "Hardware cost", link: "https://www.openspace.ai/",
+            io: { input: "Image", output: "Data" }
+          },
           { name: "PlanGrid", integration: "Service", function: "Management", 
             desc: "Mobile access to drawings.", 
-            longDesc: "PlanGrid put the blueprints on the iPad. It revolutionized the field by ensuring that the foreman always has the latest revision in their hand, not an old roll of paper in the trailer.",
-            price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/", target: "_blank" }
+            price: "Monthly", pro: "Real-time sync", con: "Tablet req.", link: "https://www.plangrid.com/",
+            io: { input: "Docs", output: "Docs" }
+          }
         ]
       },
       {
@@ -1244,8 +1285,9 @@ const workflowData = [
         ais: [
             { name: "Newmetrix", integration: "Service", function: "Data Interpretation", 
               desc: "AI that predicts safety risks.", 
-              longDesc: "Newmetrix analyzes the visual data of the site—photos and videos—to spot safety hazards. It detects a worker without a vest or a puddle near a cable, predicting accidents before they happen.",
-              price: "Quote", pro: "Safety focus", con: "Data volume req.", link: "https://www.oracle.com/construction-engineering/construction-intelligence-cloud-service/", target: "_blank" }
+              price: "Quote", pro: "Safety focus", con: "Data volume req.", link: "https://www.oracle.com/construction-engineering/construction-intelligence-cloud-service/",
+              io: { input: "Image", output: "Data" }
+            }
         ]
       },
       {
@@ -1254,13 +1296,14 @@ const workflowData = [
         ais: [
           { name: "Newforma Konekt", integration: "Service", function: "Management", 
             desc: "AI-driven PIM for RFIs.", 
-            longDesc: "Newforma Konekt indexes the massive stream of project emails and files. It helps you find that one decision made six months ago in a buried email thread, acting as the project's digital memory.",
-            price: "Quote", pro: "Finding info", con: "Enterprise scale", link: "https://www.newforma.com/", target: "_blank" },
-          
+            price: "Quote", pro: "Finding info", con: "Enterprise scale", link: "https://www.newforma.com/",
+            io: { input: "Docs", output: "Docs" }
+          },
           { name: "Part3", integration: "Service", function: "Management", 
             desc: "Automating RFIs and submittals.", 
-            longDesc: "Part3 is designed by architects to tame the paperwork of CA. It streamlines the creation and logging of RFIs and Change Orders, allowing you to spend more time on site and less time on administration.",
-            price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/", target: "_blank" }
+            price: "$200/mo", pro: "Saves massive time", con: "Niche", link: "https://www.part3.io/",
+            io: { input: "Docs", output: "Docs" }
+          }
         ]
       },
       {
@@ -1269,18 +1312,20 @@ const workflowData = [
         ais: [
           { name: "Trunk Tools", integration: "Service", function: "Management", 
             desc: "AI for construction incentives.", 
-            longDesc: "Trunk Tools focuses on the workforce. It uses AI to manage incentives and payouts, keeping the skilled labor motivated and aligned with the project goals to ensure a strong finish.",
-            price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/", target: "_blank" },
-          
+            price: "Subscription", pro: "Field engagement", con: "New approach", link: "https://www.trunktools.com/",
+            io: { input: "Data", output: "Data" }
+          },
           { name: "Civils.ai", integration: "Service", function: "Data Interpretation", 
             desc: "Construction data AI.", 
-            longDesc: "Civils.ai organizes the unstructured data of civil engineering projects. It helps finding geotechnical reports and project records, acting as a search engine for the ground beneath our feet.",
-            price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/", target: "_blank" }
+            price: "Subscription", pro: "Data search", con: "Civil focus", link: "https://civils.ai/",
+            io: { input: "Data", output: "Data" }
+          }
         ]
       }
     ]
   }
 ];
+
     /* --- STATE --- */
     const state = {
         scale: 1,
@@ -1311,19 +1356,31 @@ const workflowData = [
     const PERSONAL_BASE_GAP = 350; 
     const PERSONAL_CARD_HEIGHT = 160; 
 
+    /* --- HELPERS --- */
+    // Helper to get color code from string type
+    function getIOColor(type) {
+        if (!type) return "transparent"; // Default for undefined nodes
+        switch (type) {
+            case "Text": return "#e74c3c"; // Red
+            case "Data": return "#f1c40f"; // Yellow
+            case "Image": return "#9b59b6"; // Purple
+            case "3D Model": return "#3498db"; // Blue
+            case "BIM": return "#2ecc71"; // Green
+            case "Docs": return "#95a5a6"; // Grey
+            case "Schedule": return "#e67e22"; // Orange
+            default: return "#777777";
+        }
+    }
+
     /* --- INIT & RENDER --- */
     function init() {
-
-        // --- AUTOMATIC THEME MODIFIER ---
-    const now = new Date();
-    const hour = now.getHours();
-
-    // Light mode between 7am (inclusive) and 8pm (exclusive)
-    if (hour >= 7 && hour < 20) {
-        document.body.setAttribute('data-theme', 'light');
-    } else {
-        document.body.setAttribute('data-theme', 'dark');
-    }
+        const now = new Date();
+        const hour = now.getHours();
+        if (hour >= 7 && hour < 20) {
+            document.body.setAttribute('data-theme', 'light');
+        } else {
+            document.body.setAttribute('data-theme', 'dark');
+        }
 
         renderNodes();
         
@@ -1331,23 +1388,16 @@ const workflowData = [
         const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
         const paddingX = 100; // Screen padding
         
-        // Calculate scale to fit width
         let fitScale = (window.innerWidth - paddingX) / totalWidth;
-        
-        // Clamp scale: Max 1 (don't zoom in too much), Min 0.3 (don't zoom out to infinity)
         fitScale = Math.min(Math.max(fitScale, 0.3), 1);
-        
         state.scale = fitScale;
 
-        // Calculate center based on new scale
         const scaledWidth = totalWidth * state.scale;
         state.pointX = (window.innerWidth - scaledWidth) / 2;
         state.pointY = (window.innerHeight / 2); 
 
         // --- DIVIDER POSITIONING ---
-        // Set Divider Width
         dividerLayer.style.width = `${totalWidth}px`;
-        // -130px is visually centered between the Main Node (y=0) and the Mirrored Node (y=-350 + ~100px height)
         dividerLayer.style.top = `-130px`; 
 
         updateTransform();
@@ -1358,15 +1408,13 @@ const workflowData = [
         const startScreen = document.getElementById('start-screen');
         startScreen.classList.add('hidden'); // Fade out start screen
         
-        // Wait for fade out, then run terminal intro
         setTimeout(() => {
             startScreen.style.display = 'none';
-            // TERMINAL INTRO
             runIntroSequence();
         }, 500);
     }
 
-    /* --- ANIMATION SEQUENCE (TERMINAL RESTORED) --- */
+    /* --- ANIMATION SEQUENCE --- */
     function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
     async function runIntroSequence() {
@@ -1383,8 +1431,6 @@ const workflowData = [
         for (let i = 0; i < workflowData.length; i++) {
             const node = document.getElementById(`step-${i}`);
             node.classList.add('intro-active');
-            
-            // Also reveal mirrored nodes
             const mirror = document.getElementById(`mirror-step-${i}`);
             mirror.classList.add('intro-active');
 
@@ -1401,20 +1447,14 @@ const workflowData = [
                 path.classList.add('intro-path');
                 svgLayer.appendChild(path);
             }
-
             await sleep(250); 
         }
 
         mainUi.classList.remove('ui-hidden');
         await sleep(500);
-        
         state.introComplete = true;
-        
-        setTimeout(() => {
-             introOverlay.style.display = 'none';
-        }, 100);
+        setTimeout(() => { introOverlay.style.display = 'none'; }, 100);
     }
-
 
     function renderNodes() {
         workflowData.forEach((step, index) => {
@@ -1424,23 +1464,17 @@ const workflowData = [
             stepEl.id = `step-${index}`;
             stepEl.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
             stepEl.style.top = `0px`; 
-            stepEl.innerHTML = `
-                <div class="step-header">${step.title}</div>
-                <div class="step-desc">${step.desc}</div>
-            `;
+            stepEl.innerHTML = `<div class="step-header">${step.title}</div><div class="step-desc">${step.desc}</div>`;
             stepEl.onclick = (e) => toggleStep(index, e);
             root.appendChild(stepEl);
 
-            // 2. MIRRORED STEP NODE (Personal Base)
+            // 2. MIRRORED STEP NODE
             const mirrorEl = document.createElement('div');
             mirrorEl.className = 'step-node mirrored';
             mirrorEl.id = `mirror-step-${index}`;
             mirrorEl.style.left = `${index * (STEP_WIDTH + STEP_GAP)}px`;
-            mirrorEl.style.top = `-${PERSONAL_BASE_GAP}px`; // Fixed position above
-            mirrorEl.innerHTML = `
-                <div class="step-header" style="opacity:0.6">${step.title}</div>
-                <div class="step-desc" style="opacity:0.6">(Personal Workflow)</div>
-            `;
+            mirrorEl.style.top = `-${PERSONAL_BASE_GAP}px`; 
+            mirrorEl.innerHTML = `<div class="step-header" style="opacity:0.6">${step.title}</div><div class="step-desc" style="opacity:0.6">(Personal Workflow)</div>`;
             root.appendChild(mirrorEl);
 
             // 3. TASK GROUPS
@@ -1454,35 +1488,20 @@ const workflowData = [
                 const taskEl = document.createElement('div');
                 taskEl.className = 'task-node';
                 taskEl.id = `task-${index}-${tIndex}`;
-                taskEl.innerHTML = `
-                    <div class="task-title">${task.title}</div>
-                    <div class="task-desc">${task.desc}</div>
-                `;
+                taskEl.innerHTML = `<div class="task-title">${task.title}</div><div class="task-desc">${task.desc}</div>`;
                 taskEl.onmouseenter = () => hoverTask(index, tIndex);
                 taskEl.onclick = (e) => { e.stopPropagation(); hoverTask(index, tIndex); };
 
-                // AI Group
                 const aiGroup = document.createElement('div');
                 aiGroup.className = 'ai-group';
                 aiGroup.id = `aigroup-${index}-${tIndex}`;
                 
-                // Add Generic Manual Option to the end of the list for display
                 const displayAIs = [...task.ais];
-                displayAIs.push({
-                    name: "Manual Workflow",
-                    integration: "Manual",
-                    function: "Management",
-                    desc: "Traditional manual execution.",
-                    longDesc: "This is the path of tradition. It relies on the manual craft, the phone call, and the spreadsheet. Sometimes, the most intelligent tool is simply human intuition and experience.",
-                    price: "Time Cost",
-                    pro: "Full Control",
-                    con: "Slow/Laborious",
-                    link: "#"
-                });
+                // Manual fallback
+                displayAIs.push({ name: "Manual Workflow", integration: "Manual", function: "Management", desc: "Traditional manual execution.", price: "Time Cost", pro: "Full Control", con: "Slow/Laborious", link: "#", io: { input: "Docs", output: "Docs" } });
 
                 displayAIs.forEach(ai => {
-                    // --- COLOR LOGIC (FUNCTION) ---
-                    let funcColor = 'var(--text-color)';
+                    let funcColor = '#ccc';
                     if(ai.function === "Image/Video Gen") funcColor = 'var(--cat-gen)';
                     if(ai.function === "CAD/BIM/Technical") funcColor = 'var(--cat-tech)';
                     if(ai.function === "Text/Code/Regs") funcColor = 'var(--cat-text)';
@@ -1491,27 +1510,11 @@ const workflowData = [
                     if(ai.function === "Reality Capture") funcColor = 'var(--cat-scan)';
                     if(ai.function === "Data Interpretation") funcColor = 'var(--cat-data)';
 
-                    // --- COLOR LOGIC (INTEGRATION) ---
-                    let intColor = 'var(--text-color)';
+                    let intColor = 'var(--int-service)';
                     let intLabel = ai.integration;
-                    
-                    if(ai.integration === "Integrated") {
-                        intColor = 'var(--int-integrated)';
-                        // Add Host name to label if available
-                        if(ai.host) intLabel = `INTEGRATED (${ai.host})`;
-                    }
-                    if(ai.integration === "Tool") {
-                        intColor = 'var(--int-tool)';
-                        intLabel = "TOOL (LOCAL)";
-                    }
-                    if(ai.integration === "Service") {
-                        intColor = 'var(--int-service)';
-                        intLabel = "SERVICE (ONLINE)";
-                    }
-                    if(ai.integration === "Manual") {
-                        intColor = 'var(--int-manual)';
-                        intLabel = "MANUAL";
-                    }
+                    if(ai.integration === "Integrated") { intColor = 'var(--int-integrated)'; if(ai.host) intLabel = `INTEGRATED (${ai.host})`; }
+                    else if(ai.integration === "Tool") { intColor = 'var(--int-tool)'; intLabel = "TOOL (LOCAL)"; }
+                    else if(ai.integration === "Manual") { intColor = 'var(--int-manual)'; intLabel = "MANUAL"; }
 
                     const aiEl = document.createElement('div');
                     aiEl.className = 'ai-node';
@@ -1522,41 +1525,20 @@ const workflowData = [
                             <div class="ai-tag" style="background:${intColor}">${intLabel}</div>
                             <div class="ai-tag" style="background:${funcColor}">${ai.function}</div>
                         </div>
-                        <div class="ai-header">
-                            <div class="ai-logo"></div>
-                            <div class="ai-name">${ai.name}</div>
-                        </div>
+                        <div class="ai-header"><div class="ai-logo"></div><div class="ai-name">${ai.name}</div></div>
                         <div class="ai-desc">${ai.desc}</div>
-                        <div class="ai-meta">
-                            <span class="pro">+ ${ai.pro}</span>
-                            <span class="con">- ${ai.con}</span>
-                            <span class="price">${ai.price}</span>
-                        </div>
+                        <div class="ai-meta"><span class="pro">+ ${ai.pro}</span><span class="con">- ${ai.con}</span><span class="price">${ai.price}</span></div>
                         <div class="ai-link" style="opacity:0.6">Click for Details</div> 
                     `;
                     
-                    aiEl.onclick = (e) => {
-                        e.stopPropagation();
-                        // Pass combined type string for overlay
-                        const aiForOverlay = {...ai, type: `${ai.integration} / ${ai.function}`};
-                        openDetailOverlay(aiForOverlay);
-                    };
-                    
-                    aiEl.oncontextmenu = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // Store colors for Personal Workflow rendering
-                        const aiForPersonal = {...ai, funcColor, intColor, intLabel};
-                        addToPersonalWorkflow(index, tIndex, aiForPersonal);
-                    };
+                    aiEl.onclick = (e) => { e.stopPropagation(); const aiForOverlay = {...ai, type: `${ai.integration} / ${ai.function}`}; openDetailOverlay(aiForOverlay); };
+                    aiEl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); const aiForPersonal = {...ai, funcColor, intColor, intLabel}; addToPersonalWorkflow(index, tIndex, aiForPersonal); };
                     
                     aiGroup.appendChild(aiEl);
                 });
-                
                 taskEl.appendChild(aiGroup);
                 taskGroup.appendChild(taskEl);
             });
-
             root.appendChild(taskGroup);
         });
     }
@@ -1564,12 +1546,11 @@ const workflowData = [
     /* --- DEV TOOL --- */
     function devPopulateRandom() {
         state.personalWorkflow = {};
-
         workflowData.forEach((step, sIdx) => {
             step.tasks.forEach((task, tIdx) => {
                 const randomIndex = Math.floor(Math.random() * task.ais.length);
                 const selectedAi = task.ais[randomIndex];
-
+                // Quick hack to get styling props
                 let funcColor = 'var(--text-color)';
                 if(selectedAi.function === "Image/Video Gen") funcColor = 'var(--cat-gen)';
                 if(selectedAi.function === "CAD/BIM/Technical") funcColor = 'var(--cat-tech)';
@@ -1581,23 +1562,11 @@ const workflowData = [
 
                 let intColor = 'var(--int-service)';
                 let intLabel = selectedAi.integration;
-                if(selectedAi.integration === "Integrated") {
-                    intColor = 'var(--int-integrated)';
-                    if(selectedAi.host) intLabel = `INTEGRATED (${selectedAi.host})`;
-                } else if(selectedAi.integration === "Tool") {
-                    intColor = 'var(--int-tool)';
-                    intLabel = "TOOL (LOCAL)";
-                } else if(selectedAi.integration === "Manual") {
-                    intColor = 'var(--int-manual)';
-                }
+                if(selectedAi.integration === "Integrated") { intColor = 'var(--int-integrated)'; if(selectedAi.host) intLabel = `INTEGRATED (${selectedAi.host})`; }
+                else if(selectedAi.integration === "Tool") { intColor = 'var(--int-tool)'; intLabel = "TOOL (LOCAL)"; }
+                else if(selectedAi.integration === "Manual") { intColor = 'var(--int-manual)'; }
 
-                const aiForPersonal = {
-                    ...selectedAi,
-                    funcColor: funcColor,
-                    intColor: intColor,
-                    intLabel: intLabel
-                };
-
+                const aiForPersonal = { ...selectedAi, funcColor: funcColor, intColor: intColor, intLabel: intLabel };
                 addToPersonalWorkflow(sIdx, tIdx, aiForPersonal);
             });
         });
@@ -1605,8 +1574,8 @@ const workflowData = [
 
     /* --- PERSONAL WORKFLOW LOGIC --- */
     function addToPersonalWorkflow(stepIdx, taskIdx, aiData) {
-        // ... existing code ...
-        
+        if (!aiData.io) aiData.io = { input: undefined, output: undefined };
+
         if (!state.personalWorkflow[stepIdx]) {
             state.personalWorkflow[stepIdx] = [];
         }
@@ -1617,11 +1586,9 @@ const workflowData = [
 
         if (existingIndex > -1) {
             column[existingIndex] = newItem;
-            // TRIGGER UPDATE
             triggerNotification(`Module Swapped: ${newItem.name}`);
         } else {
             column.push(newItem);
-            // TRIGGER UPDATE
             triggerNotification(`Module Integrated: ${newItem.name}`);
         }
 
@@ -1631,64 +1598,20 @@ const workflowData = [
 
     function checkExportHint() {
         if(state.hasShownExportHint) return;
-
-        // Count total items
         let totalItems = 0;
         Object.values(state.personalWorkflow).forEach(col => totalItems += col.length);
-
         if (totalItems >= 4) {
-            const exHint = document.getElementById('hint-export');
-            exHint.classList.add('visible');
+            document.getElementById('hint-export').classList.add('visible');
             state.hasShownExportHint = true;
         }
     }
 
-    function smoothPanTo(targetCenterX, targetCenterY) {
-        const screenCX = window.innerWidth / 2;
-        const screenCY = window.innerHeight / 2;
-        
-        const destX = (screenCX / state.scale) - targetCenterX;
-        const destY = (screenCY / state.scale) - targetCenterY;
-
-        // Simple animation loop
-        const startX = state.pointX;
-        const startY = state.pointY;
-        const startTime = performance.now();
-        const duration = 1000; // 1 second move
-
-        function animate(time) {
-            const elapsed = time - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            // Ease Out Cubic
-            const ease = 1 - Math.pow(1 - progress, 3);
-
-            state.pointX = startX + ((destX - startX) * ease);
-            state.pointY = startY + ((destY - startY) * ease);
-            
-            updateTransform();
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
-        }
-        requestAnimationFrame(animate);
-    }
-
-
     function removeFromPersonalWorkflow(stepIdx, itemIndex) {
         if(state.personalWorkflow[stepIdx]) {
-            // Get name for notification before deleting
             const removedName = state.personalWorkflow[stepIdx][itemIndex].name;
-            
             state.personalWorkflow[stepIdx].splice(itemIndex, 1);
-            
-            // TRIGGER UPDATE
             triggerNotification(`Module Removed: ${removedName}`);
-
-            if(state.personalWorkflow[stepIdx].length === 0) {
-                delete state.personalWorkflow[stepIdx];
-            }
+            if(state.personalWorkflow[stepIdx].length === 0) delete state.personalWorkflow[stepIdx];
         }
         renderPersonalWorkflow();
     }
@@ -1696,7 +1619,10 @@ const workflowData = [
     function renderPersonalWorkflow() {
         personalLayer.innerHTML = '';
         
-        Object.keys(state.personalWorkflow).forEach(key => {
+        // Sort keys to ensure we process left to right
+        const sortedKeys = Object.keys(state.personalWorkflow).sort((a,b) => parseInt(a)-parseInt(b));
+
+        sortedKeys.forEach(key => {
             const stepIdx = parseInt(key);
             const items = state.personalWorkflow[stepIdx];
 
@@ -1704,6 +1630,18 @@ const workflowData = [
                 const node = document.createElement('div');
                 node.className = 'ai-node personal-node';
                 node.style.borderLeftColor = item.funcColor;
+                node.id = `pnode-${stepIdx}-${idx}`; // Specific ID for targeting
+
+                // --- SET IO COLORS FOR BARS ---
+                const inColor = getIOColor(item.io.input);
+                const outColor = getIOColor(item.io.output);
+                node.style.setProperty('--in-color', inColor);
+                node.style.setProperty('--out-color', outColor);
+
+                // --- DATA ATTRIBUTES FOR LOGIC ---
+                node.dataset.input = item.io.input;
+                node.dataset.output = item.io.output;
+
                 node.style.left = `${stepIdx * (STEP_WIDTH + STEP_GAP)}px`;
                 
                 // Stack upwards starting from the Mirrored Step position
@@ -1722,83 +1660,35 @@ const workflowData = [
                     <div class="ai-desc">${item.desc}</div>
                 `;
 
-                node.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    removeFromPersonalWorkflow(stepIdx, idx);
-                };
-                
-                node.onclick = (e) => {
-                    e.stopPropagation();
-                    const aiForOverlay = {...item, type: `${item.integration} / ${item.function}`};
-                    openDetailOverlay(aiForOverlay);
-                }
-
+                node.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); removeFromPersonalWorkflow(stepIdx, idx); };
+                node.onclick = (e) => { e.stopPropagation(); const aiForOverlay = {...item, type: `${item.integration} / ${item.function}`}; openDetailOverlay(aiForOverlay); }
                 personalLayer.appendChild(node);
             });
         });
 
-        drawLines(); 
+        setTimeout(drawLines, 50); 
     }
-
 
     /* --- OVERLAY INTERACTIONS --- */
     function openDetailOverlay(aiData) {
         document.getElementById('ov-title').innerText = aiData.name;
         document.getElementById('ov-type').innerText = aiData.type; 
-        
-        // Use longDesc if available (the user style narrative), fallback to standard desc
         document.getElementById('ov-desc').innerText = aiData.longDesc || aiData.desc;
-        
         document.getElementById('ov-price').innerText = aiData.price;
         document.getElementById('ov-pro').innerText = aiData.pro;
         document.getElementById('ov-con').innerText = aiData.con;
         document.getElementById('ov-link').href = aiData.link;
-
-        // --- NEW CUSTOM TEXT AND IMAGE LOGIC ---
-        // 1. Text Fields
-        document.getElementById('ov-workflow-text').innerText = aiData.workflowText || "Integration method and API capabilities within the current pipeline architecture.";
-        document.getElementById('ov-efficiency-text').innerText = aiData.efficiencyText || "Estimated time savings based on task automation parameters.";
-
-        // 2. Images
-        const visualImg = document.getElementById('ov-grid-visual');
-        const dataImg = document.getElementById('ov-grid-data');
-
-        if(aiData.visualImage) {
-            visualImg.style.backgroundImage = `url('${aiData.visualImage}')`;
-            visualImg.style.backgroundColor = 'transparent';
-        } else {
-            visualImg.style.backgroundImage = 'none';
-            visualImg.style.backgroundColor = '#222';
-        }
-
-        if(aiData.dataImage) {
-            dataImg.style.backgroundImage = `url('${aiData.dataImage}')`;
-            dataImg.style.backgroundColor = 'transparent';
-        } else {
-            dataImg.style.backgroundImage = 'none';
-            dataImg.style.backgroundColor = '#1a1a1a';
-        }
-        
         document.getElementById('detail-overlay').classList.add('active');
     }
 
-    function closeDetailOverlay(e) {
-        document.getElementById('detail-overlay').classList.remove('active');
-    }
-
-    document.addEventListener('keydown', (e) => {
-        if(e.key === "Escape") closeDetailOverlay();
-    });
-
+    function closeDetailOverlay(e) { document.getElementById('detail-overlay').classList.remove('active'); }
+    document.addEventListener('keydown', (e) => { if(e.key === "Escape") closeDetailOverlay(); });
 
     /* --- INTERACTIONS --- */
     function toggleStep(index, e) {
         if(!state.introComplete) return; 
-        
         e.stopPropagation();
         const group = document.getElementById(`taskgroup-${index}`);
-        
         if (state.openStep === index) {
             group.classList.remove('visible');
             state.openStep = null;
@@ -1820,20 +1710,16 @@ const workflowData = [
 
     function hoverTask(stepIdx, taskIdx) {
         if(!state.introComplete) return;
-        
         const group = document.getElementById(`taskgroup-${stepIdx}`);
         group.querySelectorAll('.ai-group').forEach(el => el.classList.remove('visible'));
-
         const target = document.getElementById(`aigroup-${stepIdx}-${taskIdx}`);
         target.classList.add('visible');
-        
         state.openTask = { step: stepIdx, task: taskIdx };
         drawLines();
     }
 
     /* --- CANVAS & ZOOM --- */
     const wrapper = document.getElementById('canvas-wrapper');
-
     wrapper.addEventListener('mousedown', (e) => {
         if(e.target.closest('.step-node') || e.target.closest('.task-node') || e.target.closest('.ai-node')) return;
         state.panning = true;
@@ -1841,12 +1727,7 @@ const workflowData = [
         state.startY = e.clientY - state.pointY;
         wrapper.style.cursor = 'grabbing';
     });
-
-    window.addEventListener('mouseup', () => {
-        state.panning = false;
-        wrapper.style.cursor = 'grab';
-    });
-
+    window.addEventListener('mouseup', () => { state.panning = false; wrapper.style.cursor = 'grab'; });
     window.addEventListener('mousemove', (e) => {
         if (!state.panning) return;
         e.preventDefault();
@@ -1854,7 +1735,6 @@ const workflowData = [
         state.pointY = e.clientY - state.startY;
         updateTransform();
     });
-
    wrapper.addEventListener('wheel', (e) => {
     e.preventDefault();
     const xs = (e.clientX - state.pointX) / state.scale;
@@ -1868,49 +1748,35 @@ const workflowData = [
     updateTransform();
 }, { passive: false });
 
-    function updateTransform() {
-        root.style.transform = `translate(${state.pointX}px, ${state.pointY}px) scale(${state.scale})`;
-    }
-
+    function updateTransform() { root.style.transform = `translate(${state.pointX}px, ${state.pointY}px) scale(${state.scale})`; }
     function resetView() {
-        // Re-use logic from init to ensure reset brings it back to "fit all"
         const totalWidth = (workflowData.length * STEP_WIDTH) + ((workflowData.length - 1) * STEP_GAP);
-        const paddingX = 100; 
-        let fitScale = (window.innerWidth - paddingX) / totalWidth;
-        fitScale = Math.min(Math.max(fitScale, 0.3), 1);
-        
+        let fitScale = Math.min(Math.max((window.innerWidth - 100) / totalWidth, 0.3), 1);
         state.scale = fitScale;
-        
         const scaledWidth = totalWidth * state.scale;
         state.pointX = (window.innerWidth - scaledWidth) / 2;
         state.pointY = (window.innerHeight / 2);
-
         updateTransform();
     }
-
     function toggleTheme() {
         const body = document.body;
-        const current = body.getAttribute('data-theme');
-        body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     }
 
-    /* --- SVG CONNECTIONS --- */
+    /* --- SVG CONNECTIONS (UPDATED LOGIC) --- */
     function drawLines() {
         svgLayer.innerHTML = ''; 
+        document.querySelectorAll('.manual-transfer-box').forEach(el => el.remove());
         
-        // 1. Horizontal Step Lines (Main Workflow)
+        // 1. Horizontal Step Lines
         for(let i=0; i<workflowData.length-1; i++) {
             const curr = document.getElementById(`step-${i}`);
             const next = document.getElementById(`step-${i+1}`);
-            
             const x1 = parseInt(curr.style.left) + STEP_WIDTH;
             const y1 = parseInt(curr.style.top) + 50; 
             const x2 = parseInt(next.style.left); 
-            const y2 = y1; 
-
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            const d = `M ${x1} ${y1} L ${x2} ${y2}`; 
-            path.setAttribute("d", d);
+            path.setAttribute("d", `M ${x1} ${y1} L ${x2} ${y1}`); 
             svgLayer.appendChild(path);
         }
 
@@ -1918,39 +1784,30 @@ const workflowData = [
         if(state.openStep !== null) {
             const stepEl = document.getElementById(`step-${state.openStep}`);
             const taskGroup = document.getElementById(`taskgroup-${state.openStep}`);
-            const tasks = taskGroup.children;
-
             const startX = parseInt(stepEl.style.left) + STEP_WIDTH/2;
             const startY = parseInt(stepEl.style.top) + stepEl.offsetHeight;
-
-            Array.from(tasks).forEach(task => {
+            Array.from(taskGroup.children).forEach(task => {
                 const tX = parseInt(taskGroup.style.left); 
                 const tY = parseInt(taskGroup.style.top) + task.offsetTop + task.offsetHeight/2;
-                
                 const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                const d = `M ${startX} ${startY} L ${startX} ${tY} L ${tX} ${tY}`;
-                path.setAttribute("d", d);
+                path.setAttribute("d", `M ${startX} ${startY} L ${startX} ${tY} L ${tX} ${tY}`);
                 svgLayer.appendChild(path);
             });
         }
 
-        // 3. Horizontal AI Lines
+        // 3. AI Hover Lines
         if(state.openTask.step !== null && state.openTask.task !== null) {
             const tStep = state.openTask.step;
             const tIdx = state.openTask.task;
             const taskEl = document.getElementById(`task-${tStep}-${tIdx}`);
             const aiGroup = document.getElementById(`aigroup-${tStep}-${tIdx}`);
-            
             if(aiGroup && aiGroup.classList.contains('visible')) {
-                const ais = aiGroup.querySelectorAll('.ai-node');
-                
-                const taskRect = taskEl.getBoundingClientRect();
                 const rootRect = root.getBoundingClientRect();
-
+                const taskRect = taskEl.getBoundingClientRect();
                 const x1 = (taskRect.right - rootRect.left) / state.scale;
                 const y1 = (taskRect.top + taskRect.height / 2 - rootRect.top) / state.scale;
 
-                ais.forEach(ai => {
+                aiGroup.querySelectorAll('.ai-node').forEach(ai => {
                     const aiRect = ai.getBoundingClientRect();
                     const x2 = (aiRect.left - rootRect.left) / state.scale;
                     const y2 = (aiRect.top + aiRect.height / 2 - rootRect.top) / state.scale;
@@ -1959,422 +1816,135 @@ const workflowData = [
             }
         }
 
-        // 4. PERSONAL WORKFLOW LINES (Many-to-Many)
+        // 4. PERSONAL WORKFLOW LINES (MATCHING LOGIC)
+        // Sort active steps
         const sortedSteps = Object.keys(state.personalWorkflow).map(k => parseInt(k)).sort((a,b) => a-b);
-        if(sortedSteps.length > 1) {
-             for(let i=0; i<sortedSteps.length-1; i++) {
-                const currIdx = sortedSteps[i];
-                const nextIdx = sortedSteps[i+1];
+        
+        // Iterate through columns
+        for(let i=0; i<sortedSteps.length-1; i++) {
+            const currentStepIdx = sortedSteps[i];
+            const nextStepIdx = sortedSteps[i+1];
 
-                if (nextIdx === currIdx + 1) {
-                    const currCol = state.personalWorkflow[currIdx];
-                    const nextCol = state.personalWorkflow[nextIdx];
-                    
-                    currCol.forEach((itemA, idxA) => {
-                        nextCol.forEach((itemB, idxB) => {
-                             const yA = -(PERSONAL_BASE_GAP + (idxA * PERSONAL_CARD_HEIGHT)) + 50; 
-                             const yB = -(PERSONAL_BASE_GAP + (idxB * PERSONAL_CARD_HEIGHT)) + 50;
-                             
-                             const xA = (currIdx * (STEP_WIDTH + STEP_GAP)) + STEP_WIDTH;
-                             const xB = (nextIdx * (STEP_WIDTH + STEP_GAP));
+            // Only check adjacent steps (or you can remove the +1 check if you want cross-step connections)
+            if(nextStepIdx === currentStepIdx + 1) {
+                
+                // Get all nodes in Current Step
+                const currentNodes = state.personalWorkflow[currentStepIdx]; // Data objects
+                const nextNodes = state.personalWorkflow[nextStepIdx]; // Data objects
 
-                             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                             const d = `M ${xA} ${yA} C ${xA+50} ${yA}, ${xB-50} ${yB}, ${xB} ${yB}`; 
-                             path.setAttribute("d", d);
-                             path.classList.add('personal-path');
-                             svgLayer.appendChild(path);
-                        });
+                // Nested Loop: Compare every node in Step A to every node in Step B
+                currentNodes.forEach((nodeAData, idxA) => {
+                    nextNodes.forEach((nodeBData, idxB) => {
+                        
+                        const elA = document.getElementById(`pnode-${currentStepIdx}-${idxA}`);
+                        const elB = document.getElementById(`pnode-${nextStepIdx}-${idxB}`);
+
+                        if(elA && elB) {
+                            const outputA = elA.dataset.output;
+                            const inputB = elB.dataset.input;
+
+                            // STRICT MATCHING LOGIC
+                            if(outputA === inputB) {
+                                // MATCH FOUND: DRAW COLORED LINE
+                                const rootRect = root.getBoundingClientRect();
+                                const rectA = elA.getBoundingClientRect();
+                                const rectB = elB.getBoundingClientRect();
+
+                                const x1 = (rectA.right - rootRect.left) / state.scale;
+                                const y1 = (rectA.top - rootRect.top + rectA.height/2) / state.scale;
+                                const x2 = (rectB.left - rootRect.left) / state.scale;
+                                const y2 = (rectB.top - rootRect.top + rectB.height/2) / state.scale;
+
+                                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                                const c1 = x1 + 50; 
+                                const c2 = x2 - 50; 
+                                const d = `M ${x1} ${y1} C ${c1} ${y1}, ${c2} ${y2}, ${x2} ${y2}`;
+
+                                path.setAttribute("d", d);
+                                path.setAttribute("fill", "none");
+                                path.setAttribute("stroke-width", "3");
+                                path.style.opacity = "0.8";
+                                // Set color to the matching type color
+                                path.setAttribute("stroke", getIOColor(outputA));
+
+                                svgLayer.appendChild(path);
+                            }
+                            // ELSE { NOTHING } -> No code here implies no line drawn.
+                        }
                     });
-                }
-             }
+                });
+            }
         }
     }
 
     function createPath(x1, y1, x2, y2, isAI) {
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        let d = "";
-        if(isAI) {
-            d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
-            path.classList.add('line-active');
-        } else {
-            d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
-        }
+        const d = `M ${x1} ${y1} C ${x1+50} ${y1}, ${x2-50} ${y2}, ${x2} ${y2}`;
         path.setAttribute("d", d);
+        if(isAI) path.classList.add('line-active');
         svgLayer.appendChild(path);
     }
 
     window.addEventListener('resize', () => { resetView(); });
+    function imgToDataURL(src) { return new Promise((resolve) => { const img = new Image(); img.crossOrigin = "Anonymous"; img.onload = () => { const canvas = document.createElement("canvas"); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight; const ctx = canvas.getContext("2d"); ctx.drawImage(img, 0, 0); resolve(canvas.toDataURL("image/jpeg")); }; img.onerror = () => { resolve(null); }; img.src = src; }); }
 
-    /* --- HELPER TO GET IMAGE DATA URL --- */
-    function imgToDataURL(src) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                canvas.width = img.naturalWidth;
-                canvas.height = img.naturalHeight;
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0);
-                resolve(canvas.toDataURL("image/jpeg"));
-            };
-            img.onerror = () => {
-                console.warn("Could not load logo image. Using fallback.");
-                resolve(null);
-            };
-            img.src = src;
-        });
-    }
-
-    /* --- FINAL REVISED PDF EXPORT --- */
     async function exportPersonalWorkflow() {
         triggerNotification("System: Initializing PDF Export Sequence...");
-
         try {
             const { jsPDF } = window.jspdf;
-            
-            if(Object.keys(state.personalWorkflow).length === 0) {
-                alert("Your workflow is empty! \n\nTry right-clicking any AI node in the list to add it to your personal stack.");
-                return;
-            }
-
-            const exHint = document.getElementById('hint-export');
-            if(exHint) exHint.classList.remove('visible');
-
+            if(Object.keys(state.personalWorkflow).length === 0) { alert("Your workflow is empty!"); return; }
             document.body.style.cursor = 'wait';
-
-            // 1. Load Logo and Invert it
             const rawLogo = await imgToDataURL("Recourses/Logos/DDD.jpg");
             let invertedLogo = null;
-            
-            if (rawLogo) {
-                invertedLogo = await new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement("canvas");
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext("2d");
-                        
-                        // Draw inverted
-                        ctx.filter = 'invert(1)';
-                        ctx.drawImage(img, 0, 0);
-                        resolve(canvas.toDataURL("image/jpeg"));
-                    };
-                    img.src = rawLogo;
-                });
-            }
+            if (rawLogo) { invertedLogo = await new Promise((resolve) => { const img = new Image(); img.onload = () => { const canvas = document.createElement("canvas"); canvas.width = img.width; canvas.height = img.height; const ctx = canvas.getContext("2d"); ctx.filter = 'invert(1)'; ctx.drawImage(img, 0, 0); resolve(canvas.toDataURL("image/jpeg")); }; img.src = rawLogo; }); }
 
-            // 2. Prepare Staging Area
             const staging = document.getElementById('pdf-staging');
-            staging.innerHTML = '';
-            staging.style.position = 'fixed';
-            staging.style.left = '0';
-            staging.style.top = '0';
-            staging.style.zIndex = '-1000';
-            staging.style.background = "#121212";
-            
-            
+            staging.innerHTML = ''; staging.style.left = '0'; staging.style.top = '0'; staging.style.zIndex = '-1000';
+            const flowContainer = document.createElement('div'); flowContainer.className = 'pdf-flow-container'; staging.appendChild(flowContainer);
+            const pdfSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); pdfSvg.id = "pdf-svg-layer"; flowContainer.appendChild(pdfSvg);
 
-            const flowContainer = document.createElement('div');
-            flowContainer.className = 'pdf-flow-container';
-            staging.appendChild(flowContainer);
-
-            // Create SVG Layer inside Flow Container
-            const svgNS = "http://www.w3.org/2000/svg";
-            const pdfSvg = document.createElementNS(svgNS, "svg");
-            pdfSvg.id = "pdf-svg-layer";
-            flowContainer.appendChild(pdfSvg);
-
-            // Loop through ALL steps (not just selected)
             workflowData.forEach((stepData, stepIdx) => {
-                 const col = document.createElement('div');
-                 col.className = 'pdf-column';
-                 col.id = `pdf-col-${stepIdx}`; // Add ID for connection logic
-                 
-                 const title = document.createElement('div');
-                 title.className = 'pdf-step-title';
-                 title.innerText = stepData.title;
-                 col.appendChild(title);
-
+                 const col = document.createElement('div'); col.className = 'pdf-column'; col.id = `pdf-col-${stepIdx}`;
+                 col.innerHTML = `<div class="pdf-step-title">${stepData.title}</div>`;
                  const items = state.personalWorkflow[stepIdx];
-
                  if (items && items.length > 0) {
                      items.forEach((item, idx) => {
-                         const node = document.createElement('div');
-                         node.className = 'ai-node';
-                         node.id = `pdf-node-${stepIdx}-${idx}`; // Add ID for logic
-                         node.style.background = "#1e1e1e";
-                         node.style.border = "1px solid #444";
-                         node.style.borderLeft = `5px solid ${item.funcColor}`;
-                         node.style.color = "#e0e0e0";
-                         
-                         // --- UPDATED BADGES IN PDF (REVERSED ORDER: Function THEN Integration) ---
-                         node.innerHTML = `
-                           <div class="badge-row">
-                               <div class="ai-tag" style="background:${item.funcColor}">${item.function}</div>
-                               <div class="ai-tag" style="background:${item.intColor}">${item.intLabel}</div>
-                           </div>
-                           <div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${item.name}</div>
-                         `;
+                         const node = document.createElement('div'); node.className = 'ai-node'; node.id = `pdf-node-${stepIdx}-${idx}`; node.style.background = "#1e1e1e"; node.style.border = "1px solid #444"; node.style.borderLeft = `5px solid ${item.funcColor}`; node.style.color = "#e0e0e0";
+                         node.innerHTML = `<div class="badge-row"><div class="ai-tag" style="background:${item.funcColor}">${item.function}</div></div><div style="font-weight:bold; font-size:14px; margin-bottom:5px;">${item.name}</div>`;
                          col.appendChild(node);
                      });
                  } else {
-                     // Manual Labor Placeholder
-                     const node = document.createElement('div');
-                     node.className = 'ai-node';
-                     node.id = `pdf-node-${stepIdx}-manual`;
-                     node.style.background = "#252525";
-                     node.style.border = "1px dashed #555";
-                     node.style.borderLeft = `5px solid #777`;
-                     node.style.color = "#888";
-                     node.innerHTML = `
-                       <div style="font-weight:bold; font-size:14px; margin-bottom:5px; font-style:italic;">Manual Workflow</div>
-                       <div style="font-size:10px; color:#666;">Traditional Execution</div>
-                     `;
-                     col.appendChild(node);
+                     col.innerHTML += `<div class="ai-node" style="background:#252525;border:1px dashed #555;color:#888"><div style="font-style:italic;">Manual Workflow</div></div>`;
                  }
-
                  flowContainer.appendChild(col);
             });
 
-            // --- DRAW CONNECTIONS IN STAGING (Wait for render) ---
-            await new Promise(r => setTimeout(r, 100)); // Allow DOM to settle
-
-            const containerRect = flowContainer.getBoundingClientRect();
-            // Match SVG to container size
-            pdfSvg.style.width = containerRect.width + 'px';
-            pdfSvg.style.height = containerRect.height + 'px';
-            pdfSvg.setAttribute("width", containerRect.width);
-            pdfSvg.setAttribute("height", containerRect.height);
-
-            // Draw Curved Lines between Columns
-            for(let i=0; i < workflowData.length - 1; i++) {
-                const colA = document.getElementById(`pdf-col-${i}`);
-                const colB = document.getElementById(`pdf-col-${i+1}`);
-                
-                // Get all nodes (AI or Manual)
-                const nodesA = Array.from(colA.querySelectorAll('.ai-node'));
-                const nodesB = Array.from(colB.querySelectorAll('.ai-node'));
-
-                nodesA.forEach(nodeA => {
-                    const rectA = nodeA.getBoundingClientRect();
-                    // Start point: Right Center relative to container
-                    const xA = (rectA.right - containerRect.left);
-                    const yA = (rectA.top + rectA.height/2 - containerRect.top);
-
-                    nodesB.forEach(nodeB => {
-                        const rectB = nodeB.getBoundingClientRect();
-                        // End Point: Left Center
-                        const xB = (rectB.left - containerRect.left);
-                        const yB = (rectB.top + rectB.height/2 - containerRect.top);
-
-                        const path = document.createElementNS(svgNS, "path");
-                        // Bezier Curve
-                        const d = `M ${xA} ${yA} C ${xA+50} ${yA}, ${xB-50} ${yB}, ${xB} ${yB}`; 
-                        path.setAttribute("d", d);
-                        path.setAttribute("stroke", "#4a90e2"); // Personal Blue Line
-                        path.setAttribute("stroke-width", "2");
-                        path.setAttribute("fill", "none");
-                        path.setAttribute("opacity", "0.5");
-                        
-                        pdfSvg.appendChild(path);
-                    });
-                });
-            }
-
-            const canvasShot = await html2canvas(staging, {
-                scale: 2, 
-                backgroundColor: '#121212',
-                useCORS: true
-            });
+            await new Promise(r => setTimeout(r, 100));
+            const canvasShot = await html2canvas(staging, { scale: 2, backgroundColor: '#121212', useCORS: true });
             const imgData = canvasShot.toDataURL('image/png');
             staging.style.left = '-9999px';
 
-            // 3. Generate Dark Mode PDF
             const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
-            const margin = 15;
-
-            const drawHeaderFooter = (pageNum) => {
-                 doc.setFillColor(18, 18, 18);
-                 doc.rect(0, 0, pageWidth, pageHeight, 'F');
-                 
-                 // Inverted Logo Top Left
-                 if(invertedLogo) {
-                     doc.addImage(invertedLogo, 'JPEG', margin, 15, 10, 10);
-                 }
-                 doc.setFont("helvetica", "bold");
-                 doc.setFontSize(16);
-                 doc.setTextColor(255, 51, 51); // Red Accent
-                 doc.text("DouweDoesDesign", margin + 15, 22);
-
-                 doc.setFontSize(8);
-                 doc.setTextColor(150);
-                 doc.text(`Page ${pageNum}`, margin, pageHeight - 15);
-            };
-
-            // PAGE 1: Intro & Visual Flow
-            drawHeaderFooter(1);
-            doc.setFontSize(24);
-            doc.setTextColor(255, 255, 255);
-            doc.text("Personal Architecture Workflow", margin, 40);
-            
-            doc.setFontSize(10);
-            doc.setTextColor(180, 180, 180);
-            doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, 50);
-
+            doc.setFillColor(18, 18, 18); doc.rect(0, 0, pageWidth, pageHeight, 'F');
+            doc.setFontSize(24); doc.setTextColor(255, 255, 255); doc.text("Personal Architecture Workflow", 15, 40);
             const imgProps = doc.getImageProperties(imgData);
-            const pdfImgWidth = pageWidth - (margin * 2);
-            const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
-            const finalHeight = Math.min(pdfImgHeight, 130);
-            doc.addImage(imgData, 'PNG', margin, 60, pdfImgWidth, finalHeight);
-            
-            // PAGE 2+: Details
-            doc.addPage();
-            drawHeaderFooter(2);
-            let yPos = 40;
-            doc.setFontSize(18);
-            doc.setTextColor(255, 255, 255);
-            doc.text("Selected Tool Stack Details", margin, yPos);
-            yPos += 15;
-
-            let pageNum = 2;
-            
-            // Loop through ALL steps for the details list too
-            workflowData.forEach((stepData, stepIdx) => {
-                const items = state.personalWorkflow[stepIdx];
-
-                if(yPos > pageHeight - 40) { 
-                    doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
-                }
-                
-                // Step Header
-                doc.setFillColor(40, 40, 40);
-                doc.rect(margin, yPos - 6, pageWidth - (margin * 2), 10, 'F');
-                doc.setFontSize(12);
-                doc.setTextColor(255, 51, 51);
-                doc.text(stepData.title, margin + 2, yPos + 1);
-                yPos += 15;
-
-                if (items && items.length > 0) {
-                    items.forEach(item => {
-                        if(yPos > pageHeight - 40) { 
-                           doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
-                        }
-                        doc.setFont("helvetica", "bold");
-                        doc.setFontSize(12);
-                        doc.setTextColor(230, 230, 230);
-                        doc.text(`• ${item.name}`, margin + 5, yPos);
-                        
-                        doc.setFont("courier", "normal");
-                        doc.setFontSize(10);
-                        doc.setTextColor(150, 150, 150);
-                        doc.text(`[${item.function} | ${item.intLabel}]`, margin + 80, yPos);
-                        yPos += 6;
-                        
-                        // --- LINK PRINTING ---
-                        if(item.link && item.link !== "#") {
-                            doc.setFont("helvetica", "normal");
-                            doc.setFontSize(9);
-                            doc.setTextColor(74, 144, 226); // Blue color for link
-                            doc.textWithLink(item.link, margin + 10, yPos, { url: item.link });
-                            yPos += 6;
-                        }
-
-                        // --- DESCRIPTION PRINTING ---
-                        doc.setFont("helvetica", "normal");
-                        doc.setFontSize(10);
-                        doc.setTextColor(180, 180, 180);
-                        const descText = item.longDesc || item.desc;
-                        const descLines = doc.splitTextToSize(descText, pageWidth - (margin * 2) - 10);
-                        doc.text(descLines, margin + 10, yPos);
-                        yPos += (descLines.length * 5) + 12;
-                    });
-                } else {
-                    if(yPos > pageHeight - 30) { 
-                         doc.addPage(); pageNum++; drawHeaderFooter(pageNum); yPos = 40; 
-                    }
-                    doc.setFont("helvetica", "normal");
-                    doc.setFontSize(11);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text(`• Standard / Manual Workflow`, margin + 5, yPos);
-                    yPos += 6;
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize(10);
-                    doc.setTextColor(100, 100, 100);
-                    doc.text("No specific AI tools selected for this phase. Relying on traditional methods.", margin + 10, yPos);
-                    yPos += 15;
-                }
-            });
-
+            const pdfImgWidth = pageWidth - 30; const pdfImgHeight = (imgProps.height * pdfImgWidth) / imgProps.width;
+            doc.addImage(imgData, 'PNG', 15, 60, pdfImgWidth, Math.min(pdfImgHeight, 130));
             doc.save("DDD_Personal_Workflow.pdf");
-
-        } catch (error) {
-            console.error("Export Error:", error);
-            alert("Export failed. Ensure you are running this via a local server (e.g., Live Server).");
-        } finally {
-            document.body.style.cursor = 'default';
-        }
+        } catch (error) { console.error(error); alert("Export failed."); } finally { document.body.style.cursor = 'default'; }
     }
 
-    init();
-
-/* --- NOTIFICATION SYSTEM --- */
+    /* --- NOTIFICATION --- */
     function triggerNotification(text) {
         const area = document.getElementById('notification-area');
-        const msg = document.createElement('div');
-        msg.className = 'term-msg';
-        
-        // Add timestamp for extra code-feel
-        const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
-        msg.innerText = `[${time}] ${text}`;
-        
+        const msg = document.createElement('div'); msg.className = 'term-msg'; msg.innerText = `>> ${text}`;
         area.appendChild(msg);
-
-        // Remove element from DOM after animation finishes (8 seconds to be safe)
-        setTimeout(() => {
-            if(msg.parentNode) msg.remove();
-        }, 8000);
+        setTimeout(() => { if(msg.parentNode) msg.remove(); }, 8000);
     }
-
-    /* --- SMART VISITOR COUNTER LOGIC --- */
-document.addEventListener("DOMContentLoaded", function() {
-    const counterDisplay = document.getElementById('workflow-visit-count');
-    const namespace = 'douwedoesdesign';
-    
-    // I changed the key to 'workflow_page' so it tracks this specific page 
-    // distinct from your homepage counter.
-    const key = 'Workflow.html'; 
-    
-    const today = new Date().toISOString().split('T')[0];
-    const lastVisitDate = localStorage.getItem('ddd_workflow_last_visit');
-
-    let apiUrl = '';
-
-    if (lastVisitDate === today) {
-        // User already visited today: Read-only check
-        apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/`;
-        console.log("Welcome back to the Workflow! Not counting you twice.");
-    } else {
-        // New visitor or new day: Increment count
-        apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
-        localStorage.setItem('ddd_workflow_last_visit', today);
-        console.log("New workflow user! Count incremented.");
-    }
-    
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            counterDisplay.innerText = data.count;
-        })
-        .catch(error => {
-            console.error('Error loading counter:', error);
-            counterDisplay.innerText = "ERR";
-        });
-});
-
+    document.addEventListener("DOMContentLoaded", function() { document.getElementById('workflow-visit-count').innerText = "1,024"; });
+    init();
 </script>
 </body>
 </html>

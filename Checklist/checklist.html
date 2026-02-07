@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DDD Master Logistics Plan</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; background: #121212; color: #e0e0e0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .btn { padding: 20px 40px; font-size: 16px; font-weight: bold; background: #ff3333; color: white; border: 2px solid white; cursor: pointer; text-transform: uppercase; margin-top: 20px; transition: 0.2s; }
+        .btn:hover { background: white; color: #ff3333; }
+        h1 { text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #ff3333; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Generate Logistics Master Plan</h1>
+    <p>Phase 2: Compliance, Pricing & Benchmarks</p>
+    <button class="btn" onclick="generatePDF()">Download Plan .PDF</button>
+
+    <script>
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const margin = 20;
+            let y = 20;
+
+            function header(text) {
+                if(y>270) { doc.addPage(); y=20; }
+                y += 10;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.setTextColor(255, 51, 51);
+                doc.text(text.toUpperCase(), margin, y);
+                y += 8;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(0,0,0);
+            }
+
+            function item(text, subtext = null) {
+                if(y>280) { doc.addPage(); y=20; }
+                doc.rect(margin, y-3, 4, 4);
+                doc.text(text, margin + 8, y);
+                y += 6;
+                if(subtext) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(100,100,100);
+                    doc.text("   > " + subtext, margin + 8, y);
+                    doc.setTextColor(0,0,0);
+                    doc.setFontSize(10);
+                    y += 6;
+                }
+            }
+
+            // TITLE
+            doc.setFontSize(20);
+            doc.setFont("courier", "bold");
+            doc.text("DOUWE DOES DESIGN", margin, y);
+            y+=10;
+            doc.setFontSize(12);
+            doc.text("Logistical Master Plan V2", margin, y);
+            y+=15;
+            doc.setLineWidth(0.5);
+            doc.line(margin, y, 190, y);
+            
+            header("1. Privacy & Accounts (EU/GDPR)");
+            item("Create Firebase Project (Server Location: Europe-West).");
+            item("Enable 'Email/Password' Auth & Google Auth.");
+            item("Draft Privacy Policy (Use online generator compliant with GDPR).");
+            item("Add 'Cookie Consent' banner to site landing.");
+            item("Implement 'Delete Account' button (Database Wipe).");
+
+            header("2. Data Schema & UI Logic");
+            item("Update JSON Structure (Add 'Pricing', 'Input', 'Output' objects).");
+            item("UI: Change Node Visuals (Colored Dots for I/O).");
+            item("UI: Move 'Type/Kind' text to 'Detail Overlay' only.");
+            item("Logic: Write function to calculate Cost based on Company Size.");
+            item("Logic: Write function to check Input/Output compatibility.");
+
+            header("3. Pricing Engine Implementation");
+            item("Create 'Company Size' dropdown (Solo, 2-5, 5-20, 20-100, 100+).");
+            item("Add 'Sunk Cost' logic (Adobe CC = $0 marginal cost).");
+            item("Calculate: (Price * Seats) + (Token Cost * Usage Rate).");
+            item("Visuals: Display 'Monthly Cost' & 'Time Saved' in Toolbar.");
+
+            header("4. Benchmarks & Review Hub");
+            item("Define 'The 3 Tests' (Villa, Floorplan, Hallucination).");
+            item("Run tests on top 10 AIs and record scores (X/10).");
+            item("Create 'Benchmark Page' (Table view of all scores).");
+            item("Create 'Review Hub' (Searchable grid of AI cards).");
+            item("Add 'Submit Review' form for users (Optional).");
+
+            header("5. Local Tools & Export");
+            item("Finalize 'qomfyAI' (ComfyUI) JSON Exporter.");
+            item("Write 'Local AI Upscale' Tutorial (Stable Diffusion).");
+
+            doc.save("DDD_Logistics_Plan_V2.pdf");
+        }
+    </script>
+</body>
+</html>
