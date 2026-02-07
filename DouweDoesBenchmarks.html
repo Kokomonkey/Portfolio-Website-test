@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="database.js" defer></script>
+    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
+    <title>DouweDoesBenchmarks | AI Analysis</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --dim-color: #444;
+            --transition-curve: cubic-bezier(0.25, 1, 0.5, 1);
+            
+            /* SIZING */
+            --square-size: min(18vw, 22vh); 
+            --grid-gap: 0px;
+            --sidebar-width: 140px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            padding-bottom: 100px;
+            transition: all 0.5s ease;
+        }
+
+        /* --- HEADER --- */
+        header {
+            height: 15vh;
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            gap: 1.5vh;
+            flex-shrink: 0;
+            transition: all 0.6s var(--transition-curve);
+            margin-top: 2vh;
+        }
+
+        .logo-placeholder {
+            height: 50px; width: 50px; 
+            background-color: var(--accent-color);
+            display: flex; justify-content: center; align-items: center;
+            filter: invert(1);
+        }
+        .logo-placeholder img { max-height: 100%; width: auto; }
+
+        h1 {
+            font-size: 1.2rem; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 5px;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            position: fixed;
+            top: 3vh; left: 3vh;
+            text-decoration: none;
+            z-index: 1000;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0; pointer-events: none;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+        .back-btn.visible { opacity: 1; pointer-events: auto; }
+
+        /* --- MAIN LAYOUT --- */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            transition: transform 0.6s var(--transition-curve);
+        }
+
+        /* --- THE GRID (4x3) --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            grid-template-rows: repeat(3, 1fr);    
+            gap: var(--grid-gap);
+            width: fit-content;
+            border: 2px solid var(--accent-color);
+            transition: all 0.8s var(--transition-curve);
+            position: relative;
+            z-index: 100;
+            margin-bottom: 5vh;
+        }
+
+        .grid-item {
+            display: block; 
+            text-decoration: none;
+            width: var(--square-size);
+            height: var(--square-size);
+            position: relative;
+            border: 1px solid var(--accent-color);
+            overflow: hidden; 
+            cursor: pointer;
+            background-color: var(--bg-color);
+            transition: all 0.5s ease;
+        }
+
+        /* --- UNIQUE INTRO ANIMATION --- */
+        .grid-item.animate-in {
+            opacity: 0; 
+            transform: scale(0.9) translateY(30px);
+            filter: blur(5px);
+            animation: techReveal 0.8s var(--transition-curve) forwards;
+        }
+
+        @keyframes techReveal {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.9) translateY(30px);
+                filter: blur(5px);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .square-content {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background-color: var(--bg-color);
+            transition: all 0.3s ease;
+            padding: 10px;
+        }
+
+        .square-icon {
+            width: 30%; height: 30%;
+            background-color: var(--accent-color);
+            margin-bottom: 15px;
+            transition: inherit;
+        }
+
+        .square-text {
+            color: var(--accent-color);
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            transition: inherit;
+        }
+
+        /* Hover Effects */
+        .grid-item:hover .square-content { transform: scale(0.90); }
+        .grid-item:hover { background-color: var(--accent-color); z-index: 10; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .grid-item:hover .square-icon { background-color: var(--bg-color); }
+        .grid-item:hover .square-text { color: var(--bg-color); }
+
+
+        /* --- DATABASE LIST SECTION --- */
+        .database-section {
+            width: calc((var(--square-size) * 4) + (var(--grid-gap) * 3));
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        body.benchmark-mode .database-section {
+            opacity: 0;
+            transform: translateY(100px);
+            pointer-events: none;
+            height: 0; overflow: hidden; margin: 0; 
+        }
+
+        .search-container {
+            width: 100%;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            border-left: 5px solid var(--accent-color); 
+            color: var(--accent-color);
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            text-transform: uppercase;
+            outline: none;
+        }
+        .search-input::placeholder { color: #555; }
+        .search-input:focus { background: #111; }
+
+        .db-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .db-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            border: 1px solid #333;
+            padding: 15px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            background: #050505;
+        }
+
+        .db-item:hover {
+            border-color: var(--accent-color);
+            background: #111;
+            transform: translateX(10px);
+        }
+
+        .db-left { display: flex; align-items: center; gap: 20px; }
+        
+        .db-logo {
+            width: 40px; height: 40px;
+            background: #222;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 4px;
+        }
+        .db-logo img { max-width: 80%; max-height: 80%; }
+
+        .db-info { display: flex; flex-direction: column; gap: 4px; }
+        .db-title { color: var(--accent-color); font-weight: bold; font-size: 1rem; text-transform: uppercase; }
+        .db-provider { color: #666; font-size: 0.75rem; text-transform: uppercase; }
+
+        .db-arrow { color: var(--accent-color); font-size: 1.2rem; opacity: 0; transition: opacity 0.2s; }
+        .db-item:hover .db-arrow { opacity: 1; }
+
+
+        /* --- BENCHMARK MODE (Sidebar Transformation) --- */
+        body.benchmark-mode {
+            overflow: hidden; 
+            align-items: flex-start; 
+        }
+
+        body.benchmark-mode header {
+            opacity: 0; pointer-events: none; margin-top: -100px;
+        }
+
+        body.benchmark-mode .grid-container {
+            position: fixed; top: 0; left: 0;
+            width: var(--sidebar-width); height: 100vh;
+            margin: 0; border: none; border-right: 1px solid #333;
+            display: flex; flex-direction: column; 
+            padding: 80px 0 0 0; 
+            overflow-y: auto;
+            background: var(--bg-color);
+            animation: slideToSidebar 0.6s var(--transition-curve) forwards;
+        }
+
+        body.benchmark-mode .grid-item {
+            width: 100%; 
+            height: auto;
+            flex-grow: 0; 
+            min-height: 70px;
+            border: none; 
+            border-bottom: 1px solid #222;
+            animation: none !important; 
+            opacity: 1; 
+            transform: none !important;
+            filter: blur(0) !important;
+            display: flex; justify-content: flex-start; align-items: center;
+            padding-left: 15px;
+        }
+
+        body.benchmark-mode .grid-item .square-icon { display: none; }
+        body.benchmark-mode .grid-item .square-content { 
+            background-color: transparent; 
+            transform: none; 
+            border: none; 
+            padding: 0;
+            align-items: flex-start;
+        }
+        
+        body.benchmark-mode .grid-item .square-text { 
+            font-size: 0.6rem; 
+            color: #666; 
+            letter-spacing: 0.5px; 
+            text-align: left;
+        }
+
+        body.benchmark-mode .grid-item.active-benchmark {
+            background: var(--bg-color);
+            border-right: 2px solid white; 
+            margin-right: -1px; 
+            z-index: 101;
+        }
+        
+        body.benchmark-mode .grid-item.active-benchmark .square-text {
+            color: white;
+            font-weight: 800;
+        }
+
+        /* --- CONTENT PANEL (Right Side) --- */
+        .content-panel {
+            position: fixed; 
+            top: 0; left: var(--sidebar-width);
+            width: calc(100vw - var(--sidebar-width)); 
+            height: 100vh;
+            overflow-y: auto; 
+            display: none; 
+            padding: 60px 100px;
+            opacity: 0; 
+            transform: translateX(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        body.benchmark-mode .content-panel { 
+            display: block; 
+        }
+        
+        .content-panel.visible {
+            opacity: 1; 
+            transform: translateX(0); 
+        }
+
+        /* Content Styling */
+        .bench-header { border-bottom: 2px solid var(--accent-color); padding-bottom: 20px; margin-bottom: 40px; }
+        .bench-title { font-size: 2.5rem; text-transform: uppercase; margin-bottom: 10px; }
+        .bench-subtitle { font-size: 1rem; color: #888; font-style: italic; }
+        .main-bench-img { width: 100%; height: 400px; background-color: #1a1a1a; border: 1px solid #333; margin-bottom: 40px; object-fit: cover; display: flex; justify-content: center; align-items: center; color: #444; font-size: 0.8rem; }
+        .prompt-container { background: #111; border: 1px dashed var(--accent-color); padding: 20px; margin-bottom: 40px; }
+        .prompt-label { color: var(--accent-color); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px; display: block; font-weight: bold; }
+        .prompt-text { color: #ccc; line-height: 1.4; font-size: 0.9rem; }
+        .text-block { margin-bottom: 40px; line-height: 1.6; font-size: 1rem; color: #ddd; max-width: 800px; }
+        .placeholder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 50px; }
+        .ph-img { width: 100%; height: 250px; background: #151515; border: 1px solid #333; display: flex; justify-content: center; align-items: center; color: #444; }
+
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            :root { --square-size: 40vw; }
+            .grid-container { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(6, 1fr); }
+            
+            .database-section { width: 90vw; }
+
+            body.benchmark-mode .grid-container { 
+                width: 100vw; height: 60px; 
+                flex-direction: row; 
+                overflow-x: auto; overflow-y: hidden;
+                padding: 0;
+                border-bottom: 1px solid #333;
+            }
+            body.benchmark-mode .grid-item { min-width: 120px; height: 100%; border-bottom: none; border-right: 1px solid #333; }
+            body.benchmark-mode .grid-item.active-benchmark { border-bottom: 2px solid white; border-right: 1px solid #333; margin: 0;}
+            
+            .content-panel { left: 0; top: 60px; width: 100%; padding: 30px; height: calc(100vh - 60px); }
+            .placeholder-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="back-btn" id="mainBackBtn" onclick="handleBack()">← Menu</button>
+
+    <header>
+        <div class="logo-placeholder">
+            <img src="Recourses/Logos/DDD.jpg" alt="DDD" />
+        </div>
+        <h1>DouweDoesBenchmarks</h1>
+    </header>
+
+    <main>
+        <div class="grid-container" id="gridContainer">
+            </div>
+
+        <div class="database-section" id="databaseSection">
+            <div class="search-container">
+                <input type="text" class="search-input" id="dbSearch" placeholder="Search Database (e.g. 'Midjourney')" onkeyup="filterDatabase()">
+            </div>
+            <div class="db-list" id="dbList">
+                </div>
+        </div>
+
+        <div class="content-panel" id="contentPanel">
+            </div>
+    </main>
+
+    <script>
+        // --- 1. BENCHMARK GRID DATA (The 12 Squares) ---
+        const benchmarks = {
+            'image-gen': { title: 'Image Generation', clip: 'polygon(50% 0%, 0% 100%, 100% 100%)', 
+                          subtitle: 'Midjourney v6 vs DALL-E 3', prompt: '/imagine prompt: A futuristic sustainable skyscraper...', imgPlaceholder: 'Main Render' },
+            'floorplan': { title: 'Floorplan Colouring', clip: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)', 
+                          subtitle: 'Automated zoning', prompt: 'Input: DXF Line drawing. Instruction: Color living areas light oak...', imgPlaceholder: 'Colored Plan' },
+            'details': { title: 'Detail Creation', clip: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
+                          subtitle: 'Generative technical detailing', prompt: 'Generate 1:5 connection detail between CLT slab and steel beam...', imgPlaceholder: 'Tech Detail' },
+            'rendering': { title: 'Rendering Images', clip: 'circle(50% at 50% 50%)',
+                          subtitle: 'Real-time vs AI upscaling', prompt: 'Enhance sketch. Style: Photorealistic...', imgPlaceholder: 'Upscale Comparison' },
+            'legal': { title: 'Checking Legalities', clip: 'polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%)',
+                          subtitle: 'NLP zoning analysis', prompt: 'Analyze attached PDF against IBC 2021...', imgPlaceholder: 'Legal Graph' },
+            'site': { title: 'Site Analysis', clip: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+                          subtitle: 'GIS data interpretation', prompt: 'Generate wind rose for 51.92N, 4.47E.', imgPlaceholder: 'Site Map' },
+            'cost': { title: 'Cost Estimation', clip: 'polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%)',
+                          subtitle: 'Predictive pricing', prompt: 'Calculate concrete volume and estimate cost...', imgPlaceholder: 'Spreadsheet' },
+            'material': { title: 'Material Selection', clip: 'polygon(10% 25%, 35% 25%, 35% 0%, 65% 0%, 65% 25%, 90% 25%, 90% 50%, 65% 50%, 65% 100%, 35% 100%, 35% 50%, 10% 50%)',
+                          subtitle: 'Carbon footprint analysis', prompt: 'Suggest bio-based alternatives...', imgPlaceholder: 'Material Palette' },
+            'model': { title: '3D Modeling', clip: 'polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%)',
+                          subtitle: 'Text-to-3D', prompt: 'Generate 3D mesh of a baroque chair...', imgPlaceholder: 'Mesh' },
+            'energy': { title: 'Energy Analysis', clip: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+                          subtitle: 'Iterative simulation', prompt: 'Optimize window-to-wall ratio...', imgPlaceholder: 'Heatmap' },
+            'schedule': { title: 'Project Scheduling', clip: 'polygon(0% 0%, 100% 100%, 100% 0%, 0% 100%)',
+                          subtitle: 'Generative Gantt', prompt: 'Draft construction schedule...', imgPlaceholder: 'Gantt' },
+            'code': { title: 'Code Scripting', clip: 'polygon(0% 0%, 50% 0%, 100% 50%, 50% 100%, 0% 100%, 50% 50%)',
+                          subtitle: 'Copilot for Grasshopper', prompt: 'Write Python script for Rhino...', imgPlaceholder: 'Code' },
+        };
+
+        // --- 2. DATABASE CONFIGURATION (Simulating external database.js) ---
+        // This is the source of truth for the list below the grid.
+        const aiDatabase = [
+            { name: "Midjourney", provider: "Midjourney Inc.", logo: "Recourses/Logos/midjourney.png", id: "midjourney" },
+            { name: "Stable Diffusion", provider: "Stability AI", logo: "Recourses/Logos/stability.png", id: "stable-diffusion" },
+            { name: "LookX", provider: "LookX.ai", logo: "Recourses/Logos/lookx.png", id: "lookx" },
+            { name: "Veras", provider: "EvolveLAB", logo: "Recourses/Logos/veras.png", id: "veras" },
+            { name: "PromeAI", provider: "Prome", logo: "Recourses/Logos/prome.png", id: "prome" },
+            { name: "Adobe Firefly", provider: "Adobe", logo: "Recourses/Logos/adobe.png", id: "firefly" },
+            { name: "Hypar", provider: "Hypar", logo: "Recourses/Logos/hypar.png", id: "hypar" },
+            { name: "TestFit", provider: "TestFit Inc.", logo: "Recourses/Logos/testfit.png", id: "testfit" },
+            { name: "Spacemaker", provider: "Autodesk", logo: "Recourses/Logos/autodesk.png", id: "spacemaker" },
+            { name: "Finch 3D", provider: "Finch", logo: "Recourses/Logos/finch.png", id: "finch" },
+            { name: "ArkoAI", provider: "Arko", logo: "Recourses/Logos/arko.png", id: "arko" },
+            { name: "Swapp", provider: "Swapp.ai", logo: "Recourses/Logos/swapp.png", id: "swapp" },
+        ];
+
+        // --- DOM ELEMENTS ---
+        const gridContainer = document.getElementById('gridContainer');
+        const contentPanel = document.getElementById('contentPanel');
+        const backBtn = document.getElementById('mainBackBtn');
+        const body = document.body;
+        const dbList = document.getElementById('dbList');
+        const dbSearch = document.getElementById('dbSearch');
+
+        // --- INITIALIZATION ---
+
+        // 1. Render Grid
+        Object.keys(benchmarks).forEach((key, index) => {
+            const data = benchmarks[key];
+            const div = document.createElement('div');
+            div.className = 'grid-item animate-in';
+            div.id = `item-${key}`;
+            
+            // Stagger animation delay
+            div.style.animationDelay = `${index * 0.05}s`;
+
+            div.innerHTML = `
+                <div class="square-content">
+                    <div class="square-icon" style="clip-path: ${data.clip};"></div>
+                    <span class="square-text">${data.title}</span>
+                </div>
+            `;
+            
+            div.onclick = () => openBenchmark(key);
+            gridContainer.appendChild(div);
+        });
+
+        // 2. Render Database List
+        function renderDatabase(data) {
+            dbList.innerHTML = ''; // Clear current list
+            data.forEach(item => {
+                const a = document.createElement('a');
+                a.href = `pages/ais/${item.id}.html`; // Link to generated page
+                a.className = 'db-item';
+                a.innerHTML = `
+                    <div class="db-left">
+                        <div class="db-logo">
+                            <img src="${item.logo}" alt="${item.name}" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\'font-size:10px\'>LOGO</span>'">
+                        </div>
+                        <div class="db-info">
+                            <span class="db-title">${item.name}</span>
+                            <span class="db-provider">${item.provider}</span>
+                        </div>
+                    </div>
+                    <div class="db-arrow">→</div>
+                `;
+                dbList.appendChild(a);
+            });
+        }
+        
+        // Initial Render of List
+        renderDatabase(aiDatabase);
+
+        // --- SEARCH FUNCTIONALITY ---
+        function filterDatabase() {
+            const query = dbSearch.value.toLowerCase();
+            const filtered = aiDatabase.filter(item => 
+                item.name.toLowerCase().includes(query) || 
+                item.provider.toLowerCase().includes(query)
+            );
+            renderDatabase(filtered);
+        }
+
+        // --- VIEW TRANSITIONS ---
+
+        function openBenchmark(key) {
+            const data = benchmarks[key];
+            
+            // 1. Layout Shift
+            body.classList.add('benchmark-mode');
+            backBtn.classList.add('visible');
+
+            // 2. Highlight Sidebar Item
+            document.querySelectorAll('.grid-item').forEach(el => el.classList.remove('active-benchmark'));
+            document.getElementById(`item-${key}`).classList.add('active-benchmark');
+
+            // 3. Inject Content
+            contentPanel.innerHTML = `
+                <div class="bench-header">
+                    <div class="bench-title">${data.title}</div>
+                    <div class="bench-subtitle">${data.subtitle}</div>
+                </div>
+
+                <div class="main-bench-img">
+                    [ ${data.imgPlaceholder} Image ]
+                </div>
+
+                <div class="prompt-container">
+                    <span class="prompt-label">Prompt Input:</span>
+                    <div class="prompt-text">${data.prompt}</div>
+                </div>
+
+                <p class="text-block">
+                    In-depth analysis of ${data.title} capabilities in current workflow integration. We test speed, accuracy, and hallucination rates against standard industry practices.
+                    <br><br>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="ph-img">[ Result A ]</div>
+                    <div class="ph-img">[ Result B ]</div>
+                </div>
+            `;
+            
+            // Small timeout to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                contentPanel.classList.add('visible');
+            }, 50);
+        }
+
+        function handleBack() {
+            // 1. Hide Content
+            contentPanel.classList.remove('visible');
+            
+            // 2. Reset Layout
+            body.classList.remove('benchmark-mode');
+            backBtn.classList.remove('visible');
+            
+            // 3. Reset Grid Highlights
+            document.querySelectorAll('.grid-item').forEach(el => el.classList.remove('active-benchmark'));
+            
+            // 4. Clean up content after transition
+            setTimeout(() => {
+                contentPanel.innerHTML = '';
+            }, 500);
+        }
+
+    </script>
+</body>
+</html>
