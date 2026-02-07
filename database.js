@@ -1308,5 +1308,6 @@ const aiDatabase = [
     }
 ];
 
-// Helper to export if using modules, but for simple HTML import we let it be global
+window.aiDatabase = aiDatabase; 
+console.log("Database attached to window:", window.aiDatabase);// Helper to export if using modules, but for simple HTML import we let it be global
 // window.aiDatabase = aiDatabase;
