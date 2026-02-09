@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rayon | AI Analysis</title>
+    <link rel="icon" type="image/png" href="../../Recourses/Logos/DDD.jpg">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --dim-color: #333;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .container { max-width: 1000px; width: 100%; }
+        
+        /* Nav */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 40px;
+            color: var(--accent-color);
+            text-decoration: none;
+            border: 1px solid var(--accent-color);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: var(--accent-color); color: var(--bg-color); }
+
+        /* Header */
+        header { 
+            border-bottom: 2px solid var(--accent-color); 
+            padding-bottom: 20px; 
+            margin-bottom: 40px; 
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        h1 { font-size: 3rem; text-transform: uppercase; line-height: 1; }
+        .provider { font-size: 1.2rem; color: #888; text-transform: uppercase; }
+
+        /* Layout */
+        .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; }
+
+        /* Left Column */
+        .info-card { 
+            background: #111; 
+            padding: 20px; 
+            border: 1px solid var(--dim-color);
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .logo-box { 
+            width: 100%; aspect-ratio: 1; 
+            background: #000; border: 1px solid #333;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .logo-box img { max-width: 80%; max-height: 80%; }
+        
+        .stat-row { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .stat-label { color: #888; font-size: 0.8rem; text-transform: uppercase; }
+        .stat-val { font-weight: bold; text-align: right; }
+
+        .btn-visit {
+            display: block; width: 100%; text-align: center;
+            background: var(--accent-color); color: var(--bg-color);
+            padding: 15px; text-decoration: none; font-weight: bold; text-transform: uppercase;
+            margin-top: 10px;
+            transition: opacity 0.3s;
+        }
+        .btn-visit:hover { opacity: 0.8; }
+
+        /* Right Column */
+        .content { line-height: 1.6; }
+        .tag { 
+            display: inline-block; background: #222; color: #ddd; 
+            padding: 5px 10px; font-size: 0.8rem; margin-right: 5px; margin-bottom: 10px;
+            border: 1px solid #444;
+        }
+        h2 { margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #333; display: inline-block; }
+        
+        ul { margin-left: 20px; margin-bottom: 20px; }
+        li { margin-bottom: 5px; color: #ccc; }
+
+        @media(max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            h1 { font-size: 2rem; }
+            body { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← Back to Dashboard</a>
+
+        <header>
+            <div>
+                <div class="provider">Rayon</div>
+                <h1>Rayon</h1>
+            </div>
+            <div style="text-align:right">
+                <span class="tag">CAD/BIM/Technical</span>
+                <span class="tag">Service</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="info-card">
+                <div class="logo-box">
+                    <img src="../../Recourses/Logos/DDD.jpg" alt="Rayon" onerror="this.style.display='none'">
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-row"><span class="stat-label">Price Model</span> <span class="stat-val">Freemium</span></div>
+                    <div class="stat-row" style="margin-top:10px;"><span class="stat-label">Monthly Cost</span> <span class="stat-val">$15</span></div>
+                    <div class="stat-row" style="margin-top:10px;"><span class="stat-label">Benchmark</span> <span class="stat-val">7/10</span></div>
+                </div>
+
+                <div class="stats">
+                     <div class="stat-row"><span class="stat-label">Input</span> <span class="stat-val">Image</span></div>
+                     <div class="stat-row" style="margin-top:5px;"><span class="stat-label">Output</span> <span class="stat-val">Image</span></div>
+                </div>
+
+                <a href="https://www.rayon.so/" target="_blank" class="btn-visit">Visit Website ↗</a>
+            </div>
+
+            <div class="content">
+                <p style="font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;">
+                    Collaborative space planning tool.
+                </p>
+                <p style="margin-bottom: 30px; color: #bbb;">
+                    A web-based 2D CAD tool designed for speed and collaboration. Features 'smart' blocks and lightweight AI assistance.
+                </p>
+
+                <h2>Workflow Integration</h2>
+                <p>Browser based CAD.</p>
+                <p style="margin-top:10px; color: #88ff88;"><em>Efficiency: Faster than AutoCAD for quick studies.</em></p>
+
+                <h2>Analysis</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3 style="color:#88ff88; font-size: 0.9rem; text-transform:uppercase; margin-bottom:10px;">Pros</h3>
+                        <ul>
+                            <li>Fast 2D workflow</li><li>Great UI</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color:#ff8888; font-size: 0.9rem; text-transform:uppercase; margin-bottom:10px;">Cons</h3>
+                        <ul>
+                            <li>2D focused</li><li>Not BIM</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h2>Fit For</h2>
+                <div>
+                    <span class="tag" style="background:#333; border:none;">Freelancer</span><span class="tag" style="background:#333; border:none;">Studio</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
