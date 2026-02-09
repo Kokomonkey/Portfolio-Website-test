@@ -392,7 +392,7 @@
 
     <main>
         <div class="grid-container" id="gridContainer">
-            </div>
+        </div>
 
         <div class="database-section" id="databaseSection">
             <div class="search-container">
@@ -403,16 +403,16 @@
         </div>
 
         <div class="content-panel" id="contentPanel">
-            </div>
+        </div>
     </main>
 
     <script>
         // --- 1. BENCHMARK GRID DATA (The 12 Squares) ---
         const benchmarks = {
             'image-gen': { title: 'Image Generation', clip: 'polygon(50% 0%, 0% 100%, 100% 100%)', 
-                          subtitle: 'Midjourney v6 vs DALL-E 3', prompt: '/imagine prompt: A futuristic sustainable skyscraper...', imgPlaceholder: 'Main Render' },
+                           subtitle: 'Midjourney v6 vs DALL-E 3', prompt: '/imagine prompt: A futuristic sustainable skyscraper...', imgPlaceholder: 'Main Render' },
             'floorplan': { title: 'Floorplan Colouring', clip: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)', 
-                          subtitle: 'Automated zoning', prompt: 'Input: DXF Line drawing. Instruction: Color living areas light oak...', imgPlaceholder: 'Colored Plan' },
+                           subtitle: 'Automated zoning', prompt: 'Input: DXF Line drawing. Instruction: Color living areas light oak...', imgPlaceholder: 'Colored Plan' },
             'details': { title: 'Detail Creation', clip: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
                           subtitle: 'Generative technical detailing', prompt: 'Generate 1:5 connection detail between CLT slab and steel beam...', imgPlaceholder: 'Tech Detail' },
             'rendering': { title: 'Rendering Images', clip: 'circle(50% at 50% 50%)',
@@ -434,23 +434,6 @@
             'code': { title: 'Code Scripting', clip: 'polygon(0% 0%, 50% 0%, 100% 50%, 50% 100%, 0% 100%, 50% 50%)',
                           subtitle: 'Copilot for Grasshopper', prompt: 'Write Python script for Rhino...', imgPlaceholder: 'Code' },
         };
-
-        // --- 2. DATABASE CONFIGURATION (Simulating external database.js) ---
-        // This is the source of truth for the list below the grid.
-        const aiDatabase = [
-            { name: "Midjourney", provider: "Midjourney Inc.", logo: "Recourses/Logos/midjourney.png", id: "midjourney" },
-            { name: "Stable Diffusion", provider: "Stability AI", logo: "Recourses/Logos/stability.png", id: "stable-diffusion" },
-            { name: "LookX", provider: "LookX.ai", logo: "Recourses/Logos/lookx.png", id: "lookx" },
-            { name: "Veras", provider: "EvolveLAB", logo: "Recourses/Logos/veras.png", id: "veras" },
-            { name: "PromeAI", provider: "Prome", logo: "Recourses/Logos/prome.png", id: "prome" },
-            { name: "Adobe Firefly", provider: "Adobe", logo: "Recourses/Logos/adobe.png", id: "firefly" },
-            { name: "Hypar", provider: "Hypar", logo: "Recourses/Logos/hypar.png", id: "hypar" },
-            { name: "TestFit", provider: "TestFit Inc.", logo: "Recourses/Logos/testfit.png", id: "testfit" },
-            { name: "Spacemaker", provider: "Autodesk", logo: "Recourses/Logos/autodesk.png", id: "spacemaker" },
-            { name: "Finch 3D", provider: "Finch", logo: "Recourses/Logos/finch.png", id: "finch" },
-            { name: "ArkoAI", provider: "Arko", logo: "Recourses/Logos/arko.png", id: "arko" },
-            { name: "Swapp", provider: "Swapp.ai", logo: "Recourses/Logos/swapp.png", id: "swapp" },
-        ];
 
         // --- DOM ELEMENTS ---
         const gridContainer = document.getElementById('gridContainer');
@@ -484,16 +467,37 @@
         });
 
         // 2. Render Database List
+        // We wait for the external script (database.js) to load
+        window.addEventListener('DOMContentLoaded', () => {
+             // Safety check in case database.js loads slower or fails
+             setTimeout(() => {
+                if (window.aiDatabase) {
+                    renderDatabase(window.aiDatabase);
+                } else {
+                    console.error("Database not loaded. Check database.js file path.");
+                    dbList.innerHTML = '<div style="color:#666; padding:20px;">Database Loading...</div>';
+                    // Retry once
+                    setTimeout(() => {
+                        if(window.aiDatabase) renderDatabase(window.aiDatabase);
+                    }, 1000);
+                }
+             }, 100);
+        });
+
         function renderDatabase(data) {
             dbList.innerHTML = ''; // Clear current list
             data.forEach(item => {
                 const a = document.createElement('a');
                 a.href = `pages/ais/${item.id}.html`; // Link to generated page
                 a.className = 'db-item';
+                
+                // Fallback for missing logos
+                const logoSrc = item.logo_url ? item.logo_url : 'Recourses/Logos/DDD.jpg';
+
                 a.innerHTML = `
                     <div class="db-left">
                         <div class="db-logo">
-                            <img src="${item.logo}" alt="${item.name}" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\'font-size:10px\'>LOGO</span>'">
+                            <img src="${logoSrc}" alt="${item.name}" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\'font-size:10px\'>AI</span>'">
                         </div>
                         <div class="db-info">
                             <span class="db-title">${item.name}</span>
@@ -506,13 +510,11 @@
             });
         }
         
-        // Initial Render of List
-        renderDatabase(aiDatabase);
-
         // --- SEARCH FUNCTIONALITY ---
         function filterDatabase() {
+            if (!window.aiDatabase) return;
             const query = dbSearch.value.toLowerCase();
-            const filtered = aiDatabase.filter(item => 
+            const filtered = window.aiDatabase.filter(item => 
                 item.name.toLowerCase().includes(query) || 
                 item.provider.toLowerCase().includes(query)
             );
