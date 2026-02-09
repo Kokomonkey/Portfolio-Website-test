@@ -1,1 +1,128 @@
-[]
+[
+  {
+    "name": "TestFit",
+    "website_url": "https://www.testfit.io/pricing",
+    "description_short": "TestFit offers flexible pricing plans for architects, developers, and construction professionals with real-time capabilities.",
+    "description_long": "TestFit provides a range of pricing plans to cater to the needs of architects, developers, general contractors, urban planners, and more, with a focus on real-time functionality. The platform aims to support various professionals in the construction and development industry with its flexible and scalable pricing options.",
+    "pricing_model": "Freemium/Paid",
+    "primary_function": "Design",
+    "id": "testfit"
+  },
+  {
+    "name": "ARCHITEChTURES",
+    "website_url": "https://architechtures.com/en/pricing?srsltid=AfmBOoqvKwin-TfiJkUubjzIp1rYgsL74RDHVXqdw9nSErT9Gg8hY_JC",
+    "description_short": "ARCHITEChTURES is an AI architecture software for designing better buildings faster.",
+    "description_long": "ARCHITEChTURES is an AI architecture software that enables users to design better buildings faster with its innovative tools and features. The platform offers a range of plans, including a free trial, to cater to different needs and preferences.",
+    "pricing_model": "Freemium",
+    "primary_function": "Design",
+    "id": "architechtures"
+  },
+  {
+    "name": "Midjourney",
+    "website_url": "https://docs.midjourney.com/hc/en-us/articles/27870484040333-Comparing-Midjourney-Plans",
+    "description_short": "Midjourney is a tool with multiple pricing plans for various user needs.",
+    "description_long": "Midjourney is a tool that offers different pricing plans to cater to various user needs, with options ranging from basic to advanced features. The plans are available in monthly and annual subscriptions, providing flexibility for users to choose the plan that best suits their requirements.",
+    "pricing_model": "Freemium",
+    "primary_function": "Design",
+    "id": "midjourney"
+  },
+  {
+    "name": "Maket.ai",
+    "website_url": "https://www.maket.ai/",
+    "description_short": "Maket.ai is a generative AI tool for designing, planning, and visualizing residential projects.",
+    "description_long": "Maket.ai utilizes generative AI to enable homeowners, architects, and builders to quickly design, plan, and visualize residential projects in just a few simple steps. This tool streamlines the project planning process, allowing users to bring their ideas to life efficiently.",
+    "pricing_model": "Freemium",
+    "primary_function": "Design",
+    "id": "maket_ai"
+  },
+  {
+    "name": "BricsCAD",
+    "website_url": "https://www.bricsys.com/en-us/store/bricscad?srsltid=AfmBOor0yTMFAUF3p8H8IM_tSCxMCwUcS9RJEn0Mg1cu3chGMkG9TETf",
+    "description_short": "BricsCAD is a computer-aided design software with various packages to suit specific design needs.",
+    "description_long": "BricsCAD is a computer-aided design software that offers a choice of packages to suit specific design needs, with each product level unlocking additional toolsets and modeling environments. It is available as a 1-year subscription, providing flexibility and accessibility for users.",
+    "pricing_model": "Paid",
+    "primary_function": "Design",
+    "id": "bricscad"
+  },
+  {
+    "name": "Autodesk Forma",
+    "website_url": "https://www.autodesk.com/products/forma/overview",
+    "description_short": "Autodesk Forma is an AI-powered site design tool that enables users to create, analyze, and optimize design options.",
+    "description_long": "Autodesk Forma is an AI-powered site design tool that enables users to create, analyze, and optimize design options, allowing them to deliver more and stress less. With its advanced AI capabilities, Forma streamlines the design process, enabling users to explore and refine their designs more efficiently.",
+    "pricing_model": "Paid",
+    "primary_function": "Design",
+    "id": "autodesk_forma"
+  },
+  {
+    "name": "Finch",
+    "website_url": "https://hubspot.finch3d.com/pricing-4",
+    "description_short": "Finch is a tool that offers detailed unit plan generation and compliance with local regulations.",
+    "description_long": "Finch Enterprise provides advanced features such as detailed unit plan generation and the ability to apply graph rules and constraints to ensure compliance with local regulations. This tool is designed to support design and construction processes, particularly for large-scale projects that require adherence to specific guidelines and standards.",
+    "pricing_model": "Enterprise",
+    "primary_function": "Design",
+    "id": "finch"
+  },
+  {
+    "name": "Spacemaker",
+    "website_url": "https://www.autodesk.com/eu/campaigns/spacemaker",
+    "description_short": "Spacemaker is a design tool that enables users to test concepts, make informed decisions, and collaborate seamlessly.",
+    "description_long": "Spacemaker allows users to test concepts in minutes, make smarter decisions, unlock their creativity with generative design, and collaborate seamlessly. It is designed to streamline the design process, enhance productivity, and facilitate effective teamwork.",
+    "pricing_model": "Paid",
+    "primary_function": "Design",
+    "id": "spacemaker"
+  },
+  {
+    "name": "APB Brain",
+    "website_url": "https://coaching.apbbuilders.com/p/apb-brain",
+    "description_short": "APB Brain is an on-demand AI assistant for residential building company owners.",
+    "description_long": "APB Brain is an on-demand AI assistant built specifically for residential building company owners, trained on over a decade of APB content. It provides access to Action Plans and other resources to support business operations.",
+    "pricing_model": "Paid",
+    "primary_function": "Management",
+    "id": "apb_brain"
+  },
+  {
+    "name": "Builda Price",
+    "website_url": "https://au.buildaprice.app/plans/",
+    "description_short": "Builda Price offers various plans for builders and subcontractors to support their work.",
+    "description_long": "Builda Price provides a range of plans tailored to support builders of all types, including subcontractors. Their Pro plan is available for $365 AUD per month, excluding GST, to help builders manage their work efficiently.",
+    "pricing_model": "Paid",
+    "primary_function": "Construction",
+    "id": "builda_price"
+  },
+  {
+    "name": "Buildxact",
+    "website_url": "https://www.buildxact.com/us/pricing/",
+    "description_short": "Buildxact is a construction management tool with pricing plans for different business needs.",
+    "description_long": "Buildxact offers a range of features to support construction management, with two main pricing plans: Foundation and Pro, each with varying levels of functionality. The tool is designed to help businesses streamline their construction processes, from planning to execution, with options for unlimited users and annual billing.",
+    "pricing_model": "Paid",
+    "primary_function": "Construction/Management",
+    "id": "buildxact"
+  },
+  {
+    "name": "DZINLY",
+    "website_url": "https://www.dzinly.com/",
+    "description_short": "DZINLY uses AI to generate designs tailored to a user's home based on their inspiration photos and style preferences.",
+    "description_long": "DZINLY is an AI-powered design tool that creates personalized designs for users' homes using their inspiration photos and style preferences. The tool provides instant results, allowing users to explore different design options for their space.",
+    "pricing_model": "Freemium",
+    "primary_function": "Design",
+    "id": "dzinly"
+  },
+  {
+    "name": "Ressio Software",
+    "website_url": "https://www.capterra.com/p/10019813/Ressio-Software/",
+    "description_short": "Ressio Software is a project management platform for tracking finances, executing tasks, and collaborating with teams and vendors.",
+    "description_long": "The Ressio platform makes it easy to track project finances, execute tasks, manage documents, and collaborate with your team, vendors, and clients. It provides a comprehensive solution for project management, enabling users to streamline their workflows and improve productivity.",
+    "pricing_model": "Paid",
+    "primary_function": "Management",
+    "id": "ressio_software"
+  },
+  {
+    "name": "Togal.AI",
+    "website_url": "https://www.togal.ai/pricing-licenses",
+    "description_short": "Togal.AI is a construction tool that offers AI-automated takeoffs and other features for growth",
+    "description_long": "Togal.AI is a construction tool that offers AI-automated takeoffs and other features to support business growth. The tool provides a range of features, including unlimited AI-automated takeoffs, and is available at a monthly or annual subscription fee",
+    "pricing_model": "Paid",
+    "primary_function": "Construction",
+    "id": "togal_ai"
+  }
+]

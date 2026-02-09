@@ -6,17 +6,16 @@ const dbPath = path.join(__dirname, 'database.js');
 let dbContent = fs.readFileSync(dbPath, 'utf8');
 
 // 2. Extract the JSON array from the file content
-// We remove "window.aiDatabase =" so we can parse just the array
 const cleanedContent = dbContent.replace(/window\.aiDatabase\s*=\s*/, '').trim();
 
-// 3. Remove the trailing semi-colon if it exists to make it valid JSON-like structure for eval
-// Note: Since the file is JS, we can use eval safely here as a build tool, 
-// or use a vm, but simple eval in a build script is acceptable for this context.
+// 3. Parse the Database
 let aiDatabase;
 try {
-    // Determine where the array ends
+    // Determine where the array ends (handling the trailing semicolon)
     const end = cleanedContent.lastIndexOf('];');
     const validJsonString = end > -1 ? cleanedContent.substring(0, end + 1) : cleanedContent;
+    
+    // Using eval to parse the JS array (ensure database.js is trusted code)
     aiDatabase = eval(validJsonString);
 } catch (e) {
     console.error("Error parsing database.js. Make sure it is valid Javascript array syntax.");
@@ -30,10 +29,9 @@ if (!fs.existsSync(outputDir)){
     fs.mkdirSync(outputDir, { recursive: true });
 }
 
-// 5. HTML Template Function
+// 5. HTML Template Function (Unchanged)
 const generateHTML = (ai) => {
-    // Fix image path: The main site uses "Recourses/...", 
-    // but these pages are in "pages/ais/", so we need to go up two levels "../../"
+    // Fix image path logic
     const logoPath = ai.logo_url ? `../../${ai.logo_url}` : '../../Recourses/Logos/DDD.jpg';
 
     return `<!DOCTYPE html>
@@ -139,12 +137,11 @@ const generateHTML = (ai) => {
 
         <header>
             <div>
-                <div class="provider">${ai.provider}</div>
+                <div class="provider">${ai.provider || 'Unknown Provider'}</div>
                 <h1>${ai.name}</h1>
             </div>
             <div style="text-align:right">
-                <span class="tag">${ai.primary_function}</span>
-                <span class="tag">${ai.integration_type}</span>
+                <span class="tag">${ai.primary_function || 'General'}</span>
             </div>
         </header>
 
@@ -155,14 +152,9 @@ const generateHTML = (ai) => {
                 </div>
                 
                 <div class="stats">
-                    <div class="stat-row"><span class="stat-label">Price Model</span> <span class="stat-val">${ai.pricing_model}</span></div>
-                    <div class="stat-row" style="margin-top:10px;"><span class="stat-label">Monthly Cost</span> <span class="stat-val">$${ai.price_base_monthly}</span></div>
-                    <div class="stat-row" style="margin-top:10px;"><span class="stat-label">Benchmark</span> <span class="stat-val">${ai.benchmark_rating}/10</span></div>
-                </div>
-
-                <div class="stats">
-                     <div class="stat-row"><span class="stat-label">Input</span> <span class="stat-val">${ai.input_type}</span></div>
-                     <div class="stat-row" style="margin-top:5px;"><span class="stat-label">Output</span> <span class="stat-val">${ai.output_type}</span></div>
+                    <div class="stat-row"><span class="stat-label">Price Model</span> <span class="stat-val">${ai.pricing_model || 'N/A'}</span></div>
+                    <div class="stat-row" style="margin-top:10px;"><span class="stat-label">Monthly Cost</span> <span class="stat-val">$${ai.price_base_monthly || 0}</span></div>
+                    <div class="stat-row" style="margin-top:10px;"><span class="stat-label">Benchmark</span> <span class="stat-val">${ai.benchmark_rating || '?'}/10</span></div>
                 </div>
 
                 <a href="${ai.website_url}" target="_blank" class="btn-visit">Visit Website ↗</a>
@@ -170,35 +162,35 @@ const generateHTML = (ai) => {
 
             <div class="content">
                 <p style="font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;">
-                    ${ai.description_short}
+                    ${ai.description_short || ''}
                 </p>
                 <p style="margin-bottom: 30px; color: #bbb;">
-                    ${ai.description_long}
+                    ${ai.description_long || ''}
                 </p>
 
                 <h2>Workflow Integration</h2>
-                <p>${ai.workflow_text}</p>
-                <p style="margin-top:10px; color: #88ff88;"><em>Efficiency: ${ai.efficiency_text}</em></p>
+                <p>${ai.workflow_text || 'No workflow data.'}</p>
+                <p style="margin-top:10px; color: #88ff88;"><em>Efficiency: ${ai.efficiency_text || 'N/A'}</em></p>
 
                 <h2>Analysis</h2>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
                         <h3 style="color:#88ff88; font-size: 0.9rem; text-transform:uppercase; margin-bottom:10px;">Pros</h3>
                         <ul>
-                            ${ai.pros.map(p => `<li>${p}</li>`).join('')}
+                            ${ai.pros ? ai.pros.map(p => `<li>${p}</li>`).join('') : '<li>N/A</li>'}
                         </ul>
                     </div>
                     <div>
                         <h3 style="color:#ff8888; font-size: 0.9rem; text-transform:uppercase; margin-bottom:10px;">Cons</h3>
                         <ul>
-                            ${ai.cons.map(c => `<li>${c}</li>`).join('')}
+                            ${ai.cons ? ai.cons.map(c => `<li>${c}</li>`).join('') : '<li>N/A</li>'}
                         </ul>
                     </div>
                 </div>
 
                 <h2>Fit For</h2>
                 <div>
-                    ${ai.company_size_fit.map(size => `<span class="tag" style="background:#333; border:none;">${size}</span>`).join('')}
+                    ${ai.company_size_fit ? ai.company_size_fit.map(size => `<span class="tag" style="background:#333; border:none;">${size}</span>`).join('') : ''}
                 </div>
             </div>
         </div>
@@ -207,17 +199,43 @@ const generateHTML = (ai) => {
 </html>`;
 };
 
-// 6. Generate Files
-console.log(`Found ${aiDatabase.length} entries. Generating pages...`);
+// 6. Generate Files (The "Smart Loop")
+console.log(`\n--- 🏭 Site Generator Started ---`);
+console.log(`Processing ${aiDatabase.length} entries...\n`);
+
+let stats = { added: 0, updated: 0, skipped: 0 };
 
 aiDatabase.forEach(ai => {
     if(!ai.id) return;
+    
     const fileName = `${ai.id}.html`;
     const filePath = path.join(outputDir, fileName);
-    const htmlContent = generateHTML(ai);
     
-    fs.writeFileSync(filePath, htmlContent);
-    console.log(`Generated: pages/ais/${fileName}`);
+    // 1. Generate the content in memory first
+    const newHtmlContent = generateHTML(ai);
+    
+    // 2. Check if file exists
+    if (fs.existsSync(filePath)) {
+        // 3. Read existing file to compare
+        const existingContent = fs.readFileSync(filePath, 'utf8');
+        
+        if (existingContent !== newHtmlContent) {
+            // 4. Update (Replace) if content is different
+            fs.writeFileSync(filePath, newHtmlContent);
+            console.log(`[UPDATED] ${fileName}`);
+            stats.updated++;
+        } else {
+            // 5. Skip if identical
+            // console.log(`[CHECKED] ${fileName} (No changes)`); // Uncomment to see all checks
+            stats.skipped++;
+        }
+    } else {
+        // 6. Add if it doesn't exist
+        fs.writeFileSync(filePath, newHtmlContent);
+        console.log(`[ ADDED ] ${fileName}`);
+        stats.added++;
+    }
 });
 
-console.log('Done! All pages generated.');
+console.log(`\n--- 🎉 Generation Complete ---`);
+console.log(`Added: ${stats.added} | Updated: ${stats.updated} | Checked & Skipped: ${stats.skipped}\n`);

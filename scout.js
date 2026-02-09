@@ -2,146 +2,92 @@ const axios = require('axios');
 const fs = require('fs');
 require('dotenv').config();
 
-// CONFIG
-const GEMINI_API_KEY = process.env.GEMINI_KEY;
-const SERPER_API_KEY = process.env.SERPER_KEY;
+const GEMINI_KEY = process.env.GEMINI_KEY;
+const SERPER_KEY = process.env.SERPER_KEY;
 
-// 1. SEARCH FUNCTION
+// 1. DYNAMIC MODEL SELECTOR
+// We try the newest model first. If it crashes, you can manually change this string.
+const MODEL_NAME = "gemini-pro"; 
+// const MODEL_NAME = "gemini-pro"; // Uncomment this if 2.0 fails too
+
 async function searchWeb(query) {
-    console.log(`🔍 Searching for: "${query}"...`);
     try {
         const response = await axios.post(
             'https://google.serper.dev/search',
             { q: query, num: 10 }, 
-            { headers: { 'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json' } }
+            { headers: { 'X-API-KEY': SERPER_KEY, 'Content-Type': 'application/json' } }
         );
         return response.data.organic || [];
     } catch (error) {
-        console.error("❌ Search Error:", error.message);
+        console.error("❌ Serper Error:", error.message);
         return [];
     }
 }
 
-// 2. GEMINI ANALYZER (Improved Prompt)
-async function analyzeWithGemini(snippet, title, link) {
-    const prompt = `
-    Analyze this search result to see if it mentions a specific AI software for architecture, construction, or design.
+async function askGemini(prompt) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_KEY}`;
     
-    Search Result Title: "${title}"
-    Snippet: "${snippet}"
-    Link: "${link}"
-
-    INSTRUCTIONS:
-    1. If this is a specific tool's homepage, extract its data.
-    2. If this is a "Top 10" list or blog post, LOOK AT THE SNIPPET. If the snippet mentions a specific tool name (e.g., "Tool X is great for..."), extract data for THAT tool.
-    3. If no specific software is mentioned, return "null".
-
-    Strictly use this JSON schema:
-    {
-        "id": "snake_case_name",
-        "name": "Tool Name",
-        "provider": "Company Name (guess if unknown)",
-        "website_url": "The link to the tool (use ${link} if it looks like the homepage, otherwise leave empty string)",
-        "description_short": "One sentence summary.",
-        "description_long": "Two sentence detailed description.",
-        "primary_function": "One of: Image/Video Gen, CAD/BIM/Technical, Data Interpretation, Management, Reality Capture, Bidding/Finance",
-        "pricing_model": "Subscription, Freemium, or Enterprise",
-        "price_base_monthly": 0,
-        "pros": ["Pro 1", "Pro 2"],
-        "cons": ["Con 1", "Con 2"],
-        "efficiency_text": "Short claim about speed/savings.",
-        "workflow_text": "Short text on how it fits into workflow.",
-        "company_size_fit": ["Studio", "Firm"], 
-        "benchmark_rating": 7
-    }
-
-    Return ONLY raw JSON. No markdown.
-    `;
-
     try {
-        const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-            { contents: [{ parts: [{ text: prompt }] }] }
-        );
-        
-        let text = response.data.candidates[0].content.parts[0].text;
-        // Clean up markdown if Gemini adds it
-        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-        
-        if (text.toLowerCase().includes("null")) return null;
-        
-        return JSON.parse(text);
-    } catch (e) {
-        return null; // Fail silently to keep logs clean
+        const response = await axios.post(url, { 
+            contents: [{ parts: [{ text: prompt }] }] 
+        });
+        return response.data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        // PRINT THE REAL ERROR so we stop guessing
+        const errMsg = error.response?.data?.error?.message || error.message;
+        console.error(`❌ AI Error (${MODEL_NAME}):`, errMsg);
+        return null;
     }
 }
 
-// 3. MAIN EXECUTION
-(async () => {
-    // 1. TARGETED QUERIES (The Secret Sauce)
-    // We break the workflow down into specific search terms to find niche tools.
-    const queries = [
-        // Pre-Design
-        "AI tool for architectural zoning analysis",
-        "AI site feasibility software architecture",
-        "Generative design software for floor plans",
-        
-        // Design & Visualization
-        "Best AI rendering software for architects 2024 2025",
-        "Text to BIM AI software",
-        "AI plugin for Revit 2025",
-        
-        // Construction Docs
-        "Automated construction specification AI",
-        "AI code compliance checker for building permits",
-        
-        // Bidding & Admin
-        "AI construction estimating software",
-        "AI bid leveling software construction",
-        "AI construction schedule optimizer",
-        "AI submittal review software"
-    ];
-
-    let blacklist = [];
-    if (fs.existsSync('blacklist.json')) blacklist = JSON.parse(fs.readFileSync('blacklist.json'));
+async function extractToolNames(snippet, title) {
+    const prompt = `
+    Source: "${title}" - "${snippet}"
+    List specific AI architecture software names found here. 
+    Format: Comma-separated list (e.g. Veras, TestFit). 
+    If none, say NONE.
+    `;
     
-    // Load existing candidates so we don't duplicate
-    let candidates = [];
-    if (fs.existsSync('candidates.json')) candidates = JSON.parse(fs.readFileSync('candidates.json'));
+    const text = await askGemini(prompt);
+    if (!text || text.includes("NONE")) return [];
+    
+    return text.split(',').map(s => s.trim()).filter(s => s.length > 2);
+}
 
-    console.log(`🚀 Starting Scout with ${queries.length} targeted queries...`);
+// MAIN LOOP
+(async () => {
+    console.log(`🚀 Scout initialized using model: ${MODEL_NAME}`);
+    
+    const queries = ["Top AI tools for architects 2025", "Generative design software architecture"];
+    let foundCount = 0;
 
     for (const q of queries) {
+        console.log(`\n🔎 Scanning: "${q}"...`);
         const results = await searchWeb(q);
         
         for (const item of results) {
-            // Skip if we already have it or banned it
-            if (blacklist.includes(item.link)) continue;
-            if (candidates.find(c => c.website_url === item.link)) continue;
-
-            // Log activity
-            process.stdout.write(`   Analyzing: ${item.title.substring(0, 40)}... `);
-            
-            const aiData = await analyzeWithGemini(item.snippet, item.title, item.link);
-            
-            if (aiData && aiData.name) {
-                // Deduplicate by name (in case different URL found same tool)
-                if (!candidates.find(c => c.name === aiData.name)) {
-                    candidates.push(aiData);
-                    console.log(`✅ FOUND: ${aiData.name}`);
-                } else {
-                    console.log(`(Duplicate)`);
-                }
+            const names = await extractToolNames(item.snippet, item.title);
+            if (names.length > 0) {
+                console.log(`   ✅ Found: ${names.join(", ")}`);
+                foundCount += names.length;
+                
+                // SAVE IMMEDIATELY (Simple Append)
+                // In a real app we dedup, but for now let's just prove it works
+                let current = [];
+                if (fs.existsSync('candidates.json')) current = JSON.parse(fs.readFileSync('candidates.json'));
+                
+                names.forEach(n => {
+                    current.push({ name: n, website_url: item.link });
+                });
+                
+                fs.writeFileSync('candidates.json', JSON.stringify(current, null, 2));
             } else {
-                console.log(`(Skipped)`);
+                process.stdout.write("."); // searching...
             }
-            
-            // 1 second delay to respect API rate limits
-            await new Promise(r => setTimeout(r, 1000));
         }
     }
-
-    fs.writeFileSync('candidates.json', JSON.stringify(candidates, null, 2));
-    console.log(`\n🎉 Done! Total candidates found: ${candidates.length}`);
-    console.log("Run 'node review_server.js' to process them.");
+    
+    if (foundCount === 0) {
+        console.log("\n\n⚠️ STILL 0 FOUND? Try changing 'MODEL_NAME' at the top of the script to 'gemini-pro'.");
+    }
 })();
