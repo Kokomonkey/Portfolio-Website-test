@@ -1,128 +1,482 @@
 [
   {
-    "name": "TestFit",
-    "website_url": "https://www.testfit.io/pricing",
-    "description_short": "TestFit offers flexible pricing plans for architects, developers, and construction professionals with real-time capabilities.",
-    "description_long": "TestFit provides a range of pricing plans to cater to the needs of architects, developers, general contractors, urban planners, and more, with a focus on real-time functionality. The platform aims to support various professionals in the construction and development industry with its flexible and scalable pricing options.",
-    "pricing_model": "Freemium/Paid",
-    "primary_function": "Design",
-    "id": "testfit"
-  },
-  {
-    "name": "ARCHITEChTURES",
-    "website_url": "https://architechtures.com/en/pricing?srsltid=AfmBOoqvKwin-TfiJkUubjzIp1rYgsL74RDHVXqdw9nSErT9Gg8hY_JC",
-    "description_short": "ARCHITEChTURES is an AI architecture software for designing better buildings faster.",
-    "description_long": "ARCHITEChTURES is an AI architecture software that enables users to design better buildings faster with its innovative tools and features. The platform offers a range of plans, including a free trial, to cater to different needs and preferences.",
-    "pricing_model": "Freemium",
-    "primary_function": "Design",
-    "id": "architechtures"
-  },
-  {
     "name": "Midjourney",
-    "website_url": "https://docs.midjourney.com/hc/en-us/articles/27870484040333-Comparing-Midjourney-Plans",
-    "description_short": "Midjourney is a tool with multiple pricing plans for various user needs.",
-    "description_long": "Midjourney is a tool that offers different pricing plans to cater to various user needs, with options ranging from basic to advanced features. The plans are available in monthly and annual subscriptions, providing flexibility for users to choose the plan that best suits their requirements.",
-    "pricing_model": "Freemium",
-    "primary_function": "Design",
-    "id": "midjourney"
+    "website_url": "https://jimmacleod.medium.com/the-best-ai-image-tools-for-2026-compared-and-evaluated-4dee99b4b565",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Midjourney_Emblem.png",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Maket.ai",
-    "website_url": "https://www.maket.ai/",
-    "description_short": "Maket.ai is a generative AI tool for designing, planning, and visualizing residential projects.",
-    "description_long": "Maket.ai utilizes generative AI to enable homeowners, architects, and builders to quickly design, plan, and visualize residential projects in just a few simple steps. This tool streamlines the project planning process, allowing users to bring their ideas to life efficiently.",
-    "pricing_model": "Freemium",
-    "primary_function": "Design",
-    "id": "maket_ai"
+    "name": "Meta AI",
+    "website_url": "https://jimmacleod.medium.com/the-best-ai-image-tools-for-2026-compared-and-evaluated-4dee99b4b565",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Meta_AI_Logo_%28Ring_Only%29.png",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "BricsCAD",
-    "website_url": "https://www.bricsys.com/en-us/store/bricscad?srsltid=AfmBOor0yTMFAUF3p8H8IM_tSCxMCwUcS9RJEn0Mg1cu3chGMkG9TETf",
-    "description_short": "BricsCAD is a computer-aided design software with various packages to suit specific design needs.",
-    "description_long": "BricsCAD is a computer-aided design software that offers a choice of packages to suit specific design needs, with each product level unlocking additional toolsets and modeling environments. It is available as a 1-year subscription, providing flexibility and accessibility for users.",
-    "pricing_model": "Paid",
-    "primary_function": "Design",
-    "id": "bricscad"
+    "name": "Canva AI",
+    "website_url": "https://jimmacleod.medium.com/the-best-ai-image-tools-for-2026-compared-and-evaluated-4dee99b4b565",
+    "logo_url": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/canva-icon.svg",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Autodesk Forma",
-    "website_url": "https://www.autodesk.com/products/forma/overview",
-    "description_short": "Autodesk Forma is an AI-powered site design tool that enables users to create, analyze, and optimize design options.",
-    "description_long": "Autodesk Forma is an AI-powered site design tool that enables users to create, analyze, and optimize design options, allowing them to deliver more and stress less. With its advanced AI capabilities, Forma streamlines the design process, enabling users to explore and refine their designs more efficiently.",
-    "pricing_model": "Paid",
-    "primary_function": "Design",
-    "id": "autodesk_forma"
+    "name": "Google's Nano Banana",
+    "website_url": "https://www.cnet.com/tech/services-and-software/best-ai-image-generators/",
+    "logo_url": "https://miro.medium.com/v2/resize:fit:1400/1*hhb4eQSrCeksxDGYIMZT4A.png",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Finch",
-    "website_url": "https://hubspot.finch3d.com/pricing-4",
-    "description_short": "Finch is a tool that offers detailed unit plan generation and compliance with local regulations.",
-    "description_long": "Finch Enterprise provides advanced features such as detailed unit plan generation and the ability to apply graph rules and constraints to ensure compliance with local regulations. This tool is designed to support design and construction processes, particularly for large-scale projects that require adherence to specific guidelines and standards.",
-    "pricing_model": "Enterprise",
-    "primary_function": "Design",
-    "id": "finch"
+    "name": "Stable Diffusion",
+    "website_url": "https://www.cnet.com/tech/services-and-software/best-ai-image-generators/",
+    "logo_url": "https://chasejarvis.com/wp-content/uploads/2025/12/How-does-Stable-Diffusion-work.jpeg",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Spacemaker",
-    "website_url": "https://www.autodesk.com/eu/campaigns/spacemaker",
-    "description_short": "Spacemaker is a design tool that enables users to test concepts, make informed decisions, and collaborate seamlessly.",
-    "description_long": "Spacemaker allows users to test concepts in minutes, make smarter decisions, unlock their creativity with generative design, and collaborate seamlessly. It is designed to streamline the design process, enhance productivity, and facilitate effective teamwork.",
-    "pricing_model": "Paid",
-    "primary_function": "Design",
-    "id": "spacemaker"
+    "name": "Seedream",
+    "website_url": "https://www.youtube.com/watch?v=_Ow97llH1YE",
+    "logo_url": "https://vectorseek.com/wp-content/uploads/2025/09/ByteDance-Seedream-Logo-PNG-SVG-01.png",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "APB Brain",
-    "website_url": "https://coaching.apbbuilders.com/p/apb-brain",
-    "description_short": "APB Brain is an on-demand AI assistant for residential building company owners.",
-    "description_long": "APB Brain is an on-demand AI assistant built specifically for residential building company owners, trained on over a decade of APB content. It provides access to Action Plans and other resources to support business operations.",
-    "pricing_model": "Paid",
-    "primary_function": "Management",
-    "id": "apb_brain"
+    "name": "Nano Banana",
+    "website_url": "https://www.youtube.com/watch?v=_Ow97llH1YE",
+    "logo_url": "https://store-images.s-microsoft.com/image/apps.47708.13995459486483234.d55d4637-fda0-48bc-b660-131213c2390f.a5803faf-f2fb-4a2a-b350-a42da831ac3b",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Builda Price",
-    "website_url": "https://au.buildaprice.app/plans/",
-    "description_short": "Builda Price offers various plans for builders and subcontractors to support their work.",
-    "description_long": "Builda Price provides a range of plans tailored to support builders of all types, including subcontractors. Their Pro plan is available for $365 AUD per month, excluding GST, to help builders manage their work efficiently.",
-    "pricing_model": "Paid",
-    "primary_function": "Construction",
-    "id": "builda_price"
+    "name": "Kling Image Generator",
+    "website_url": "https://www.youtube.com/watch?v=_Ow97llH1YE",
+    "logo_url": "https://dl-file.cyberlink.com/web/content/b3881/Thumbnail.jpg",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Buildxact",
-    "website_url": "https://www.buildxact.com/us/pricing/",
-    "description_short": "Buildxact is a construction management tool with pricing plans for different business needs.",
-    "description_long": "Buildxact offers a range of features to support construction management, with two main pricing plans: Foundation and Pro, each with varying levels of functionality. The tool is designed to help businesses streamline their construction processes, from planning to execution, with options for unlimited users and annual billing.",
-    "pricing_model": "Paid",
-    "primary_function": "Construction/Management",
-    "id": "buildxact"
+    "name": "Based on the provided context",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://mms.businesswire.com/media/20250708658619/en/2516648/22/black-png.jpg",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "DZINLY",
-    "website_url": "https://www.dzinly.com/",
-    "description_short": "DZINLY uses AI to generate designs tailored to a user's home based on their inspiration photos and style preferences.",
-    "description_long": "DZINLY is an AI-powered design tool that creates personalized designs for users' homes using their inspiration photos and style preferences. The tool provides instant results, allowing users to explore different design options for their space.",
-    "pricing_model": "Freemium",
-    "primary_function": "Design",
-    "id": "dzinly"
+    "name": "I've extracted the specific software names for \"Image Generation\" from the article. Here are the results:\n\nDeep Dream Generator",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://us1.discourse-cdn.com/openai1/optimized/4X/7/7/3/773cead7d81acbfbf20b6f8762150cd0ab046ed8_2_609x499.png",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Ressio Software",
-    "website_url": "https://www.capterra.com/p/10019813/Ressio-Software/",
-    "description_short": "Ressio Software is a project management platform for tracking finances, executing tasks, and collaborating with teams and vendors.",
-    "description_long": "The Ressio platform makes it easy to track project finances, execute tasks, manage documents, and collaborate with your team, vendors, and clients. It provides a comprehensive solution for project management, enabling users to streamline their workflows and improve productivity.",
-    "pricing_model": "Paid",
-    "primary_function": "Management",
-    "id": "ressio_software"
+    "name": "Prisma",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://user-images.githubusercontent.com/35201107/216070630-01100f3c-2154-4b57-bed3-2ac16ec35343.png",
+    "suggested_category": "Image Generation"
   },
   {
-    "name": "Togal.AI",
-    "website_url": "https://www.togal.ai/pricing-licenses",
-    "description_short": "Togal.AI is a construction tool that offers AI-automated takeoffs and other features for growth",
-    "description_long": "Togal.AI is a construction tool that offers AI-automated takeoffs and other features to support business growth. The tool provides a range of features, including unlimited AI-automated takeoffs, and is available at a monthly or annual subscription fee",
-    "pricing_model": "Paid",
-    "primary_function": "Construction",
-    "id": "togal_ai"
+    "name": "Artbreeder",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://assets.stickpng.com/images/66b0c51849d67f23279b286b.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "DALL-E",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://assets.stickpng.com/images/66af68f6585ea98e55ff85fd.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Adobe Fresco",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Adobe_Fresco_CC_icon.svg/960px-Adobe_Fresco_CC_icon.svg.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Wombo Dream",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://img.icons8.com/color/1200/wombo-by-dream.jpg",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Craiyon (formerly DALL-E Mini)",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://i0.wp.com/techtips.eglibrary.org/wp-content/uploads/2022/07/craiyonlogo.png?fit=680%2C383&ssl=1",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "PaintsChainer\n\nThese software names are strictly comma-separated as per the rules",
+    "website_url": "https://www.reddit.com/r/Aiarty/comments/1pyfgps/i_tested_20_ai_image_generators_here_are_the_top/",
+    "logo_url": "https://itirupati.com/wp-content/uploads/2024/06/PaintsChainer-ai-logo.webp",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "ChatGPT (GPT-4o)",
+    "website_url": "https://zapier.com/blog/best-ai-image-generator/",
+    "logo_url": "https://cdn.vectorstock.com/i/1000v/43/07/chatgpt-4o-logo-openai-ai-chatbot-vector-51364307.jpg",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Reve",
+    "website_url": "https://zapier.com/blog/best-ai-image-generator/",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Logo_of_REVE_Antivirus.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Adobe Firefly",
+    "website_url": "https://uk.pcmag.com/ai/162243/the-best-ai-image-generators-for-2026",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Adobe_Firefly_Logo.svg/960px-Adobe_Firefly_Logo.svg.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Google Gemini",
+    "website_url": "https://uk.pcmag.com/ai/162243/the-best-ai-image-generators-for-2026",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/500px-Google_Gemini_logo.svg.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Microsoft Copilot",
+    "website_url": "https://uk.pcmag.com/ai/162243/the-best-ai-image-generators-for-2026",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Microsoft_Copilot_Icon.svg/1280px-Microsoft_Copilot_Icon.svg.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Grok",
+    "website_url": "https://uk.pcmag.com/ai/162243/the-best-ai-image-generators-for-2026",
+    "logo_url": "https://1000logos.net/wp-content/uploads/2025/02/Grok-Logo.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "I was unable to access the full text of \"The Best AI Image Generators in 2025: The ultimate expert guide...\". However",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://cdn.mos.cms.futurecdn.net/gtcUDsoF7bc9j4FUnVBeF7.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "I can still provide you with a list of popular AI image generators as of my knowledge cutoff in 2023. \n\nHere's a list of AI image generators that I can confirm:\n\nDeep Dream Generator",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://prdstrapimediastorage.blob.core.windows.net/prdstrapimediastorage/assets/best_ai_image_generators_Playground_AI_15d5262daf.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "AI Painter",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://static.vecteezy.com/system/resources/thumbnails/046/437/283/small_2x/adobe-illustrator-icon-free-png.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "PaintsChainer",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://itirupati.com/wp-content/uploads/2024/06/PaintsChainer-ai-logo.webp",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "and Generative Adversarial Network (GAN) tools like BigGAN and StyleGAN.\n\nHowever",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://miro.medium.com/1*RNikjy4B9aK-UgWR9pFdaQ.jpeg",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "since I couldn't access the full text of the provided source",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://external-preview.redd.it/oss-alternative-to-open-webui-chatgpt-like-ui-api-and-cli-v0-NbBv8AZ8_FKSnCg3gr7veZ2x9ORPuKnCYj3fZNiyQ4g.png?width=640&crop=smart&auto=webp&s=c7b803dc54d4efa07b26adcaaf15f3d1576da99f",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "I'll provide you with a list of AI image generators that might be mentioned in the source. Please note that this list might not be exhaustive.\n\nHere's a list of AI image generators that might be mentioned in the source:\n\nDALL-E",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=25853124217627068",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "BigGAN",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://png.pngtree.com/png-clipart/20221110/original/pngtree-download-software-logo-material-design-picture-image_3624755.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "StyleGAN",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://opengraph.githubassets.com/7a7e0f5524df9d44750461d0e9bd66e579c0504b147b8adb634b14fc1a764351/NVlabs/stylegan",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "and other tools like Craiyon",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://p16-seeyou-useast5.capcutcdn-us.com/tos-useast5-i-2zwwjm3azk-tx/8f3404c6e02d4ef881d9c233f5ee789d~tplv-2zwwjm3azk-image.image",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Denoising Diffusion",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://miro.medium.com/v2/resize:fit:1400/1*kxEVcIWwuFR0Ws7NoRco1A.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "and Imagen.\n\nSince I couldn't access the full text of the source",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Open_Source_Initiative.svg",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "I'll return a list of AI image generators that I can confirm",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://images.ctfassets.net/lzny33ho1g45/2olcy4TVSWAjqy5dsxLNZd/09b4a18346af97076615d5f1d1407c39/best-ai-image-generator-hero.jpg",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "excluding generic terms. If the source mentions any other tools",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://substackcdn.com/image/fetch/$s_!XrnD!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8dcc7dee-68d4-48cd-986c-190f40d16d5a_1536x1024.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "they might not be included in this list.\n\nHere's the list of AI image generators in a comma-separated format:\n\nDALL-E",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://us1.discourse-cdn.com/openai1/optimized/4X/7/7/3/773cead7d81acbfbf20b6f8762150cd0ab046ed8_2_609x499.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Craiyon",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://www.kindpng.com/picc/m/149-1495447_crayon-logo-png-crayon-software-logo-transparent-png.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Imagen",
+    "website_url": "https://aimlapi.com/blog/the-best-ai-image-generators",
+    "logo_url": "https://www.clipartmax.com/png/middle/36-368069_logos-computer-software-icon-png.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "GPT Image",
+    "website_url": "https://wavespeed.ai/blog/posts/best-ai-image-generators-2026",
+    "logo_url": "https://i.pinimg.com/736x/33/d5/cb/33d5cbb35f83f09537b33fe52b51ba30.jpg",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Gemini",
+    "website_url": "https://wavespeed.ai/blog/posts/best-ai-image-generators-2026",
+    "logo_url": "https://1000logos.net/wp-content/uploads/2024/02/Gemini-Logo.jpg",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Flux 2",
+    "website_url": "https://wavespeed.ai/blog/posts/best-ai-image-generators-2026",
+    "logo_url": "https://user-images.githubusercontent.com/92439/89046494-4dd57a00-d34d-11ea-9d46-a4cee212c52d.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Hunyuan",
+    "website_url": "https://wavespeed.ai/blog/posts/best-ai-image-generators-2026",
+    "logo_url": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/hunyuan-color.png",
+    "suggested_category": "Image Generation"
+  },
+  {
+    "name": "Arcadium 3D",
+    "website_url": "https://arcadium3d.com/articles/colour-zoning-with-arcadiums-ai-tool",
+    "logo_url": "https://gdm-catalog-fmapi-prod.imgix.net/ProductLogo/bdf3aad1-b540-4b2f-bca2-6f05e1a07f8b.png",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "Ideal House",
+    "website_url": "https://ideal.house/create/ai-plan-visualizer",
+    "logo_url": "https://cdn.promeai.pro/idealhouse-web/v0.1.1798.prod/_nuxt/logo_en.8qiTJ2o5.svg",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "NanoBanana.art",
+    "website_url": "https://nanobanana.art/ai-image-effects/ai-floor-plan-generator",
+    "logo_url": "https://miro.medium.com/v2/resize:fit:1400/1*hhb4eQSrCeksxDGYIMZT4A.png",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "mnml.ai",
+    "website_url": "https://mnml.ai/blog/turn-cad-plans-into-realistic-renders",
+    "logo_url": "https://s3-eu-west-1.amazonaws.com/tpd/logos/664f7bf8598c1c220e38a9b5/0x0.png",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "ArchiVinci",
+    "website_url": "https://www.archivinci.com/",
+    "logo_url": "https://static.wixstatic.com/media/80eeb4_27eda7027f574213a84eced74c16feb4~mv2.png/v1/fill/w_2500,h_1406,al_c/80eeb4_27eda7027f574213a84eced74c16feb4~mv2.png",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "Rendair",
+    "website_url": "https://rendair.ai/ai-rendering-for-autocad",
+    "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQE48hJkd9pDFw/company-logo_200_200/company-logo_200_200/0/1706810713056/rendair_logo?e=2147483647&v=beta&t=DV9XhFy92gGe-uLqW1l7rC617O_M66o0MLaqC7zO5AY",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "I was unable to find any specific software names related to \"Floorplan Colouring\". However",
+    "website_url": "https://camplan.ai/",
+    "logo_url": "https://applet3d.com/assets/images/blog/interior-rendering/best-interior-design-software-free-amp-online/floorplanner-logo.jpg",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "I can suggest some tools that might be relevant:\n\n- CamPlan\n\nSince CamPlan is the only specific tool mentioned in the context",
+    "website_url": "https://camplan.ai/",
+    "logo_url": "https://media.whatagraph.com/13_best_dashboard_reporting_tools_b46ca6ef08.png",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "the list of software names is:\n\nCamPlan",
+    "website_url": "https://camplan.ai/",
+    "logo_url": "https://fabrikbrands.com/wp-content/uploads/Software-Company-Logos-1.png",
+    "suggested_category": "Floorplan Colouring"
+  },
+  {
+    "name": "ALICE Technologies",
+    "website_url": "https://www.mastt.com/software/ai-construction-tools",
+    "logo_url": "https://mma.prnewswire.com/media/1836702/Logo_FullColour_RGB_4x_100.jpg?p=twitter",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Vitruvi",
+    "website_url": "https://vitruvisoftware.com/blog/top-ai-construction-software",
+    "logo_url": "https://vitruvisoftware.com/hubfs/Website/02_2.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Buildots",
+    "website_url": "https://vitruvisoftware.com/blog/top-ai-construction-software",
+    "logo_url": "https://buildots.com/wp-content/uploads/2022/05/Buildots_Logo_RGB_BlackYellow.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "OpenSpace",
+    "website_url": "https://vitruvisoftware.com/blog/top-ai-construction-software",
+    "logo_url": "https://www.openspace.ai/wp-content/uploads/2025/09/OpenSpace_Logo_Icon_CodeBlue_Standard-scaled.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Doxel",
+    "website_url": "https://vitruvisoftware.com/blog/top-ai-construction-software",
+    "logo_url": "https://builtworlds.com/wp-content/uploads/2022/03/Construction-Conference-2025_Sponsor-Tiles_WEB19-784x203.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Foresight",
+    "website_url": "https://vitruvisoftware.com/blog/top-ai-construction-software",
+    "logo_url": "https://res.cloudinary.com/dpznnk0ur/image/upload/v1677715820/Foresight_Logo_main_8215ef9762.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "I found the following specific software name:\n\nKreo\n\nSince there's only one specific software name mentioned",
+    "website_url": "https://www.kreo.net/",
+    "logo_url": "https://media.tekpon.com/2024/01/Kreo-Logo.webp",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "I will return it as a comma-separated list:\n\nKreo",
+    "website_url": "https://www.kreo.net/",
+    "logo_url": "https://contractorforeman.com/wp-content/uploads/2025/07/kreologo.svg",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "TestFit",
+    "website_url": "https://constructionmanagement.co.uk/ai-tool-speeds-up-generative-design/",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvMTM0ZDkxZjYtNTAzZS00ZTc0LWJmOTgtNDkyNWVmMzU3M2Q1LmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "After analyzing the provided context",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://mms.businesswire.com/media/20250708658619/en/2516648/22/black-png.jpg",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "I found the following specific software names:\n\nRoomSketcher",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://www.bobvila.com/wp-content/uploads/2023/02/The-Best-Floor-Plan-Software-Option-RoomSketcher.jpg?quality=85&w=404",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Planner 5D",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/Planner_5D_logo.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Floorplanner",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://cdn.brandfetch.io/idVnui-Rx-/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1768753545607",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Homestyler",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Homestyler.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Planner",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Microsoft_Planner_%282019%E2%80%932024%29.svg/960px-Microsoft_Planner_%282019%E2%80%932024%29.svg.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Space Planner",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://static.thenounproject.com/png/2431859-200.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "RoomSketcher",
+    "website_url": "https://www.reddit.com/r/askarchitects/comments/1ihovf2/ai_tool_for_scaling_floor_plans/",
+    "logo_url": "https://applet3d.com/assets/images/blog/interior-rendering/best-interior-design-software-free-amp-online/room-sketcher-logo.jpg",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "I was able to extract the following software names:\n\nNew Relic",
+    "website_url": "https://aws.amazon.com/blogs/machine-learning/new-relic-transforms-productivity-with-generative-ai-on-aws/",
+    "logo_url": "https://newrelic.com/themes/custom/erno/assets/mediakit/new_relic_logo_vertical.png",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "Amazon Bedrock\n\nThese names are specific software tools mentioned in the context",
+    "website_url": "https://aws.amazon.com/blogs/machine-learning/new-relic-transforms-productivity-with-generative-ai-on-aws/",
+    "logo_url": "https://media2.dev.to/dynamic/image/width=1080,height=1080,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F5pvbl6rnra2z7cuveuqd.jpg",
+    "suggested_category": "Detail Creation"
+  },
+  {
+    "name": "I was able to extract the following software names related to \"Energy Analysis\":\n\nSimulationHub",
+    "website_url": "https://www.simulationhub.com/buildings-ai",
+    "logo_url": "x-raw-image:///8c1f671f7f65a693a29df8b15718ec7a1388bcb6b770dc383957d4c7684b55c0",
+    "suggested_category": "Energy Analysis"
+  },
+  {
+    "name": "BuildingsAI\n\nThese software names meet the specified rules and are directly related to the task of energy analysis",
+    "website_url": "https://www.simulationhub.com/buildings-ai",
+    "logo_url": "x-raw-image:///cc343382365d9a1146209089afab75fef0e3fd2fb912df7cc14b4e9de2d8ab86",
+    "suggested_category": "Energy Analysis"
+  },
+  {
+    "name": "EnergyPlus",
+    "website_url": "https://www.mdpi.com/2075-5309/15/21/3950",
+    "logo_url": "https://energyplus.net/assets/images/energyplus.png",
+    "suggested_category": "Energy Analysis"
+  },
+  {
+    "name": "ENVI-met",
+    "website_url": "https://oneclicklca.com/en/resources/articles/building-energy-simulation-envi-met",
+    "logo_url": "https://envi-met.com/wp-content/uploads/2021/10/envi-met-logo.png",
+    "suggested_category": "Energy Analysis"
+  },
+  {
+    "name": "Connecteam",
+    "website_url": "https://www.reddit.com/r/ConstructionManagers/comments/1dkdwnp/ai_in_scheduling/",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Connecteam_logo.png",
+    "suggested_category": "Scheduling"
+  },
+  {
+    "name": "I was unable to find any specific software names mentioned in the source \"Runchat in Rhino - by Gwyllim Jahn\". However",
+    "website_url": "https://gwyllim.substack.com/p/runchat-in-rhino",
+    "logo_url": "https://substackcdn.com/image/fetch/$s_!s7PH!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F04a8d69d-b7ce-4e84-bc1a-06565d31344b_2392x800.png",
+    "suggested_category": "Scripting"
+  },
+  {
+    "name": "I can extract the name of the tool mentioned in the context.\n\nThe tool mentioned is: Runchat\n\nSince Runchat is the only specific software name mentioned",
+    "website_url": "https://gwyllim.substack.com/p/runchat-in-rhino",
+    "logo_url": "https://miro.medium.com/v2/resize:fit:1400/1*dFiJ_UT5JirOKFkAv-nFdw.png",
+    "suggested_category": "Scripting"
+  },
+  {
+    "name": "the list is:\n\nRunchat",
+    "website_url": "https://gwyllim.substack.com/p/runchat-in-rhino",
+    "logo_url": "https://static.wikia.nocookie.net/logopedia/images/c/c5/The_List_App-Like_Icon.png/revision/latest?cb=20220925024119",
+    "suggested_category": "Scripting"
   }
 ]
