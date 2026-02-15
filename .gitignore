@@ -1,0 +1,7 @@
+# 1. Ignore everything inside the MaterialData folder
+MaterialData/*
+
+# 2. Add exceptions (!) for the files you WANT to sync
+!MaterialData/public_material_portal.html
+!MaterialData/local_brain.py
+!MaterialData/materials.db
