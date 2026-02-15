@@ -110,6 +110,40 @@
             line-height: 1;
         }
 
+        /* --- NEW TITLE CONTAINER & ROADMAP BUTTON --- */
+        .title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Aligns text/button to the left relative to each other */
+            justify-content: center;
+        }
+
+        .roadmap-btn {
+            margin-top: 1vh;
+            font-size: 1.5vh;
+            text-decoration: none;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 0.5vh 1.5vh;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all var(--transition-speed) ease;
+            letter-spacing: 0.2vh;
+        }
+
+        .roadmap-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            cursor: pointer;
+        }
+
+        /* MOBILE TWEAK: Center the button on mobile */
+        @media (max-width: 768px) {
+            .title-container {
+                align-items: center; /* Center align on mobile */
+            }
+        }
+
         /* --- GRID SECTION --- */
         main {
             display: flex;
@@ -382,8 +416,12 @@
     <header>
         <div class="logo-placeholder">
             <img src="Recourses/Logos/DDD.jpg" />
-            </div>
-        <h1>DouweDoesDesign</h1>
+        </div>
+        
+        <div class="title-container">
+            <h1>DouweDoesDesign</h1>
+            <a href="Roadmap.html" class="roadmap-btn">feature roadmap</a>
+        </div>
     </header>
 
     <main>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadmap | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #050505;
+            --accent-color: #ffffff;
+            --dim-color: #444444;
+            --wip-stripe: #1a1a1a;
+            --node-width: 160px;
+            --node-height: 50px;
+            --green: #0f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            user-select: none;
+        }
+
+        /* --- BACKGROUND PATTERN --- */
+        .bg-pattern {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(var(--dim-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* --- INTRO OVERLAY --- */
+        #intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-color);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 1s ease;
+        }
+        .intro-text {
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            animation: blink 0.2s infinite;
+        }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* --- UI LAYER --- */
+        .ui-layer {
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+            width: 100%; height: 100%;
+        }
+
+        .back-btn {
+            pointer-events: auto;
+            position: absolute;
+            top: 30px; left: 30px;
+            text-decoration: none;
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        .header-title {
+            position: absolute;
+            top: 30px; right: 40px;
+            text-align: right;
+        }
+        .header-title h1 { font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+        .header-title p { font-size: 0.8rem; color: #888; }
+
+        /* --- DATABASE LOG (BOTTOM LEFT) --- */
+        .db-console {
+            position: absolute;
+            bottom: 30px; left: 30px;
+            width: 350px;
+            font-size: 10px;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .db-console:hover { opacity: 1; }
+
+        .db-header {
+            color: #888;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            display: flex; justify-content: space-between;
+        }
+        .db-log {
+            height: 120px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse; /* Newest at bottom visually */
+            gap: 4px;
+            mask-image: linear-gradient(to bottom, transparent, black 20%);
+        }
+        .log-entry { color: #666; animation: slideIn 0.3s forwards; }
+        .log-entry.new { color: var(--accent-color); text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .log-entry span { color: #444; margin-right: 5px; }
+        @keyframes slideIn { from { transform: translateX(-10px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* --- LEGEND & REQUEST BTN (BOTTOM RIGHT) --- */
+        .bottom-right-ui {
+            position: absolute;
+            bottom: 30px; right: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 15px;
+            pointer-events: auto;
+        }
+
+        .btn-request {
+            background: var(--bg-color);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 10px 15px;
+            font-family: inherit;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0px rgba(255,255,255,0.2);
+        }
+        .btn-request:hover {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px rgba(255,255,255,0.4);
+        }
+
+        .legend {
+            display: flex; gap: 20px;
+            font-size: 12px; color: #888;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .dot { width: 10px; height: 10px; border: 1px solid var(--accent-color); }
+        .dot.done { background: var(--accent-color); }
+        .dot.wip { background: repeating-linear-gradient(45deg, var(--bg-color), var(--bg-color) 2px, var(--dim-color) 2px, var(--dim-color) 4px); }
+
+        /* --- CANVAS --- */
+        #viewport {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            cursor: grab;
+        }
+        #viewport:active { cursor: grabbing; }
+
+        #roadmap-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 2500px; height: 1500px;
+            transform-origin: 0 0;
+            transition: transform 0.1s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+        }
+
+        svg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+
+        path {
+            fill: none;
+            stroke: var(--dim-color);
+            stroke-width: 2;
+            stroke-dasharray: 6 6; 
+            opacity: 0; 
+            transition: opacity 0.5s;
+        }
+        
+        path.visible { opacity: 1; animation: flow 1s linear infinite; }
+        path.active-path { stroke: var(--accent-color); }
+
+        @keyframes flow {
+            from { stroke-dashoffset: 24; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* --- NODES --- */
+        .node {
+            position: absolute;
+            width: var(--node-width);
+            height: var(--node-height);
+            border: 1px solid var(--accent-color);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 5px;
+            z-index: 2;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+            opacity: 0; transform: scale(0); /* Intro state */
+        }
+
+        .node.visible { opacity: 1; transform: scale(1); }
+
+        .node[data-status="done"] { background-color: var(--accent-color); color: var(--bg-color); }
+        .node[data-status="wip"] {
+            background: repeating-linear-gradient(45deg, var(--bg-color), var(--bg-color) 5px, var(--wip-stripe) 5px, var(--wip-stripe) 10px);
+            border: 2px solid var(--accent-color);
+            animation: pulseBorder 2s infinite;
+        }
+        .node[data-status="todo"] { border: 1px dashed var(--dim-color); color: #888; }
+        .node.locked { border-color: var(--green); box-shadow: 0 0 15px rgba(0,255,0,0.3); z-index: 20; }
+
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); border-color: white; }
+            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); border-color: white;}
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); border-color: #888; }
+        }
+
+        .node-vote-badge {
+            position: absolute; top: -10px; right: -10px;
+            background: #000; border: 1px solid var(--accent-color); color: var(--accent-color);
+            font-size: 9px; padding: 2px 5px; border-radius: 50%; min-width: 20px; text-align: center;
+        }
+        .node[data-status="done"] .node-vote-badge { background: var(--bg-color); color: var(--accent-color); border-color: var(--bg-color); }
+
+        /* --- TOOLTIP --- */
+        .tooltip {
+            position: fixed;
+            width: 300px;
+            background: rgba(0,0,0,0.95);
+            border: 1px solid var(--accent-color);
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,1);
+            pointer-events: none; 
+        }
+
+        .tooltip.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .tt-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed var(--dim-color); padding-bottom: 10px; margin-bottom: 10px; }
+        .tt-title { font-size: 14px; text-transform: uppercase; font-weight: bold; }
+        .tt-close { display: none; cursor: pointer; font-weight: bold; color: var(--dim-color); }
+        .tooltip.locked .tt-close { display: block; }
+        .tt-desc { font-size: 12px; line-height: 1.5; color: #ccc; margin-bottom: 20px; }
+        .tt-vote-btn { background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 8px 16px; font-family: inherit; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; transition: 0.2s;}
+        .tt-vote-btn:hover, .tt-vote-btn.voted { background: var(--accent-color); color: var(--bg-color); }
+
+        /* --- REQUEST MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 5000;
+            display: none;
+            justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: #000; border: 2px solid var(--accent-color);
+            width: 400px; padding: 30px;
+            box-shadow: 0 0 50px rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .modal-header { font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .modal-close { cursor: pointer; }
+        
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .input-group input, .input-group textarea {
+            background: #111; border: 1px solid #333; color: white;
+            padding: 10px; font-family: inherit; font-size: 12px; outline: none;
+        }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--accent-color); }
+        
+        .btn-send {
+            background: var(--accent-color); color: var(--bg-color); border: none;
+            padding: 12px; font-family: inherit; font-weight: bold; text-transform: uppercase;
+            cursor: pointer; margin-top: 10px;
+        }
+        .btn-send:hover { opacity: 0.8; }
+        .success-msg { text-align: center; display: none; color: #fff; padding: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-pattern"></div>
+
+    <div id="intro-overlay">
+        <div class="intro-text">INITIALIZING ROOT SYSTEM...</div>
+    </div>
+
+    <div class="ui-layer">
+        <a href="index.html" class="back-btn">← Back</a>
+        
+        <div class="db-console">
+            <div class="db-header">
+                <span>Features.json [R/W]</span>
+                <span id="db-status" style="color:#0f0">ACTIVE</span>
+            </div>
+            <div class="db-log" id="db-log-container">
+                </div>
+        </div>
+
+        <div class="header-title">
+            <h1>Roadmap</h1>
+            <p>Scroll to Zoom • Drag to Move • Click to Lock</p>
+        </div>
+        
+        <div class="bottom-right-ui">
+            <button class="btn-request" onclick="openRequestModal()">+ Request Feature</button>
+            <div class="legend">
+                <div class="legend-item"><div class="dot done"></div> COMPLETED</div>
+                <div class="legend-item"><div class="dot wip"></div> IN PROGRESS</div>
+                <div class="legend-item"><div class="dot"></div> PLANNED</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewport">
+        <div id="roadmap-container">
+            <svg id="connections"></svg>
+            </div>
+    </div>
+
+    <div id="tooltip" class="tooltip">
+        <div class="tt-header">
+            <span class="tt-title" id="tt-title">Title</span>
+            <span class="tt-close" onclick="closeTooltip()">[CLOSE]</span>
+        </div>
+        <p class="tt-desc" id="tt-desc">Description goes here.</p>
+        <div class="tt-vote-area" id="tt-vote-area">
+            <button class="tt-vote-btn" id="tt-btn" onclick="handleVote()">▲ Vote for this Feature</button>
+        </div>
+    </div>
+
+    <div id="request-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div id="modal-form-content">
+                <div class="modal-header">
+                    <span>REQUEST FEATURE</span>
+                    <span class="modal-close" onclick="closeRequestModal()">×</span>
+                </div>
+                <div class="input-group">
+                    <label>Feature Description (Required)</label>
+                    <textarea id="req-feature" rows="4" placeholder="Describe the feature..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Name (Optional)</label>
+                    <input type="text" id="req-name" placeholder="Name or Alias">
+                </div>
+                <div class="input-group">
+                    <label>Contact Email (Private)</label>
+                    <input type="email" id="req-email" placeholder="For updates...">
+                </div>
+                <button class="btn-send" onclick="submitFeature()">Submit to Database</button>
+            </div>
+            
+            <div id="modal-success" class="success-msg">
+                <h3 style="color:var(--green); margin-bottom:10px;">DATA ENCRYPTED & SAVED</h3>
+                <p>Feature logged to local database.</p>
+                <p style="font-size: 0.8rem; color: #888; margin-top:5px;">Admin will review shortly.</p>
+                <button class="btn-request" style="margin-top: 20px;" onclick="closeRequestModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const nodes = [
+            { id: 1, text: "Cost Calc", x: 50, y: 100, status: 'done', desc: "Monthly AI subscription cost calculator." },
+            { id: 2, text: "Size Filter", x: 250, y: 100, status: 'done', desc: "Filter tools based on company size." },
+            { id: 3, text: "Combined Filter", x: 450, y: 100, status: 'done', desc: "Unified filtering system." },
+            { id: 4, text: "Login System", x: 650, y: 100, status: 'wip', desc: "Secure user accounts." },
+            
+            { id: 5, text: "GDPR/Privacy", x: 900, y: 50, status: 'wip', desc: "EU Privacy compliance." },
+            { id: 6, text: "Save Workflows", x: 900, y: 120, status: 'todo', desc: "Save custom stacks to profile." },
+            { id: 20, text: "Community Flows", x: 1100, y: 120, status: 'todo', desc: "Share workflows publicly." },
+            { id: 7, text: "Fav Tools", x: 900, y: 190, status: 'todo', desc: "Bookmark favorite AIs." },
+            
+            { id: 9, text: "Reformat DB", x: 50, y: 400, status: 'done', desc: "Database structure update." },
+            { id: 10, text: "Benchmarks", x: 50, y: 500, status: 'wip', desc: "Performance testing results." },
+            { id: 11, text: "Reviews", x: 250, y: 450, status: 'wip', desc: "Detailed editorial reviews." },
+            { id: 21, text: "Random Tool", x: 250, y: 550, status: 'todo', desc: "Random discovery button." },
+            { id: 12, text: "Tutorials", x: 450, y: 450, status: 'todo', desc: "Step-by-step guides." },
+            { id: 22, text: "Browser Ext.", x: 850, y: 450, status: 'todo', desc: "Chrome extension for clipping." },
+
+            { id: 14, text: "Limits Page", x: 50, y: 700, status: 'done', desc: "Disclaimer on AI hallucinations." },
+            { id: 15, text: "Auto-Limits", x: 250, y: 700, status: 'todo', desc: "Automated stats updating." },
+            { id: 18, text: "Playgrounds", x: 500, y: 850, status: 'todo', desc: "Interactive AI demos." },
+
+            { id: 19, text: "Mobile App", x: 1100, y: 400, status: 'todo', desc: "iOS/Android App." },
+            { id: 23, text: "Roadmap Voting", x: 1300, y: 200, status: 'done', desc: "Interactive voting system." },
+            { id: 24, text: "Rebrand", x: 1300, y: 400, status: 'wip', desc: "Visual identity refresh." },
+        ];
+
+        // Sort by X for animation logic
+        nodes.sort((a,b) => a.x - b.x);
+
+        const connections = [
+            { from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 },
+            { from: 4, to: 5 }, { from: 4, to: 6 }, { from: 4, to: 7 },
+            { from: 6, to: 20 },
+            { from: 9, to: 11 }, { from: 10, to: 11 }, { from: 21, to: 11 },
+            { from: 11, to: 12 }, { from: 12, to: 22 },
+            { from: 14, to: 15 }, { from: 15, to: 18 },
+            { from: 4, to: 19 }, { from: 4, to: 23 }, { from: 4, to: 24 }
+        ];
+
+        // --- SETUP ---
+        const container = document.getElementById('roadmap-container');
+        const viewport = document.getElementById('viewport');
+        const svg = document.getElementById('connections');
+        const tooltip = document.getElementById('tooltip');
+        
+        let state = {
+            scale: 1,
+            panning: false,
+            startX: 0, startY: 0, translateX: 0, translateY: 0,
+            lockedNodeId: null
+        };
+
+        // --- DB LOG LOGIC ---
+        function addLogEntry(user, text, isNew) {
+            const container = document.getElementById('db-log-container');
+            const div = document.createElement('div');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
+            div.className = isNew ? 'log-entry new' : 'log-entry';
+            div.innerHTML = `<span>[${time}]</span> <strong>${user}:</strong> ${text}`;
+            container.insertBefore(div, container.firstChild);
+        }
+
+        function initDatabase() {
+            // Retrieve stored features
+            const data = JSON.parse(localStorage.getItem('ddd_features_db')) || [];
+            if(data.length === 0) {
+                addLogEntry("SYSTEM", "Initializing File System...", false);
+                addLogEntry("SYSTEM", "Ready.", false);
+            } else {
+                addLogEntry("SYSTEM", "Reloading session...", false);
+                // Show last 3 entries so the log isn't empty
+                data.slice(-3).forEach(d => addLogEntry(d.user, `REQ: ${d.feature}`, false));
+            }
+        }
+
+        // --- INITIALIZATION ---
+        (function init() {
+            // 1. Render Nodes
+            nodes.forEach(node => {
+                const el = document.createElement('div');
+                el.className = 'node';
+                el.id = `node-${node.id}`;
+                el.dataset.id = node.id;
+                el.dataset.status = node.status;
+                el.style.left = node.x + 'px';
+                el.style.top = node.y + 'px';
+                el.innerText = node.text;
+
+                // Vote Badge
+                const badge = document.createElement('div');
+                badge.className = 'node-vote-badge';
+                badge.id = `badge-${node.id}`;
+                badge.innerText = "0";
+                if(node.status !== 'done') el.appendChild(badge);
+
+                // Events
+                el.addEventListener('mouseenter', (e) => { if(!state.lockedNodeId) showTooltip(e, node); });
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    state.lockedNodeId = node.id;
+                    document.querySelectorAll('.node').forEach(n => n.classList.remove('locked'));
+                    el.classList.add('locked');
+                    showTooltip(e, node, true);
+                });
+
+                container.appendChild(el);
+            });
+
+            // 2. Render Connections
+            connections.forEach((conn) => {
+                const n1 = nodes.find(n => n.id === conn.from);
+                const n2 = nodes.find(n => n.id === conn.to);
+                if(!n1 || !n2) return;
+                const x1 = n1.x + 160; const y1 = n1.y + 25;
+                const x2 = n2.x; const y2 = n2.y + 25;
+                const cp1X = x1 + (x2 - x1) / 2;
+                
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", `M ${x1} ${y1} C ${cp1X} ${y1}, ${cp1X} ${y2}, ${x2} ${y2}`);
+                path.id = `path-${n1.id}-${n2.id}`;
+                if(n1.status === 'done' || n1.status === 'wip') path.classList.add('active-path');
+                svg.appendChild(path);
+            });
+
+            // 3. Update Votes
+            updateAllVoteCounts();
+
+            // 4. Init DB Log
+            initDatabase();
+
+            // 5. Run Intro Animation
+            setTimeout(() => {
+                document.getElementById('intro-overlay').style.opacity = 0;
+                setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1000);
+                
+                // Staggered reveal
+                nodes.forEach((node, i) => {
+                    setTimeout(() => {
+                        document.getElementById(`node-${node.id}`).classList.add('visible');
+                        // Show connected paths
+                        connections.filter(c => c.from === node.id).forEach(c => {
+                            const p = document.getElementById(`path-${c.from}-${c.to}`);
+                            if(p) p.classList.add('visible');
+                        });
+                    }, (node.x / 100) * 100); // Delay based on X position
+                });
+            }, 1000);
+
+        })();
+
+        // --- INTERACTION HANDLERS ---
+        function updateTransform() { container.style.transform = `translate(${state.translateX}px, ${state.translateY}px) scale(${state.scale})`; }
+        
+        viewport.addEventListener('mousedown', (e) => { 
+            state.panning = true; 
+            state.startX = e.clientX - state.translateX; 
+            state.startY = e.clientY - state.translateY; 
+        });
+        window.addEventListener('mouseup', () => state.panning = false);
+        window.addEventListener('mousemove', (e) => { 
+            if (!state.panning) return; 
+            e.preventDefault(); 
+            state.translateX = e.clientX - state.startX; 
+            state.translateY = e.clientY - state.startY; 
+            updateTransform(); 
+        });
+        
+        viewport.addEventListener('wheel', (e) => { 
+            e.preventDefault(); 
+            const scaleAmount = -e.deltaY * 0.001; 
+            state.scale = Math.min(Math.max(0.4, state.scale + scaleAmount), 2); 
+            updateTransform(); 
+        });
+
+        // Click background to unlock
+        viewport.addEventListener('click', (e) => {
+            if(!e.target.closest('.node') && !e.target.closest('.tooltip')) closeTooltip();
+        });
+
+        // --- TOOLTIP ---
+        function showTooltip(e, node, isLocked = false) {
+             const tt = document.getElementById('tooltip');
+             document.getElementById('tt-title').innerText = node.text;
+             document.getElementById('tt-desc').innerText = node.desc;
+             const rect = document.getElementById(`node-${node.id}`).getBoundingClientRect();
+             tt.style.left = (rect.right + 20) + 'px'; tt.style.top = (rect.top) + 'px';
+             tt.classList.add('active');
+             if(isLocked) tt.classList.add('locked'); else tt.classList.remove('locked');
+             tt.dataset.activeId = node.id;
+             
+             // Update Button State
+             const btn = document.getElementById('tt-btn');
+             const area = document.getElementById('tt-vote-area');
+             if(node.status === 'done') {
+                 area.style.display = 'none';
+             } else {
+                 area.style.display = 'block';
+                 const votes = JSON.parse(localStorage.getItem('ddd_roadmap_votes_v2')) || {};
+                 if(votes[node.id]) { btn.innerText = "✓ Voted"; btn.classList.add('voted'); }
+                 else { btn.innerText = "▲ Vote for this Feature"; btn.classList.remove('voted'); }
+             }
+        }
+
+        function closeTooltip() {
+            state.lockedNodeId = null;
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('locked'));
+            document.getElementById('tooltip').classList.remove('active', 'locked');
+        }
+
+        // --- VOTING ---
+        function handleVote() {
+             const id = document.getElementById('tooltip').dataset.activeId;
+             if(!id) return;
+             const votes = JSON.parse(localStorage.getItem('ddd_roadmap_votes_v2')) || {};
+             if (votes[id]) delete votes[id]; else votes[id] = true;
+             localStorage.setItem('ddd_roadmap_votes_v2', JSON.stringify(votes));
+             
+             // Update UI
+             const btn = document.getElementById('tt-btn');
+             if(votes[id]) { btn.innerText = "✓ Voted"; btn.classList.add('voted'); }
+             else { btn.innerText = "▲ Vote for this Feature"; btn.classList.remove('voted'); }
+             
+             updateAllVoteCounts();
+        }
+
+        function updateAllVoteCounts() {
+            const votes = JSON.parse(localStorage.getItem('ddd_roadmap_votes_v2')) || {};
+            nodes.forEach(node => {
+                if(node.status === 'done') return;
+                const badge = document.getElementById(`badge-${node.id}`);
+                const count = votes[node.id] ? 1 : 0; 
+                if(badge) badge.innerText = count;
+            });
+        }
+
+        // --- FEATURE REQUEST ---
+        function openRequestModal() { document.getElementById('request-modal').style.display = 'flex'; document.getElementById('modal-form-content').style.display = 'block'; document.getElementById('modal-success').style.display = 'none'; }
+        function closeRequestModal() { document.getElementById('request-modal').style.display = 'none'; }
+        
+        function submitFeature() {
+            const feature = document.getElementById('req-feature').value;
+            const name = document.getElementById('req-name').value || "Guest";
+            const email = document.getElementById('req-email').value || "Not provided";
+            
+            if(!feature) { alert("Please enter a feature description."); return; }
+
+            // 1. Retrieve Current Data
+            const dbData = JSON.parse(localStorage.getItem('ddd_features_db')) || [];
+            
+            // 2. Add New Entry
+            const newEntry = {
+                id: Date.now(),
+                feature: feature,
+                user: name,
+                contact: email, // Email stored here
+                timestamp: new Date().toISOString()
+            };
+            
+            dbData.push(newEntry);
+            localStorage.setItem('ddd_features_db', JSON.stringify(dbData));
+
+            // 3. Update Visual Log
+            addLogEntry(name, `WRITE: "${feature.substring(0, 15)}..."`, true);
+            addLogEntry("SYSTEM", `Contact encrypted: ${email !== "Not provided" ? "YES" : "NO"}`, false);
+
+            // 4. Show Success Modal (No email popup)
+            document.getElementById('modal-form-content').style.display = 'none';
+            document.getElementById('modal-success').style.display = 'block';
+            
+            // Clear inputs
+            document.getElementById('req-feature').value = "";
+            document.getElementById('req-email').value = "";
+        }
+
+    </script>
+</body>
+</html>
