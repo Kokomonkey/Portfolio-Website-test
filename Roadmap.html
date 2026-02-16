@@ -11,8 +11,8 @@
             --accent-color: #ffffff;
             --dim-color: #444444;
             --wip-stripe: #1a1a1a;
-            --node-width: 160px;
-            --node-height: 50px;
+            --node-width: 180px; /* Slightly wider for the text */
+            --node-height: 60px;
             --green: #0f0;
         }
 
@@ -214,7 +214,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             padding: 5px;
             z-index: 2;
@@ -312,7 +312,7 @@
     <div class="bg-pattern"></div>
 
     <div id="intro-overlay">
-        <div class="intro-text">INITIALIZING ROOT SYSTEM...</div>
+        <div class="intro-text">INITIALIZING SYSTEM...</div>
     </div>
 
     <div class="ui-layer">
@@ -320,8 +320,8 @@
         
         <div class="db-console">
             <div class="db-header">
-                <span>Features.json [R/W]</span>
-                <span id="db-status" style="color:#0f0">ACTIVE</span>
+                <span>Server Log</span>
+                <span id="db-status" style="color:#0f0">ONLINE</span>
             </div>
             <div class="db-log" id="db-log-container">
                 </div>
@@ -367,69 +367,84 @@
                     <span class="modal-close" onclick="closeRequestModal()">×</span>
                 </div>
                 <div class="input-group">
-                    <label>Feature Description (Required)</label>
-                    <textarea id="req-feature" rows="4" placeholder="Describe the feature..."></textarea>
+                    <label>Feature Description</label>
+                    <textarea id="req-feature" rows="4" placeholder="Describe what you want..."></textarea>
                 </div>
                 <div class="input-group">
-                    <label>Name (Optional)</label>
+                    <label>Your Name</label>
                     <input type="text" id="req-name" placeholder="Name or Alias">
                 </div>
                 <div class="input-group">
                     <label>Contact Email (Private)</label>
                     <input type="email" id="req-email" placeholder="For updates...">
                 </div>
-                <button class="btn-send" onclick="submitFeature()">Submit to Database</button>
+                <button class="btn-send" onclick="submitFeature()">Submit to Server</button>
             </div>
             
             <div id="modal-success" class="success-msg">
-                <h3 style="color:var(--green); margin-bottom:10px;">DATA ENCRYPTED & SAVED</h3>
-                <p>Feature logged to local database.</p>
-                <p style="font-size: 0.8rem; color: #888; margin-top:5px;">Admin will review shortly.</p>
+                <h3 style="color:var(--green); margin-bottom:10px;">DATA SENT</h3>
+                <p>Request logged to backend database.</p>
                 <button class="btn-request" style="margin-top: 20px;" onclick="closeRequestModal()">Close</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- DATA ---
+        // --- CONFIGURATION ---
+        const REQUESTS_API_URL = 'https://sheetdb.io/api/v1/3f9o5w8ml9b71';
+        const VOTES_API_URL = 'https://sheetdb.io/api/v1/6nmccth1eiq5p';
+
+        // --- ROADMAP DATA (Matching your Image) ---
         const nodes = [
-            { id: 1, text: "Cost Calc", x: 50, y: 100, status: 'done', desc: "Monthly AI subscription cost calculator." },
-            { id: 2, text: "Size Filter", x: 250, y: 100, status: 'done', desc: "Filter tools based on company size." },
-            { id: 3, text: "Combined Filter", x: 450, y: 100, status: 'done', desc: "Unified filtering system." },
-            { id: 4, text: "Login System", x: 650, y: 100, status: 'wip', desc: "Secure user accounts." },
+            // Row 1
+            { id: 1, text: "Cost Calculator", x: 50, y: 100, status: 'done', desc: "Finalize the monthly cost calculator." },
+            { id: 2, text: "Size Filter", x: 280, y: 100, status: 'done', desc: "Finalize the company size filter." },
+            { id: 3, text: "Combined Filter", x: 510, y: 100, status: 'done', desc: "Create a combined filter system." },
+            { id: 4, text: "Login System", x: 740, y: 100, status: 'wip', desc: "Create a 'login & account' system." },
             
-            { id: 5, text: "GDPR/Privacy", x: 900, y: 50, status: 'wip', desc: "EU Privacy compliance." },
-            { id: 6, text: "Save Workflows", x: 900, y: 120, status: 'todo', desc: "Save custom stacks to profile." },
-            { id: 20, text: "Community Flows", x: 1100, y: 120, status: 'todo', desc: "Share workflows publicly." },
-            { id: 7, text: "Fav Tools", x: 900, y: 190, status: 'todo', desc: "Bookmark favorite AIs." },
+            // Login Branches
+            { id: 5, text: "Privacy Policy", x: 980, y: 20, status: 'wip', desc: "Make the 'login & account' conform to European privacy policy." },
+            { id: 6, text: "Save Workflows", x: 980, y: 90, status: 'todo', desc: "Allow users to 'Save workflows'." },
+            { id: 7, text: "Fav Tools", x: 980, y: 160, status: 'todo', desc: "Allow users to 'Save favourite tools'." },
+            { id: 8, text: "Subscribe", x: 980, y: 230, status: 'todo', desc: "Subscribe to certain tool types for alerts." },
             
-            { id: 9, text: "Reformat DB", x: 50, y: 400, status: 'done', desc: "Database structure update." },
-            { id: 10, text: "Benchmarks", x: 50, y: 500, status: 'wip', desc: "Performance testing results." },
-            { id: 11, text: "Reviews", x: 250, y: 450, status: 'wip', desc: "Detailed editorial reviews." },
-            { id: 21, text: "Random Tool", x: 250, y: 550, status: 'todo', desc: "Random discovery button." },
-            { id: 12, text: "Tutorials", x: 450, y: 450, status: 'todo', desc: "Step-by-step guides." },
-            { id: 22, text: "Browser Ext.", x: 850, y: 450, status: 'todo', desc: "Chrome extension for clipping." },
+            { id: 19, text: "Smartphone App", x: 1050, y: -80, status: 'todo', desc: "Create an 'app' for smartphones with AI news updates." },
 
-            { id: 14, text: "Limits Page", x: 50, y: 700, status: 'done', desc: "Disclaimer on AI hallucinations." },
-            { id: 15, text: "Auto-Limits", x: 250, y: 700, status: 'todo', desc: "Automated stats updating." },
-            { id: 18, text: "Playgrounds", x: 500, y: 850, status: 'todo', desc: "Interactive AI demos." },
+            // Row 2
+            { id: 9, text: "Reformat DB", x: 50, y: 400, status: 'done', desc: "Reformat the ai-database and automize the updating." },
+            { id: 10, text: "Benchmarks", x: 50, y: 500, status: 'wip', desc: "Write proper benchmarks for the tools." },
+            { id: 11, text: "Reviews", x: 300, y: 450, status: 'wip', desc: "Write reviews & correct descriptions of the shown tools." },
+            { id: 12, text: "Tool Tutorials", x: 550, y: 450, status: 'todo', desc: "Create tool-tutorial pages for good tools." },
+            { id: 13, text: "ComfyUI Export", x: 800, y: 450, status: 'todo', desc: "Export workflows to ComfyUI." },
 
-            { id: 19, text: "Mobile App", x: 1100, y: 400, status: 'todo', desc: "iOS/Android App." },
-            { id: 23, text: "Roadmap Voting", x: 1300, y: 200, status: 'done', desc: "Interactive voting system." },
-            { id: 24, text: "Rebrand", x: 1300, y: 400, status: 'wip', desc: "Visual identity refresh." },
+            // Row 3
+            { id: 14, text: "Limitations", x: 50, y: 700, status: 'done', desc: "Finalize the ai-limitations page." },
+            { id: 15, text: "Auto-Limits", x: 280, y: 700, status: 'todo', desc: "Automize the ai-limitations page." },
+            { id: 16, text: "Material DB", x: 550, y: 700, status: 'todo', desc: "Create access to AI-created material database & request system." },
+            { id: 17, text: "LLM Access", x: 850, y: 700, status: 'todo', desc: "Create LLM access to direct request materials." },
+            { id: 18, text: "Playgrounds", x: 550, y: 850, status: 'todo', desc: "Add more 'ai-powered playgrounds'." },
+
+            // Rebrand Branch (Connected from Login flow in image)
+            { id: 24, text: "Rebrand", x: 1000, y: 400, status: 'wip', desc: "Rebrand the platform." },
+            { id: 25, text: "Persona CV", x: 1250, y: 350, status: 'todo', desc: "Add a persona CV." },
+            { id: 26, text: "Terms (AV)", x: 1250, y: 420, status: 'todo', desc: "Add a 'Algemene Voorwaarden'." },
+            { id: 27, text: "Portfolio", x: 1250, y: 490, status: 'todo', desc: "Add a persona Portfolio." },
         ];
 
-        // Sort by X for animation logic
-        nodes.sort((a,b) => a.x - b.x);
-
+        // Connections based on your flowchart image
         const connections = [
             { from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 },
-            { from: 4, to: 5 }, { from: 4, to: 6 }, { from: 4, to: 7 },
-            { from: 6, to: 20 },
-            { from: 9, to: 11 }, { from: 10, to: 11 }, { from: 21, to: 11 },
-            { from: 11, to: 12 }, { from: 12, to: 22 },
-            { from: 14, to: 15 }, { from: 15, to: 18 },
-            { from: 4, to: 19 }, { from: 4, to: 23 }, { from: 4, to: 24 }
+            { from: 4, to: 5 }, { from: 4, to: 6 }, { from: 4, to: 7 }, { from: 4, to: 8 },
+            { from: 4, to: 19 }, // Login -> App
+            { from: 4, to: 24, curve: true }, // Login -> Rebrand (Long curve)
+            
+            { from: 9, to: 11 }, { from: 10, to: 11 },
+            { from: 11, to: 12 }, { from: 12, to: 13 },
+            
+            { from: 14, to: 15 }, { from: 15, to: 16 }, { from: 16, to: 17 },
+            { from: 16, to: 18 }, // Material DB -> Playgrounds
+            
+            { from: 24, to: 25 }, { from: 24, to: 26 }, { from: 24, to: 27 }
         ];
 
         // --- SETUP ---
@@ -455,21 +470,78 @@
             container.insertBefore(div, container.firstChild);
         }
 
-        function initDatabase() {
-            // Retrieve stored features
-            const data = JSON.parse(localStorage.getItem('ddd_features_db')) || [];
-            if(data.length === 0) {
-                addLogEntry("SYSTEM", "Initializing File System...", false);
-                addLogEntry("SYSTEM", "Ready.", false);
-            } else {
-                addLogEntry("SYSTEM", "Reloading session...", false);
-                // Show last 3 entries so the log isn't empty
-                data.slice(-3).forEach(d => addLogEntry(d.user, `REQ: ${d.feature}`, false));
-            }
+        // --- GLOBAL VOTING SYSTEM ---
+        function fetchGlobalVotes() {
+            // Target the 'votes' sheet. Assumes columns: node_id, count
+            fetch(`${VOTES_API_URL}?sheet=votes`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(row => {
+                    const badge = document.getElementById(`badge-${row.node_id}`);
+                    if(badge) {
+                        badge.innerText = row.count;
+                        badge.dataset.serverCount = row.count;
+                    }
+                });
+                addLogEntry("SYSTEM", "Vote counts synced.", false);
+            })
+            .catch(err => {
+                console.error(err);
+                addLogEntry("SYSTEM", "WARN: Could not sync votes.", false);
+            });
         }
+
+        function handleVote() {
+            const id = document.getElementById('tooltip').dataset.activeId;
+            if(!id) return;
+
+            // Check Local Storage (Prevent double vote)
+            const localVotes = JSON.parse(localStorage.getItem('ddd_roadmap_votes_v2')) || {};
+            if (localVotes[id]) {
+                alert("You have already voted for this feature.");
+                return;
+            }
+
+            // Optimistic UI Update
+            const btn = document.getElementById('tt-btn');
+            const badge = document.getElementById(`badge-${id}`);
+            
+            localVotes[id] = true;
+            localStorage.setItem('ddd_roadmap_votes_v2', JSON.stringify(localVotes));
+            
+            btn.innerText = "✓ Voted"; 
+            btn.classList.add('voted');
+
+            let currentCount = parseInt(badge.dataset.serverCount || badge.innerText || 0);
+            let newCount = currentCount + 1;
+            badge.innerText = newCount;
+            badge.dataset.serverCount = newCount;
+
+            addLogEntry("YOU", `VOTED: Node ${id}`, true);
+
+            // Send PATCH to Server
+            // Assumes your sheet has a column 'node_id' used as key, or we target by index.
+            // SheetDB search & update: /node_id/{value}
+            fetch(`${VOTES_API_URL}/node_id/${id}?sheet=votes`, {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    data: { count: newCount }
+                })
+            })
+            .then(res => res.json())
+            .then(data => console.log("Vote saved"))
+            .catch(err => console.error("Vote save failed", err));
+        }
+
 
         // --- INITIALIZATION ---
         (function init() {
+            addLogEntry("SYSTEM", "Initializing Connection...", false);
+
             // 1. Render Nodes
             nodes.forEach(node => {
                 const el = document.createElement('div');
@@ -506,38 +578,50 @@
                 const n1 = nodes.find(n => n.id === conn.from);
                 const n2 = nodes.find(n => n.id === conn.to);
                 if(!n1 || !n2) return;
-                const x1 = n1.x + 160; const y1 = n1.y + 25;
-                const x2 = n2.x; const y2 = n2.y + 25;
+                
+                const x1 = n1.x + 180; // node width
+                const y1 = n1.y + 30;  // half height
+                const x2 = n2.x; 
+                const y2 = n2.y + 30;
+                
                 const cp1X = x1 + (x2 - x1) / 2;
                 
                 const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                path.setAttribute("d", `M ${x1} ${y1} C ${cp1X} ${y1}, ${cp1X} ${y2}, ${x2} ${y2}`);
+                
+                // Simple curve logic
+                let d = `M ${x1} ${y1} C ${cp1X} ${y1}, ${cp1X} ${y2}, ${x2} ${y2}`;
+                
+                if(conn.curve) {
+                     // Deeper curve for Login -> Rebrand
+                     d = `M ${x1} ${y1} C ${x1+200} ${y1}, ${x2-200} ${y2}, ${x2} ${y2}`;
+                }
+
+                path.setAttribute("d", d);
                 path.id = `path-${n1.id}-${n2.id}`;
                 if(n1.status === 'done' || n1.status === 'wip') path.classList.add('active-path');
                 svg.appendChild(path);
             });
 
-            // 3. Update Votes
-            updateAllVoteCounts();
+            // 3. Sync Votes
+            fetchGlobalVotes();
 
-            // 4. Init DB Log
-            initDatabase();
-
-            // 5. Run Intro Animation
+            // 4. Run Intro Animation
             setTimeout(() => {
                 document.getElementById('intro-overlay').style.opacity = 0;
                 setTimeout(() => document.getElementById('intro-overlay').style.display = 'none', 1000);
                 
                 // Staggered reveal
-                nodes.forEach((node, i) => {
+                nodes.sort((a,b) => a.x - b.x).forEach((node, i) => {
                     setTimeout(() => {
-                        document.getElementById(`node-${node.id}`).classList.add('visible');
+                        const el = document.getElementById(`node-${node.id}`);
+                        if(el) el.classList.add('visible');
+                        
                         // Show connected paths
                         connections.filter(c => c.from === node.id).forEach(c => {
                             const p = document.getElementById(`path-${c.from}-${c.to}`);
                             if(p) p.classList.add('visible');
                         });
-                    }, (node.x / 100) * 100); // Delay based on X position
+                    }, i * 50); 
                 });
             }, 1000);
 
@@ -567,7 +651,6 @@
             updateTransform(); 
         });
 
-        // Click background to unlock
         viewport.addEventListener('click', (e) => {
             if(!e.target.closest('.node') && !e.target.closest('.tooltip')) closeTooltip();
         });
@@ -577,15 +660,19 @@
              const tt = document.getElementById('tooltip');
              document.getElementById('tt-title').innerText = node.text;
              document.getElementById('tt-desc').innerText = node.desc;
-             const rect = document.getElementById(`node-${node.id}`).getBoundingClientRect();
-             tt.style.left = (rect.right + 20) + 'px'; tt.style.top = (rect.top) + 'px';
+             
+             const el = document.getElementById(`node-${node.id}`);
+             const rect = el.getBoundingClientRect();
+             
+             tt.style.left = (rect.right + 20) + 'px'; 
+             tt.style.top = (rect.top) + 'px';
              tt.classList.add('active');
              if(isLocked) tt.classList.add('locked'); else tt.classList.remove('locked');
              tt.dataset.activeId = node.id;
              
-             // Update Button State
              const btn = document.getElementById('tt-btn');
              const area = document.getElementById('tt-vote-area');
+             
              if(node.status === 'done') {
                  area.style.display = 'none';
              } else {
@@ -602,33 +689,7 @@
             document.getElementById('tooltip').classList.remove('active', 'locked');
         }
 
-        // --- VOTING ---
-        function handleVote() {
-             const id = document.getElementById('tooltip').dataset.activeId;
-             if(!id) return;
-             const votes = JSON.parse(localStorage.getItem('ddd_roadmap_votes_v2')) || {};
-             if (votes[id]) delete votes[id]; else votes[id] = true;
-             localStorage.setItem('ddd_roadmap_votes_v2', JSON.stringify(votes));
-             
-             // Update UI
-             const btn = document.getElementById('tt-btn');
-             if(votes[id]) { btn.innerText = "✓ Voted"; btn.classList.add('voted'); }
-             else { btn.innerText = "▲ Vote for this Feature"; btn.classList.remove('voted'); }
-             
-             updateAllVoteCounts();
-        }
-
-        function updateAllVoteCounts() {
-            const votes = JSON.parse(localStorage.getItem('ddd_roadmap_votes_v2')) || {};
-            nodes.forEach(node => {
-                if(node.status === 'done') return;
-                const badge = document.getElementById(`badge-${node.id}`);
-                const count = votes[node.id] ? 1 : 0; 
-                if(badge) badge.innerText = count;
-            });
-        }
-
-        // --- FEATURE REQUEST ---
+        // --- REQUEST MODAL HANDLERS ---
         function openRequestModal() { document.getElementById('request-modal').style.display = 'flex'; document.getElementById('modal-form-content').style.display = 'block'; document.getElementById('modal-success').style.display = 'none'; }
         function closeRequestModal() { document.getElementById('request-modal').style.display = 'none'; }
         
@@ -636,37 +697,50 @@
             const feature = document.getElementById('req-feature').value;
             const name = document.getElementById('req-name').value || "Guest";
             const email = document.getElementById('req-email').value || "Not provided";
+            const btn = document.querySelector('.btn-send');
             
             if(!feature) { alert("Please enter a feature description."); return; }
 
-            // 1. Retrieve Current Data
-            const dbData = JSON.parse(localStorage.getItem('ddd_features_db')) || [];
-            
-            // 2. Add New Entry
-            const newEntry = {
+            const originalText = btn.innerText;
+            btn.innerText = "UPLOADING...";
+            btn.style.opacity = "0.5";
+            btn.disabled = true;
+
+            addLogEntry(name, `SENDING: "${feature.substring(0, 15)}..."`, true);
+
+            const data = {
                 id: Date.now(),
+                date: new Date().toLocaleString(),
+                name: name,
                 feature: feature,
-                user: name,
-                contact: email, // Email stored here
-                timestamp: new Date().toISOString()
+                email: email
             };
-            
-            dbData.push(newEntry);
-            localStorage.setItem('ddd_features_db', JSON.stringify(dbData));
 
-            // 3. Update Visual Log
-            addLogEntry(name, `WRITE: "${feature.substring(0, 15)}..."`, true);
-            addLogEntry("SYSTEM", `Contact encrypted: ${email !== "Not provided" ? "YES" : "NO"}`, false);
-
-            // 4. Show Success Modal (No email popup)
-            document.getElementById('modal-form-content').style.display = 'none';
-            document.getElementById('modal-success').style.display = 'block';
-            
-            // Clear inputs
-            document.getElementById('req-feature').value = "";
-            document.getElementById('req-email').value = "";
+            fetch(REQUESTS_API_URL, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: data })
+            })
+            .then(res => res.json())
+            .then(d => {
+                addLogEntry("SYSTEM", "200 OK: Saved to Backend.", false);
+                document.getElementById('modal-form-content').style.display = 'none';
+                document.getElementById('modal-success').style.display = 'block';
+                document.getElementById('req-feature').value = "";
+                document.getElementById('req-email').value = "";
+                btn.innerText = originalText;
+                btn.style.opacity = "1";
+                btn.disabled = false;
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Connection failed.");
+                addLogEntry("SYSTEM", "ERROR: Connection Timeout.", false);
+                btn.innerText = originalText;
+                btn.style.opacity = "1";
+                btn.disabled = false;
+            });
         }
-
     </script>
 </body>
 </html>
