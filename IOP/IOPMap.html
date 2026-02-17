@@ -6,15 +6,14 @@
     <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
     <title>IOP1 Map Generator | [DOUWEDOESDESIGN]</title>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
-    
     <style>
         :root {
             --bg-color: #000000;
             --accent-color: #ffffff;
             --alert-color: #ff0000;
             --ui-font: 'Courier New', Courier, monospace;
-            --paper-color: #f4f4f4; /* Light background required for Multiply effect */
+            /* White background for the map container to simulate paper */
+            --paper-color: #ffffff; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,7 +30,7 @@
             gap: 2vw;
         }
 
-        /* --- BACK BUTTON --- */
+        /* --- UI ELEMENTS --- */
         .back-btn {
             position: fixed; top: 30px; left: 30px;
             text-decoration: none;
@@ -45,7 +44,6 @@
         }
         .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
 
-        /* --- INFO PANEL (LEFT) --- */
         .info-panel {
             width: 200px;
             flex-shrink: 0;
@@ -64,24 +62,18 @@
 
         p { font-size: 0.75rem; line-height: 1.4; color: #888; }
 
-        /* --- CENTRAL VIEWPORT (MAP FRAME) --- */
+        /* --- MAP VIEWPORT --- */
         .plan-viewport {
-            /* KEY CHANGE: Scale to Window Height */
-            height: 90vh; 
-            width: auto; 
-            aspect-ratio: 1 / 1.414; /* A-series paper aspect ratio (approx), adjust if needed */
-            
-            position: relative; 
-            background-color: var(--paper-color); /* White background for 'Multiply' to work */
+            /* Adjust height to fit window, width adjusts automatically */
+            height: 90vh;
+            aspect-ratio: 1 / 1.414; /* A-series ratio */
+            background-color: var(--paper-color);
+            position: relative;
             border: 1px solid #333;
             overflow: hidden;
-            
-            /* Center the layers */
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
+        /* The visible layers in the browser */
         .plan-layer {
             position: absolute;
             top: 0; left: 0;
@@ -89,120 +81,74 @@
             height: 100%;
             display: none;
             pointer-events: none;
-            
-            /* KEY CHANGE: Multiply Blend Mode */
-            mix-blend-mode: multiply;
+            /* CSS Multiply for on-screen preview */
+            mix-blend-mode: multiply; 
         }
 
-        .plan-layer.active {
-            display: block;
-        }
+        .plan-layer.active { display: block; }
 
         .plan-layer img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Ensure entire map fits */
+            width: 100%; height: 100%;
+            object-fit: contain;
             display: block;
         }
 
-        /* --- EXPORT OVERLAY (Dark text because background is now light) --- */
+        /* --- OVERLAY (Visual only, Canvas draws its own) --- */
         .map-overlay {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            z-index: 50;
-            color: #000; /* Black ink for the overlay */
+            bottom: 20px; right: 20px;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 5px;
+            z-index: 50; color: #000;
+            pointer-events: none;
         }
-
         .north-arrow {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border: 2px solid #000;
             border-radius: 50%;
             position: relative;
         }
         .north-arrow::after {
-            content: '';
-            position: absolute;
-            left: 50%; top: 0;
-            width: 2px; height: 50%;
-            background-color: #000;
-            transform: translateX(-50%);
+            content: ''; position: absolute;
+            left: 50%; top: 0; width: 2px; height: 50%;
+            background: #000; transform: translateX(-50%);
         }
         .north-arrow::before {
-            content: 'N';
-            position: absolute;
-            top: -12px; left: 50%;
-            transform: translateX(-50%);
-            font-size: 10px; font-weight: bold; color: #000;
+            content: 'N'; position: absolute;
+            top: -12px; left: 50%; transform: translateX(-50%);
+            font-size: 10px; font-weight: bold;
         }
-
         .scale-marker {
-            font-size: 0.7rem;
-            border-top: 2px solid #000;
-            padding-top: 2px;
-            width: 50px;
-            text-align: center;
-            font-weight: bold;
+            font-size: 0.7rem; border-top: 2px solid #000;
+            padding-top: 2px; width: 50px; text-align: center; font-weight: bold;
         }
 
-        /* --- CONTROLS SYSTEM (RIGHT) --- */
+        /* --- CONTROLS --- */
         .controls-panel {
-            width: 160px;
-            margin-right: 2vw;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            width: 160px; margin-right: 2vw;
+            display: flex; flex-direction: column; gap: 10px;
             justify-content: center;
         }
 
         .layer-btn {
-            background: transparent;
-            border: 1px solid #333;
-            color: #555;
-            padding: 8px;
-            text-align: left;
-            cursor: pointer;
-            font-family: var(--ui-font);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            display: flex;
-            justify-content: space-between;
+            background: transparent; border: 1px solid #333;
+            color: #555; padding: 10px; text-align: left;
+            cursor: pointer; font-family: var(--ui-font);
+            text-transform: uppercase; font-size: 0.75rem;
+            display: flex; justify-content: space-between;
             transition: 0.2s;
         }
-
         .layer-btn:hover { border-color: #666; color: #aaa; }
-        
-        .layer-btn.active {
-            border-color: var(--alert-color);
-            color: var(--accent-color);
-        }
+        .layer-btn.active { border-color: var(--alert-color); color: var(--accent-color); }
         .layer-btn.active::after { content: 'ON'; color: var(--alert-color); }
-        .layer-btn::after { content: 'OFF'; color: #333; }
 
         .export-btn {
-            margin-top: 20px;
-            background-color: var(--alert-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-family: var(--ui-font);
-            font-size: 0.8rem;
+            margin-top: 20px; background-color: var(--alert-color);
+            color: var(--bg-color); border: none; padding: 12px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase;
+            font-family: var(--ui-font); font-size: 0.8rem;
         }
         .export-btn:hover { background-color: #fff; }
-
-        /* Helper for missing images */
-        .error-msg {
-            color: red; font-size: 10px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -212,31 +158,24 @@
     <div class="info-panel">
         <div>
             <h2>IOP1 Generator</h2>
-            <p>Layer stacking visualization.</p>
+            <p>High-Fidelity Output System.</p>
         </div>
         <div style="font-size: 0.7rem; color: #666;">
-            MODE: MULTIPLY<br>
-            SCALE: 1:20000<br>
-            STATUS: ACTIVE
+            RENDER: CANVAS<br>
+            BLEND: MULTIPLY<br>
+            RES: 2480x3508px
         </div>
     </div>
 
-    <div class="plan-viewport" id="capture-target">
+    <div class="plan-viewport">
+        <div class="plan-layer active" id="layer-base" data-src="Maps/BaseA1.svg">
+            <img src="Maps/BaseA1.svg" onerror="this.src='https://placehold.co/2000x2800/FFF/000?text=BaseA1+Missing'">
+        </div>
+
+        <div class="plan-layer" id="layer-water" data-src="Maps/WaterA1.svg">
+            <img src="Maps/WaterA1.svg" onerror="this.src='https://placehold.co/2000x2800/transparent/00F?text=WaterA1+Missing'">
+        </div>
         
-        <div class="plan-layer active" id="layer-base">
-            <img src="Maps/BaseA1.svg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-            <div class="error-msg">BaseA1.svg missing</div>
-        </div>
-
-        <div class="plan-layer" id="layer-water">
-            <img src="Maps/WaterA1.svg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-            <div class="error-msg">WaterA1.svg missing</div>
-        </div>
-
-        <div class="plan-layer" id="layer-extra">
-             <img src="https://placehold.co/800x1100/transparent/red/png?text=HEATMAP" style="opacity:0.5">
-        </div>
-
         <div class="map-overlay">
             <div class="north-arrow"></div>
             <div class="scale-marker">1:20000</div>
@@ -246,46 +185,135 @@
     <div class="controls-panel">
         <button class="layer-btn active" onclick="toggleLayer('layer-base', this)">Base Map</button>
         <button class="layer-btn" onclick="toggleLayer('layer-water', this)">Water</button>
-        <button class="layer-btn" onclick="toggleLayer('layer-extra', this)">Heatmap</button>
-
-        <button class="export-btn" onclick="exportMap()">Export PNG</button>
+        <button class="export-btn" onclick="generateHighResExport()">High-Res Export</button>
     </div>
 
     <script>
-        function toggleLayer(layerId, btn) {
-            const layer = document.getElementById(layerId);
-            layer.classList.toggle('active');
+        // --- UI TOGGLE LOGIC ---
+        function toggleLayer(id, btn) {
+            document.getElementById(id).classList.toggle('active');
             btn.classList.toggle('active');
         }
 
-        function exportMap() {
-            const node = document.getElementById('capture-target');
+        // --- EXPORT LOGIC (CANVAS DRAWING) ---
+        async function generateHighResExport() {
             const btn = document.querySelector('.export-btn');
             const originalText = btn.innerText;
+            btn.innerText = "GENERATING...";
+            btn.style.opacity = 0.5;
 
-            btn.innerText = "RENDERING...";
-            btn.style.opacity = "0.5";
+            try {
+                // 1. Setup High-Res Canvas (A4 @ 300dpi approx)
+                const canvas = document.createElement('canvas');
+                const width = 2480; 
+                const height = 3508; 
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
 
-            // dom-to-image usually handles SVGs and Filters better than html2canvas
-            domtoimage.toPng(node)
-                .then(function (dataUrl) {
-                    var link = document.createElement('a');
-                    link.download = 'IOP1_Map_Export.png';
-                    link.href = dataUrl;
-                    link.click();
-                    
-                    btn.innerText = originalText;
-                    btn.style.opacity = "1";
-                })
-                .catch(function (error) {
-                    console.error('oops, something went wrong!', error);
-                    alert("Export Failed. \n\n1. Ensure you are running this on a Local Server (not just double clicking the file).\n2. Ensure SVGs are valid.\n3. Check Console (F12) for details.");
-                    btn.innerText = "ERROR";
-                    setTimeout(() => {
-                        btn.innerText = originalText;
-                        btn.style.opacity = "1";
-                    }, 3000);
-                });
+                // 2. Fill Background White (simulating paper)
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, width, height);
+
+                // 3. Collect Active Layers
+                const activeLayers = Array.from(document.querySelectorAll('.plan-layer.active'));
+                
+                // 4. Load and Draw Images sequentially
+                for (const layerDiv of activeLayers) {
+                    const imgSrc = layerDiv.getAttribute('data-src');
+                    // Fallback if data-src missing, use the img tag src
+                    const finalSrc = imgSrc || layerDiv.querySelector('img').src; 
+
+                    await drawImageToCanvas(ctx, finalSrc, width, height);
+                }
+
+                // 5. Draw UI Overlay (North Arrow & Scale)
+                drawOverlay(ctx, width, height);
+
+                // 6. Download
+                const link = document.createElement('a');
+                link.download = 'IOP1_HighRes_Map.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+            } catch (err) {
+                console.error(err);
+                alert("Export failed. Check console. Ensure Local Server is running.");
+            } finally {
+                btn.innerText = originalText;
+                btn.style.opacity = 1;
+            }
+        }
+
+        // Helper to load image and draw with Multiply
+        function drawImageToCanvas(ctx, src, w, h) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous"; // Try to handle CORS if needed
+                img.onload = () => {
+                    ctx.globalCompositeOperation = 'multiply'; // THE MAGIC FILTER
+                    // Draw image scaling to fit canvas container (object-fit: contain logic)
+                    // Assuming maps are roughly same aspect ratio as canvas. 
+                    // If not, we stretch to fit or center. Here we stretch to full canvas.
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve();
+                };
+                img.onerror = (e) => {
+                    console.warn("Could not load image for export:", src);
+                    resolve(); // Skip broken images but continue
+                };
+                img.src = src;
+            });
+        }
+
+        // Helper to draw the North Arrow/Scale crisply
+        function drawOverlay(ctx, w, h) {
+            ctx.globalCompositeOperation = 'source-over'; // Reset blend mode
+            ctx.strokeStyle = '#000000';
+            ctx.fillStyle = '#000000';
+            ctx.lineWidth = 4; // Thicker lines for high res
+
+            const margin = 100; // bottom right padding
+            const cx = w - margin - 50;
+            const cy = h - margin - 80;
+
+            // -- North Arrow --
+            const radius = 50;
+            
+            // Circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // Line (Center to Top)
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx, cy - radius);
+            ctx.stroke();
+
+            // "N" text
+            ctx.font = "bold 40px Courier New";
+            ctx.textAlign = "center";
+            ctx.fillText("N", cx, cy - radius - 15);
+
+            // -- Scale Marker --
+            const scaleY = cy + radius + 30;
+            const scaleWidth = 150;
+            
+            ctx.beginPath();
+            // Horizontal line
+            ctx.moveTo(cx - scaleWidth/2, scaleY);
+            ctx.lineTo(cx + scaleWidth/2, scaleY);
+            // Vertical ticks
+            ctx.moveTo(cx - scaleWidth/2, scaleY);
+            ctx.lineTo(cx - scaleWidth/2, scaleY - 10);
+            ctx.moveTo(cx + scaleWidth/2, scaleY);
+            ctx.lineTo(cx + scaleWidth/2, scaleY - 10);
+            ctx.stroke();
+
+            // Text
+            ctx.font = "bold 30px Courier New";
+            ctx.fillText("1:20000", cx, scaleY + 40);
         }
     </script>
 </body>
