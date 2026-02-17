@@ -8,12 +8,12 @@
     
     <style>
         :root {
-            --bg-color: #000000;
+            --bg-color: #050505;
             --accent-color: #ffffff;
-            --alert-color: #ff0000;
+            --alert-color: #ff3300;
+            --grid-color: rgba(0,0,0,0.15);
             --ui-font: 'Courier New', Courier, monospace;
-            /* White background for the map container to simulate paper */
-            --paper-color: #ffffff; 
+            --paper-color: #f0f0f0; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,7 +45,7 @@
         .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
 
         .info-panel {
-            width: 200px;
+            width: 220px;
             flex-shrink: 0;
             text-align: left;
             margin-left: 2vw;
@@ -61,16 +61,24 @@
         }
 
         p { font-size: 0.75rem; line-height: 1.4; color: #888; }
+        
+        .tracker-box {
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 0.7rem;
+            color: var(--alert-color);
+            font-weight: bold;
+        }
 
         /* --- MAP VIEWPORT --- */
         .plan-viewport {
-            /* Adjust height to fit window, width adjusts automatically */
             height: 90vh;
-            aspect-ratio: 1 / 1.414; /* A-series ratio */
+            aspect-ratio: 1 / 1.414; /* ISO Aspect Ratio */
             background-color: var(--paper-color);
             position: relative;
             border: 1px solid #333;
             overflow: hidden;
+            cursor: crosshair; 
         }
 
         /* The visible layers in the browser */
@@ -81,7 +89,6 @@
             height: 100%;
             display: none;
             pointer-events: none;
-            /* CSS Multiply for on-screen preview */
             mix-blend-mode: multiply; 
         }
 
@@ -93,29 +100,32 @@
             display: block;
         }
 
-        /* --- OVERLAY (Visual only, Canvas draws its own) --- */
+        /* --- OVERLAYS --- */
+        .grid-overlay {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px; 
+            pointer-events: none; display: none; z-index: 10;
+        }
+        .grid-overlay.active { display: block; }
+
         .map-overlay {
-            position: absolute;
-            bottom: 20px; right: 20px;
-            display: flex; flex-direction: column;
-            align-items: center; gap: 5px;
-            z-index: 50; color: #000;
-            pointer-events: none;
+            position: absolute; bottom: 20px; right: 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            z-index: 50; color: #000; pointer-events: none;
         }
         .north-arrow {
-            width: 40px; height: 40px;
-            border: 2px solid #000;
-            border-radius: 50%;
-            position: relative;
+            width: 40px; height: 40px; border: 2px solid #000;
+            border-radius: 50%; position: relative;
         }
         .north-arrow::after {
-            content: ''; position: absolute;
-            left: 50%; top: 0; width: 2px; height: 50%;
+            content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 50%;
             background: #000; transform: translateX(-50%);
         }
         .north-arrow::before {
-            content: 'N'; position: absolute;
-            top: -12px; left: 50%; transform: translateX(-50%);
+            content: 'N'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
             font-size: 10px; font-weight: bold;
         }
         .scale-marker {
@@ -123,24 +133,65 @@
             padding-top: 2px; width: 50px; text-align: center; font-weight: bold;
         }
 
-        /* --- CONTROLS --- */
+        .map-title-input {
+            position: absolute; top: 20px; left: 20px;
+            background: transparent; border: none;
+            border-bottom: 2px solid #000; color: #000;
+            font-family: var(--ui-font); font-size: 1.5rem;
+            font-weight: bold; text-transform: uppercase;
+            width: 300px; z-index: 50;
+        }
+        .map-title-input:focus { outline: none; border-color: var(--alert-color); }
+
+        /* --- CONTROLS PANEL --- */
         .controls-panel {
-            width: 160px; margin-right: 2vw;
+            width: 200px; margin-right: 2vw;
             display: flex; flex-direction: column; gap: 10px;
             justify-content: center;
         }
 
-        .layer-btn {
-            background: transparent; border: 1px solid #333;
-            color: #555; padding: 10px; text-align: left;
-            cursor: pointer; font-family: var(--ui-font);
-            text-transform: uppercase; font-size: 0.75rem;
-            display: flex; justify-content: space-between;
-            transition: 0.2s;
+        .control-group {
+            border: 1px solid #333;
+            padding: 8px;
+            margin-bottom: 5px;
+            transition: border-color 0.3s;
         }
-        .layer-btn:hover { border-color: #666; color: #aaa; }
-        .layer-btn.active { border-color: var(--alert-color); color: var(--accent-color); }
-        .layer-btn.active::after { content: 'ON'; color: var(--alert-color); }
+        .control-group.active { border-color: var(--alert-color); }
+
+        .layer-header {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer;
+            font-size: 0.75rem; text-transform: uppercase;
+            color: #666;
+        }
+        .control-group.active .layer-header { color: var(--accent-color); }
+        
+        /* Status Indicator */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; }
+        .control-group.active .status-dot { background: var(--alert-color); box-shadow: 0 0 5px var(--alert-color); }
+
+        /* Opacity Slider */
+        .opacity-slider-container {
+            margin-top: 8px;
+            display: flex; align-items: center; gap: 5px;
+            opacity: 0.3; pointer-events: none; /* Disabled by default */
+        }
+        .control-group.active .opacity-slider-container { opacity: 1; pointer-events: all; }
+
+        input[type=range] {
+            -webkit-appearance: none; width: 100%; height: 2px; background: #333; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 10px; height: 10px; background: #666; cursor: pointer; border: 1px solid #000;
+        }
+        .control-group.active input[type=range]::-webkit-slider-thumb { background: var(--alert-color); border-color: #fff; }
+
+        .feature-toggle {
+            margin-top: 10px; border: 1px dashed #555; color: #888;
+            padding: 10px; text-transform: uppercase; font-size: 0.75rem;
+            background: transparent; cursor: pointer; width: 100%; text-align: left;
+        }
+        .feature-toggle.active { background: rgba(255,255,255,0.1); color: #fff; border-style: solid; }
 
         .export-btn {
             margin-top: 20px; background-color: var(--alert-color);
@@ -160,20 +211,34 @@
             <h2>IOP1 Generator</h2>
             <p>High-Fidelity Output System.</p>
         </div>
+        
+        <div class="tracker-box" id="coord-tracker">
+            X: 0000.00 <br> Y: 0000.00
+        </div>
+
         <div style="font-size: 0.7rem; color: #666;">
-            RENDER: CANVAS<br>
+            RENDER: CANVAS (A2)<br>
             BLEND: MULTIPLY<br>
-            RES: 2480x3508px
+            RES: 4960x7016px
         </div>
     </div>
 
-    <div class="plan-viewport">
+    <div class="plan-viewport" id="viewport">
+        
+        <input type="text" class="map-title-input" id="mapTitle" value="SITE IOP1" spellcheck="false">
+        <div class="grid-overlay" id="gridLayer"></div>
+
         <div class="plan-layer active" id="layer-base" data-src="Maps/BaseA1.svg">
             <img src="Maps/BaseA1.svg" onerror="this.src='https://placehold.co/2000x2800/FFF/000?text=BaseA1+Missing'">
         </div>
-
         <div class="plan-layer" id="layer-water" data-src="Maps/WaterA1.svg">
             <img src="Maps/WaterA1.svg" onerror="this.src='https://placehold.co/2000x2800/transparent/00F?text=WaterA1+Missing'">
+        </div>
+        <div class="plan-layer" id="layer-wijken" data-src="Maps/WijkenA1.svg">
+            <img src="Maps/WijkenA1.svg" onerror="this.src='https://placehold.co/2000x2800/transparent/F00?text=WijkenA1+Missing'">
+        </div>
+        <div class="plan-layer" id="layer-grond" data-src="Maps/GrondgebruikA1.svg">
+            <img src="Maps/GrondgebruikA1.svg" onerror="this.src='https://placehold.co/2000x2800/transparent/0F0?text=GrondgebruikA1+Missing'">
         </div>
         
         <div class="map-overlay">
@@ -183,137 +248,238 @@
     </div>
 
     <div class="controls-panel">
-        <button class="layer-btn active" onclick="toggleLayer('layer-base', this)">Base Map</button>
-        <button class="layer-btn" onclick="toggleLayer('layer-water', this)">Water</button>
-        <button class="export-btn" onclick="generateHighResExport()">High-Res Export</button>
+        <label style="font-size:0.7rem; color:#666;">LAYERS / OPACITY</label>
+
+        <div class="control-group active" id="ctrl-base">
+            <div class="layer-header" onclick="toggleLayer('layer-base', 'ctrl-base')">
+                Base Map <div class="status-dot"></div>
+            </div>
+            <div class="opacity-slider-container">
+                <input type="range" min="0" max="1" step="0.1" value="1" oninput="updateOpacity('layer-base', this.value)">
+            </div>
+        </div>
+
+        <div class="control-group" id="ctrl-water">
+            <div class="layer-header" onclick="toggleLayer('layer-water', 'ctrl-water')">
+                Water <div class="status-dot"></div>
+            </div>
+            <div class="opacity-slider-container">
+                <input type="range" min="0" max="1" step="0.1" value="1" oninput="updateOpacity('layer-water', this.value)">
+            </div>
+        </div>
+
+        <div class="control-group" id="ctrl-wijken">
+            <div class="layer-header" onclick="toggleLayer('layer-wijken', 'ctrl-wijken')">
+                Wijken <div class="status-dot"></div>
+            </div>
+            <div class="opacity-slider-container">
+                <input type="range" min="0" max="1" step="0.1" value="1" oninput="updateOpacity('layer-wijken', this.value)">
+            </div>
+        </div>
+
+        <div class="control-group" id="ctrl-grond">
+            <div class="layer-header" onclick="toggleLayer('layer-grond', 'ctrl-grond')">
+                Grondgebruik <div class="status-dot"></div>
+            </div>
+            <div class="opacity-slider-container">
+                <input type="range" min="0" max="1" step="0.1" value="1" oninput="updateOpacity('layer-grond', this.value)">
+            </div>
+        </div>
+
+        <label style="font-size:0.7rem; color:#666; margin-top:10px;">TOOLS</label>
+        <button class="feature-toggle" onclick="toggleGrid(this)">Ref Grid</button>
+        <button class="export-btn" onclick="generateUltraResExport()">Export (A2)</button>
     </div>
 
     <script>
-        // --- UI TOGGLE LOGIC ---
-        function toggleLayer(id, btn) {
-            document.getElementById(id).classList.toggle('active');
+        // --- UI LOGIC ---
+
+        function toggleLayer(layerId, ctrlId) {
+            const layer = document.getElementById(layerId);
+            const ctrl = document.getElementById(ctrlId);
+            
+            // Toggle Display
+            if(layer.classList.contains('active')) {
+                layer.classList.remove('active');
+                ctrl.classList.remove('active');
+            } else {
+                layer.classList.add('active');
+                ctrl.classList.add('active');
+            }
+        }
+
+        function updateOpacity(layerId, val) {
+            const layer = document.getElementById(layerId);
+            layer.style.opacity = val;
+            // Store value in data attribute for the export function to read easily
+            layer.setAttribute('data-opacity', val); 
+        }
+
+        function toggleGrid(btn) {
+            document.getElementById('gridLayer').classList.toggle('active');
             btn.classList.toggle('active');
         }
 
-        // --- EXPORT LOGIC (CANVAS DRAWING) ---
-        async function generateHighResExport() {
+        // --- MOUSE TRACKER ---
+        const viewport = document.getElementById('viewport');
+        const tracker = document.getElementById('coord-tracker');
+        viewport.addEventListener('mousemove', (e) => {
+            const rect = viewport.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width * 1000).toFixed(2);
+            const y = ((e.clientY - rect.top) / rect.height * 1000).toFixed(2);
+            tracker.innerHTML = `X: ${x} <br> Y: ${y}`;
+        });
+
+        // --- ULTRA RES EXPORT LOGIC ---
+        async function generateUltraResExport() {
             const btn = document.querySelector('.export-btn');
             const originalText = btn.innerText;
+            const title = document.getElementById('mapTitle').value;
+            
             btn.innerText = "GENERATING...";
             btn.style.opacity = 0.5;
+            btn.style.cursor = "wait";
 
             try {
-                // 1. Setup High-Res Canvas (A4 @ 300dpi approx)
+                // Resolution: A2 @ 300 DPI
+                const width = 4960; 
+                const height = 7016; 
+                
                 const canvas = document.createElement('canvas');
-                const width = 2480; 
-                const height = 3508; 
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
 
-                // 2. Fill Background White (simulating paper)
-                ctx.fillStyle = "#ffffff";
+                // 1. Fill Background (Paper)
+                ctx.fillStyle = "#f0f0f0"; 
                 ctx.fillRect(0, 0, width, height);
 
-                // 3. Collect Active Layers
-                const activeLayers = Array.from(document.querySelectorAll('.plan-layer.active'));
-                
-                // 4. Load and Draw Images sequentially
-                for (const layerDiv of activeLayers) {
-                    const imgSrc = layerDiv.getAttribute('data-src');
-                    // Fallback if data-src missing, use the img tag src
-                    const finalSrc = imgSrc || layerDiv.querySelector('img').src; 
-
-                    await drawImageToCanvas(ctx, finalSrc, width, height);
+                // 2. Draw Grid (if active)
+                if(document.getElementById('gridLayer').classList.contains('active')) {
+                   drawGrid(ctx, width, height); 
                 }
 
-                // 5. Draw UI Overlay (North Arrow & Scale)
-                drawOverlay(ctx, width, height);
+                // 3. Draw Active Layers with Opacity
+                const activeLayers = Array.from(document.querySelectorAll('.plan-layer.active'));
+                
+                for (const layerDiv of activeLayers) {
+                    const imgSrc = layerDiv.getAttribute('data-src');
+                    // Get Opacity (default to 1 if not set)
+                    const opacity = layerDiv.getAttribute('data-opacity') || 1;
+                    
+                    const finalSrc = imgSrc || layerDiv.querySelector('img').src; 
+                    
+                    // Pass opacity to the drawer
+                    await drawImageToCanvas(ctx, finalSrc, width, height, opacity);
+                }
 
-                // 6. Download
+                // 4. Draw Overlay
+                drawOverlay(ctx, width, height, title);
+
+                // 5. Download
                 const link = document.createElement('a');
-                link.download = 'IOP1_HighRes_Map.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                const cleanTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                link.download = `${cleanTitle}_UltraRes.png`;
+                
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url); 
+                    
+                    btn.innerText = "DONE!";
+                    setTimeout(() => { btn.innerText = originalText; btn.style.opacity = 1; btn.style.cursor = "pointer"; }, 2000);
+                }, 'image/png');
 
             } catch (err) {
                 console.error(err);
-                alert("Export failed. Check console. Ensure Local Server is running.");
-            } finally {
-                btn.innerText = originalText;
-                btn.style.opacity = 1;
+                alert("Export failed. Check console.");
+                btn.innerText = "ERROR";
             }
         }
 
-        // Helper to load image and draw with Multiply
-        function drawImageToCanvas(ctx, src, w, h) {
+        function drawGrid(ctx, w, h) {
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.strokeStyle = "rgba(0,0,0,0.15)";
+            ctx.lineWidth = 2; 
+            const gridSize = 150; 
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+            for (let y = 0; y <= h; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+            ctx.stroke();
+            ctx.globalCompositeOperation = 'source-over'; 
+        }
+
+        // Updated Helper: Handles SVG resizing and Opacity
+        function drawImageToCanvas(ctx, src, w, h, opacity) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
-                img.crossOrigin = "Anonymous"; // Try to handle CORS if needed
+                img.crossOrigin = "Anonymous"; 
                 img.onload = () => {
-                    ctx.globalCompositeOperation = 'multiply'; // THE MAGIC FILTER
-                    // Draw image scaling to fit canvas container (object-fit: contain logic)
-                    // Assuming maps are roughly same aspect ratio as canvas. 
-                    // If not, we stretch to fit or center. Here we stretch to full canvas.
+                    // Set Blend Mode
+                    ctx.globalCompositeOperation = 'multiply';
+                    
+                    // Set Opacity (Global Alpha)
+                    ctx.globalAlpha = parseFloat(opacity);
+
+                    // FORCE SVG TO FILL CANVAS
+                    // This is the fix for SVGs appearing empty or small
+                    // We tell the browser: "Treat this image as if it is w by h pixels"
                     ctx.drawImage(img, 0, 0, w, h);
+                    
+                    // Reset Opacity
+                    ctx.globalAlpha = 1.0;
                     resolve();
                 };
-                img.onerror = (e) => {
-                    console.warn("Could not load image for export:", src);
-                    resolve(); // Skip broken images but continue
-                };
+                img.onerror = () => {
+                    console.warn("Skipping broken image:", src);
+                    resolve();
+                }; 
                 img.src = src;
             });
         }
 
-        // Helper to draw the North Arrow/Scale crisply
-        function drawOverlay(ctx, w, h) {
-            ctx.globalCompositeOperation = 'source-over'; // Reset blend mode
+        function drawOverlay(ctx, w, h, titleText) {
+            ctx.globalCompositeOperation = 'source-over';
             ctx.strokeStyle = '#000000';
             ctx.fillStyle = '#000000';
-            ctx.lineWidth = 4; // Thicker lines for high res
+            ctx.lineWidth = 5; 
 
-            const margin = 100; // bottom right padding
-            const cx = w - margin - 50;
-            const cy = h - margin - 80;
+            const margin = 150; 
+            const cx = w - margin - 80;
+            const cy = h - margin - 120;
 
-            // -- North Arrow --
-            const radius = 50;
-            
-            // Circle
+            // Title
+            ctx.font = "bold 120px Courier New";
+            ctx.textAlign = "left";
+            ctx.fillText(titleText, 100, 150);
+
+            // North Arrow
+            const radius = 80;
             ctx.beginPath();
             ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
             ctx.stroke();
-
-            // Line (Center to Top)
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.lineTo(cx, cy - radius);
             ctx.stroke();
-
-            // "N" text
-            ctx.font = "bold 40px Courier New";
+            ctx.font = "bold 60px Courier New";
             ctx.textAlign = "center";
-            ctx.fillText("N", cx, cy - radius - 15);
+            ctx.fillText("N", cx, cy - radius - 20);
 
-            // -- Scale Marker --
-            const scaleY = cy + radius + 30;
-            const scaleWidth = 150;
-            
+            // Scale Marker
+            const scaleY = cy + radius + 40;
+            const scaleWidth = 250;
             ctx.beginPath();
-            // Horizontal line
             ctx.moveTo(cx - scaleWidth/2, scaleY);
             ctx.lineTo(cx + scaleWidth/2, scaleY);
-            // Vertical ticks
             ctx.moveTo(cx - scaleWidth/2, scaleY);
-            ctx.lineTo(cx - scaleWidth/2, scaleY - 10);
+            ctx.lineTo(cx - scaleWidth/2, scaleY - 15);
             ctx.moveTo(cx + scaleWidth/2, scaleY);
-            ctx.lineTo(cx + scaleWidth/2, scaleY - 10);
+            ctx.lineTo(cx + scaleWidth/2, scaleY - 15);
             ctx.stroke();
-
-            // Text
-            ctx.font = "bold 30px Courier New";
-            ctx.fillText("1:20000", cx, scaleY + 40);
+            ctx.font = "bold 40px Courier New";
+            ctx.fillText("1:20000", cx, scaleY + 60);
         }
     </script>
 </body>
