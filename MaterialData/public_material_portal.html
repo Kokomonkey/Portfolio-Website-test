@@ -3,282 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Material Mind | Portal</title>
+    <title>Material Mind</title>
     <style>
-        /* --- CSS VARIABLES & RESET --- */
-        :root {
-            --bg-color: #000000;
-            --accent-color: #ffffff;
-            --dim-color: #444;
-            --transition-curve: cubic-bezier(0.25, 1, 0.5, 1);
-            --square-size: min(18vw, 22vh); 
-            --grid-gap: 0px;
-            --sidebar-width: 320px;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            font-family: 'Courier New', Courier, monospace; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh; 
-            overflow: hidden;
-        }
-
-        /* --- BACK BUTTON --- */
-        .back-btn {
-            position: fixed;
-            top: 20px; left: 20px;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 10px 20px;
-            text-decoration: none;
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 0.8rem;
-            z-index: 1000;
-            transition: 0.3s;
-        }
-        .back-btn:hover { background: var(--accent-color); color: var(--bg-color); }
-
-        /* --- HEADER --- */
-        header {
-            height: 15vh;
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: center;
-            gap: 1.5vh; flex-shrink: 0;
-            margin-top: 10px;
-        }
-
-        h1 {
-            font-size: 1.5rem; letter-spacing: 2px;
-            text-transform: uppercase; font-weight: 700;
-            border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 5px;
-        }
-
-        /* --- MAIN LAYOUT --- */
-        main { display: flex; flex-direction: row; width: 100%; height: 85vh; }
-
-        /* --- LEFT: VISUAL GRID --- */
-        .request-container {
-            flex: 1; display: flex;
-            justify-content: center; align-items: flex-start;
-            padding-top: 5vh; overflow-y: auto;
-        }
-
-        .grid-container {
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            gap: var(--grid-gap); width: fit-content;
-            border: 2px solid var(--accent-color);
-        }
-
-        .grid-item {
-            width: var(--square-size); height: var(--square-size);
-            border: 1px solid var(--accent-color);
-            background-color: var(--bg-color);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: all 0.4s var(--transition-curve);
-        }
-
-        .grid-item:hover { 
-            background-color: var(--accent-color); color: var(--bg-color);
-            transform: scale(1.05); z-index: 10;
-            box-shadow: 0 0 25px rgba(255,255,255,0.4);
-        }
-
-        .grid-plus { font-size: 4rem; font-weight: 100; }
-        .grid-text { font-size: 0.8rem; text-align: center; padding: 10px; font-weight: bold; text-transform: uppercase; }
-
-        /* --- RIGHT: SIDEBAR --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            border-left: 2px solid var(--accent-color);
-            padding: 20px; display: flex; flex-direction: column;
-            background: #050505;
-        }
-
-        .sidebar h2 {
-            font-size: 1rem; text-transform: uppercase;
-            border-bottom: 1px solid var(--dim-color);
-            padding-bottom: 10px; margin-bottom: 20px;
-        }
-
-        .status-dot { height: 8px; width: 8px; background: #0f0; border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 5px #0f0; }
-        .status-offline { background: #f00; box-shadow: 0 0 5px #f00; }
-
-        .request-list { flex-grow: 1; overflow-y: auto; list-style: none; }
-
-        .request-item {
-            background: #111; border: 1px solid #333;
-            padding: 10px; margin-bottom: 10px;
-            font-size: 0.8rem; display: flex;
-            justify-content: space-between; align-items: center;
-        }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); display: none;
-            justify-content: center; align-items: center; z-index: 100;
-        }
+        :root { --primary: #2c3e50; --accent: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f4f7f6; }
+        header { background: var(--primary); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
         
-        .modal {
-            background: black; border: 2px solid white;
-            padding: 40px; width: 400px;
-            display: flex; flex-direction: column; gap: 20px;
-            box-shadow: 0 0 50px rgba(255,255,255,0.2);
-        }
-
-        .modal input {
-            background: transparent; border: none;
-            border-bottom: 1px solid white; color: white;
-            padding: 10px; font-family: inherit; font-size: 1rem; outline: none;
-        }
-
-        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .modal button { flex: 1; padding: 10px; cursor: pointer; font-family: inherit; font-weight: bold; text-transform: uppercase; }
-        .btn-cancel { background: transparent; color: white; border: 1px solid white; }
-        .btn-confirm { background: white; color: black; border: none; }
-
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        
+        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+        .material-item { border-bottom: 1px solid #eee; padding: 1rem 0; display: flex; justify-content: space-between; }
+        .material-item img { height: 50px; width: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px; }
+        
+        input, button { padding: 10px; border-radius: 4px; border: 1px solid #ddd; }
+        button { background: var(--accent); color: white; border: none; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        
+        #chat-log { height: 300px; overflow-y: scroll; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; background: #fafafa; }
+        .msg { margin-bottom: 5px; padding: 5px 10px; border-radius: 4px; }
+        .msg.user { background: #e1f5fe; text-align: right; }
+        .msg.ai { background: #e8f5e9; }
     </style>
 </head>
 <body>
 
-    <a href="javascript:history.back()" class="nav-back-btn">← Back</a>
+<header>
+    <h1>🏗️ Material Mind</h1>
+    <button onclick="document.getElementById('req-modal').style.display='block'">+ Request New Material</button>
+</header>
 
-    <header>
-        <div style="width: 40px; height: 40px; background: white;"></div> 
-        <h1>Material Mind</h1>
-    </header>
-
-    <main>
-        <div class="request-container">
-            <div class="grid-container" id="visualGrid">
-                <div class="grid-item" onclick="openModal()">
-                    <span class="grid-plus">+</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <h2>
-                <span id="serverStatus" class="status-dot status-offline"></span>
-                Database Queue
-            </h2>
-            <ul class="request-list" id="queueList">
-                <li style="color: #666; font-size: 0.8rem;">Connecting to Local DB...</li>
-            </ul>
-        </div>
-    </main>
-
-    <div class="modal-overlay" id="modal">
-        <div class="modal">
-            <h2 style="text-transform: uppercase;">New Material Request</h2>
-            <input type="text" id="matName" placeholder="MATERIAL NAME (e.g. Rockwool)">
-            <input type="text" id="userName" placeholder="REQUESTED BY (Optional)">
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn-confirm" onclick="submitToDB()">Add to Database</button>
-            </div>
+<div class="container grid">
+    <div>
+        <h2>📚 Material Database</h2>
+        <div id="material-list" class="card">
+            <p>Loading...</p>
         </div>
     </div>
 
-    <script>
-        const API_URL = "http://localhost:8000";
-        let requestQueue = [];
+    <div>
+        <h2>🧠 Local Architect AI</h2>
+        <div class="card">
+            <div id="chat-log"></div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="chat-input" placeholder="Ask about insulation values..." style="flex:1;">
+                <button onclick="sendMessage()">Ask</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // 1. INIT
-        window.onload = function() {
-            fetchQueue();
-            // Refresh queue every 5 seconds to see updates from Admin
-            setInterval(fetchQueue, 5000); 
-        };
+<div id="req-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div class="card" style="margin: 10% auto; max-width: 400px;">
+        <h3>Request Material</h3>
+        <input type="text" id="req-name" placeholder="Material Name (e.g. Aerogel)" style="width:90%; margin-bottom:10px;">
+        <input type="text" id="req-user" placeholder="Your Name" style="width:90%; margin-bottom:10px;">
+        <button onclick="submitRequest()" style="width:100%">Submit to Queue</button>
+        <button onclick="document.getElementById('req-modal').style.display='none'" style="width:100%; background:#999; margin-top:5px;">Close</button>
+    </div>
+</div>
 
-        // 2. FETCH FROM PYTHON BACKEND
-        async function fetchQueue() {
-            try {
-                const response = await fetch(`${API_URL}/get_queue`);
-                if (!response.ok) throw new Error("Server Offline");
-                
-                requestQueue = await response.json();
-                
-                document.getElementById('serverStatus').className = "status-dot"; // Green
-                renderUI();
-            } catch (error) {
-                console.log("Server error:", error);
-                document.getElementById('serverStatus').className = "status-dot status-offline"; // Red
-            }
-        }
-
-        // 3. SUBMIT TO PYTHON BACKEND
-        async function submitToDB() {
-            const name = document.getElementById('matName').value;
-            const user = document.getElementById('userName').value || "Anonymous";
-
-            if (!name) return;
-
-            try {
-                const response = await fetch(`${API_URL}/submit_request`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ material_name: name, requested_by: user })
-                });
-
-                if (response.ok) {
-                    closeModal();
-                    fetchQueue(); // Refresh immediately
-                } else {
-                    alert("Error saving to database.");
-                }
-            } catch (error) {
-                alert("Is the python server running?");
-            }
-        }
-
-        // 4. UI HELPERS
-        function openModal() {
-            document.getElementById('modal').style.display = 'flex';
-            document.getElementById('matName').focus();
-        }
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('matName').value = '';
-        }
-
-        function renderUI() {
-            // Render List
-            const list = document.getElementById('queueList');
-            list.innerHTML = '';
-            requestQueue.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'request-item';
-                li.innerHTML = `
+<script>
+    // 1. Fetch Materials
+    async function loadMaterials() {
+        const res = await fetch('/api/materials');
+        const data = await res.json();
+        const container = document.getElementById('material-list');
+        container.innerHTML = data.map(m => `
+            <div class="material-item">
+                <div style="display:flex; align-items:center;">
+                    ${m.image_path ? `<img src="${m.image_path}">` : ''}
                     <div>
-                        <div style="font-weight:bold">${item.material_name}</div>
-                        <div style="font-size:0.7rem; color:#888;">${item.requested_by}</div>
+                        <strong>${m.name}</strong><br>
+                        <small>${m.category}</small>
                     </div>
-                    <div style="font-size:0.6rem; color:${item.status === 'Pending' ? 'yellow' : 'lime'};">${item.status}</div>
-                `;
-                list.appendChild(li);
-            });
+                </div>
+                <a href="${m.pdf_path}" target="_blank"><button>📄 PDF</button></a>
+            </div>
+        `).join('');
+    }
 
-            // Render Grid
-            const grid = document.getElementById('visualGrid');
-            const plusBtn = grid.lastElementChild;
-            grid.innerHTML = '';
-            requestQueue.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'grid-item';
-                div.innerHTML = `<span class="grid-text">${item.material_name}</span>`;
-                grid.appendChild(div);
-            });
-            grid.appendChild(plusBtn);
-        }
-    </script>
+    // 2. Chat Logic
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const log = document.getElementById('chat-log');
+        const q = input.value;
+        if(!q) return;
+
+        log.innerHTML += `<div class="msg user">You: ${q}</div>`;
+        input.value = '';
+
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({question: q})
+        });
+        const data = await res.json();
+        log.innerHTML += `<div class="msg ai">🤖: ${data.answer}</div>`;
+        log.scrollTop = log.scrollHeight;
+    }
+
+    // 3. Request Logic
+    async function submitRequest() {
+        const name = document.getElementById('req-name').value;
+        const user = document.getElementById('req-user').value;
+        await fetch('/api/request', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, user})
+        });
+        alert("Request Queued!");
+        document.getElementById('req-modal').style.display='none';
+    }
+
+    loadMaterials();
+</script>
+
 </body>
 </html>

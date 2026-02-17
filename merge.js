@@ -1,73 +1,72 @@
 const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
 
-const DB_PATH = path.join(__dirname, 'database.js');
-const WORKFLOW_PATH = path.join(__dirname, 'workflow.js');
+const WHITELIST_PATH = './whitelist.json';
+const DATABASE_PATH = './database.js';
+const WORKFLOW_PATH = './workflow.js';
 
-// 1. LOAD EXISTING DATABASE SAFELY
-let currentDB = [];
-try {
-    const dbContent = fs.readFileSync(DB_PATH, 'utf8');
-    const sandbox = { window: {} };
-    vm.createContext(sandbox);
-    vm.runInContext(dbContent, sandbox);
-    currentDB = sandbox.window.aiDatabase || [];
-} catch (e) {
-    console.log("Creating new database structure...");
-}
+const whitelist = fs.existsSync(WHITELIST_PATH) ? JSON.parse(fs.readFileSync(WHITELIST_PATH)) : [];
 
-// 2. LOAD EXISTING WORKFLOW SAFELY
+// 1. UPDATE DATABASE.JS
+console.log("🔄 Merging Whitelist into Database...");
+const newDatabase = whitelist.map(item => ({
+    id: item.id,
+    name: item.name,
+    provider: item.provider,
+    website_url: item.website_url,
+    logo_url: item.logo_url,
+    image_url_1: item.image_url_1 || "", // 🆕 Ensure these map
+    image_url_2: item.image_url_2 || "", // 🆕 Ensure these map
+    
+    description_short: item.description_short,
+    description_long: item.description_long, // 🆕 Ensure these map
+    
+    primary_function: item.primary_function,
+    integration_type: item.integration_type || "Service",
+    
+    input_type: item.input_type,
+    output_type: item.output_type,
+    
+    pricing_model: item.pricing_model,
+    price_base_monthly: item.price_base_monthly,
+    usage_limit_per_month: item.usage_limit_per_month || -1,
+    
+    company_size_fit: item.company_size_fit || ["Studio", "Firm"],
+    benchmark_rating: item.benchmark_rating || 5,
+    
+    pros: item.pros || [],
+    cons: item.cons || [],
+    
+    efficiency_text: item.efficiency_text || "Standard efficiency.",
+    workflow_text: item.workflow_text || "Standard workflow."
+}));
+
+const dbContent = `window.aiDatabase = ${JSON.stringify(newDatabase, null, 4)};`;
+fs.writeFileSync(DATABASE_PATH, dbContent);
+console.log(`✅ database.js updated with ${newDatabase.length} entries.`);
+
+// 2. UPDATE WORKFLOW.JS
+// Load existing workflow to preserve structure, but inject new IDs
 let workflow = [];
 try {
-    const wfContent = fs.readFileSync(WORKFLOW_PATH, 'utf8');
-    const sandbox = { window: {}, module: {} };
-    vm.createContext(sandbox);
-    vm.runInContext(wfContent, sandbox);
-    workflow = sandbox.window.workflowData || sandbox.module.exports || [];
-} catch (e) {
-    console.log("❌ Error loading workflow.js. Ensure the file exists and isn't corrupted.");
-}
+    const wfRaw = fs.readFileSync(WORKFLOW_PATH, 'utf8');
+    workflow = JSON.parse(wfRaw.replace('window.workflowData =', '').replace(';', '').trim());
+} catch(e) { console.log("⚠️ Could not load workflow structure, starting fresh."); }
 
-// 3. CHECK FOR NEW DATA (WHITELIST)
-if (fs.existsSync('whitelist.json')) {
-    const whitelist = JSON.parse(fs.readFileSync('whitelist.json'));
-    if (whitelist.length > 0) {
-        console.log(`➕ Processing ${whitelist.length} new approved tools...`);
-        
-        whitelist.forEach(item => {
-            if (!currentDB.find(x => x.id === item.id)) {
-                const target = item.workflow_target;
-                delete item.workflow_target; 
-                currentDB.push(item);
-
-                if (target && workflow[target.phaseIndex]) {
-                    const task = workflow[target.phaseIndex].tasks[target.taskIndex];
-                    if (!task.ai_refs.includes(item.id)) {
-                        task.ai_refs.push(item.id);
-                    }
-                }
+whitelist.forEach(tool => {
+    if (tool.workflow_target) {
+        const { phaseIndex, taskIndex } = tool.workflow_target;
+        if (workflow[phaseIndex] && workflow[phaseIndex].tasks[taskIndex]) {
+            const task = workflow[phaseIndex].tasks[taskIndex];
+            if (!task.ai_refs) task.ai_refs = [];
+            
+            // Only add if not already there
+            if (!task.ai_refs.includes(tool.id)) {
+                task.ai_refs.push(tool.id);
             }
-        });
-        // Clear whitelist after processing
-        fs.writeFileSync('whitelist.json', '[]');
+        }
     }
-}
+});
 
-// 4. SAVE HYBRID FILES (This is what fixes your "Empty Data" issue)
-// This ensures the files always have the "window.x =" prefix for the browser
-const dbFinal = `window.aiDatabase = ${JSON.stringify(currentDB, null, 4)};`;
-fs.writeFileSync(DB_PATH, dbFinal);
-
-const wfFinal = `window.workflowData = ${JSON.stringify(workflow, null, 4)}; \n\nif(typeof module !== 'undefined') module.exports = window.workflowData;`;
-fs.writeFileSync(WORKFLOW_PATH, wfFinal);
-
-console.log("✅ Files updated and synced for Browser + Node.js.");
-
-// 5. AUTO-GENERATE PAGES
-try {
-    require('./generate_site.js');
-    console.log("🚀 HTML Pages regenerated.");
-} catch (e) {
-    console.log("⚠️ Manual page generation required.");
-}
+const wfContent = `window.workflowData = ${JSON.stringify(workflow, null, 4)};`;
+fs.writeFileSync(WORKFLOW_PATH, wfContent);
+console.log(`✅ workflow.js updated with new tool references.`);
