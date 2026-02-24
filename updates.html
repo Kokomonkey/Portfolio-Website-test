@@ -306,7 +306,7 @@
         // --- RENDER REAL DATA ---
         function renderCommits(commits) {
             // Limit to last 15 commits to keep page clean
-            const recentCommits = commits.slice(0, 15);
+            const recentCommits = commits.slice(0, 100);
 
             recentCommits.forEach((item, index) => {
                 const msg = item.commit.message;

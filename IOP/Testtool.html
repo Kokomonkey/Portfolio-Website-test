@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Architectural Masterplan Simulator</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Courier New', Courier, monospace; background: #111; color: #eee; }
+        #ui-panel {
+            position: absolute; left: 0; top: 0; width: 320px; height: 100vh;
+            background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(10px);
+            padding: 20px; box-sizing: border-box; border-right: 1px solid #4a90e2;
+            overflow-y: auto; z-index: 10;
+        }
+        h1, h2 { text-transform: uppercase; letter-spacing: 1px; font-size: 1.2rem; margin-top: 0; color: #4a90e2; }
+        h2 { font-size: 0.9rem; color: #aaa; margin-top: 20px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        button {
+            width: 100%; padding: 10px; margin: 5px 0; background: transparent;
+            color: #eee; border: 1px solid #4a90e2; cursor: pointer; text-transform: uppercase;
+            transition: 0.2s; font-family: inherit; font-size: 0.8rem;
+        }
+        button:hover { background: #4a90e2; color: #fff; }
+        .danger-btn { border-color: #e24a4a; }
+        .danger-btn:hover { background: #e24a4a; }
+        .slider-container { margin: 15px 0; font-size: 0.8rem; }
+        input[type=range] { width: 100%; margin-top: 5px; }
+        #canvas-container { position: absolute; top: 0; left: 320px; width: calc(100vw - 320px); height: 100vh; }
+        #info { position: absolute; bottom: 10px; right: 10px; color: rgba(255,255,255,0.5); font-size: 0.8rem; pointer-events: none; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+<div id="ui-panel">
+    <h1>3D Masterplan Builder</h1>
+    
+    <h2>Construct Layers</h2>
+    <button onclick="addLayer('tunnel')">+ Add Highway Tunnel</button>
+    <button onclick="addLayer('industry')">+ Add Industrial Base</button>
+    <button onclick="addLayer('pillars')">+ Add Structural Pillars</button>
+    <button onclick="addLayer('residential')">+ Add Residential Block</button>
+    <button onclick="addLayer('greenhouse')">+ Add Glass Greenhouse</button>
+    
+    <h2>Environment Controls</h2>
+    <div class="slider-container">
+        <label>Sun Position / Time of Day</label>
+        <input type="range" id="sunSlider" min="0" max="100" value="70">
+    </div>
+
+    <h2>Tools</h2>
+    <button onclick="toggleWireframe()">Toggle Da Vinci Wireframe</button>
+    <button onclick="populate()">Spawn Workers/Residents</button>
+    <button onclick="clearStack()" class="danger-btn">Demolish All</button>
+</div>
+
+<div id="canvas-container"></div>
+<div id="info">Left Click: Rotate | Right Click: Pan | Scroll: Zoom</div>
+
+<script>
+    // --- SCENE SETUP ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87CEEB); // Default sky blue
+    scene.fog = new THREE.FogExp2(0x87CEEB, 0.02);
+
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(20, 20, 30);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 5, 0);
+    controls.maxPolarAngle = Math.PI / 2 - 0.05; // Don't go below ground
+
+    // --- LIGHTING (Sun Shader System) ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xffffee, 1.5);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 100;
+    sunLight.shadow.camera.left = -20;
+    sunLight.shadow.camera.right = 20;
+    sunLight.shadow.camera.top = 20;
+    sunLight.shadow.camera.bottom = -20;
+    sunLight.shadow.bias = -0.001;
+    scene.add(sunLight);
+
+    // Dynamic Sun Update
+    const sunSlider = document.getElementById('sunSlider');
+    function updateSun() {
+        const val = sunSlider.value / 100;
+        const angle = Math.PI * val; // 0 to PI (sunrise to sunset)
+        
+        sunLight.position.x = Math.cos(angle) * 40;
+        sunLight.position.y = Math.sin(angle) * 40;
+        sunLight.position.z = Math.sin(angle) * 20; // Slight offset
+
+        // Sky color interpolation
+        if (val < 0.2 || val > 0.8) {
+            scene.background.setHex(0xff7e5f); // Sunset/Sunrise orange
+            scene.fog.color.setHex(0xff7e5f);
+            sunLight.intensity = 0.8;
+            ambientLight.intensity = 0.2;
+        } else if (val >= 0.2 && val <= 0.8) {
+            scene.background.setHex(0x87CEEB); // Day blue
+            scene.fog.color.setHex(0x87CEEB);
+            sunLight.intensity = 1.5;
+            ambientLight.intensity = 0.4;
+        }
+    }
+    sunSlider.addEventListener('input', updateSun);
+    updateSun(); // Init sun
+
+    // --- MATERIALS ---
+    const matConcrete = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.9 });
+    const matAsphalt = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+    const matWood = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.6 });
+    const matGlass = new THREE.MeshPhysicalMaterial({ 
+        color: 0xffffff, metalness: 0.1, roughness: 0.1, 
+        transmission: 0.8, thickness: 0.5, transparent: true 
+    });
+    const matSteel = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.8, roughness: 0.2 });
+    
+    // Global material array for wireframe toggle
+    const allMaterials = [matConcrete, matAsphalt, matWood, matGlass, matSteel];
+    let isWireframe = false;
+
+    // --- GROUND PLANE ---
+    const groundGeo = new THREE.PlaneGeometry(100, 100);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x4a5d23, roughness: 1 }); // Grassish
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // --- ARCHITECTURE GENERATOR ---
+    let stack = [];
+    const population = [];
+
+    function createGeometryByType(type) {
+        const group = new THREE.Group();
+        group.userData = { type: type, height: 0, weight: 0 };
+
+        if (type === 'tunnel') {
+            const baseGeo = new THREE.BoxGeometry(16, 3, 10);
+            const base = new THREE.Mesh(baseGeo, matConcrete);
+            base.position.y = 1.5;
+            base.castShadow = true; base.receiveShadow = true;
+            
+            // Hollow center illusion (black box)
+            const holeGeo = new THREE.BoxGeometry(8, 2.5, 10.1);
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const hole = new THREE.Mesh(holeGeo, holeMat);
+            hole.position.y = 1.25;
+            
+            group.add(base); group.add(hole);
+            group.userData.height = 3;
+            group.userData.weight = 100;
+
+        } else if (type === 'industry') {
+            const geo = new THREE.BoxGeometry(14, 4, 10);
+            const mesh = new THREE.Mesh(geo, matConcrete);
+            mesh.position.y = 2;
+            mesh.castShadow = true; mesh.receiveShadow = true;
+            group.add(mesh);
+            group.userData.height = 4;
+            group.userData.weight = 80;
+
+        } else if (type === 'pillars') {
+            const slabGeo = new THREE.BoxGeometry(14, 0.5, 10);
+            const slab = new THREE.Mesh(slabGeo, matConcrete);
+            slab.position.y = 2.75;
+            slab.castShadow = true; slab.receiveShadow = true;
+            group.add(slab);
+
+            const pGeo = new THREE.CylinderGeometry(0.3, 0.3, 2.5);
+            const positions = [[-6, -4], [6, -4], [-6, 4], [6, 4], [0,0]];
+            positions.forEach(pos => {
+                const pillar = new THREE.Mesh(pGeo, matSteel);
+                pillar.position.set(pos[0], 1.25, pos[1]);
+                pillar.castShadow = true; pillar.receiveShadow = true;
+                group.add(pillar);
+            });
+            group.userData.height = 3;
+            group.userData.weight = 90;
+
+        } else if (type === 'residential') {
+            const geo = new THREE.BoxGeometry(10, 5, 8);
+            const mesh = new THREE.Mesh(geo, matWood);
+            mesh.position.y = 2.5;
+            mesh.castShadow = true; mesh.receiveShadow = true;
+            group.add(mesh);
+            group.userData.height = 5;
+            group.userData.weight = 50;
+
+        } else if (type === 'greenhouse') {
+            // Base glass box
+            const boxGeo = new THREE.BoxGeometry(8, 3, 6);
+            const box = new THREE.Mesh(boxGeo, matGlass);
+            box.position.y = 1.5;
+            box.castShadow = true; box.receiveShadow = true;
+            group.add(box);
+
+            // Pitched roof
+            const roofGeo = new THREE.CylinderGeometry(0.1, 4.5, 3, 4);
+            const roof = new THREE.Mesh(roofGeo, matGlass);
+            roof.rotation.y = Math.PI / 4; // rotate to align square base
+            roof.position.y = 4.5;
+            roof.castShadow = true; roof.receiveShadow = true;
+            group.add(roof);
+
+            group.userData.height = 6;
+            group.userData.weight = 20;
+        }
+
+        return group;
+    }
+
+    window.addLayer = function(type) {
+        const layer = createGeometryByType(type);
+        
+        // Calculate Y position based on current stack height
+        let currentY = 0;
+        stack.forEach(item => currentY += item.userData.height);
+        
+        layer.position.y = currentY;
+        
+        // Drop-in animation setup
+        layer.userData.targetY = currentY;
+        layer.position.y = currentY + 10; 
+        
+        scene.add(layer);
+        stack.push(layer);
+        checkIntegrity();
+    };
+
+    window.clearStack = function() {
+        stack.forEach(layer => scene.remove(layer));
+        population.forEach(p => scene.remove(p));
+        stack = [];
+        population.length = 0;
+    };
+
+    // --- STRUCTURAL INTEGRITY (Surprise Feature Adapted) ---
+    function checkIntegrity() {
+        for (let i = 0; i < stack.length; i++) {
+            stack[i].userData.unstable = false; // Reset
+        }
+        for (let i = 0; i < stack.length - 1; i++) {
+            const currentWeight = stack[i].userData.weight;
+            const weightAbove = stack[i+1].userData.weight;
+            
+            // If putting heavy concrete on light glass/wood
+            if (weightAbove > currentWeight) {
+                stack[i+1].userData.unstable = true;
+                console.warn(`Integrity Warning: Level ${i+1} is too heavy for its foundation!`);
+            }
+        }
+    }
+
+    // --- TOOLS ---
+    window.toggleWireframe = function() {
+        isWireframe = !isWireframe;
+        allMaterials.forEach(mat => mat.wireframe = isWireframe);
+        
+        if (isWireframe) {
+            scene.background.setHex(0xd8cbb8); // Da Vinci paper color
+            scene.fog.color.setHex(0xd8cbb8);
+            groundMat.color.setHex(0xaaaaaa);
+        } else {
+            updateSun(); // Restore normal sky
+            groundMat.color.setHex(0x4a5d23);
+        }
+    };
+
+    window.populate = function() {
+        if(stack.length === 0) return;
+        
+        const popGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.4);
+        const popMat = new THREE.MeshStandardMaterial({ color: 0xff4444 });
+
+        stack.forEach(layer => {
+            // Don't spawn on tunnels or thin pillars
+            if(layer.userData.type === 'tunnel' || layer.userData.type === 'pillars') return;
+
+            const amount = Math.floor(Math.random() * 5) + 2;
+            for(let i=0; i<amount; i++) {
+                const person = new THREE.Mesh(popGeo, popMat);
+                person.castShadow = true;
+                
+                // Random position on the layer roof
+                const rx = (Math.random() - 0.5) * 6;
+                const rz = (Math.random() - 0.5) * 6;
+                
+                person.position.set(rx, layer.userData.targetY + layer.userData.height + 0.2, rz);
+                
+                // Add simple roaming logic variables
+                person.userData = {
+                    originX: rx, originZ: rz,
+                    angle: Math.random() * Math.PI * 2,
+                    speed: 0.01 + Math.random() * 0.02
+                };
+                
+                scene.add(person);
+                population.push(person);
+            }
+        });
+    };
+
+    // --- RESIZE HANDLER ---
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+
+    // --- ANIMATION LOOP ---
+    const clock = new THREE.Clock();
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
+
+        // Animate layer drops
+        stack.forEach(layer => {
+            if (layer.position.y > layer.userData.targetY) {
+                layer.position.y -= 0.5; // fall speed
+                if (layer.position.y < layer.userData.targetY) layer.position.y = layer.userData.targetY;
+            }
+            
+            // Wobble unstable blocks (Structural Integrity check)
+            if (layer.userData.unstable) {
+                layer.rotation.z = Math.sin(time * 10) * 0.02;
+                layer.rotation.x = Math.cos(time * 12) * 0.02;
+            } else {
+                layer.rotation.z = 0; layer.rotation.x = 0;
+            }
+        });
+
+        // Animate population
+        population.forEach(person => {
+            person.position.x += Math.cos(person.userData.angle) * person.userData.speed;
+            person.position.z += Math.sin(person.userData.angle) * person.userData.speed;
+            
+            // Keep them somewhat near their origin
+            const dist = Math.hypot(person.position.x - person.userData.originX, person.position.z - person.userData.originZ);
+            if (dist > 2) {
+                person.userData.angle += Math.PI; // Turn around
+            }
+            
+            // Random direction changes
+            if(Math.random() < 0.02) person.userData.angle += (Math.random() - 0.5);
+        });
+
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    
+    // Initial setup
+    addLayer('tunnel');
+    addLayer('industry');
+    addLayer('pillars');
+    addLayer('residential');
+    
+    animate();
+</script>
+</body>
+</html>

@@ -1715,8 +1715,19 @@
         return 'var(--int-manual)';
     }
 
-    document.addEventListener("DOMContentLoaded", function() { document.getElementById('workflow-visit-count').innerText = "25"; });
-    init();
+document.addEventListener("DOMContentLoaded", function() { 
+    // 1. Check if the user has a visit count stored in their browser
+    let visitCount = localStorage.getItem('individual_visit_count');
+    
+    // 2. If it exists, add 1. If it doesn't, start at 1.
+    visitCount = visitCount ? parseInt(visitCount) + 1 : 1;
+    
+    // 3. Save the new count back to local storage
+    localStorage.setItem('individual_visit_count', visitCount);
+    
+    // 4. Display the count in your UI
+    document.getElementById('workflow-visit-count').innerText = visitCount; 
+});    init();
 </script>
 </body>
 </html>

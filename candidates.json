@@ -1,212 +1,82 @@
 [
   {
-    "name": "Synaps",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://allvectorlogo.com/img/2019/04/synapse-audio-software-logo.png",
-    "image_urls": [
-      "https://www.researchgate.net/publication/380182615/figure/fig1/AS:11431281250482648@1717832532891/A-screen-of-Snapse-showing-the-software-interface-four-neurons-boxes-labeled-with-8.png",
-      "https://www.techpowerup.com/img/XLh7aP2sTjl457M1.jpg"
-    ]
-  },
-  {
     "name": "Raven AI",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://raven.ai/wp-content/uploads/2022/10/raven_black_blue.svg",
+    "logo_url": "https://media.licdn.com/dms/image/v2/D560BAQHoe2zUwX8zrg/company-logo_200_200/company-logo_200_200/0/1685046361998/ravenai_logo?e=2147483647&v=beta&t=fWFZf43hzaLZzTg4IPpOl_-vTGVHq_yFcvoKo3h5XlQ",
     "image_urls": [
-      "https://www.ravenchat.ai/_next/static/media/RavenUIGraphic.ba45b24d.png",
-      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/5acd86cc-c03f-4c24-9096-bde5b0c3f2f6.png?ixlib=rb-1.0.0&ch=Width%2CDPR&auto=format&w=750&h=450&q=50"
+      "https://i.ytimg.com/vi/4c0g-I6Vz-U/maxresdefault.jpg",
+      "https://i.ytimg.com/vi/ve-T7vEHIII/hqdefault.jpg"
     ]
   },
   {
     "name": "Archivinci",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn-1.webcatalog.io/catalog/archivinci/archivinci-icon-filled-256.png?v=1724904113363",
+    "logo_url": "https://static.wixstatic.com/media/80eeb4_ce8eb039772948d4ad2b8696739eea35~mv2.png/v1/fill/w_2500,h_1406,al_c/80eeb4_ce8eb039772948d4ad2b8696739eea35~mv2.png",
     "image_urls": [
-      "https://static.wixstatic.com/media/02f1ab_610055974f5c417ebc4eb780584c2a5d~mv2.webp/v1/fill/w_980,h_598,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/texture-balance-adjustment-interface.webp",
-      "https://cdn.sanity.io/images/q0fo807q/production/4fc5b909705580eb7a50b33e1d237a7e62cb9730-1750x1060.png?rect=0,71,1750,919&w=1200&h=630&q=100&fit=max&auto=format"
-    ]
-  },
-  {
-    "name": "Typus AI",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://bdbau.org/wp-content/uploads/2026/01/1760881823429339-typus_logo_black.png",
-    "image_urls": [
-      "https://3dwarehouse.sketchup.com/warehouse/v1.0/content/public/ceec9379-9f99-491c-ab9b-cf4492a137eb",
-      "https://autodesk-exchange-apps-v-1-5-staging.s3.amazonaws.com/data/content/files/images/T4R2JFDCJ987M38A/439862635907036577/original_f8f906e5-e924-4a5a-b317-8731938f2b2c_.png?AWSAccessKeyId=AKIAWQAA5ADROJBNX5E4&Expires=1771188623&response-content-disposition=inline&response-content-type=image%2Fpng&Signature=%2FTq3JTKNcaUmEvXHKc2m6UXJ%2Bx4%3D"
+      "https://static.wixstatic.com/media/02f1ab_10749fb047d740cb8f2965764286f060~mv2.webp/v1/fill/w_757,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/archivinci-ai-render-interface-exterior-module.webp",
+      "https://static.wixstatic.com/media/02f1ab_fb2d28c6da6b471481ed80a23c9867b3~mv2.webp"
     ]
   },
   {
     "name": "Renderahouse",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://blog.renderahouse.com/logo.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://assets.seobotai.com/renderahouse.com/68a3c8fb4eebbe86def1aca2/ac8ef4f8a76cc319b491d712cb9c8573.jpg",
-      "https://assets.seobotai.com/renderahouse.com/68a3c8fb4eebbe86def1aca2/65928bbe7a23cff8ad84520f5df2f6cd.jpg"
-    ]
-  },
-  {
-    "name": "OpenClaw",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://fortune.com/img-assets/wp-content/uploads/2026/02/GettyImages-2259515289-e1770916900864.jpg?resize=1200,600",
-    "image_urls": [
-      "https://preview.redd.it/openclaw-is-a-game-changer-v0-xwzy2ogx93jg1.jpeg?width=1080&crop=smart&auto=webp&s=1dcf21704a5aeb94e491c0be22c7980ff19e211c",
-      "https://www.cultofmac.com/wp-content/uploads/2026/02/openclaw-companion-app2.jpg"
-    ]
-  },
-  {
-    "name": "Nano Banana",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://store-images.s-microsoft.com/image/apps.47708.13995459486483234.d55d4637-fda0-48bc-b660-131213c2390f.a5803faf-f2fb-4a2a-b350-a42da831ac3b",
-    "image_urls": [
-      "https://blog-cdn.skywork.ai/wp-content/uploads/2025/09/Nano-Banana-ai-1024x576.jpeg",
-      "https://preview.redd.it/i-tried-generating-app-store-screenshots-with-nano-banana-v0-pxtp11z0dk6g1.png?width=2592&format=png&auto=webp&s=f32222021860b53dabaeecd7fc12deff9b037903"
-    ]
-  },
-  {
-    "name": "Kling AI",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://awsmp-logos.s3.amazonaws.com/seller-hny6ajdzqszbm/14c9e8f8e6c14b4d3109d0878f0cf5e6.png",
-    "image_urls": [
-      "https://cdn.sanity.io/images/q0fo807q/production/fff321f93b1ef0229def08c201464e0f87e41340-3176x1894.png?w=1200&q=100&fit=max&auto=format",
-      "https://cdn.mos.cms.futurecdn.net/kKEUp6SgC5x8GybeYcuPvY.png"
-    ]
-  },
-  {
-    "name": "Elevenlabs",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/ElevenLabs_logo_%282022-2024%29.png",
-    "image_urls": [
-      "https://storage.googleapis.com/eleven-public-cdn/images/vo-studio/vo-studio-hero.jpg",
-      "https://nerdynav.com/_astro/ElevenLabsVoicelibrary.Bc0LQkJu_26kusJ.png"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://biblus.accasoftware.com/en/wp-content/uploads/sites/2/2017/06/04_PlayStructure_tools.jpg"
     ]
   },
   {
     "name": "Claude",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/Claude_AI_logo.png",
+    "logo_url": "https://i.logos-download.com/114232/31116-s1280-fa091cbf2b0bebc0fad188b896376d53.png/Claude_Logo_2023-s1280.png",
     "image_urls": [
-      "https://media.licdn.com/dms/image/v2/D4E22AQFid9cd52n-Dg/feedshare-shrink_800/B4EZfGfqa3GwAg-/0/1751381879794?e=2147483647&v=beta&t=0717-f7VlDvFXyD0LLzJMRIUMOfJqqz7IgQ-Of1sfU0",
-      "https://www.testingcatalog.com/content/images/size/w2000/2024/07/screenshot-claude.ai-2024.07.19-22_41_21.png"
-    ]
-  },
-  {
-    "name": "Higgsfield",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://mma.prnewswire.com/media/2768078/Higgsfield_Logo.jpg?p=facebook",
-    "image_urls": [
-      "https://cdn.sanity.io/images/q0fo807q/production/260d33d115e6742b84506cdb309679156add14da-1750x1060.png?w=1200&q=100&fit=max&auto=format",
-      "https://petapixel.com/assets/uploads/2025/08/higgsfield-ai-upscale-ui-800x396.jpg"
-    ]
-  },
-  {
-    "name": "Invideo",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://vectorseek.com/wp-content/uploads/2023/12/Invideo-Ai-Logo-PNG-SVG-Vector.png",
-    "image_urls": [
-      "https://cdn.mos.cms.futurecdn.net/UE9krGryQwhWxn5gp4ATKG.jpg",
-      "https://assets-static.invideo.io/uploads/2021/03/Image-45.jpg"
-    ]
-  },
-  {
-    "name": "Google Veo",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://logosandtypes.com/wp-content/uploads/2025/06/google-veo.svg",
-    "image_urls": [
-      "https://lifehacker.com/imagery/articles/01JXFD7XW20KN0BTN5X1BP6FM8/images-2.fill.size_2000x1125.v1749642639.jpg",
-      "https://support.veo.co/hc/article_attachments/37992433443601"
+      "https://miro.medium.com/v2/resize:fit:1400/1*tywrih93ylNEPSij0Asaag.png",
+      "https://miro.medium.com/v2/resize:fit:1400/1*gAzLbOcVr9AkTybifYku9g.png"
     ]
   },
   {
     "name": "Perplexity",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Perplexity_AI_logo.svg/1280px-Perplexity_AI_logo.svg.png",
+    "logo_url": "https://1000logos.net/wp-content/uploads/2024/08/Perplexity-Logo.png",
     "image_urls": [
       "https://www.uxdesigninstitute.com/blog/wp-content/uploads/2024/06/Screenshot-2024-06-14-at-11.34.28.png",
-      "https://www.testingcatalog.com/content/images/size/w2000/2024/11/Screenshot-2024-11-25-at-20.53.40-1.png"
-    ]
-  },
-  {
-    "name": "Cursor",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/brand/brand-logo-4.svg",
-    "image_urls": [
-      "https://cdn.prod.website-files.com/6542d8f9e468531067fe9978/68711ec046bc57b16a1c2b59_AD_4nXcbLPspUVHKY2FIAAM3s6PhzpL8nizgpJ_zsg1SMkXiSJXhFOEMy3O1f_lfwBS6YwpINeGuInGWL5YCePY7oVm5kDP1olRjBkkrmMJZEZh0kaklgCyocgjay5_mVdyntenmH0mTsQ.webp",
-      "https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/homepage/homepage-team-photo-1.jpg"
+      "https://www.elegantthemes.com/blog/wp-content/uploads/2023/10/perplexity-ai-ft-img-3-min.jpg"
     ]
   },
   {
     "name": "Urban ChatGPT",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/3840px-ChatGPT_logo.svg.png",
+    "logo_url": "https://static.vecteezy.com/system/resources/previews/021/495/996/non_2x/chatgpt-openai-logo-icon-free-png.png",
     "image_urls": [
-      "https://i.ytimg.com/vi/4RRnI4DxLyM/maxresdefault.jpg",
-      "https://miro.medium.com/v2/resize:fit:1400/1*qti1IcpXjNIanTqxNfrtKA.png"
-    ]
-  },
-  {
-    "name": "Dino",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://dino-software.com/wp-content/uploads/2017/10/Dino-Software-Logo.png",
-    "image_urls": [
-      "https://www.dino-robotics.com/wp-content/uploads/2021/11/DRSNodeGraph2021-11-18-13-51-39.png",
-      "https://www.dino-robotics.com/wp-content/uploads/2021/11/ZX2DView2021-11-23-12-34-11.png"
-    ]
-  },
-  {
-    "name": "SWAPP",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://aps.autodesk.com/sites/default/files/styles/customer_logo/public/2020-07/swapp_logo_1.png?itok=VCAVYHyw",
-    "image_urls": [
-      "https://aps.autodesk.com/sites/default/files/2020-07/swapp.jpg",
-      "https://framerusercontent.com/images/s3fqfXKsMtiA2aqIVtlgAz7How.png?scale-down-to=2048&width=4010&height=2866"
+      "https://parametric-architecture.com/wp-content/uploads/2025/02/Urban-GPT-Alpha-Studio-Tim-Fu-12-1-1600x950.webp",
+      "https://i.ytimg.com/vi/BC31m78wU2Y/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFkgZShXMA8=&rs=AOn4CLAoYMYr4R7HNG5HWYR7QcTyS14mJw"
     ]
   },
   {
     "name": "Aino",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://media.licdn.com/dms/image/v2/D4D0BAQH6YjlFwUQCLQ/company-logo_200_200/company-logo_200_200/0/1711399930030/ainotech_logo?e=2147483647&v=beta&t=YoE9jfcbhCFE8w53-mqSaljVSEn_c0t8P5ZdRnR-_2o",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvZmFmNjY0YTEtZWYyOS00NDcyLTk4NmQtMzRlY2ZlMjBkODkxLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://i.ytimg.com/vi/mhNmydBrNJA/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGHIgPyg0MA8=&rs=AOn4CLAU24m_MQH-M3aZCpLQkYhvkxLzAA",
-      "https://help.m-files.com/wp-content/uploads/aino5.png"
-    ]
-  },
-  {
-    "name": "Airi Lab",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/instagram/airi.lab/profile_pic.jpg",
-    "image_urls": [
-      "https://static.food4rhino.com/cdn/farfuture/TSW5dA4vL3chvjkw247f05i5OXmb1LoNhfdrF50iItE/mtime:1737088351/sites/default/files/public/styles/large/public/users-files/ai-rui/app/landscape.png?itok=QBN-uekN",
-      "https://static.food4rhino.com/cdn/farfuture/Ii_BxlPGwCyLHwUMu9rTwHJ4Vd5J2_7qw8goV77nQK4/mtime:1737088217/sites/default/files/public/users-files/ai-rui/app/design_compressed.gif?itok=dEsaLuFr"
+      "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3823804754158500399",
+      "https://lookaside.fbsbx.com/lookaside/crawler/instagram/DSmqVVljEdb/0/image.jpg"
     ]
   },
   {
     "name": "Luma AI",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://logos-world.net/wp-content/uploads/2024/11/Luma-Labs-Logo.png",
+    "logo_url": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/luma-ai-icon.svg",
     "image_urls": [
-      "https://www.eesel.ai/_next/image?url=https%3A%2F%2Fwebsite-cms.eesel.ai%2Fwp-content%2Fuploads%2F2025%2F10%2F01-LumaAI-Dream-Machine.png&w=1680&q=100",
-      "https://bytescale.mobbin.com/FW25bBB/image/mobbin.com/prod/file.webp?enc=1.BQnbdJK6.9MWy_h7bplzshXoC.p4fkvEE2MR9NjadOyOYVMPmV9m-TIcWyuHfnKkHDexWMcBKmKwJWcXlRwe1nvgLneAJvitEcNrj-grPSzEMDtG195N-JLcCwLwsGuMSeDKjtvaQ-ALPI_uvjitt1VV6eRFxM2apNlFf_IbZJJzzmTWy7VmPHFyM-0QihuR-9rzHryMo8TXKgbM6WuFm0JM-i4njkzEoak47Ag-M8KdAhVoyctvraD8KAyX4YWUf3zlahKUIdRcEdv9IewEJbtDggy_ZRLF85UcqTOMx7QF2xgaFnVEUXqYsKkY1h9P2E8xJGNm5q6Qwoc2F2aq0hRqLF7ovvcCweUD3tSH2r_iuZx99kuDAWscaAzZDgwfR6lzH_JHY"
+      "https://integratedbim.com/wp-content/uploads/2024/06/Screenshot-2024-06-04-at-13.23.48-min.png",
+      "https://s3-alpha.figma.com/hub/file/2281410113363185601/8f324828-53e0-45db-8787-72614b397e77-cover.png"
     ]
   },
   {
@@ -215,7 +85,7 @@
     "website_url": "",
     "logo_url": "https://huggingface.co/tencent/Hunyuan3D-1/resolve/main/assets/logo.png",
     "image_urls": [
-      "https://3dprintingindustry.com/wp-content/uploads/2025/11/3D.jpg",
+      "https://community.osarch.org/uploads/editor/bi/vuufnfyjrjmp.png",
       "https://mintcdn.com/dripart/NmGUk_QSXQXRVtZP/images/tutorial/3d/hunyuan3d-2mv/hunyuan3d_2_non_multiview.jpg?fit=max&auto=format&n=NmGUk_QSXQXRVtZP&q=85&s=33c158fcfb133560674aa56bfdb5087d"
     ]
   },
@@ -226,157 +96,37 @@
     "logo_url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Midjourney_Emblem.png",
     "image_urls": [
       "https://www.researchgate.net/publication/366594739/figure/fig3/AS:11431281109517389@1672073146281/User-Interface-of-Midjourney.png",
-      "https://www.eesel.ai/_next/image?url=https%3A%2F%2Fwebsite-cms.eesel.ai%2Fwp-content%2Fuploads%2F2025%2F08%2F06-Midjourney-demonstrating-its-power-as-one-of-the-top-creative-AI-tools-for-business.png&w=1680&q=100"
-    ]
-  },
-  {
-    "name": "Meta AI",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Meta_AI_Logo_%28Ring_Only%29.png",
-    "image_urls": [
-      "https://about.fb.com/wp-content/uploads/2025/04/01_HomeScreen.jpg",
-      "https://d15shllkswkct0.cloudfront.net/wp-content/blogs.dir/1/files/2023/09/meta-ai1.png"
-    ]
-  },
-  {
-    "name": "Canva AI",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://commsroom.co/wp-content/uploads/2023/03/canva-logo.jpg",
-    "image_urls": [
-      "https://www.cnet.com/a/img/resize/362139f634f6b4b61d36240a45e016abe1340282/hub/2025/03/05/cf6dcba3-5cb3-47df-8cfc-31a90428ff91/canva-dashboard.png?auto=webp&width=1200",
-      "https://content-management-files.canva.com/894e680a-6714-47e7-a22f-d9bfc09ebad6/canva-AI_hero2x.png"
+      "https://blog.logrocket.com/wp-content/uploads/2023/09/10-Example-using-Midjourney-for-dashboard-UI-design.png"
     ]
   },
   {
     "name": "Stable Diffusion",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://chasejarvis.com/wp-content/uploads/2025/12/How-does-Stable-Diffusion-work.jpeg",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/8/8e/Stable_Diffusion_web_UI_in_English.png",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Screenshot_of_AUTOMATIC1111_Stable_Diffusion_Web_UI.png/960px-Screenshot_of_AUTOMATIC1111_Stable_Diffusion_Web_UI.png"
-    ]
-  },
-  {
-    "name": "Seedream",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://vectorseek.com/wp-content/uploads/2025/09/ByteDance-Seedream-Logo-PNG-SVG-01.png",
-    "image_urls": [
-      "https://images.hitpaw.com/guide/photo-ai/ai-enhance/interface.jpg",
-      "https://p16-seeyou-useast5.capcutcdn-us.com/tos-useast5-i-2zwwjm3azk-tx/f17a37f47f1f49c889668cfa3fb3f599~tplv-2zwwjm3azk-image.image"
-    ]
-  },
-  {
-    "name": "Kling Image Generator",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://d7umqicpi7263.cloudfront.net/img/product/29f8bddd-7623-4543-a228-215dd9bf72b2.com/2cbcb3a299c22ac4c0d6c460d38a4f69",
-    "image_urls": [
-      "https://cdn.sanity.io/images/q0fo807q/production/fff321f93b1ef0229def08c201464e0f87e41340-3176x1894.png?w=1200&q=100&fit=max&auto=format",
-      "https://cdn.mos.cms.futurecdn.net/kKEUp6SgC5x8GybeYcuPvY.png"
-    ]
-  },
-  {
-    "name": "Deep Dream Generator",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://deepdreamgenerator.com/logo_1024.png",
-    "image_urls": [
-      "https://pictory.ai/wp-content/uploads/2024/03/f13c9138-d677-41ad-becf-9b8ffbbc90d2.png",
-      "https://images.surferseo.art/2ff4856c-d4e2-4e79-8f38-0055fede1148.png"
-    ]
-  },
-  {
-    "name": "Prisma",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://user-images.githubusercontent.com/35201107/216070630-01100f3c-2154-4b57-bed3-2ac16ec35343.png",
-    "image_urls": [
-      "https://infovis-wiki.net/w/images/e/e5/Prisma_mainwindow.jpg",
-      "https://infovis-wiki.net/w/images/5/58/Prisma_treemap.jpg"
-    ]
-  },
-  {
-    "name": "Artbreeder",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://assets.stickpng.com/images/66b0c53249d67f23279b286c.png",
-    "image_urls": [
-      "https://s3.amazonaws.com/aws.conferbot/664cdbc0441d848c226d07c1/hero_image-1735572491155.jpg",
-      "https://image.cdn2.seaart.ai/static/upload/20240812/58ff0725-b817-49ec-b963-f86a379ce870.jpg"
+      "https://blog.paperspace.com/content/images/2022/09/Screen-Shot-2022-09-29-at-12.49.56-PM.png",
+      "https://developer-blogs.nvidia.com/wp-content/uploads/2023/10/stable-diffusion-images.png"
     ]
   },
   {
     "name": "DALL-E",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn-public.softwarereviews.com/production/logos/offerings/11760/large/dall-e_logo.png?1715638321",
+    "logo_url": "https://i.pinimg.com/736x/7e/ee/2f/7eee2fc41654561afbe2ded749b06b29.jpg",
     "image_urls": [
-      "https://images.ctfassets.net/lzny33ho1g45/2JwWuuMoeVKekTr7554OGV/9f09d54fd2d01e31a044fec7ba45f069/how-to-use-dall-e-2-image11.png",
+      "https://www.researchgate.net/publication/366594739/figure/fig2/AS:11431281109527862@1672073146182/User-Interface-of-Dall-E-2.png",
       "https://uizard.io/blog/content/images/2023/11/dalle-1.gif"
-    ]
-  },
-  {
-    "name": "Adobe Fresco",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Adobe_Fresco_CC_icon.svg/960px-Adobe_Fresco_CC_icon.svg.png",
-    "image_urls": [
-      "https://helpx-prod.scene7.com/is/image/HelpxProdLoc/getting-started-interface-fr?$pjpeg$&jpegSize=300&wid=1920",
-      "https://i.ytimg.com/vi/7Yb5lMLnsD0/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGH8gPCg_MA8=&rs=AOn4CLAnwZiCiz5Tdhol90PmWvH6-4vHLQ"
-    ]
-  },
-  {
-    "name": "Wombo Dream",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/d/d7/WomboLogo.svg",
-    "image_urls": [
-      "https://www.vidmore.com/images/2024/10/review-dream-by-wombo-s-1200x681.jpg",
-      "https://www.usitility.com/media/software/screenshots/screenshot-wombo-dream-35125_thumb.webp"
-    ]
-  },
-  {
-    "name": "Craiyon",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://www.kindpng.com/picc/m/149-1495447_crayon-logo-png-crayon-software-logo-transparent-png.png",
-    "image_urls": [
-      "https://media.craiyon.com/2025-06-15/BIAJY2FyRguXqphQTC-Dqw.webp",
-      "https://pics.craiyon.com/2023-09-28/f028d21c413241fb97b1dfb7158890eb.webp"
-    ]
-  },
-  {
-    "name": "PaintsChainer",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://itirupati.com/wp-content/uploads/2024/06/PaintsChainer-ai-logo.webp",
-    "image_urls": [
-      "https://itirupati.com/wp-content/uploads/2024/06/PaintsChainer-ai-Landing-Webpage.webp",
-      "https://images.hive.blog/0x0/https://cdn.steemitimages.com/DQmPXhFToiHQCEHjZnuKwzMFgahemmwkerVPg3UcepnPkYB/1.gif"
     ]
   },
   {
     "name": "ChatGPT",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/3840px-ChatGPT_logo.svg.png",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/ChatGPT-Logo.png",
     "image_urls": [
-      "https://i.ytimg.com/vi/PFaGpuIg6eU/maxresdefault.jpg",
-      "https://user-images.githubusercontent.com/25262722/227805265-bd26c0c9-9c6a-4e4d-83c9-3e27ea3d3c7e.png"
-    ]
-  },
-  {
-    "name": "Reve",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Logo_of_REVE_Antivirus.png",
-    "image_urls": [
-      "https://www.how2shout.com/wp-content/uploads/2018/10/REVE1.jpg",
-      "https://cdn.sanity.io/images/q0fo807q/production/594440d05152cc7662c840d7180beaecf9aa348b-1750x1060.png?w=1200&q=100&fit=max&auto=format"
+      "https://miro.medium.com/v2/resize:fit:2000/1*KKF5uRBQVbYZFyXmHYNSKg.png",
+      "https://user-images.githubusercontent.com/25262722/227799952-65cf6e6f-f1ae-49c4-89f6-b60a0cf7eb25.png"
     ]
   },
   {
@@ -385,125 +135,35 @@
     "website_url": "",
     "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Adobe_Firefly_Logo.svg/960px-Adobe_Firefly_Logo.svg.png",
     "image_urls": [
-      "https://media.wired.com/photos/690eb446c0d94014228a85bd/master/w_1600%2Cc_limit/Screenshot%2520From%25202025-10-31%252010-35-43.png",
-      "https://phlearn.com/wp-content/uploads/2025/04/1200x800-image-2_44e0ea.jpg"
+      "https://cdn.mos.cms.futurecdn.net/Aji63k6JUVknMy7wqejYch.jpg",
+      "https://media.wired.com/photos/690eb48e8a4e70117accf316/master/w_1600%2Cc_limit/Screenshot%2520From%25202025-10-31%252010-37-05.png"
     ]
   },
   {
     "name": "Google Gemini",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/500px-Google_Gemini_logo.svg.png",
+    "logo_url": "https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/3/google-gemini-924j3051o55m98g4rwehj.png/google-gemini-fjwerd7ldxwt4c010vyoh.png?_a=DATAiZAAZAA0",
     "image_urls": [
       "https://docshound.com/_astro/dh_gemini_feature_image.DsuC3-WS_Z1qQOmn.webp",
-      "https://i.ytimg.com/vi/_lu-FcPUIfM/maxresdefault.jpg"
+      "https://storage.googleapis.com/gweb-research2023-media/original_images/GenUI-0c-Hero.png"
     ]
   },
   {
     "name": "Microsoft Copilot",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Microsoft_Copilot_Icon.svg/1280px-Microsoft_Copilot_Icon.svg.png",
+    "logo_url": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/copilot-icon.svg",
     "image_urls": [
-      "https://blogs.microsoft.com/wp-content/uploads/2023/03/HERO-image-M365Copilot_HeroBanner_WordApp_Prompt_1920x1080.png",
-      "https://www.microsoft.com/en-us/microsoft-365/blog/wp-content/uploads/sites/2/2023/03/M365Copilot_HeroBanner_Apps_BLOG-FEATURE.jpg"
-    ]
-  },
-  {
-    "name": "Grok",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Grok-feb-2025-logo.svg/1280px-Grok-feb-2025-logo.svg.png",
-    "image_urls": [
-      "https://learnprompting.org/blog/grok-interface-research.png",
-      "https://api.pixelcommercestudio.com/storage/uploads/blog/thumbnails/real-time-insights-how-to-use-grok-ai-on-x-featured_20251114_021324.jpg"
-    ]
-  },
-  {
-    "name": "AI Painter",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://static.vecteezy.com/system/resources/previews/066/118/524/non_2x/adobe-substance-3d-painter-icon-app-logo-editable-transparent-background-premium-social-media-design-for-digital-download-free-png.png",
-    "image_urls": [
-      "https://cdn.mos.cms.futurecdn.net/6MR6XsgRSM4M5ckzNkMpv9-1000-80.jpg",
-      "https://architosh.com/wp-content/uploads/2018/03/newstyle.jpg"
-    ]
-  },
-  {
-    "name": "BigGAN",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://techcrunch.com/wp-content/uploads/2015/07/bugsnag-logo-1.png",
-    "image_urls": [
-      "https://i.ytimg.com/vi/FOJ8m0z_PVY/hqdefault.jpg",
-      "https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/002/588/635/datas/original.png"
-    ]
-  },
-  {
-    "name": "StyleGAN",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://images.squarespace-cdn.com/content/v1/5d429cc990aa3d000191d3e3/1701785907526-QY541VMJHNXM73TNBHUJ/StyleGAN2-placeholder.png?format=1000w",
-    "image_urls": [
-      "https://i.ytimg.com/vi/FOJ8m0z_PVY/maxresdefault.jpg",
-      "https://fritz.ai/wp-content/uploads/2023/09/1GR-DZeG9zmycJblmPblk1Q-1-1024x585.webp"
-    ]
-  },
-  {
-    "name": "Denoising Diffusion",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Example_of_Denoising_Diffusion_models.png",
-    "image_urls": [
-      "https://miro.medium.com/v2/resize:fit:1400/1*jkx95J2umiOmCzoHKrvLhQ.png",
-      "https://preview.redd.it/sdxl-two-staged-denoising-workflow-v0-iifp0kcmtlab1.png?width=1816&format=png&auto=webp&s=845aba7d446b8bce6309a7cde151825a26a4671e"
-    ]
-  },
-  {
-    "name": "Imagen",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://assets.stickpng.com/images/66b0a4d4aa33d8cd18e10c4a.png",
-    "image_urls": [
-      "https://shotkit.com/wp-content/uploads/bb-plugin/cache/Imagen-Culling-Studio0012-landscape-407947634ae2385ce727aa904f09ae40-zybravgx2q47.jpg",
-      "https://on1-wp.s3.amazonaws.com/wp-content/uploads/2025/05/15071441/on1-photo-raw-interface-hero.jpg"
-    ]
-  },
-  {
-    "name": "GPT Image",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/960px-ChatGPT_logo.svg.png",
-    "image_urls": [
-      "https://us1.discourse-cdn.com/openai1/original/4X/1/6/b/16b1a075d255c439b47f84571091e9cecb56f6a6.png",
-      "https://www.researchgate.net/publication/378204099/figure/fig1/AS:11431281224578057@1708351933441/The-upper-left-screenshot-depicts-a-conversation-with-GPT-35-ChatGPT-interface-when.ppm"
-    ]
-  },
-  {
-    "name": "Flux 2",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://play-lh.googleusercontent.com/rNQxV7uS-wcP3yqGHqY7YbnrzV23qM0SnCErXcPq3UtVomku6nZRujW60Gf-T1VSrimFKLcA7xENExJHrfTH",
-    "image_urls": [
-      "https://prod-assets.cosmic.aws.dev/a/363cKXpBesdfrJYDzZdtxwoOoUb/Scre.webp?imgSize=1000x783",
-      "https://preview.redd.it/flux-2-workflow-with-optional-multi-image-reference-v0-n2wc4kggmf5g1.png?width=640&crop=smart&auto=webp&s=38dccfe853e5abeceb04c385ff1639027131c4c8"
-    ]
-  },
-  {
-    "name": "Hunyuan",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/hunyuan-color.png",
-    "image_urls": [
-      "https://i.redd.it/l765jc2yf6fe1.gif",
-      "https://3dprintingindustry.com/wp-content/uploads/2025/11/3D.jpg"
+      "https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/media/implementationguide/copilot-studio-agent-management.png",
+      "https://www.microsoft.com/en-us/microsoft-copilot/blog/wp-content/uploads/2023/12/2023-12-04-14-28-27-203.webp"
     ]
   },
   {
     "name": "Arcadium 3D",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://arcadium3d.com/build/assets/house_plan_arcadium-CNuJRO6Y.png",
+    "logo_url": "https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_25c31586902c47d9d9a67287c4f32244/arcadium.png",
     "image_urls": [
       "https://arcadium3d.com/build/assets/modelling4-BZLpVkqu.png",
       "https://arcadium3d.com/build/assets/Arcadium3DDesignA-CyhRRK7I.png"
@@ -513,20 +173,20 @@
     "name": "Ideal House",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn.promeai.pro/idealhouse-web/v0.1.1829.prod/_nuxt/logo_en.8qiTJ2o5.svg",
+    "logo_url": "https://www.designconsulting.com.au/wp-content/uploads/2022/05/autodesk-collection-AEC-product-icon-social-400.png",
     "image_urls": [
-      "https://gstatic1.promeai.pro/article/2025/12/08/f1b7f1fa3e7a4a71bf641367a0b46625.png",
-      "https://i0.wp.com/www.melaniejadedesign.com/wp-content/uploads/2024/04/interior-design-3d.png?resize=800%2C483&ssl=1"
+      "https://www.adfwebmagazine.jp/wp-content/uploads/2021/01/adf-web-magazine-bim-software-1.jpg",
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png"
     ]
   },
   {
     "name": "NanoBanana.art",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "http://htrnews.xpr-gannett.com/wp-content/uploads/sites/103/2025/09/nano-banana1-1758649885950.png",
+    "logo_url": "https://www.logoai.com/img/ai-editor/intro-models/nano-banana1.png",
     "image_urls": [
-      "https://blog-cdn.skywork.ai/wp-content/uploads/2025/09/Nano-Banana-ai-1024x576.jpeg",
-      "https://framerusercontent.com/images/ruWemEREN6lgi3nbIl7jdwiLASs.png"
+      "https://raw.studio/wp-content/uploads/1__9DoY27b7gZCOW2vVjsOiQ-1024x570.jpg",
+      "https://raw.studio/wp-content/uploads/Gemini_Generated_Image_jhrzxsjhrzxsjhrz.jpg"
     ]
   },
   {
@@ -535,28 +195,28 @@
     "website_url": "",
     "logo_url": "https://s3-eu-west-1.amazonaws.com/tpd/logos/664f7bf8598c1c220e38a9b5/0x0.png",
     "image_urls": [
-      "https://pub-f06985640d65492f9c24d84f8e463878.r2.dev/blog/53fbf0e1-07b2-4f90-847b-50057a90f1a5.png",
-      "https://10web.io/wp-content/uploads/2024/09/mnml.ai_screenshot.png"
+      "https://lh7-rt.googleusercontent.com/docsz/AD_4nXdaMOnc4ImjzY1k6D0zbKYBw-L1MB1w1Y90XlL5HQx2LFjgUdahWLaswQs4IAdRe5MxN_lzQfjOLrITXf9b9CvvTU5Vi0yoSANNIVkFwfDeQDrnGP8z4_FxJuYDyKppIof1P4MshQ?key=8LNTAgmzomLTkLX-5OC-6A",
+      "https://pub-f06985640d65492f9c24d84f8e463878.r2.dev/blog/53fbf0e1-07b2-4f90-847b-50057a90f1a5.png"
     ]
   },
   {
     "name": "Rendair",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn-1.webcatalog.io/catalog/rendair/rendair-icon-filled-256.png?v=1723709098063",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvNTUzN2Q5MjMtMDExMS00YjhjLThiMWQtNWJkZWQ5ZjJmNzhmLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://framerusercontent.com/images/k6Pkog2WJqV1I7WoPFBreOCytzY.png?width=3000&height=2000",
-      "https://framerusercontent.com/images/2pF9OqEbnW2aSKFJlZLvFgN98.png"
+      "https://framerusercontent.com/images/fbcKmV7TXZOwwllVq3ImF1Hkj80.png",
+      "https://framerusercontent.com/images/14rGLi5DiSUAFGt2TiUoFVk6A.png"
     ]
   },
   {
     "name": "CamPlan",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://storage.getlatka.com/images/camplan.app.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://camplan.ai/images/3-phones.webp",
-      "https://www.todaysmedicaldevelopments.com/remote/aHR0cHM6Ly9naWVjZG4uYmxvYi5jb3JlLndpbmRvd3MubmV0L2ZpbGV1cGxvYWRzL2ltYWdlLzIwMjQvMDcvMDMvcmVhZC1iYWNrLXByb2JpbmctcGFydF9maW4tZW4uanBn.FK8Vmt0pFKA.jpg?format=webp"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://www.researchgate.net/publication/354208845/figure/fig13/AS:1062406285447172@1630308805798/Building-Information-Modelling-BIM-Interface-showing-the-level-of-complexities-and.png"
     ]
   },
   {
@@ -566,17 +226,17 @@
     "logo_url": "https://blog.alicetechnologies.com/hubfs/Logo-FullColour-RGB@4x-100.jpg",
     "image_urls": [
       "https://www.alicetechnologies.com/hs-fs/hubfs/ALICE%20Model%20UI_3_Frosted%20Panel%20(1).png?width=2000&height=1255&name=ALICE%20Model%20UI_3_Frosted%20Panel%20(1).png",
-      "https://www.alicetechnologies.com/hubfs/8_product%20UI.svg"
+      "https://www.alicetechnologies.com/hubfs/ALICE%20Plan%20UI%20-%20Canvas%20zoom%20out.png"
     ]
   },
   {
     "name": "Vitruvi",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://vitruvisoftware.com/hubfs/Website/02_2.png",
+    "logo_url": "https://4457472.fs1.hubspotusercontent-na1.net/hubfs/4457472/6260786f4404524a9405dd2f_VITRUVI-Colour-hidpi.png",
     "image_urls": [
-      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/cc997d73-fee3-4fed-80f0-721890f21d35.png?auto=format&q=50",
-      "https://vitruvisoftware.com/hs-fs/hubfs/Vitruvi%20Media%202025/dashboards-slide-1.png?width=2164&height=940&name=dashboards-slide-1.png"
+      "https://assets.isu.pub/document-structure/250423174149-ae110f1436bd2f4cd4dabcaefbee3a51/v1/24aff9376e7d230d2bf1aed0efaa344b.jpeg",
+      "https://vitruvisoftware.com/hubfs/plan-02.jpg"
     ]
   },
   {
@@ -585,8 +245,8 @@
     "website_url": "",
     "logo_url": "https://buildots.com/wp-content/uploads/2022/05/Buildots_Logo_RGB_BlackYellow.png",
     "image_urls": [
-      "https://buildots.com/wp-content/uploads/2023/05/Dashboard.png",
-      "https://buildots.com/wp-content/uploads/2022/11/Buildots-platform.png"
+      "https://planradar-website.s3.amazonaws.com/production/uploads/2024/12/siteview.png",
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png"
     ]
   },
   {
@@ -595,58 +255,58 @@
     "website_url": "",
     "logo_url": "https://www.openspace.ai/wp-content/uploads/2025/09/OpenSpace_Logo_Icon_CodeBlue_Standard-scaled.png",
     "image_urls": [
-      "https://support.openspace.ai/hc/article_attachments/41888103354771",
-      "https://www.openspace.ai/wp-content/uploads/2024/01/Field-Notes-Save-time-with-integrations-600-x-333-px.webp"
+      "https://www.openspace.ai/wp-content/uploads/2023/06/928x522px-openspace-bimplus.webp",
+      "https://www.openspace.ai/wp-content/uploads/2019/11/ScreenShot2019-11-07at11.51.11AM-1.png"
     ]
   },
   {
     "name": "Doxel",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://lever-client-logos.s3.us-west-2.amazonaws.com/090fe6ef-b78f-4c07-8a99-ac683bb9e401-1707928953032.png",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InByb2ZpbGUvYWZjNTBiNWEtNTMyNC00ZjJjLThiMzQtOGMwZmE5ZjAzZThlLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://cdn.prod.website-files.com/66d838d64eaac709f2317b86/67481dd0b467d25d802f751c_67481ce165d775fc3caf0ed1_Table-1280x628.png",
-      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/f7c0a786-9733-47d8-8edc-61e9e79de822.png"
+      "https://cdn.prod.website-files.com/66aa56b055292635770d0c44/66ea6f41ef0ee5754adfbfc2_Frame%20745s7.png",
+      "https://cdn.prod.website-files.com/66aa56b055292635770d0c44/6704d390dccd7ff8832a5eb1_intelligent.webp"
     ]
   },
   {
     "name": "Foresight",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://res.cloudinary.com/dpznnk0ur/image/upload/v1677715820/Foresight_Logo_main_8215ef9762.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://indoorgolfoutlet.com/cdn/shop/files/Foresight-Sports-GC3-Launch-Monitor-FSX-Pro-Performance_1200x.png?v=1753380844",
-      "https://support.foresightsports.com/sites/default/files/images/Improve%20Select%20A%20Course.JPG"
+      "https://www.researchgate.net/publication/354208845/figure/fig13/AS:1062406285447172@1630308805798/Building-Information-Modelling-BIM-Interface-showing-the-level-of-complexities-and.png",
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png"
     ]
   },
   {
     "name": "Kreo",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://media.tekpon.com/2024/01/Kreo-Logo.webp",
+    "logo_url": "https://cdn.prod.website-files.com/647e71e2f708de4885548c35/648514e1e99be77562332493_Startup-Showcase_-Kreo.png",
     "image_urls": [
-      "https://staticfiles.gleap.io/helpcenter/6874f791a81bb9196b315e05/20250715090922_4740.png",
-      "https://staticfiles.gleap.io/helpcenter/6874f791a81bb9196b315e05/20250715090930_3590.png"
+      "https://cdn.prod.website-files.com/64f99c20baacccad71dc895a%2F6778493d23815ee6d76c4d92_Index%202%20%284%29-poster-00001.jpg",
+      "https://cdn.prod.website-files.com/64f9d166374676995d39173b/69132dc8aef79196027ce5c6_Items%20Variants.png"
     ]
   },
   {
     "name": "TestFit",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://aps.autodesk.com/sites/default/files/styles/customer_logo/public/2023-06/testfit%20logo.jpg?itok=MpbY-p1N",
+    "logo_url": "https://aecplustech.s3.amazonaws.com/tool/134d91f6-503e-4e74-bf98-4925ef3573d5.jpg",
     "image_urls": [
       "https://i.ytimg.com/vi/4QyL1dksaNA/maxresdefault.jpg",
-      "https://support.testfit.io/hs-fs/hubfs/CS%20-%20Customer%20Success/CS%20-%20Knowledge%20Base/CS%20-%20Knowledge%20Base/Getting%20started/new%20user%20interface.jpg?width=670&height=372&name=new%20user%20interface.jpg"
+      "https://aecmag.com/wp-content/uploads/2021/03/testfir-multifamily.jpg"
     ]
   },
   {
     "name": "RoomSketcher",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://wpmedia.roomsketcher.com/content/uploads/2021/12/15075948/roomsketcher-logo-square.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
       "https://wpmedia.roomsketcher.com/content/uploads/2021/12/26092532/Canva-vs-RoomSketcher-UI.jpg",
-      "https://www.roomsketcher.com/content/uploads/2022/02/RoomSketcher-App-Mac-Windows_800x600.jpg"
+      "https://wpmedia.roomsketcher.com/content/uploads/2021/12/16105826/roomsketcher-floor-plan-software-ui.jpg"
     ]
   },
   {
@@ -656,24 +316,24 @@
     "logo_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/Planner_5D_logo.png",
     "image_urls": [
       "https://planner5d.com/assets/images/use-cases/interior-design-software/interior-design-software-4.webp",
-      "https://cdn.mos.cms.futurecdn.net/7EBNLh8ef3B7w4ewd8kUzd.jpg"
+      "https://planner5d.com/blog/content/images/2022/04/Planner-5D-render_3--1-.jpg"
     ]
   },
   {
     "name": "Floorplanner",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn.brandfetch.io/idVnui-Rx-/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1768753545607",
+    "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064354404234",
     "image_urls": [
-      "https://static.floorplanner.com/_next/static/media/easy-to-learn.992e247a.png",
-      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/e9c4a4d0-6e0e-4f61-9a56-8553e1aca43e.jpeg?auto=format&q=50"
+      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/e9c4a4d0-6e0e-4f61-9a56-8553e1aca43e.jpeg?auto=format&q=50",
+      "https://wpmedia.roomsketcher.com/content/uploads/2021/12/11135412/roomsketcher-floor-plan-software-1.jpg"
     ]
   },
   {
     "name": "Homestyler",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn-publish-filemanager.homestyler.com/prod/_homestyler/_nuxt/dist/client/img/homestyler_logo_black.e51a7e4.png",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Homestyler.png",
     "image_urls": [
       "https://bbs-static.homestyler.com/bbs/2022/1/0065633cdc61e2066f8e760c392ccb13.png?x-oss-process=image/resize,w_1280,m_lfit/format,webp",
       "https://bbs-static.homestyler.com/bbs/2022/1/c59728732f1a11f19e285793d7f0ea8e.png?x-oss-process=image/resize,w_1280,m_lfit/format,webp"
@@ -686,37 +346,17 @@
     "logo_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Microsoft_Planner_%282024%E2%80%93present%29.svg/960px-Microsoft_Planner_%282024%E2%80%93present%29.svg.png",
     "image_urls": [
       "https://learn.microsoft.com/en-us/graph/images/plannerboard.png",
-      "https://www.projectmanager.com/wp-content/uploads/2022/07/construction-list-150-light-mode.jpg"
+      "https://adoption.microsoft.com/wp-content/uploads/2025/04/planner-video-4.jpg"
     ]
   },
   {
     "name": "Space Planner",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://images.softwaresuggest.com/software_logo/1616051203887newphotos.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
       "https://interior-design3d.com/img/space-planning-software-interior-design-3d.png",
-      "https://wpmedia.roomsketcher.com/content/uploads/2022/05/05131123/RoomSketcher-office-planner-software-1.jpg"
-    ]
-  },
-  {
-    "name": "New Relic",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://newrelic.com/themes/custom/erno/assets/mediakit/new_relic_logo_horizontal.png",
-    "image_urls": [
-      "https://docs.newrelic.com/images/apm_screenshot-full_apm-complete-summary-page-.webp",
-      "https://newrelic.com/sites/default/files/wp_blog_inline_files/platform_overview_screenshot.png"
-    ]
-  },
-  {
-    "name": "Amazon Bedrock",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://www.datasunrise.com/wp-content/uploads/2025/03/amazon-bedrock.png",
-    "image_urls": [
-      "https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2024/11/28/bedrock-bda-demo-results.png",
-      "https://d1.awsstatic.com/onedam/marketing-channels/website/aws/en_US/product-categories/ai-ml/machine-learning/approved/images/4c84314f228dcd44ae771bab5c8bac42.b65b7208ad10b98568ebfadc34faf1fdee698928.png"
+      "https://www.autodesk.com/akn-aknsite-ckeditor-image-uploads/bbd77e0b-5d97-47d9-bc57-a245663a7101.png"
     ]
   },
   {
@@ -725,28 +365,28 @@
     "website_url": "",
     "logo_url": "https://www.simulationhub.com/assets/images/default/simulationHub-logo.png",
     "image_urls": [
-      "https://static.simulationhub.com/prod/images/pages/getting-started/generic-simulation/upfront-cfd-simulation-details.jpg",
-      "https://static.simulationhub.com/prod/images/pages/getting-started/control-valve-performer/Simulation%20Details.jpg"
+      "https://static.simulationhub.com/prod/images/pages/blogs/2021/09-Sep/01-why-and-what-of-AHC/autonomous-hvac-cfd-bim-designer-hd.jpg",
+      "https://static.simulationhub.com/prod/images/pages/apps/autonomous-hvac-cfd-ahc/updatedDetails/ahc-revit-import.png"
     ]
   },
   {
     "name": "BuildingsAI",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn.prod.website-files.com/5ef15d420f8c641f803847ad/61663c853dc39af703f32608_BuildAi%20logo%20main.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://sh-static-content.s3.us-west-2.amazonaws.com/prod/images/pages/apps/buidings-ai/seamless_interoperability_header_image.png",
-      "https://miro.medium.com/v2/resize:fit:1400/0*qAMJbTOTTMl6EgeB.png"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://www.researchgate.net/publication/354208845/figure/fig13/AS:1062406285447172@1630308805798/Building-Information-Modelling-BIM-Interface-showing-the-level-of-complexities-and.png"
     ]
   },
   {
     "name": "EnergyPlus",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://energyplus.net/assets/images/energyplus.png",
+    "logo_url": "https://www.energy.gov/sites/default/files/EnergyPlus_logo.png",
     "image_urls": [
       "https://www.researchgate.net/publication/295548769/figure/fig5/AS:331992819355655@1456164664583/EnergyPlus-User-interface.png",
-      "https://www.researchgate.net/publication/354630115/figure/fig3/AS:1080189526245441@1634548660518/User-interface-of-the-Energy-Plus-software.jpg"
+      "https://www.intellicad.org/hubfs/Fig.png"
     ]
   },
   {
@@ -755,85 +395,75 @@
     "website_url": "",
     "logo_url": "https://envi-met.com/wp-content/uploads/2021/10/envi-met-logo.png",
     "image_urls": [
-      "https://www.researchgate.net/publication/320274645/figure/fig3/AS:547307303038976@1507499637787/ENVI-met-Analyses-interface-Set-up-of-ENVI-met-receptors.png",
-      "https://envi-met.com/wp-content/uploads/2021/10/2-User-Interface_ENVI-met_Banner-Website_2560px.jpg"
+      "https://envi-met.info/lib/exe/fetch.php?w=900&tok=d0c819&media=intro:model_architecture.jpg",
+      "https://i.ytimg.com/vi/_kfV3lpDb-c/maxresdefault.jpg"
     ]
   },
   {
     "name": "Connecteam",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Connecteam_logo.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
       "https://peoplemanagingpeople.com/wp-content/uploads/sites/3/2023/11/connecteam-screenshot-1687901937-1024x683.png",
-      "https://thedigitalprojectmanager.com/wp-content/cache/thedigitalprojectmanager.com/static/static.crozdesk.com/web-app-library-analyst-review-assets-attachments-000-009-016-original-connecteam-task-management-screenshot.png"
-    ]
-  },
-  {
-    "name": "Runchat",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://runchat.ai/assets/img/logo.png",
-    "image_urls": [
-      "https://substackcdn.com/image/fetch/$s_!KXmL!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Faad64094-b914-4751-b04e-61def953f1e4_2521x961.png",
-      "https://substackcdn.com/image/fetch/$s_!s7PH!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F04a8d69d-b7ce-4e84-bc1a-06565d31344b_2392x800.png"
+      "https://work-management.org/wp-content/uploads/2024/04/task-mngmnt-1024x694.webp"
     ]
   },
   {
     "name": "Digital Blue Foam",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064169107740",
+    "logo_url": "https://www.graphisoft.com/content/uploads/2021/11/dbf-logo.png",
     "image_urls": [
-      "https://procore-marketplace.s3.amazonaws.com/production/uploads/c175d809-38df-403a-8dc4-2a218824bcb4.png",
-      "https://procore-marketplace.s3.amazonaws.com/production/uploads/ae276809-7760-4ec8-bcd8-4022e02f7112.png"
+      "https://architosh.com/wp-content/uploads/2021/06/508x253_IN4_DBF_-1.jpg",
+      "https://gsdownloads.blob.core.windows.net/cdn/assets/images/int/dbf-image-5.gif"
     ]
   },
   {
     "name": "Crosby Studios",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://crosbystudios.com/images/crosbylogo.svg",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://metropolismag.com/wp-content/uploads/2022/03/CS-Video-Game-Preview-768x1024.jpg",
-      "https://design-milk.com/images/2022/05/Crosby-Studios-Moooi-New-York-Harry-Nuriev-NYCxDESIGN-1.jpg"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://images.adsttc.com/media/images/68f2/c6a8/9662/4101/8803/fc07/newsletter/how-will-bim-ai-assistance-and-workflows-shape-architects-design-experience_2.jpg?1760741074"
     ]
   },
   {
     "name": "ReimagineHome",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn.techjockey.com/web/assets/images/techjockey/products/23863_23863_REimagineHomelogo.jpg",
+    "logo_url": "https://cdn.brandfetch.io/idjrfErnJn/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1764589981114",
     "image_urls": [
-      "https://cdn.prod.website-files.com/65eede53df668d7015c0bd8c/694a54d3f700f7cb751763ab_693a5d7ccd07b384324df12a_blog_1765432695_section3_86d632ce.png",
-      "https://cdn.prod.website-files.com/65eede53df668d7015c0bd8c/691197caebaa25fa680f2e72_690f25abcd9e8c44da5d93b4_blog_1762600358_section2_2e72e470.png"
+      "https://cdn.prod.website-files.com/65eede53df668d7015c0bd8c/691443d09227b3b7402e1a39_69132437338e48142b69b13e_blog_1762862129_section3_c5f4c137.png",
+      "https://botmemo.com/wp-content/uploads/2023/09/Screenshot-94.png"
     ]
   },
   {
     "name": "UpCodes Copilot",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Upcodes_Logo.png",
+    "logo_url": "https://i.ytimg.com/vi/695G3xNKk_o/maxresdefault.jpg",
     "image_urls": [
-      "https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/63086679645/original/-bcSasrZAVinYby8j7Eh_KYbwZ3Gtuubqg.png?1730211865",
-      "https://www.buildingenclosureonline.com/ext/resources/2025/12/24/U_Codes.webp?t=1766585477"
+      "https://www.buildingenclosureonline.com/ext/resources/2025/12/24/U_Codes.webp?t=1766585477",
+      "https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/63086679645/original/-bcSasrZAVinYby8j7Eh_KYbwZ3Gtuubqg.png?1730211865"
     ]
   },
   {
     "name": "Autodesk Forma",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://microsolresources.com/wp-content/uploads/2023/08/Untitled-1-600x600.png",
+    "logo_url": "https://yt3.googleusercontent.com/YQO9Ez56Me9NQ0gOms-l602CYd-5lJF7LVIGTw13yzthcgTuig4LreD0bz3B_agqKQzRnzN5=s900-c-k-c0x00ffffff-no-rj",
     "image_urls": [
-      "https://adsknews.autodesk.com/app/uploads/2025/06/Screenshot-2025-05-30-at-3.03.47%E2%80%AFPM.png",
-      "https://blogs.autodesk.com/forma/wp-content/uploads/sites/163/image-4-8-1024x579.jpg"
+      "https://aecmag.com/wp-content/uploads/2025/09/Forma-Connected-Client-1.jpg",
+      "https://blogs.autodesk.com/forma/wp-content/uploads/sites/163/Frontpage.jpg"
     ]
   },
   {
     "name": "Polycam",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://mms.businesswire.com/media/20250226523971/en/2393280/22/polycam.jpg",
+    "logo_url": "https://tech.architizer.com/media/cache/small/custom/domain_1/image_files/sitemgr_photo_131.jpg",
     "image_urls": [
       "https://aecmag.com/wp-content/uploads/2025/04/polycam-UI.jpg",
       "https://cdn.prod.website-files.com/67a3e58efec5f4dc95fd18c6/683f9af975aa33273243907c_a3a12fcc744d595f5d11291307af6e67_Sketchup-Import1.png"
@@ -846,17 +476,17 @@
     "logo_url": "https://content.partnerpage.io/eyJidWNrZXQiOiJwYXJ0bmVycGFnZS5wcm9kIiwia2V5IjoibWVkaWEvZGlyZWN0b3JpZXMvaW1hZ2VzLzU0M2ZkMTAxLTg0MDktNDkwMi05ZGM0LTlkMDBmMDk3M2M0MS8wN2FjZDkxYi01MzA3LTQyZWMtOTU5Mi1hNTExYWNiZjA0YjEuanBlZyIsImVkaXRzIjp7InRvRm9ybWF0Ijoid2VicCIsInJlc2l6ZSI6eyJ3aWR0aCI6MTIwMCwiaGVpZ2h0Ijo2MzAsImZpdCI6ImNvbnRhaW4iLCJiYWNrZ3JvdW5kIjp7InIiOjI1NSwiZyI6MjU1LCJiIjoyNTUsImFscGhhIjowfSwicG9zaXRpb24iOiJjZW50cmUifX19",
     "image_urls": [
       "https://assets.idda.com.au/public/app-assets/U1lTVEVN/201808/IMG_afb2b0bd0357918cbbfe8bcc0f1e626ee2b063f8_src.jpg",
-      "https://academy.archistar.ai/images/dashboard.png"
+      "https://www.archistar.ai/wp-content/uploads/2021/01/iStock-184321625.jpg"
     ]
   },
   {
     "name": "Aurivus",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100063745440889",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvOTJhMTExZDYtZWViNC00NzRhLWEyNDEtMmQyNWNlNjVmY2JiLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://i.ytimg.com/vi/dQXfvy2NMlQ/maxresdefault.jpg",
-      "https://aurivus.com/wp-content/uploads/2022/11/stairs.gif"
+      "https://aurivus.com/wp-content/uploads/2022/11/stairs.gif",
+      "https://aurivus.com/wp-content/uploads/2022/11/move_objects-1.gif"
     ]
   },
   {
@@ -865,8 +495,8 @@
     "website_url": "",
     "logo_url": "https://media.licdn.com/dms/image/v2/D560BAQF2Lhs72obfuw/company-logo_200_200/company-logo_200_200/0/1687974725754/lookxai_logo?e=2147483647&v=beta&t=o84ZDzRBBQWyRBv_xxvfVyZ-i4ZuXa_eEo4ZI9rEmBI",
     "image_urls": [
-      "https://i.ytimg.com/vi/7i8s1OWIdNo/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGD0gSShyMA8=&rs=AOn4CLBTry2PnaNiOk7DYmI3N_dQUXc3rA",
-      "https://desktoparchitect.com/wp-content/uploads/2024/03/LookX-AI-1024x485.png"
+      "https://parametric-architecture.com/wp-content/uploads/2023/06/tim-fu-lookx.jpg",
+      "https://www.cesdb.com/images/edificius-screenshot.jpg"
     ]
   },
   {
@@ -875,8 +505,8 @@
     "website_url": "",
     "logo_url": "https://buildingventures.com/wp-content/uploads/2020/04/Hypar_portfolio-1.jpg",
     "image_urls": [
-      "https://www.researchgate.net/publication/356758271/figure/fig6/AS:1149075718184977@1650972408939/Screenshot-from-the-Hypar-interface-2020-on-the-right-the-preview-of-the-resulting.png",
-      "https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/file-uploads/blogs/2147511612/images/338368b-745e-26d0-52d4-b828a458a8c_loadtoRevit.png"
+      "https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/file-uploads/blogs/2147511612/images/338368b-745e-26d0-52d4-b828a458a8c_loadtoRevit.png",
+      "https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/file-uploads/blogs/2147511612/images/dfea3-1bec-80e0-5522-bd64ea08be70_pdfexport.png"
     ]
   },
   {
@@ -885,8 +515,8 @@
     "website_url": "",
     "logo_url": "https://static.wixstatic.com/media/ac0b35_86d5bcd8283f45b18547561f3426a0c1~mv2_d_2034_1726_s_2.jpg/v1/fill/w_1000,h_849,al_c,q_85,usm_0.66_1.00_0.01/ac0b35_86d5bcd8283f45b18547561f3426a0c1~mv2_d_2034_1726_s_2.jpg",
     "image_urls": [
-      "https://static.wixstatic.com/media/ac0b35_ad3b3c53dea1425cb94d10effaccfe91~mv2_d_3508_2480_s_4_2.jpg/v1/fill/w_1000,h_707,al_c,q_85,usm_0.66_1.00_0.01/ac0b35_ad3b3c53dea1425cb94d10effaccfe91~mv2_d_3508_2480_s_4_2.jpg",
-      "https://i.ytimg.com/vi/Zv1YdxAvOm0/maxresdefault.jpg"
+      "https://i.ytimg.com/vi/D4Twh4Sr2YI/maxresdefault.jpg",
+      "https://addd.io/wp-content/uploads/2023/10/interface.png"
     ]
   },
   {
@@ -895,17 +525,17 @@
     "website_url": "",
     "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100065379403009",
     "image_urls": [
-      "https://cdn.prod.website-files.com/635a3cc7f3c8a4c9d1492cac/63691d0bb2346218166647a9_live_link-poster-00001.jpg",
-      "https://autodesk-exchange-apps-v-1-5-staging.s3.amazonaws.com/data/content/files/images/4GU2KTJBRJHTW3JF/994418353372942051/original_097830c9-ce76-4f33-8547-f5710773cf90_.png?AWSAccessKeyId=AKIAWQAA5ADROJBNX5E4&Expires=1770504163&response-content-disposition=inline&response-content-type=image%2Fpng&Signature=H00TgN2HjGuQ21r4lEbtgxnpY1g%3D"
+      "https://aecmag.com/wp-content/uploads/2023/01/Finch_generate_plan-use-this-one-1024x575.jpg",
+      "https://cdn.prod.website-files.com/635a3cc7f3c8a4c9d1492cac/63691d0bb2346218166647a9_live_link-poster-00001.jpg"
     ]
   },
   {
     "name": "Snaptrude",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://bimageconsulting.com/wp-content/uploads/2025/04/snaptrude-logo-1024x238.png",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InByb2ZpbGUvZjk3YjM0MTAtNjZiNy00ZDkwLWJlMjQtMjc1OGM4ODU2ZTQ0LmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://cdn.prod.website-files.com/63e277aa768b73128bb36a29/67d9af7b4a34f9268b85f971_Program%20Feature%20Image%20no%20Gradient.png",
+      "https://static.dezeen.com/uploads/2025/06/snaptrude-3-0-enhanced-ui-bim-integration_dezeen_2364_col_1.jpg",
       "https://static.dezeen.com/uploads/2025/06/snaptrude-3-0-enhanced-ui-bim-integration_dezeen_2364_col_2-852x484.jpg"
     ]
   },
@@ -913,40 +543,40 @@
     "name": "PlanFinder",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "http://static.food4rhino.com/cdn/farfuture/y71_Tn41KgZnn32Cm70v-DCOhBDfNRzzwLVI9uMP9CI/mtime:1680615395/sites/default/files/public/users-files/planfinder-plugin/app/logoroomfill.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://download.archsupply.com/wp-content/uploads/2023/05/PlanFinder-Revit-screenshot-1.png",
-      "https://download.archsupply.com/wp-content/uploads/2023/05/PlanFinder-Rhino-screenshot-3-1024x538.png"
+      "https://i.ytimg.com/vi/NbeMHbvyHYw/maxresdefault.jpg",
+      "https://download.archsupply.com/wp-content/uploads/2023/05/PlanFinder-Revit-screenshot-1.png"
     ]
   },
   {
     "name": "Rayon",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://media.tekpon.com/2024/01/Rayon-Logo.webp",
+    "logo_url": "https://northzone.com/wp-content/uploads/2024/02/rayon.png",
     "image_urls": [
-      "https://cdn.sanity.io/images/rhvb8nfd/production/6c544fe23252053136b6eaa1aa448fc090fc9c93-2380x1582.png?fit=max&auto=format",
-      "https://cdn.sanity.io/images/rhvb8nfd/production/9b8479bbe0da72e6bd7afb87ec0e2a866863d0cc-2441x1623.png?fit=max&auto=format"
+      "https://images.adsttc.com/media/images/6516/d643/8c25/a301/7c05/3828/medium_jpg/rayon-a-design-software-revolutionizing-collaboration-for-efficient-project-development_15.jpg?1695995495",
+      "https://www.rayon.design/first_frame.jpg"
     ]
   },
   {
     "name": "Krea.ai",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://fahimai.com/wp-content/uploads/2024/04/CTA-4.png",
+    "logo_url": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/krea-ai-icon.png",
     "image_urls": [
-      "https://10web.io/wp-content/uploads/2024/07/KREA_screenshot.png",
-      "https://s.krea.ai/opengraph.webp"
+      "https://s.krea.ai/opengraph.webp",
+      "https://i.redd.it/qbe146rzt8cf1.jpeg"
     ]
   },
   {
     "name": "Veras",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://static.wixstatic.com/media/a01782_a5e53b35f9624dd095e3a665a84a4e67~mv2.png/v1/crop/x_49,y_51,w_292,h_290/fill/w_252,h_250,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/veras-icon-color-rgb.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://alizvfdwaq.cloudimg.io/https://6852391.fs1.hubspotusercontent-na1.net/hubfs/6852391/preset%20sharing%20-%20veras.jpg?w=1778&h=1183&optipress=3&force_format=avif",
-      "https://forum.evolvelab.io/uploads/default/original/2X/0/08ebde3f791e5eaca56a4b382348c2dbd4adb49d.jpeg"
+      "https://static.wixstatic.com/media/660a3e_adf700d7861c4515a4073f71ad83377b~mv2.png/v1/fill/w_980,h_281,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/660a3e_adf700d7861c4515a4073f71ad83377b~mv2.png",
+      "https://aecmag.com/wp-content/uploads/2024/01/veras-1024x576.jpg"
     ]
   },
   {
@@ -955,18 +585,18 @@
     "website_url": "",
     "logo_url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Enscape_Logo.png",
     "image_urls": [
-      "https://forum.enscape3d.com/wcf/_data/public/files/01/d6/1624-01d664b6d3341a19a87f5aa76fe0402ef3dc068612c8ebecc4f8e0febd56753d-variant.webp",
-      "https://i.ytimg.com/vi/Bb63_sApDD8/maxresdefault.jpg"
+      "https://www.architecturelab.net/wp-content/uploads/2024/05/Enscape-Interface-Explained.jpg",
+      "https://www.designblendz.com/hs-fs/hubfs/Blog_Images/ui.jpg?width=1404&name=ui.jpg"
     ]
   },
   {
     "name": "D5 Render",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://www.graphisoft.com/content/uploads/2023/05/D5-Render-logo.png",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InByb2ZpbGUvNDkwMTYxODUtZWU4OC00OWJhLTk4MDItODdjOTQ4NWRlMDUzLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://usa-forum.d5cdn.com/original/2X/3/3f0c8003c18cb299bd19ada42e2851fc57dd8337.jpeg",
-      "https://forum.d5render.com/uploads/default/original/2X/a/a3015d3646d4728911f70bb4debfb47d483f3eb4.jpeg"
+      "https://cdn.prod.website-files.com/62ce5d829e01c60b7c148396/681c8d9a94a30c92a4faaf1c_ezgif-2-b3d694f2f7.gif",
+      "https://parametric-architecture.com/wp-content/uploads/2023/09/D5-Render-12.png"
     ]
   },
   {
@@ -975,75 +605,75 @@
     "website_url": "",
     "logo_url": "https://cdn.brandfetch.io/idewOu_kJD/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1764486865108",
     "image_urls": [
-      "https://support.arkio.is/hc/article_attachments/21952969656732",
-      "https://support.arkio.is/hc/article_attachments/21636207833116"
+      "https://support.arkio.is/hc/article_attachments/21952989877788",
+      "https://support.arkio.is/hc/article_attachments/21952989876892"
     ]
   },
   {
     "name": "Skema",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://images.squarespace-cdn.com/content/v1/65268b0e1822263deb04b39a/10e3d126-240c-4aad-865d-82ebb1efcc1f/Skema+AI+Stacked.png",
+    "logo_url": "https://images.squarespace-cdn.com/content/v1/65268b0e1822263deb04b39a/c91417ab-cbf8-4b57-bd45-4cf5428ea563/Standard+Stacked+logo+-+in+block+-+Skema+-+RGB+-+small.png",
     "image_urls": [
-      "https://images.squarespace-cdn.com/content/v1/65268b0e1822263deb04b39a/1748375910682-4UZRTULN3B7IPH466SVN/Image+NB+American+copper+building+skema+rhino+text+obscured+by+play+bar+%28002%29.png",
-      "https://aecmag.com/wp-content/uploads/2023/11/Skema-MAIN-1024x538.jpg"
+      "https://aecmag.com/wp-content/uploads/2023/11/Skema-MAIN-1024x538.jpg",
+      "https://i.ytimg.com/vi/eEankLWCRZ4/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AH-CYAC0AWKAgwIABABGE0gYShlMA8=&rs=AOn4CLB7_DM7qNm0FJ4SHz_D47H2-0JS0Q"
     ]
   },
   {
     "name": "BricsCAD BIM",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://static.food4rhino.com/cdn/farfuture/c7o-5fnJwW3LSEm3eDrHfzXtm0OsI9r1Uk-JbJyWXjE/mtime:1680615331/sites/default/files/public/users-files/chris-hex/resource/bimlogo1.png",
+    "logo_url": "https://novedge.com/cdn/shop/files/brisys_a955be40-db21-4f07-8c23-7cd749591e09_600x.jpg?v=1683645587",
     "image_urls": [
       "https://static.bricsys.com/help/images/V26/en_US/GD_exploringthebiminterface_elements.png",
-      "https://i.ytimg.com/vi/o6RHn7Gs2t0/maxresdefault.jpg"
+      "https://images.ctfassets.net/26961o1141cc/QMZJeRfDra16EUSgdonEN/689679ffa8fcb04cc220f2914a538584/BricsCAD_BIM_V21-2.png"
     ]
   },
   {
     "name": "Augmenta",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://mms.businesswire.com/media/20230621955156/en/1824440/22/Augmenta-black.jpg",
+    "logo_url": "https://aecplustech.s3.amazonaws.com/tool/7591c486-5beb-499f-b111-0f330ef71b72.jpg",
     "image_urls": [
       "https://cdn.prod.website-files.com/62a8b06220bc7079495906eb/69386fe1ee8492055db45180_Set%20Up.png",
-      "https://i.ytimg.com/vi/7plbwA_IzR0/maxresdefault.jpg"
+      "https://cdn.prod.website-files.com/62a8b06220bc7079495906eb/69386fe83d952bbb76c7569f_Guide.png"
     ]
   },
   {
     "name": "Cove.tool",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://mms.businesswire.com/media/20250109493410/en/2348120/22/cove_logo_horizontal_black_-_1000px.jpg",
+    "logo_url": "https://mms.businesswire.com/media/20240926025041/en/2254735/22/Large.jpg",
     "image_urls": [
-      "https://i.vimeocdn.com/video/903338623-49d74c8039f7ac322b23ef43717899efac05f45a9866ea9b9d47061eadddc6ac-d?f=webp",
-      "https://download.archsupply.com/wp-content/uploads/2024/07/cove.tool-Screenshot-1.jpg"
+      "https://info.cove.tools/hubfs/Intro%20to%20drawing.tool.png",
+      "https://cove.inc/wp-content/uploads/2021/10/Z1-R-JbqstJ98hfW_drawing.tool-metasize.jpg"
     ]
   },
   {
     "name": "One Click LCA",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://oneclicklca.com/hs-fs/hubfs/Logos/Data%20points%20logos/One-Click-LCA-logo-.jpg?",
+    "logo_url": "https://carbonleadershipforum.org/wp-content/uploads/2023/02/one-click-logo.png",
     "image_urls": [
-      "https://oneclicklca.com/hubfs/Highlight%20images/410%20x%20410%20px/software-building-project-highlight-square-65ddfc6852153.webp",
-      "https://oneclicklca.com/hubfs/blog%20feature%20image%20(56).jpg"
+      "https://oneclicklca.com/hubfs/blog%20feature%20image%20(56).jpg",
+      "https://oneclicklca.com/hubfs/Hero%20images/Half/software-bim-hero-half-7-65ef1ec0cff2e.webp"
     ]
   },
   {
     "name": "Kaedim",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://creativedestructionlab.com/wp-content/uploads/2022/06/Kaedim-Logo.png",
+    "logo_url": "https://techspark.co/wp-content/uploads/2020/04/logo-04.png",
     "image_urls": [
       "https://cdn.prod.website-files.com/65133f53bfa58e82dbfee1eb/67a25d7899a1bba44914e2a8_kaedim%20thumbnail%20hover%20(1).png",
-      "https://10web.io/wp-content/uploads/2024/09/Kaedim_screenshot.png"
+      "https://g4bim.pl/wp-content/uploads/2025/07/kaedim-interfejs.png"
     ]
   },
   {
     "name": "Adobe Substance 3D",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/adobe-substance-3d-painter-icon.png",
+    "logo_url": "https://helpx.adobe.com/content/dam/substance-3d/general-knowledge/ecosystem/substance-3d-icons-svg/Adobe_Substance_3D_icon.svg",
     "image_urls": [
       "https://helpx.adobe.com/content/dam/help/en/substance-3d/documentation/sddoc/files/129368159/223053281/1/1637771532678/interface-customisation-resize.gif",
       "https://helpx.adobe.com/content/dam/help/en/substance-3d/documentation/sddoc/files/129368159/223053283/1/1637771535815/interface-customisation-maximise.gif"
@@ -1053,40 +683,40 @@
     "name": "Stylib",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://assets.stylib.com/wp-content/uploads/2025/06/23145520/Frame-1321318722.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://assets.stylib.com/wp-content/uploads/2025/03/28091607/Centralize-1.png",
-      "https://user-images.githubusercontent.com/41105888/96990634-a7ea7380-1527-11eb-8f84-74ef2e5e8d6b.png"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://blog.architizer.com/wp-content/uploads/Revit-Screenshot.png"
     ]
   },
   {
     "name": "Specright",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://mma.prnewswire.com/media/1924212/Specright_Wordmark_Green_White__1_Logo.jpg?p=facebook",
+    "logo_url": "http://www.specright.com/wp-content/uploads/2025/07/633c650fba438f85f66dec1b_logo_square1300.jpeg",
     "image_urls": [
-      "https://www.specright.com/wp-content/uploads/2025/09/67c0d7b4a5f50c58323b0d08_Screenshot-2025-02-26-at-2.54.41-PM-1024x485.webp",
-      "https://www.specright.com/wp-content/uploads/2025/07/633c65139fa24160cd3f7fa0_Quality-Gif-2.gif"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://www.specright.com/wp-content/uploads/2025/09/67c0d8ce5f98111b91aa78c2_Screenshot-2025-02-26-at-2.54.06-PM-p-1600-1024x627.webp"
     ]
   },
   {
     "name": "Deltek Specpoint",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://www.deltek.com/-/media/deltekblogs/lead-images/700x500-blogheader-specpointlaunch-15034.ashx?h=500&w=700&la=en&hash=FD4906D209AB69D279EF6CF49BECC778",
+    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Deltek_Logo.jpg",
     "image_urls": [
-      "https://www.deltek.com/-/media/blog/project%20nation/2021/specpoint%201_what%20is.ashx",
-      "https://help.deltek.com/Products/Specpoint/AE/GUID-597C31A4-D845-4024-BD0C-E5A56C337D1C-low.png"
+      "https://www.deltek.com/-/media/deltekblogs/lead-images/700x500-blogheader-specpointlaunch-15034.ashx?h=500&w=700&la=en&hash=FD4906D209AB69D279EF6CF49BECC778",
+      "https://www.deltek.com/-/media/blog/project%20nation/2021/specpoint%201_what%20is.ashx"
     ]
   },
   {
     "name": "Solibri",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://solibri-assets.s3.amazonaws.com/old-site/2017/06/Solibri_Logo_RGB.png",
+    "logo_url": "https://www.newforma.com/wp-content/uploads/2023/09/solibri_logo_rgb.png",
     "image_urls": [
-      "https://solibri-assets.s3.amazonaws.com/_1264xAUTO_crop_center-center_82_none_ns/68014/Solibri-Anywhere-UI-Communication.webp",
-      "https://solibri-assets.s3.amazonaws.com/incorporating-the-solibri-model-viewer_03.png"
+      "https://solibri-assets.s3.amazonaws.com/_1440xAUTO_crop_center-center_82_none_ns/140290/solibri-screens-hero-element_2025-06-09-113306_vigb.webp",
+      "https://res.cloudinary.com/vectorworks/image/upload/q_auto/f_auto/article/blog/5-things-you-need-to-know-about-solibri-inside/Screen_Shot_2023-08-17_at_2.26.33_PM.png"
     ]
   },
   {
@@ -1095,18 +725,18 @@
     "website_url": "",
     "logo_url": "https://brandlogos.net/wp-content/uploads/2025/04/navisworks-logo_brandlogos.net_cczxx.png",
     "image_urls": [
-      "https://blog.novatr.com/hs-fs/hubfs/User%20interface%20of%20Navisworks.jpg?width=1920&height=1080&name=User%20interface%20of%20Navisworks.jpg",
-      "https://www.configura.com/hubfs/Screenshot%202025-02-20%20143306.png"
+      "https://kaarwan.s3.amazonaws.com/public/blog/media/2908b729-9c3b-4255-adbb-49d0fb9a0701.jpg",
+      "https://blog.novatr.com/hs-fs/hubfs/User%20interface%20of%20Navisworks.jpg?width=1920&height=1080&name=User%20interface%20of%20Navisworks.jpg"
     ]
   },
   {
-    "name": "Glyph",
+    "name": "Swapp",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://glyphsapp.com/media/site/5cc3f7ec66-1624987026/glyphs-3.png",
+    "logo_url": "https://files.aecplustech.com/eyJidWNrZXQiOiJhZWNwbHVzdGVjaC1maWxlcyIsImtleSI6InRvb2wvYWY5OGQ4YWMtNTBiMy00ZDU2LWJkNDUtNDM2ZWIxZmEzMDNiLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://handbook.glyphsapp.com/v/content/images/root/new-document.png",
-      "https://glyphsapp.com/media/pages/news/new-features-in-glyphs-2-6/1a97bbc05d-1624987025/glyphsdarkmode.png"
+      "https://aecmag.com/wp-content/uploads/2022/11/SWAPP_3.jpg",
+      "https://aecmag.com/wp-content/uploads/2022/11/3D_section.jpg"
     ]
   },
   {
@@ -1115,28 +745,28 @@
     "website_url": "",
     "logo_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Vectorworks_Logo.png",
     "image_urls": [
-      "https://i.ytimg.com/vi/z4UpSSxUogw/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDCeADWSyo3mLhtUoPWh3q0EUuiIA",
-      "https://forum.vectorworks.net/uploads/monthly_2026_02/Screenshot2026-02-06at1_05_04PM.png.1f2735c1a6d21c5b54269186b9003076.png"
+      "https://res.cloudinary.com/vectorworks/image/upload/f_auto,q_auto/v1749648137/article/2504-vw-2025-update-5-aida-illustration-homescreen.png",
+      "https://res.cloudinary.com/vectorworks/image/upload/f_auto,q_auto/v1750954262/pages/start/make-the-move/architecture/2506-uk-mtm-bldg-05-team.png"
     ]
   },
   {
     "name": "Pype AutoSpecs",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://procore-marketplace.s3.amazonaws.com/production/uploads/33823af1-7767-4652-8729-7f498f59e5f7.png",
+    "logo_url": "https://www.imaginit.com/Portals/4/ImageCache/ProductDetails/1_Pype%20Autospecs_256.png",
     "image_urls": [
       "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/4fe9bf5f-e581-4483-bac6-73fc3d8a911d.png",
-      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/130d5df2-005c-4ac0-be11-5fb99bd10bf6.png?ixlib=rb-1.0.0&ch=Width%2CDPR&auto=format&w=750&h=450&q=50"
+      "https://embed-ssl.wistia.com/deliveries/482f85cce11ca85bf203019b1615820e.jpg"
     ]
   },
   {
     "name": "Document Crunch",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://builtworlds.com/wp-content/uploads/2023/06/Document-Crunch.png",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvMTZkOTBmNGItMWQ5YS00NjdlLTg0NWUtZGNhYTU2ZTdiZDFiLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://procore-marketplace.s3.us-west-2.amazonaws.com/production/uploads/7f6da930-992e-48e6-9224-7b08c97d445a.png",
-      "https://www.documentcrunch.com/wp-content/uploads/2025/05/Short-Checklist-AI-Summary-e1748396573190-768x643.png"
+      "https://files.aecplustech.com/eyJidWNrZXQiOiJhZWNwbHVzdGVjaC1maWxlcyIsImtleSI6InRvb2xzL2ZjZTEyMjg2LTllY2MtNDdhMi1iN2RlLTg4ODg0MjU5NzQ0ZC5wbmciLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjgwMCwiZml0IjoiY292ZXIifX19",
+      "https://miro.medium.com/v2/resize:fit:1400/1*tjJoPkX5gF0YHLk0QhmNlA.png"
     ]
   },
   {
@@ -1146,47 +776,47 @@
     "logo_url": "https://press.bluebeam.com/wp-content/uploads/2022/06/Group-614.png",
     "image_urls": [
       "https://support.bluebeam.com/resources/images/revu/images/revu-2018-and-above-interface.png",
-      "https://www.hagenbusiness.com/wp-content/uploads/2013/07/fit-width.jpg"
+      "https://support.bluebeam.com/resources/images/revu/images/revu-2017-and-below-interface.png"
     ]
   },
   {
     "name": "Downtobid",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://media.licdn.com/dms/image/v2/D4E0BAQFTcNc_rbjnZA/company-logo_200_200/company-logo_200_200/0/1701888548500/downtobid_logo?e=2147483647&v=beta&t=gpLAQ-4uAWdbkIxUYkXYGQO3OyzsE84Vmu-yPSchrec",
+    "logo_url": "https://iconape.com/wp-content/files/ns/348764/png/348764.png",
     "image_urls": [
-      "https://cdn.prod.website-files.com/68525ab144470c4f77e593ae/685d22aeae4ab57bb1c7eb2c_Frame%2010660%20(1).webp",
-      "https://strapi-cdn.downtobid.com/downtobid_bid_1_142351c1ae/downtobid_bid_1_142351c1ae.png"
+      "https://strapi-cdn.downtobid.com/Screenshot_2025_02_13_at_5_57_37_PM_6ec5b0b7b2/Screenshot_2025_02_13_at_5_57_37_PM_6ec5b0b7b2.png",
+      "https://strapi-cdn.downtobid.com/Kreo_d2f8fab0ca/Kreo_d2f8fab0ca.png"
     ]
   },
   {
     "name": "SmartBid",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://procore-marketplace.s3.amazonaws.com/production/uploads/SB-A-Product-Of-JBK-Logo-RGB.png",
+    "logo_url": "https://media.licdn.com/dms/image/v2/C4E0BAQGsKhH4fiySqQ/company-logo_200_200/company-logo_200_200/0/1631363561334/smartbidsoftware_logo?e=2147483647&v=beta&t=gLBcIKUSD_tPYh0AkET8rBeaEnKOQGUeyeX0-xdSYV8",
     "image_urls": [
-      "https://procore-marketplace.s3.amazonaws.com/production/uploads/SB-Screenshot-Dashboard.png",
-      "https://www.constructconnect.com/hubfs/assets/2025%20Redesign/Supporting%20Graphics/Solutions%20by%20Product/SmartBid/SmartBid_share2.png"
+      "https://www.constructconnect.com/hubfs/assets/2025%20Redesign/Supporting%20Graphics/Solutions%20by%20Product/SmartBid/SmartBid_share2.png",
+      "https://smartbid.co/wp-content/uploads/2017/03/SB_Features_Send_Invitations_to_Bid.png"
     ]
   },
   {
     "name": "Procore",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://seekvectorlogo.net/wp-content/uploads/2018/11/procore-vector-logo.png",
+    "logo_url": "https://companieslogo.com/img/orig/PCOR-33258035.png?t=1720244493",
     "image_urls": [
-      "https://en-gb.support.procore.com/@api/deki/files/4571/tool-page-view.png?revision=1",
-      "https://images.ctfassets.net/td1zutv6uo2d/TrNxdZ4zxjHZr5dZXHhOj/9d7397fe8ab8de1da188112e1565d583/Webhooks.png"
+      "https://images.ctfassets.net/8pep15rt0kef/56kzxtxt1ZVUiyaVBK0qJ4/281419627334bb553118e2f5c5b996e1/bim_screen01?fit=fill&f=center&w=1440&h=1000",
+      "https://images.ctfassets.net/td1zutv6uo2d/3eTSqGZaIHRDZC4zhZsyhS/872cd6945c036831bd8185a829bb5345/image-20260106-172738.png"
     ]
   },
   {
     "name": "Togal.AI",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://cdn.prod.website-files.com/64c804c83c2a878381a29d9d/64d683c0a1365bc7c7dcbd44_Togal-OpenGraph.png",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvYTgyMmI3NDItMmFhYy00MmQ4LWJiMzctM2JmMGM1NjZiMDJhLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://cdn.prod.website-files.com/64c804c83c2a878381a29dd3/68f9361d949de624ba9a8e47_64c804c83c2a878381a29fd3_62aaa3c3af404fddd2c3c609_aZs0653-PEdH7EPsFbuhQlJZ_BDn5rBXv9PbAoymru8pMwb-mxyKZ7lsz-eecAV4elukx-Ja0np1E7XeU1PSNg1McXIDN2aAzK4btL3l1AZnLwpUWAyLs5n0fSPNUKJ4hYR1T6iC1htT-AXbPw.png",
-      "https://cdn.prod.website-files.com/64c804c83c2a878381a29dd3/68f9361a949de624ba9a8c46_64c804c83c2a878381a2a011_62aaa3c1134cd2aa49ed9ecf_OYgK82GyAXpczmOjtjkawuYXI2seXeSUHb7wZZFb-c19ItJEsbxnDCxbgE8fKHOxyKgDmLJrDVKbwsT644hmhW0DFbCq6MRjfH5V0um1OozWyFWmwv3NiuIC39MGj4gcW3MaCCviVdlNeN3L8g.png"
+      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/d8d1a462-5d68-453d-8da9-3d9a26ee9aa1.jpeg?auto=format&q=50",
+      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/462961f2-2972-4954-8a85-bce0b3560da5.jpeg"
     ]
   },
   {
@@ -1195,25 +825,25 @@
     "website_url": "",
     "logo_url": "https://www.pelles.ai/images/webclip.png",
     "image_urls": [
-      "https://www.pelles.ai/images/webclip.png",
-      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhBYjnRF_fl_NBCtEPbHj-HRRNzJToHA0aDV2wYMFwZMckMmYp-brQkg_dzDPtQq6aLtSnaabV2NBhPwfDZCQIDKqnIekt7iTFQW8_kfMVDeaqyjQtLrp2n6yUHpC7tTrO2_jSGKTyu3d5J/s1600/PellesC+%25281%2529.png"
+      "https://blog.prototechsolutions.com/wp-content/uploads/2025/02/How-Pele-AI-is-Transforming-Your-Revit-Workflows-scaled.webp",
+      "https://images.adsttc.com/media/images/68f2/c6a8/9662/4101/8803/fc07/large_jpg/how-will-bim-ai-assistance-and-workflows-shape-architects-design-experience_2.jpg?1760741074"
     ]
   },
   {
     "name": "Join.build",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://join.build/wp-content/uploads/2024/03/Black-Logo-Square-with-Padding.png",
+    "logo_url": "https://buildingventures.com/wp-content/webp-express/webp-images/uploads/2020/04/joinbuild_portfolio-1.jpg.webp",
     "image_urls": [
       "https://join.build/wp-content/uploads/2023/09/homepage-color-1.svg",
-      "https://join.build/wp-content/uploads/2024/10/Scenarios_SiteImage.png"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png"
     ]
   },
   {
     "name": "OpenCost",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://opencost.io/img/logo.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
       "https://opencost.io/assets/images/ui-screenshot-b0a9686e179fba03f8d0fa619de76596.png",
       "https://opencost.io/assets/images/screenshot-7443f3a62f1c5e6e27816031905c6a9f.png"
@@ -1223,30 +853,30 @@
     "name": "Disperse",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://northzone.com/wp-content/uploads/2020/03/DISPERSE_LOGO-Long-copy.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
-      "https://www.sinisoftware.com/storage/products/Plugins_UI_Disperse2.jpg",
-      "https://mms.businesswire.com/media/20221121005191/en/1643308/5/Impulse_Press_Release_v2_%281%29.jpg?download=1"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://www.researchgate.net/publication/354208845/figure/fig13/AS:1062406285447172@1630308805798/Building-Information-Modelling-BIM-Interface-showing-the-level-of-complexities-and.png"
     ]
   },
   {
     "name": "PlanGrid",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://upload.wikimedia.org/wikipedia/commons/6/64/PlanGrid_2015_Logo.png",
+    "logo_url": "https://e7.pngegg.com/pngimages/603/766/png-clipart-plangrid-architectural-engineering-company-y-combinator-website-building-blue-company.png",
     "image_urls": [
-      "https://help.plangrid.com/hc/article_attachments/360097452313/GridView.png",
-      "https://help.plangrid.com/hc/article_attachments/360093480893/EditSingleTask.gif"
+      "https://help.plangrid.com/hc/article_attachments/360032551134/image8.png",
+      "https://help.plangrid.com/hc/article_attachments/360032552554/image6.gif"
     ]
   },
   {
     "name": "Newmetrix",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://procore-marketplace.s3.amazonaws.com/production/uploads/e03c2fd0-3558-4fa6-bddf-482e013490f9.png",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
     "image_urls": [
       "https://img.ironpros.com/files/base/acbm/fcp/image/2024/05/2769cb98.png?auto=format%2Ccompress&fit=max&q=70&w=1200",
-      "https://www.enr.com/ext/resources/2022/12/16/newmetrix_780.jpg?height=635&t=1671225771&width=1200"
+      "https://miro.medium.com/v2/resize:fit:1400/1*c5WVP0sTAdenB7ZmZaG8EA.jpeg"
     ]
   },
   {
@@ -1255,38 +885,308 @@
     "website_url": "",
     "logo_url": "https://www.newforma.com/wp-content/uploads/2023/10/cropped-2023_newformalogoicon_4c.png",
     "image_urls": [
-      "https://www.newforma.com/wp-content/uploads/2025/06/ccm-1-screen-illustration.jpg",
-      "https://konekt.help.newforma.com/wp-content/uploads/punch_lists-1.png"
+      "https://www.newforma.com/wp-content/uploads/2024/07/screenshot-2024-07-22-112724.png",
+      "https://www.newforma.com/wp-content/uploads/2023/09/nf-2d-3d-image-2-230906.png"
     ]
   },
   {
     "name": "Part3",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://info.part3.io/hs-fs/hubfs/logo-500x148px.png?width=400&height=118&name=logo-500x148px.png",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvYmFmMDQ5OTAtZTUzZi00NmFjLWFhODUtZTMyNWNiYWU4NjQyLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
     "image_urls": [
-      "https://framerusercontent.com/images/rFKJbTfl8dfDHzQT2Rh7bWxiI.png?width=4618&height=2760",
-      "https://framerusercontent.com/images/5Z6naSiYNRbSJRt8neTs9snYTg.png?width=1536&height=1024"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://www.researchgate.net/publication/354208845/figure/fig13/AS:1062406285447172@1630308805798/Building-Information-Modelling-BIM-Interface-showing-the-level-of-complexities-and.png"
     ]
   },
   {
     "name": "Trunk Tools",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://trunktools.com/wp-content/uploads/2023/05/trunk-tools_logo_black-1.png",
+    "logo_url": "https://builtworlds.com/wp-content/uploads/2023/05/Trunk-toolllls.jpg",
     "image_urls": [
-      "https://gdm-catalog-fmapi-prod.imgix.net/ProductScreenshot/dbf19291-9cae-42d3-ba35-aaf2c96f1943.png",
-      "https://trunktools.com/wp-content/uploads/2023/11/Doc-Viewer-Desktop-Web.png"
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://www.researchgate.net/publication/354208845/figure/fig13/AS:1062406285447172@1630308805798/Building-Information-Modelling-BIM-Interface-showing-the-level-of-complexities-and.png"
     ]
   },
   {
     "name": "Civils.ai",
     "suggested_category": "Backlog",
     "website_url": "",
-    "logo_url": "https://civils.ai/static/tunnelsai/images/linkpreview2.png",
+    "logo_url": "https://media.licdn.com/dms/image/v2/C4D0BAQFDM3mMeTB3FA/company-logo_200_200/company-logo_200_200/0/1655977486925/civils_ai_logo?e=2147483647&v=beta&t=ozTfwwVuHo78thq1_QA3DP7bhmH9criTdRSNqxdpd90",
     "image_urls": [
-      "https://d122f4822rob2u.cloudfront.net/floor-plan-annotation-preview.png",
-      "https://www.bentley.com/wp-content/uploads/bentley_opensite_ai_820.jpg"
+      "https://aecmag.com/wp-content/uploads/2025/10/create-model.jpg",
+      "https://www.toponseek.com/wp-content/uploads/2025/10/AI-Architecture-Software-Tool-BricsCAD-BIM.jpg"
+    ]
+  },
+  {
+    "name": "Maket.ai",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.dribbble.com/userupload/44938458/file/fb2aa3be9463c4d9c6e404be81c3ff7d.jpg",
+    "image_urls": [
+      "https://framerusercontent.com/images/qsozuHZ0R5z0oEUDKaK3sk8IJIk.jpg?width=1920&height=1080",
+      "https://framerusercontent.com/images/TIN8zMNggaE2Rnrnn3wulA9dTY.png"
+    ]
+  },
+  {
+    "name": "PromeAI",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://d35zifqd5u72jg.cloudfront.net/eyJidWNrZXQiOiJhZWNwbHVzdGVjaCIsImtleSI6InRvb2wvMzg2ZDgyYWQtNmEwYy00NzUwLTkxZmEtZTg3NmZhMWEwYTdiLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
+    "image_urls": [
+      "https://www.promeai.pro/blog/wp-content/uploads/2024/03/How-to-Render-Architecture-Floor-Plan-in-02-minutes-0-41-screenshot.png",
+      "https://www.promeai.pro/blog/wp-content/uploads/2024/03/How-to-Render-Architecture-Floor-Plan-in-02-minutes-0-18-screenshot.png"
+    ]
+  },
+  {
+    "name": "Arko.ai",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://media.licdn.com/dms/image/v2/D4E0BAQFRy3o1gxkwmA/company-logo_200_200/company-logo_200_200/0/1687880824706/arkoai_logo?e=2147483647&v=beta&t=j21mPSNMhEexfvuUjPZJt1r6I7IFLSnastsSl2N3tP0",
+    "image_urls": [
+      "https://download.archsupply.com/wp-content/uploads/2023/05/Arko-Ai-Screenshot-02-sketchup.png",
+      "https://download.archsupply.com/wp-content/uploads/2023/05/Arko-Ai-Screenshot-03-rhino.png"
+    ]
+  },
+  {
+    "name": "Interior AI",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
+    "image_urls": [
+      "https://images.adsttc.com/media/images/68f2/c6a8/9662/4101/8803/fc07/newsletter/how-will-bim-ai-assistance-and-workflows-shape-architects-design-experience_2.jpg?1760741074",
+      "https://www.toponseek.com/wp-content/uploads/2025/10/AI-Architecture-Software-Tool-BricsCAD-BIM.jpg"
+    ]
+  },
+  {
+    "name": "Architechtures",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
+    "image_urls": [
+      "https://architechtures.com/_next/static/media/editorInterface.84f88399.jpg",
+      "https://architechtures.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fqcuz6m8h%2Fproduction%2Fa52d8656547fd02d2a81ca685df6c8da274b322d-1920x1026.jpg&w=3840&q=75"
+    ]
+  },
+  {
+    "name": "Delve",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://files.aecplustech.com/eyJidWNrZXQiOiJhZWNwbHVzdGVjaC1maWxlcyIsImtleSI6InRvb2wvNzU5MWM0ODYtNWJlYi00OTlmLWIxMTEtMGYzMzBlZjcxYjcyLmpwZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6ODAwLCJmaXQiOiJjb3ZlciJ9fX0=",
+    "image_urls": [
+      "https://imgproxy.divecdn.com/mNJ3W6gIqglzsfri3s2N6xoOVX0BkDAc8Q0wBedH1i8/raw:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9EZWx2ZVN0dWR5UGFnZUJHLmdpZg==",
+      "https://static.bluelabellabs.com/wp-content/themes/html5blank-stable/assets/cases/delve/images/macbook-mockup.png"
+    ]
+  },
+  {
+    "name": "Gendo",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
+    "image_urls": [
+      "https://cdn.dribbble.com/userupload/10673529/file/original-aaad2bcaeaf19bd7a51ba033e52d18f5.png?resize=400x300",
+      "https://mir-s3-cdn-cf.behance.net/project_modules/1400/bafee9181866017.6523f30c070dd.png"
+    ]
+  },
+  {
+    "name": "Modumate",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
+    "image_urls": [
+      "https://aecmag.com/wp-content/uploads/2022/11/modumate1-.jpg",
+      "https://aecmag.com/wp-content/uploads/2022/11/modumate-4.jpg"
+    ]
+  },
+  {
+    "name": "Qonic",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://media.licdn.com/dms/image/v2/C4E0BAQHOQOvbkhpftw/company-logo_200_200/company-logo_200_200/0/1669804353390/qonic_logo?e=2147483647&v=beta&t=uVEVoJOQ7FHp-WsQ6_zjdRODzW5G_ZwQAjv6XOnBB60",
+    "image_urls": [
+      "https://aecmag.com/wp-content/uploads/2023/11/Group-373.jpg",
+      "https://aecmag.com/wp-content/uploads/2022/09/Qonic_BIM-360x203.jpg"
+    ]
+  },
+  {
+    "name": "Archicad AI Visualizer",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064035605334",
+    "image_urls": [
+      "https://help.graphisoft.com/AC/28/INT/_AC28_Help/100_Visualization/AIVizScreen.png",
+      "https://architosh.com/wp-content/uploads/2026/02/40_dark-model_line-edges.jpg"
+    ]
+  },
+  {
+    "name": "Dusty Robotics",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.prod.website-files.com/64d2bbdae796ca9291a4c909/64d2bbdae796ca9291a4c948_dusty-logo-dark.svg",
+    "image_urls": [
+      "https://cdn.prod.website-files.com/64d2bbdae796ca9291a4c909/6721100f48eb0c8542f1c9e8_dusty_robotics_automated_layout_speed.webp",
+      "https://cdn.prod.website-files.com/64d2bbdae796ca9291a4c909/6671ac4764c298a8e2448209_dusty_robotics_automated_layout_collaboration.webp"
+    ]
+  },
+  {
+    "name": "Versatile",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
+    "image_urls": [
+      "https://blog.architizer.com/wp-content/uploads/Revit-Screenshot.png",
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png"
+    ]
+  },
+  {
+    "name": "Avvir",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://s3-us-west-2.amazonaws.com/cbi-image-service-prd/original/1a75ec40-e4ba-463e-bb9d-8f25d42d15b4.png",
+    "image_urls": [
+      "https://www.researchgate.net/publication/383334789/figure/fig3/AS:11431281273313244@1724430275718/Scan-BIM-checks-in-Avvir-software-highlighting-potential-mistakes.png",
+      "https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/000/697/387/datas/original.png"
+    ]
+  },
+  {
+    "name": "Cupix",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://gdm-catalog-fmapi-prod.imgix.net/ProductLogo/e6d2a9e8-2561-42eb-9f55-da805acfd839.png?w=128&h=128&fit=max&dpr=3&auto=format&q=50",
+    "image_urls": [
+      "https://cdn.prod.website-files.com/60a1d24dc3ad907b33ec0ba9/65a09a105e8303fd692af60c_BIM%20Image%203.png",
+      "https://cdn.prod.website-files.com/60a1d24dc3ad907b33ec0ba9/6711c2a3b3fdf9bea077b06d_6711c286f8dd737bb9bf934d_Detail%2520View.png"
+    ]
+  },
+  {
+    "name": "ClearEdge3D",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://www.clearedge3d.com/wp-content/uploads/2025/05/CE3D-Yoast-Logo.png",
+    "image_urls": [
+      "https://www.clearedge3d.com/wp-content/uploads/2025/03/Revit-Verify-Installed-Work.png",
+      "https://www.topconpositioning.com/content/topconpositioning/global/en/solutions/technology/infrastructure-software-and-services/clearedge-edgewise/_jcr_content/root/container/container/container_84963970_c/columns_copy/node2/image_copy.coreimg.png/1741584619401/workflow-ft-100-analyze-web-main.png"
+    ]
+  },
+  {
+    "name": "Reconstruct",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
+    "image_urls": [
+      "https://www.researchgate.net/publication/281704378/figure/fig7/AS:282331723124736@1444324536291/Revit-GUI-with-a-remote-controlled-BIM-model-b-GoToMeeting-menu-and-c-floating.png",
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png"
+    ]
+  },
+  {
+    "name": "DroneDeploy",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn-assets.informedinfrastructure.com/2017/04/DD.png",
+    "image_urls": [
+      "https://support-assets.dronedeploy.com/a5f0384-Screen_Shot_2019-03-04_at_1.38.49_PM.png",
+      "https://help.dronedeploy.com/hc/article_attachments/31719693407255"
+    ]
+  },
+  {
+    "name": "HoloBuilder",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://aps.autodesk.com/sites/default/files/styles/customer_logo/public/2020-12/HoloBuilder_Logo_Black_For_Bright_Backgrounds_Pixel.png?itok=0ozKdk1f",
+    "image_urls": [
+      "https://www.aecbytes.com/illustrations/feature/2022/ConstructionTracking-HoloBuilder-images/fig3.jpg",
+      "https://i.ytimg.com/vi/FkU97gM5EYc/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAoYuAnXAPhF6jYFrCiDk8Axk_yVg"
+    ]
+  },
+  {
+    "name": "Kwant.ai",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100063842011769",
+    "image_urls": [
+      "https://cdn.prod.website-files.com/627b3c733504b954bd1a533e/665fdb237d1ab1375a0c002a_Data%20Flow%20in%20Kwant.png",
+      "https://i.ytimg.com/vi/60MXAr0odtw/maxresdefault.jpg"
+    ]
+  },
+  {
+    "name": "Wint",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.freebiesupply.com/logos/large/2x/aec-software-logo-svg-vector.svg",
+    "image_urls": [
+      "https://i.ytimg.com/vi/TI7lzP4DXCA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAjM_YHrBH9wknK2w0qi16lWMn53g",
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png"
+    ]
+  },
+  {
+    "name": "Zepth",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://gdm-catalog-fmapi-prod.imgix.net/ProductLogo/7b005c75-32c6-4381-8731-2565fe995b96.png",
+    "image_urls": [
+      "https://i.ytimg.com/vi/FO6HvvwqGbY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDbZDul5ePFPksr5TcN7n-ABu1TSg",
+      "https://www.zepth.com/wp-content/uploads/2024/05/Document-Management.png"
+    ]
+  },
+  {
+    "name": "Sefaira",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://globalabc.org/sites/default/files/2023-08/Sefaira.png",
+    "image_urls": [
+      "https://images.adsttc.com/media/images/53f0/cdd7/c07a/8038/8e00/038c/large_jpg/unknown.jpg?1408290258",
+      "https://support.sefaira.com/hc/article_attachments/115000136791/Sefaira_Arch_2017_Blog_Post_Header_Image.jpg"
+    ]
+  },
+  {
+    "name": "Consigli",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://www.consigli.com/wp-content/themes/consigli/images/logo.png",
+    "image_urls": [
+      "https://www.researchgate.net/publication/275829776/figure/fig1/AS:294482391126018@1447221481365/BIM-software-screenshot.png",
+      "https://www.researchgate.net/publication/354208845/figure/fig13/AS:1062406285447172@1630308805798/Building-Information-Modelling-BIM-Interface-showing-the-level-of-complexities-and.png"
+    ]
+  },
+  {
+    "name": "Giraffe",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://cdn.prod.website-files.com/67ecd7c6c2def3f2990a4aaf/68084c3027d2cce11d3218c6_Opengraph%20(1).png",
+    "image_urls": [
+      "https://architosh.com/wp-content/uploads/2025/09/Giraffe2.jpg",
+      "https://cdn.prod.website-files.com/67ecd7c6c2def3f2990a4aaf/681c1b34c82b51806b46cefb_%5B224%5D%20Create%20and%20test.webp"
+    ]
+  },
+  {
+    "name": "VuCity",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://www.vu.city/hubfs/2025/General/VU.CITY-Flythroughs-Dark.svg",
+    "image_urls": [
+      "https://www.vu.city/hubfs/2025/Home/sitesolve-output-ui-2.webp",
+      "https://www.vu.city/hubfs/2025/Home/vucity-timeline-ui-home-2.webp"
+    ]
+  },
+  {
+    "name": "InfraWorks",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://civilsurveysolutions.com.au/wp-content/uploads/autodesk-infraworks-product-icon-128@2x.png",
+    "image_urls": [
+      "https://damassets.autodesk.net/content/dam/autodesk/www/products/infraworks/fy25/features/key-features-of-infraworks-thumb-1920x1080-v2.jpg",
+      "https://www.e-zigurat.com/storage/blog/2019/08/Infraworks1.jpg"
+    ]
+  },
+  {
+    "name": "Karamba3D",
+    "suggested_category": "Backlog",
+    "website_url": "",
+    "logo_url": "https://parametric-architecture.com/wp-content/uploads/2022/04/7dd217d2ee088b76b0c24c5312016be3769242d3.jpg",
+    "image_urls": [
+      "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3385001384431484598",
+      "https://www.researchgate.net/publication/333104509/figure/fig2/AS:758735043575809@1557907939321/Karamba3D-setup-within-Grasshopper.jpg"
     ]
   }
 ]

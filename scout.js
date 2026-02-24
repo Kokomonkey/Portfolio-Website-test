@@ -77,13 +77,14 @@ async function askGroq(prompt) {
 
 async function extractToolNames(snippet, category) {
     const prompt = `
-    Context: Finding specialized AI architecture software for "${category}".
+    Context: Finding specialized AI architecture and AEC software for "${category}".
     Source text: "${snippet}"
-    Task: Extract specific software names.
+    Task: Extract specific software names used strictly in architecture, design, or construction.
     Rules: 
     1. Comma-separated list only. 
-    2. No generic terms (e.g. "AI", "CAD"). 
-    3. If none, return "NONE".`;
+    2. No generic terms (e.g., "AI", "CAD", "3D"). 
+    3. Exclude non-architectural software (e.g., general CRM, gaming, medical, general IT).
+    4. If none, return "NONE".`;
     
     const text = await askGroq(prompt);
     if (!text || text.includes("NONE")) return [];
@@ -124,7 +125,7 @@ async function runPhase1() {
 
             // Fetch Missing Data
             if (missingLogo) {
-                const logos = await searchImages(`${item.name} software logo transparent`, 1);
+                const logos = await searchImages(`${item.name} architecture AEC software logo transparent OR icon`, 1);
                 if (logos.length) candidate.logo_url = logos[0];
             }
 
@@ -132,7 +133,7 @@ async function runPhase1() {
                 // Ensure we have array
                 if(!candidate.image_urls) candidate.image_urls = [];
                 const needed = 2 - candidate.image_urls.length;
-                const screens = await searchImages(`${item.name} software interface screenshot`, needed);
+                const screens = await searchImages(`${item.name} architecture software UI OR BIM interface screenshot`, needed);
                 candidate.image_urls = [...candidate.image_urls, ...screens];
             }
 
@@ -190,8 +191,8 @@ async function runPhase2() {
                     process.stdout.write(`   + Discovered: ${n} `);
                     
                     // Fetch Basics Immediately
-                    const logo = await searchImages(`${n} software logo`, 1);
-                    const screens = await searchImages(`${n} interface screenshot`, 2);
+                    const logo = await searchImages(`${n} architecture AI software logo small`, 1);
+                    const screens = await searchImages(`${n} architecture AI software logo small`, 2);
                     
                     candidates.push({
                         name: n,

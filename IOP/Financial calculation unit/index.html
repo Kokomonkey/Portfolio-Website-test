@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Floorplan Extractor</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #canvas-container { position: relative; display: inline-block; border: 1px solid #ccc; }
+        /* We layer two canvases: one for the base image, one for the AI masks on top */
+        canvas { position: absolute; top: 0; left: 0; cursor: crosshair; }
+        #imageCanvas { z-index: 1; }
+        #maskCanvas { z-index: 2; pointer-events: none; /* Let clicks pass through to the image canvas */ }
+    </style>
+</head>
+<body>
+
+    <h2>1. Upload Floorplan</h2>
+    <input type="file" id="imageUpload" accept="image/*">
+
+    <h2>2. Click a building</h2>
+    <div id="canvas-container" style="width: 800px; height: 600px;"> <canvas id="imageCanvas"></canvas>
+        <canvas id="maskCanvas"></canvas>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const imageCanvas = document.getElementById('imageCanvas');
+        const maskCanvas = document.getElementById('maskCanvas');
+        const imgCtx = imageCanvas.getContext('2d');
+        const maskCtx = maskCanvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+
+        let currentFile = null;
+
+        // 1. Handle Image Upload
+        imageUpload.addEventListener('change', async (e) => {
+            currentFile = e.target.files[0];
+            if (!currentFile) return;
+
+            // Draw image on canvas
+            const img = new Image();
+            img.src = URL.createObjectURL(currentFile);
+            img.onload = () => {
+                // Resize canvases to match image
+                container.style.width = img.width + 'px';
+                container.style.height = img.height + 'px';
+                imageCanvas.width = img.width; imageCanvas.height = img.height;
+                maskCanvas.width = img.width; maskCanvas.height = img.height;
+                
+                imgCtx.drawImage(img, 0, 0);
+            };
+
+            // Send image to Python backend
+            const formData = new FormData();
+            formData.append('file', currentFile);
+            console.log("Sending image to AI...");
+            await fetch('http://localhost:8000/upload', { method: 'POST', body: formData });
+            console.log("Image ready for clicking!");
+        });
+
+        // 2. Handle Clicking on the image
+        imageCanvas.addEventListener('click', async (e) => {
+            if (!currentFile) return;
+
+            // Get exact X/Y coordinates of the click relative to the canvas
+            const rect = imageCanvas.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+
+            console.log(`Clicked at X:${x}, Y:${y}. Asking AI for mask...`);
+
+            // Send coordinates to Python backend
+            const response = await fetch(`http://localhost:8000/click?x=${x}&y=${y}`, { method: 'POST' });
+            const data = await response.json();
+
+            // 3. Draw the returned mask
+            if (data.mask_base64) {
+                const maskImg = new Image();
+                maskImg.src = "data:image/png;base64," + data.mask_base64;
+                maskImg.onload = () => {
+                    // Clear previous masks (optional, remove this line if you want to select multiple!)
+                    maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height); 
+                    
+                    // Draw the new blue mask over the building
+                    maskCtx.drawImage(maskImg, 0, 0);
+                };
+            }
+        });
+    </script>
+</body>
+</html>

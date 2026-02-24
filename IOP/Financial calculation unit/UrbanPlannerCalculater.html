@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parametric Urban Planner Pro - Dutch Typologies & GH Export</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #050505; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Page 1 (2D) Styles */
+        #page-1 { display: flex; flex-direction: column; height: 100vh; background: #f3f4f6; }
+        #canvas-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; overflow: auto; padding: 20px;}
+        #drawing-area {
+            width: 800px; height: 600px; background-color: white; background-size: contain;
+            background-repeat: no-repeat; background-position: center; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 2px dashed #cbd5e1; cursor: crosshair;
+        }
+        #svg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
+        .drawing-active { border-color: #3b82f6 !important; }
+
+        /* Page 2 (3D) Styles */
+        #page-2 { display: none; width: 100vw; height: 100vh; position: relative; }
+        
+        /* Floating UI Panels for 3D */
+        .glass-panel {
+            background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(5px);
+            color: #eee; padding: 20px; border-radius: 12px; border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; pointer-events: auto;
+        }
+        #ui-left { position: absolute; top: 20px; left: 20px; width: 340px; display: flex; flex-direction: column; gap: 15px; pointer-events: none;}
+        #ui-left > * { pointer-events: auto; }
+        #ui-right { position: absolute; top: 20px; right: 20px; width: 320px; }
+        
+        /* 3D UI Elements */
+        h2 { margin-top: 0; font-size: 16px; color: #fff; border-bottom: 1px solid #444; padding-bottom: 8px; margin-bottom: 12px; }
+        .control-group { margin-bottom: 12px; }
+        .control-group label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; font-weight: 500;}
+        input[type=range] { width: 100%; cursor: pointer; accent-color: #e67e22; }
+        select, input[type=number] { width: 100%; padding: 6px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 13px;}
+        
+        .layer-card { background: #222; border-left: 4px solid #555; padding: 10px; border-radius: 4px; margin-bottom: 8px; }
+        .layer-residence { border-color: #e74c3c; }
+        .layer-industry { border-color: #9b59b6; }
+        .layer-greenhouse { border-color: #2ecc71; }
+        
+        button.btn-dark { width: 100%; padding: 8px; background-color: #333; color: white; border: 1px solid #555; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.2s; margin-top: 5px;}
+        button.btn-dark:hover { background-color: #e67e22; border-color: #e67e22; }
+        button.btn-primary { background-color: #3b82f6; border-color: #2563eb; }
+        button.btn-primary:hover { background-color: #2563eb; }
+        button.btn-danger { background-color: #c0392b; border-color: #c0392b; }
+        button.btn-danger:hover { background-color: #a53125; }
+
+        #settings-panel { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="page-1">
+        <header class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md z-10">
+            <div>
+                <h1 class="text-xl font-bold">Step 1: Define Typology Zones</h1>
+                <p class="text-xs text-gray-400">Scale presumed at A1 @ 1:2000. Draw zones to be filled with typologies.</p>
+            </div>
+            <div class="flex gap-4 items-center">
+                <input type="file" id="file-upload" accept=".svg, .png, .jpg" class="text-sm text-gray-300 w-64" title="Upload an SVG to parse polygons, or an image as background">
+                <button id="btn-draw" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-white font-semibold transition">
+                    + Draw Zone
+                </button>
+                <button id="btn-go-3d" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-2 rounded text-white font-bold transition shadow-lg">
+                    Build in 3D ➔
+                </button>
+            </div>
+        </header>
+
+        <div id="canvas-container">
+            <div id="drawing-area">
+                <svg id="svg-overlay">
+                    <polyline id="temp-line" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4"></polyline>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-2">
+        <canvas id="glcanvas"></canvas>
+        
+        <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 pointer-events-auto flex gap-4">
+            <button id="btn-back-2d" class="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-white font-bold border border-gray-600 shadow-xl backdrop-blur-md opacity-90 transition">
+                ⬅ Back to 2D
+            </button>
+            <button id="btn-export-svg" class="bg-purple-700 hover:bg-purple-600 px-6 py-2 rounded-full text-white font-bold border border-purple-500 shadow-xl backdrop-blur-md opacity-90 transition">
+                ⤓ SVG
+            </button>
+            <button id="btn-export-gh" class="bg-orange-600 hover:bg-orange-500 px-6 py-2 rounded-full text-white font-bold border border-orange-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export JSON for Grasshopper">
+                ⤓ Export to GH
+            </button>
+        </div>
+
+        <div id="ui-left">
+            <button id="btn-toggle-settings" class="glass-panel w-full flex justify-between items-center cursor-pointer hover:bg-gray-800 transition" style="padding: 12px 20px;">
+                <span class="font-bold">⚙ Environment Settings</span>
+                <span>▼</span>
+            </button>
+
+            <div id="settings-panel" class="glass-panel w-full">
+                <h2>Environment Lighting</h2>
+                <div class="control-group">
+                    <label>Sun Rotation: <span id="azimuthVal">45°</span></label>
+                    <input type="range" id="sunAzimuth" min="0" max="360" value="45">
+                </div>
+                <div class="control-group">
+                    <label>Sun Height: <span id="altitudeVal">60°</span></label>
+                    <input type="range" id="sunAltitude" min="0" max="90" value="60">
+                </div>
+                <button id="toggleSunAnim" class="btn-dark mt-2">Toggle Sun Animation</button>
+            </div>
+
+            <div class="glass-panel w-full">
+                <h2>Batch Actions</h2>
+                <div class="control-group">
+                    <label>Volumize (Add Floors to All): <span id="volVal">2</span></label>
+                    <input type="range" id="volSlider" min="1" max="10" value="2">
+                </div>
+                <button id="btn-volumize" class="btn-dark">Volumize All Buildings</button>
+            </div>
+
+            <div id="inspector-panel" class="glass-panel w-full">
+                <h2>Zone Inspector</h2>
+                <div id="empty-state" class="text-gray-400 text-sm italic text-center py-4">
+                    Click a zone or building in the 3D view to manage it.
+                </div>
+                
+                <div id="editor-state" style="display: none;">
+                    
+                    <div id="container-setup-view" style="display: none;">
+                        <h3 class="text-sm font-bold text-gray-300 mb-2">Zone Setup</h3>
+                        <p class="text-xs text-gray-400 mb-4">Select a Dutch typology to generate.</p>
+                        
+                        <div class="control-group">
+                            <label>Typology</label>
+                            <select id="typology-select" class="mb-3">
+                                <option value="rijtjeshuis">Rijtjeshuis (Row Houses)</option>
+                                <option value="grachtenpand">Grachtenpand (Canal Houses)</option>
+                                <option value="middelhoogbouw">Middelhoogbouw (L-Shape, Mid-Rise)</option>
+                                <option value="hoogbouw">Hoogbouw (Towers in a Park)</option>
+                            </select>
+                        </div>
+                        <button id="btn-lock-generate" class="btn-dark btn-primary shadow-lg mb-2">🔒 Lock Area & Generate</button>
+                        <button id="btn-delete-site" class="btn-dark btn-danger mt-2">Delete Entire Zone</button>
+                    </div>
+
+                    <div id="building-edit-view" style="display: none;">
+                        <div class="flex justify-between items-center mb-4 bg-[#111] p-2 rounded border border-green-800">
+                            <span class="text-xs text-green-400 font-bold">✔ Area Locked</span>
+                            <button id="btn-unlock-area" class="bg-gray-700 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded">🔓 Unlock Zone</button>
+                        </div>
+
+                        <div id="sub-building-editor">
+                            <div id="sub-empty-state" class="text-xs text-gray-400 italic mb-4 text-center py-2">
+                                Click an individual building within this locked zone to edit its floors.
+                            </div>
+                            
+                            <div id="sub-active-state" style="display: none;">
+                                <div class="flex justify-between text-xs mb-3 bg-[#222] p-2 rounded">
+                                    <span class="text-gray-400">Footprint:</span>
+                                    <span class="font-bold text-emerald-400"><span id="site-area">0</span> m²</span>
+                                </div>
+
+                                <h3 class="text-sm font-bold mb-2 text-gray-300">Floor Layers (Active Building)</h3>
+                                <div id="layer-list" class="flex flex-col gap-2 mb-4 max-h-[30vh] overflow-y-auto pr-1">
+                                </div>
+                                <button id="btn-add-layer" class="btn-dark">+ Add Floor Layer</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="ui-right" class="glass-panel">
+            <h2>Urban & Financial Metrics</h2>
+            <div class="flex flex-col gap-2 text-sm mt-4">
+                <div class="flex justify-between border-b border-gray-700 pb-1">
+                    <span class="text-red-400">Residential F.A.:</span>
+                    <span id="fin-res-area" class="font-bold">0 m²</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-700 pb-1">
+                    <span class="text-purple-400">Industrial F.A.:</span>
+                    <span id="fin-ind-area" class="font-bold">0 m²</span>
+                </div>
+                
+                <div class="flex justify-between border-b border-gray-700 pb-1 mt-2">
+                    <span class="text-blue-300 font-semibold" title="Floor Space Index: Total Floor Area / Total Site Area">Floor Space Index (FSI):</span>
+                    <span id="fin-fsi" class="font-bold text-blue-300">0.00</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-700 pb-1">
+                    <span class="text-blue-300 font-semibold" title="Percentage of ground covered by buildings">Ground Coverage:</span>
+                    <span id="fin-coverage" class="font-bold text-blue-300">0%</span>
+                </div>
+
+                <div class="flex justify-between mt-2 pt-2 border-t-2 border-gray-600">
+                    <span class="text-gray-300 font-bold">Est. Dev Cost:</span>
+                    <span id="fin-total-cost" class="font-bold text-emerald-400">€ 0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STATE ---
+        let sites = []; 
+        let activeSiteId = null;
+        let activeSubId = null; 
+        let activeLayerId = null;
+        
+        const REAL_WIDTH_M = 1188;
+        const pixelsPerMeter = 800 / REAL_WIDTH_M;
+
+        function createDefaultLayer(type, height) {
+            return { id: Date.now() + Math.random(), type: type, height: height, splitType: 'None', splitRatio: 50 };
+        }
+
+        function isPointInPolygon(point, vs) {
+            let x = point[0], y = point[1];
+            let inside = false;
+            for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+                let xi = vs[i].x, yi = vs[i].y;
+                let xj = vs[j].x, yj = vs[j].y;
+                let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        function calculateRealArea(pts) {
+            let pxArea = 0;
+            for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+                pxArea += (pts[j].x + pts[i].x) * (pts[j].y - pts[i].y);
+            }
+            return Math.abs(pxArea / 2) / (pixelsPerMeter * pixelsPerMeter);
+        }
+
+        // --- 2D ENGINE ---
+        const page1 = document.getElementById('page-1');
+        const page2 = document.getElementById('page-2');
+        const drawingArea = document.getElementById('drawing-area');
+        const svg = document.getElementById('svg-overlay');
+        const tempLine = document.getElementById('temp-line');
+        let isDrawing = false;
+        let currentPoints = [];
+
+        document.getElementById('file-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.name.toLowerCase().endsWith('.svg')) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(event.target.result, "image/svg+xml");
+                    let parsedCount = 0;
+
+                    // --- NEW: Calculate scaling based on SVG dimensions vs Canvas dimensions ---
+                    const svgNode = doc.querySelector('svg');
+                    let svgW = 1188; // fallback
+                    let svgH = 841;
+                    
+                    if (svgNode) {
+                        if (svgNode.getAttribute('viewBox')) {
+                            const vb = svgNode.getAttribute('viewBox').split(/[\s,]+/);
+                            svgW = parseFloat(vb[2]);
+                            svgH = parseFloat(vb[3]);
+                        } else if (svgNode.getAttribute('width')) {
+                            svgW = parseFloat(svgNode.getAttribute('width'));
+                            svgH = parseFloat(svgNode.getAttribute('height'));
+                        }
+                    }
+                    
+                    const scaleX = (800 / svgW) * 0.8; 
+                    const scaleY = (600 / svgH) * 0.8;
+                    // -------------------------------------------------------------------------
+
+                    // Parse Polygons and Polylines
+                    const polygons = doc.querySelectorAll('polygon, polyline');
+                    polygons.forEach(poly => {
+                        const pointsStr = poly.getAttribute('points');
+                        if(!pointsStr) return;
+                        const pointsList = pointsStr.trim().split(/[\s,]+/);
+                        let pts = [];
+                        for(let i=0; i < pointsList.length; i+=2) {
+                            if(pointsList[i] !== undefined && pointsList[i+1] !== undefined) {
+                                // Apply the scale factor here
+                                pts.push({
+                                    x: parseFloat(pointsList[i]) * scaleX, 
+                                    y: parseFloat(pointsList[i+1]) * scaleY
+                                });
+                            }
+                        }
+                        if(pts.length > 2) {
+                            sites.push({ id: 'site-' + Date.now() + Math.random(), points: pts, area: calculateRealArea(pts), isLocked: false, typology: 'rijtjeshuis', subBuildings: [] });
+                            parsedCount++;
+                        }
+                    });
+
+                    // Parse Rectangles
+                    const rects = doc.querySelectorAll('rect');
+                    rects.forEach(rect => {
+                        // Apply the scale factor here
+                        const x = parseFloat(rect.getAttribute('x') || 0) * scaleX;
+                        const y = parseFloat(rect.getAttribute('y') || 0) * scaleY;
+                        const w = parseFloat(rect.getAttribute('width') || 0) * scaleX;
+                        const h = parseFloat(rect.getAttribute('height') || 0) * scaleY;
+                        if(w > 0 && h > 0) {
+                            const pts = [ {x: x, y: y}, {x: x + w, y: y}, {x: x + w, y: y + h}, {x: x, y: y + h} ];
+                            sites.push({ id: 'site-' + Date.now() + Math.random(), points: pts, area: calculateRealArea(pts), isLocked: false, typology: 'rijtjeshuis', subBuildings: [] });
+                            parsedCount++;
+                        }
+                    });
+
+                    render2D();
+                    alert(`Parsed ${parsedCount} zones from the SVG.`);
+                };
+                reader.readAsText(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (event) => drawingArea.style.backgroundImage = `url('${event.target.result}')`;
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('btn-draw').addEventListener('click', () => {
+            isDrawing = true; currentPoints = []; tempLine.setAttribute('points', '');
+            drawingArea.classList.add('drawing-active');
+        });
+
+        svg.addEventListener('mousemove', (e) => {
+            if (!isDrawing || currentPoints.length === 0) return;
+            const rect = svg.getBoundingClientRect();
+            const pts = currentPoints.map(p => `${p.x},${p.y}`).join(' ');
+            tempLine.setAttribute('points', `${pts} ${e.clientX - rect.left},${e.clientY - rect.top}`);
+        });
+
+        svg.addEventListener('click', (e) => {
+            if (!isDrawing) return;
+            const rect = svg.getBoundingClientRect();
+            const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            if (currentPoints.length > 2 && Math.hypot(x - currentPoints[0].x, y - currentPoints[0].y) < 20) {
+                finishDrawing(); return;
+            }
+            currentPoints.push({x, y});
+        });
+
+        function finishDrawing() {
+            isDrawing = false; drawingArea.classList.remove('drawing-active'); tempLine.setAttribute('points', '');
+            sites.push({
+                id: 'site-' + Date.now(),
+                points: [...currentPoints],
+                area: calculateRealArea(currentPoints),
+                isLocked: false,
+                typology: 'rijtjeshuis',
+                subBuildings: []
+            });
+            render2D();
+        }
+
+        function render2D() {
+            svg.querySelectorAll('.site-poly, .sub-poly').forEach(p => p.remove());
+            
+            sites.forEach(site => {
+                const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                poly.setAttribute('points', site.points.map(p => `${p.x},${p.y}`).join(' '));
+                poly.setAttribute('class', 'site-poly');
+                poly.setAttribute('fill', site.isLocked ? 'rgba(39, 174, 96, 0.1)' : 'rgba(59, 130, 246, 0.4)');
+                poly.setAttribute('stroke', site.isLocked ? '#27ae60' : '#2563eb');
+                poly.setAttribute('stroke-width', '2');
+                poly.setAttribute('stroke-dasharray', site.isLocked ? '4 2' : 'none');
+                svg.appendChild(poly);
+
+                if (site.isLocked) {
+                    site.subBuildings.forEach(sub => {
+                        const subPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                        subPoly.setAttribute('points', sub.points.map(p => `${p.x},${p.y}`).join(' '));
+                        subPoly.setAttribute('class', 'sub-poly');
+                        
+                        let color = '#9b59b6'; 
+                        if(sub.layers[0] && sub.layers[0].type === 'Residence') color = '#e74c3c';
+                        if(sub.layers[0] && sub.layers[0].type === 'Greenhouse') color = '#2ecc71';
+                        
+                        subPoly.setAttribute('fill', color);
+                        subPoly.setAttribute('stroke', '#111');
+                        subPoly.setAttribute('stroke-width', '1');
+                        subPoly.style.opacity = '0.8';
+                        svg.appendChild(subPoly);
+                    });
+                }
+            });
+            updateFinancials();
+        }
+
+        // --- EXPORT DATA LOGIC ---
+        
+        // 1. Export JSON for Grasshopper
+        document.getElementById('btn-export-gh').addEventListener('click', () => {
+            let ghData = {
+                metadata: {
+                    exportTime: new Date().toISOString(),
+                    unit: "meters"
+                },
+                typologies: []
+            };
+
+            sites.forEach(site => {
+                // Only export if locked and contains buildings
+                if (site.isLocked && site.subBuildings.length > 0) {
+                    // We extract ONE archetype per zone. Since they start identical, subBuildings[0] is our baseline.
+                    // If the user clicked and modified a specific one, they might differ, but taking the first acts as the master typology.
+                    let archetype = site.subBuildings[0];
+
+                    // Convert footprint points to Local Coordinate Meters (starting at 0,0)
+                    let minX = Math.min(...archetype.points.map(p => p.x));
+                    let minY = Math.min(...archetype.points.map(p => p.y));
+
+                    let localFootprintMeters = archetype.points.map(p => ({
+                        x: (p.x - minX) / pixelsPerMeter,
+                        y: (p.y - minY) / pixelsPerMeter
+                    }));
+
+                    let uniqueFloors = [];
+                    let currentElevation = 0;
+
+                    archetype.layers.forEach((layer, index) => {
+                        // Create a unique 'signature' to group identical floors
+                        let signature = `${layer.type}_${layer.splitType}_${layer.splitRatio}_${layer.height}`;
+
+                        let existing = uniqueFloors.find(uf => uf.signature === signature);
+
+                        if (existing) {
+                            existing.levels.push(index);
+                        } else {
+                            uniqueFloors.push({
+                                signature: signature,
+                                name: index === 0 ? "Ground Floor" : "Deviant Floor", // Renamed later
+                                levels: [index],
+                                baseElevationMeters: currentElevation,
+                                heightMeters: layer.height,
+                                mainFunction: layer.type,
+                                splitFunction: layer.splitType,
+                                splitRatio: layer.splitRatio
+                            });
+                        }
+                        currentElevation += layer.height; // Accumulate height for the next layer
+                    });
+
+                    // Rename the floor type with the most levels to "Typical Floor" (if it isn't the ground floor)
+                    let maxLevels = 0;
+                    let typicalFloor = null;
+                    uniqueFloors.forEach(uf => {
+                        if (uf.levels.length > maxLevels && !uf.levels.includes(0)) {
+                            maxLevels = uf.levels.length;
+                            typicalFloor = uf;
+                        }
+                    });
+                    if (typicalFloor) typicalFloor.name = "Typical Floor";
+
+                    ghData.typologies.push({
+                        zoneId: site.id,
+                        typologyName: site.typology,
+                        grossAreaM2: archetype.area,
+                        footprintLocal: localFootprintMeters,
+                        totalHeightMeters: currentElevation,
+                        uniqueFloorPlans: uniqueFloors
+                    });
+                }
+            });
+
+            // Trigger Download
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ghData, null, 2));
+            const a = document.createElement('a');
+            a.href = dataStr;
+            a.download = "gh_typologies.json";
+            a.click();
+        });
+
+        // 2. Export SVG
+        document.getElementById('btn-export-svg').addEventListener('click', () => {
+            let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" style="background:#f3f4f6;">\n`;
+            svgStr += `\n`;
+            
+            sites.forEach(site => {
+                let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+                svgStr += `  <polygon points="${sitePts}" fill="${site.isLocked ? '#e2e8f0' : '#dbeafe'}" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>\n`;
+                
+                if (site.isLocked) {
+                    site.subBuildings.forEach(sub => {
+                        let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                        let color = '#9b59b6'; 
+                        if(sub.layers[0] && sub.layers[0].type === 'Residence') color = '#e74c3c';
+                        if(sub.layers[0] && sub.layers[0].type === 'Greenhouse') color = '#2ecc71';
+                        svgStr += `  <polygon points="${subPts}" fill="${color}" stroke="#1e293b" stroke-width="1"/>\n`;
+                    });
+                }
+            });
+            svgStr += `</svg>`;
+            
+            const blob = new Blob([svgStr], {type: "image/svg+xml"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "dutch_urban_plan.svg";
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // --- TRANSITIONS ---
+        document.getElementById('btn-go-3d').addEventListener('click', () => {
+            page1.style.display = 'none'; page2.style.display = 'block';
+            build3DScene(); resize3DCanvas(); updateFinancials();
+        });
+
+        document.getElementById('btn-back-2d').addEventListener('click', () => {
+            page2.style.display = 'none'; page1.style.display = 'flex';
+            render2D(); 
+        });
+
+        function resize3DCanvas() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        window.addEventListener('resize', resize3DCanvas);
+
+        // --- 3D ENGINE ---
+        const canvas3D = document.getElementById('glcanvas');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050505);
+        scene.fog = new THREE.FogExp2(0x050505, 0.0005);
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 5000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: true, preserveDrawingBuffer: true });
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+        orbitControls.enableDamping = true;
+        orbitControls.dampingFactor = 0.05;
+        orbitControls.maxPolarAngle = Math.PI / 2 - 0.01;
+
+        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x111111, 0.4);
+        scene.add(hemiLight);
+
+        const sunLight = new THREE.DirectionalLight(0xfff5e6, 2.0);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 4096; sunLight.shadow.mapSize.height = 4096;
+        const d = 500;
+        sunLight.shadow.camera.left = -d; sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d; sunLight.shadow.camera.bottom = -d;
+        sunLight.shadow.camera.far = 2000; sunLight.shadow.bias = -0.0005;
+        scene.add(sunLight);
+
+        const floorObj = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 }));
+        floorObj.rotation.x = -Math.PI / 2; floorObj.receiveShadow = true;
+        scene.add(floorObj);
+
+        let buildingMeshes = [];
+        let buildingGroups = [];
+
+        function getMaterialForType(type, isSelected, isContainer = false, typology = null) {
+            if (isContainer) {
+                let baseColor = isSelected ? 0x3b82f6 : 0x444444; 
+                let opacity = 0.2;
+                if (typology === 'hoogbouw' || typology === 'middelhoogbouw') { baseColor = 0x27ae60; opacity = 0.15; } 
+                if (typology === 'grachtenpand') { baseColor = 0x555555; opacity = 0.3; } 
+                return new THREE.MeshBasicMaterial({ color: baseColor, transparent: true, opacity: opacity, side: THREE.DoubleSide });
+            }
+            let color = 0x9b59b6; let roughness = 0.8; let metalness = 0.1;
+            if(type === 'Residence') { color = 0xe74c3c; roughness = 0.9; }
+            if(type === 'Greenhouse') { color = 0x2ecc71; roughness = 0.2; metalness = 0.8; }
+            return new THREE.MeshStandardMaterial({
+                color: color, roughness: roughness, metalness: metalness,
+                emissive: isSelected ? 0x3b82f6 : 0x000000, emissiveIntensity: isSelected ? 0.4 : 0
+            });
+        }
+
+        function buildFloors(group, subBuilding, parentSiteId) {
+            const shape = new THREE.Shape();
+            subBuilding.points.forEach((p, index) => {
+                const x = p.x - 400; const y = -(p.y - 300);
+                if (index === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+            });
+
+            let currentElevation = 0;
+            subBuilding.layers.forEach(layer => {
+                const isSelectedLayer = (activeLayerId === layer.id);
+                const isSelectedBuilding = (activeSubId === subBuilding.id && !activeLayerId);
+                const isHighlighted = isSelectedLayer || isSelectedBuilding;
+                const displayHeight = layer.height * 2;
+
+                if (layer.splitType && layer.splitType !== 'None') {
+                    const ratio1 = (layer.splitRatio || 50) / 100;
+                    const h1 = displayHeight * ratio1;
+                    const mesh1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h1, bevelEnabled: false }), getMaterialForType(layer.type, isHighlighted));
+                    mesh1.rotation.x = -Math.PI / 2; mesh1.position.y = currentElevation;
+                    mesh1.castShadow = true; mesh1.receiveShadow = true;
+                    mesh1.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
+                    group.add(mesh1); buildingMeshes.push(mesh1);
+                    currentElevation += h1;
+
+                    const h2 = displayHeight * (1 - ratio1);
+                    const mesh2 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h2, bevelEnabled: false }), getMaterialForType(layer.splitType, isHighlighted));
+                    mesh2.rotation.x = -Math.PI / 2; mesh2.position.y = currentElevation;
+                    mesh2.castShadow = true; mesh2.receiveShadow = true;
+                    mesh2.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
+                    group.add(mesh2); buildingMeshes.push(mesh2);
+                    currentElevation += h2;
+                } else {
+                    const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: displayHeight, bevelEnabled: false }), getMaterialForType(layer.type, isHighlighted));
+                    mesh.rotation.x = -Math.PI / 2; mesh.position.y = currentElevation;
+                    mesh.castShadow = true; mesh.receiveShadow = true;
+                    mesh.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
+                    group.add(mesh); buildingMeshes.push(mesh);
+                    currentElevation += displayHeight;
+                }
+            });
+        }
+
+        function build3DScene() {
+            buildingGroups.forEach(g => scene.remove(g));
+            buildingGroups = [];
+            buildingMeshes = [];
+
+            sites.forEach(site => {
+                const group = new THREE.Group();
+                
+                const shape = new THREE.Shape();
+                site.points.forEach((p, index) => {
+                    const x = p.x - 400; const y = -(p.y - 300);
+                    if (index === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+                });
+                
+                const isSelectedZone = (activeSiteId === site.id);
+                const padMat = getMaterialForType(null, isSelectedZone && !site.isLocked, true, site.isLocked ? site.typology : null);
+                const padMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false }), padMat);
+                padMesh.rotation.x = -Math.PI / 2;
+                padMesh.position.y = 0;
+                padMesh.userData = { siteId: site.id }; 
+                group.add(padMesh);
+                buildingMeshes.push(padMesh);
+
+                if (site.isLocked) {
+                    site.subBuildings.forEach(sub => buildFloors(group, sub, site.id));
+                }
+
+                scene.add(group);
+                buildingGroups.push(group);
+            });
+
+            if (camera.position.y === 0) {
+                camera.position.set(0, 400, 600);
+                camera.lookAt(0, 0, 0);
+            }
+            updateFinancials();
+        }
+
+        // --- TYPOLOGY GENERATION LOGIC ---
+        function generateTypology(site) {
+            site.subBuildings = [];
+            
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            site.points.forEach(p => {
+                if(p.x < minX) minX = p.x; if(p.y < minY) minY = p.y;
+                if(p.x > maxX) maxX = p.x; if(p.y > maxY) maxY = p.y;
+            });
+
+            let bWidthM, bHeightM, gapXM, gapYM, baseFloors, floorVariation, type, shapeType;
+
+            if (site.typology === 'rijtjeshuis') {
+                bWidthM = 6; bHeightM = 10; gapXM = 0; gapYM = 12; baseFloors = 2; floorVariation = 1; type = 'Residence'; shapeType = 'rect';
+            } else if (site.typology === 'grachtenpand') {
+                bWidthM = 5; bHeightM = 15; gapXM = 0; gapYM = 10; baseFloors = 4; floorVariation = 1; type = 'Residence'; shapeType = 'rect';
+            } else if (site.typology === 'middelhoogbouw') {
+                bWidthM = 25; bHeightM = 25; gapXM = 15; gapYM = 15; baseFloors = 4; floorVariation = 2; type = 'Residence'; shapeType = 'L';
+            } else { // hoogbouw
+                bWidthM = 24; bHeightM = 24; gapXM = 45; gapYM = 45; baseFloors = 15; floorVariation = 15; type = 'Residence'; shapeType = 'rect';
+            }
+
+            let pxW = bWidthM * pixelsPerMeter;
+            let pxH = bHeightM * pixelsPerMeter;
+            let pxGapX = gapXM * pixelsPerMeter;
+            let pxGapY = gapYM * pixelsPerMeter;
+
+            for (let x = minX + (pxGapX/2); x < maxX - pxW; x += pxW + pxGapX) {
+                for (let y = minY + (pxGapY/2); y < maxY - pxH; y += pxH + pxGapY) {
+                    
+                    let cx = x + pxW/2; let cy = y + pxH/2;
+                    
+                    if (isPointInPolygon([cx, cy], site.points)) {
+                        let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
+                        let subLayers = [];
+                        for(let i=0; i<floorsCount; i++) {
+                            subLayers.push(createDefaultLayer(type, 3));
+                        }
+                        
+                        let pts = [];
+                        let area = 0;
+
+                        if (shapeType === 'L') {
+                            let tM = 10; 
+                            let pxT = tM * pixelsPerMeter;
+                            pts = [
+                                {x: x, y: y}, {x: x+pxW, y: y}, {x: x+pxW, y: y+pxT}, 
+                                {x: x+pxT, y: y+pxT}, {x: x+pxT, y: y+pxH}, {x: x, y: y+pxH}
+                            ];
+                            area = (bWidthM * tM) + ((bHeightM - tM) * tM);
+                        } else {
+                            pts = [ {x: x, y: y}, {x: x+pxW, y: y}, {x: x+pxW, y: y+pxH}, {x: x, y: y+pxH} ];
+                            area = bWidthM * bHeightM;
+                        }
+
+                        site.subBuildings.push({
+                            id: 'sub-' + Date.now() + Math.random(),
+                            points: pts,
+                            area: area,
+                            layers: subLayers
+                        });
+                    }
+                }
+            }
+        }
+
+        // --- 3D INTERACTION ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        canvas3D.addEventListener('pointerdown', (event) => {
+            if(event.target.closest('.glass-panel')) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(buildingMeshes);
+
+            if (intersects.length > 0) {
+                activeSiteId = intersects[0].object.userData.siteId;
+                activeSubId = intersects[0].object.userData.subId || null;
+                activeLayerId = intersects[0].object.userData.layerId || null;
+            } else {
+                activeSiteId = null; activeSubId = null; activeLayerId = null;
+            }
+            
+            build3DScene();
+            renderSidebarUI();
+        });
+
+        // --- UI & SETTINGS LOGIC ---
+        document.getElementById('btn-toggle-settings').addEventListener('click', () => {
+            const panel = document.getElementById('settings-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        });
+
+        let isSunAnimating = false;
+        document.getElementById('sunAzimuth').addEventListener('input', e => { sunLight.position.x = Math.cos(e.target.value * Math.PI/180) * 500; sunLight.position.z = Math.sin(e.target.value * Math.PI/180) * 500; document.getElementById('azimuthVal').innerText = e.target.value + '°'; });
+        document.getElementById('sunAltitude').addEventListener('input', e => { sunLight.position.y = e.target.value * 5.5; document.getElementById('altitudeVal').innerText = e.target.value + '°'; });
+        document.getElementById('toggleSunAnim').addEventListener('click', () => { isSunAnimating = !isSunAnimating; });
+        document.getElementById('volSlider').addEventListener('input', (e) => { document.getElementById('volVal').innerText = e.target.value; });
+
+        document.getElementById('btn-volumize').addEventListener('click', () => {
+            const floorsToAdd = parseInt(document.getElementById('volSlider').value);
+            sites.forEach(site => {
+                if(site.isLocked) {
+                    site.subBuildings.forEach(sub => {
+                        const baseType = sub.layers.length ? sub.layers[sub.layers.length-1].type : 'Residence';
+                        for(let i=0; i<floorsToAdd; i++) sub.layers.push(createDefaultLayer(baseType, 3));
+                    });
+                }
+            });
+            build3DScene(); renderSidebarUI(); updateFinancials();
+        });
+
+        document.getElementById('btn-lock-generate').addEventListener('click', () => {
+            if(!activeSiteId) return;
+            const site = sites.find(s => s.id === activeSiteId);
+            site.typology = document.getElementById('typology-select').value;
+            generateTypology(site);
+            site.isLocked = true;
+            activeSubId = null; 
+            build3DScene(); renderSidebarUI();
+        });
+
+        document.getElementById('btn-unlock-area').addEventListener('click', () => {
+            if(!activeSiteId) return;
+            const site = sites.find(s => s.id === activeSiteId);
+            site.isLocked = false;
+            site.subBuildings = [];
+            activeSubId = null;
+            build3DScene(); renderSidebarUI();
+        });
+
+        document.getElementById('btn-delete-site').addEventListener('click', () => {
+            sites = sites.filter(s => s.id !== activeSiteId);
+            activeSiteId = null; activeSubId = null;
+            render2D(); renderSidebarUI(); build3DScene();
+        });
+
+        function renderSidebarUI() {
+            const emptyState = document.getElementById('empty-state');
+            const editorState = document.getElementById('editor-state');
+            const setupView = document.getElementById('container-setup-view');
+            const editView = document.getElementById('building-edit-view');
+            
+            if (!activeSiteId) {
+                emptyState.style.display = 'block'; editorState.style.display = 'none';
+                return;
+            }
+
+            const site = sites.find(s => s.id === activeSiteId);
+            emptyState.style.display = 'none'; editorState.style.display = 'block';
+
+            if (!site.isLocked) {
+                setupView.style.display = 'block'; editView.style.display = 'none';
+                document.getElementById('typology-select').value = site.typology;
+            } else {
+                setupView.style.display = 'none'; editView.style.display = 'block';
+                
+                const subEmpty = document.getElementById('sub-empty-state');
+                const subActive = document.getElementById('sub-active-state');
+
+                if (!activeSubId) {
+                    subEmpty.style.display = 'block'; subActive.style.display = 'none';
+                } else {
+                    subEmpty.style.display = 'none'; subActive.style.display = 'block';
+                    
+                    const subBldg = site.subBuildings.find(s => s.id === activeSubId);
+                    document.getElementById('site-area').innerText = Math.round(subBldg.area).toLocaleString();
+
+                    const layerList = document.getElementById('layer-list');
+                    layerList.innerHTML = '';
+                    
+                    [...subBldg.layers].reverse().forEach((layer, index) => {
+                        const floorNum = subBldg.layers.length - index;
+                        const div = document.createElement('div');
+                        
+                        let bClass = 'layer-industry';
+                        if(layer.type === 'Residence') bClass = 'layer-residence';
+                        if(layer.type === 'Greenhouse') bClass = 'layer-greenhouse';
+                        
+                        let activeStyle = (layer.id === activeLayerId) ? 'border-width: 2px; border-color: #3b82f6;' : '';
+                        div.className = `layer-card ${bClass}`; div.style = activeStyle;
+                        div.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-xs">Floor ${floorNum}</span>
+                                <button onclick="removeLayer(${layer.id})" class="text-red-400 hover:text-red-300 text-xs">✖</button>
+                            </div>
+                            <div class="flex gap-2 mb-2">
+                                <select onchange="updateLayer(${layer.id}, 'type', this.value)" class="flex-2 text-xs">
+                                    <option value="Residence" ${layer.type === 'Residence' ? 'selected' : ''}>Residence</option>
+                                    <option value="Industry" ${layer.type === 'Industry' ? 'selected' : ''}>Industry</option>
+                                    <option value="Greenhouse" ${layer.type === 'Greenhouse' ? 'selected' : ''}>Greenhouse</option>
+                                </select>
+                                <input type="number" value="${layer.height}" title="Height (m)" class="flex-1 text-xs"
+                                       onchange="updateLayer(${layer.id}, 'height', this.value)">
+                            </div>
+                        `;
+                        div.addEventListener('click', (e) => {
+                            if(e.target.tagName !== 'SELECT' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+                                activeLayerId = layer.id; build3DScene(); renderSidebarUI();
+                            }
+                        });
+                        layerList.appendChild(div);
+                    });
+                }
+            }
+        }
+
+        window.updateLayer = function(layerId, key, value) {
+            const site = sites.find(s => s.id === activeSiteId);
+            if(site && activeSubId) {
+                const subBldg = site.subBuildings.find(s => s.id === activeSubId);
+                const layer = subBldg.layers.find(l => l.id === layerId);
+                layer[key] = (key === 'height' || key === 'splitRatio') ? parseFloat(value) : value;
+                renderSidebarUI(); build3DScene(); updateFinancials();
+            }
+        };
+
+        window.removeLayer = function(layerId) {
+            const site = sites.find(s => s.id === activeSiteId);
+            if(site && activeSubId) {
+                const subBldg = site.subBuildings.find(s => s.id === activeSubId);
+                subBldg.layers = subBldg.layers.filter(l => l.id !== layerId);
+                renderSidebarUI(); build3DScene(); updateFinancials();
+            }
+        };
+
+        document.getElementById('btn-add-layer').addEventListener('click', () => {
+            const site = sites.find(s => s.id === activeSiteId);
+            if(site && activeSubId) {
+                const subBldg = site.subBuildings.find(s => s.id === activeSubId);
+                const newLayer = createDefaultLayer(subBldg.layers.length ? subBldg.layers[subBldg.layers.length-1].type : 'Residence', 3);
+                subBldg.layers.push(newLayer);
+                activeLayerId = newLayer.id;
+                build3DScene(); renderSidebarUI(); updateFinancials();
+            }
+        });
+
+        // --- FINANCIALS & URBAN METRICS ---
+        function formatEuros(number) {
+            return "€ " + number.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function updateFinancials() {
+            let resArea = 0, indArea = 0, greenArea = 0;
+            let totalFootprint = 0;
+            let totalSiteArea = 0;
+            
+            sites.forEach(site => {
+                totalSiteArea += site.area;
+
+                if (site.isLocked) {
+                    site.subBuildings.forEach(sub => {
+                        totalFootprint += sub.area;
+
+                        sub.layers.forEach(layer => {
+                            const ratio1 = layer.splitType && layer.splitType !== 'None' ? (layer.splitRatio || 50) / 100 : 1;
+                            const ratio2 = 1 - ratio1;
+
+                            if(layer.type === 'Residence') resArea += sub.area * ratio1;
+                            if(layer.type === 'Industry') indArea += sub.area * ratio1;
+                            if(layer.type === 'Greenhouse') greenArea += sub.area * ratio1;
+
+                            if(layer.splitType === 'Residence') resArea += sub.area * ratio2;
+                            if(layer.splitType === 'Industry') indArea += sub.area * ratio2;
+                            if(layer.splitType === 'Greenhouse') greenArea += sub.area * ratio2;
+                        });
+                    });
+                }
+            });
+            
+            const totalGrossFloorArea = resArea + indArea + greenArea;
+            const fsi = totalSiteArea > 0 ? (totalGrossFloorArea / totalSiteArea).toFixed(2) : "0.00";
+            const coverage = totalSiteArea > 0 ? Math.round((totalFootprint / totalSiteArea) * 100) : 0;
+
+            const unitCostRes = 1850;
+            const unitCostInd = 1200;
+
+            const totalCost = (resArea * unitCostRes) + (indArea * unitCostInd);
+
+            document.getElementById('fin-res-area').innerText = Math.round(resArea).toLocaleString() + ' m²';
+            document.getElementById('fin-ind-area').innerText = Math.round(indArea).toLocaleString() + ' m²';
+            
+            document.getElementById('fin-fsi').innerText = fsi;
+            document.getElementById('fin-coverage').innerText = coverage + '%';
+
+            document.getElementById('fin-total-cost').innerText = formatEuros(totalCost);
+        }
+
+        // --- ANIMATION LOOP ---
+        const animate = function () {
+            requestAnimationFrame(animate);
+            orbitControls.update();
+            
+            if (isSunAnimating) {
+                let az = parseFloat(document.getElementById('sunAzimuth').value);
+                az = (az + 0.5) % 360;
+                document.getElementById('sunAzimuth').value = az;
+                sunLight.position.x = Math.cos(az * Math.PI/180) * 500; 
+                sunLight.position.z = Math.sin(az * Math.PI/180) * 500;
+                document.getElementById('azimuthVal').innerText = Math.round(az) + '°';
+            }
+
+            renderer.render(scene, camera);
+        };
+        animate();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Floorplan - Multi-Floor Gen</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Left Sidebar for Inputs */
+        .sidebar {
+            width: 350px;
+            min-width: 350px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        /* Right side main content container */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: row;
+            background-color: #e9e9f0;
+            padding: 20px;
+            gap: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        /* Canvas containers */
+        .canvas-container {
+            display: flex;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        /* 2D container */
+        .container-2d {
+            flex: 2.5; 
+            min-width: 350px;
+            padding: 40px; 
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        /* 3D Container - Now scrollable */
+        .container-3d {
+            flex: 1.5; 
+            min-width: 280px;
+            background: #f8f8ff;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 80px; /* Space for the sticky button */
+        }
+
+        canvas {
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* The 3D canvas needs a fixed width to scale height proportionally */
+        #axoCanvas {
+            width: 300px;
+            object-fit: fill; 
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        #floorplanCanvas.grab-cursor { cursor: grab; }
+        #floorplanCanvas.grabbing-cursor { cursor: grabbing; }
+
+        h2, h3 { margin: 0 0 10px 0; color: #222; }
+        
+        .control-group {
+            background: #f9f9fc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .input-row label { font-size: 14px; font-weight: bold; }
+        
+        .slider-row { display: flex; align-items: center; gap: 10px; }
+        input[type="range"] { flex-grow: 1; }
+        input[type="number"] { width: 60px; padding: 4px; border: 1px solid #ccc; border-radius: 4px; }
+        
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            border: none;
+            transition: background 0.2s;
+        }
+        button:hover { background: #0056b3; }
+        
+        .note { font-size: 12px; color: #666; margin-top: 5px; }
+
+        /* Floating Add Floor Button in 3D View */
+        .add-floor-btn {
+            position: sticky;
+            bottom: 10px;
+            width: 80%;
+            padding: 12px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 100;
+            margin-top: auto; /* Pushes to bottom if content is short */
+        }
+
+        /* HTML Adaptable Scale Bar */
+        .scale-bar-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .scale-bar-line {
+            height: 6px;
+            border-left: 2px solid #333;
+            border-right: 2px solid #333;
+            border-bottom: 2px solid #333;
+            transition: width 0.1s;
+        }
+
+        .scale-bar-text {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Floorplan Variables</h2>
+        <div id="floor-indicator" style="margin-bottom: 10px; padding: 5px; background: #eef; border-radius: 4px; text-align: center;">
+            Editing: <strong><span id="current-floor-name">Ground Floor</span></strong>
+        </div>
+
+        <div class="control-group">
+            <h3>Building Settings</h3>
+            <select id="building-type">
+                <option value="residential">Residential Tower</option>
+                <option value="office">Office Block</option>
+                <option value="mixed">Mixed Use</option>
+            </select>
+             <div class="note">Strategy applies to all floors.</div>
+            <select id="exit-strategy" onchange="handleInputChange()">
+                <option value="door">Door to Outside (Ground only)</option>
+                <option value="stairwell" selected>Internal Stairwell (Movable on G)</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <h3>Current Floor Footprint</h3>
+            <div class="input-row">
+                <label>Width (meters)</label>
+                <input type="number" id="b-width" value="12" min="5" max="30" onchange="handleInputChange()">
+            </div>
+            <div class="input-row">
+                <label>Length (meters)</label>
+                <input type="number" id="b-length" value="8" min="5" max="30" onchange="handleInputChange()">
+            </div>
+            <div class="note">Total Area: <span id="total-area-display">96</span> m²</div>
+        </div>
+
+        <div class="control-group" id="room-controls">
+            <h3>Room Proportions</h3>
+            <div class="note" style="margin-bottom: 10px;">Adjusting sliders affects the active floor.</div>
+        </div>
+
+        <button onclick="shuffleCurrentFloor()">🎲 Shuffle Current Layout</button>
+    </div>
+
+    <div class="main-content">
+        <div class="canvas-container container-2d">
+            <canvas id="floorplanCanvas" width="800" height="600"></canvas>
+            
+            <div class="scale-bar-container">
+                <div id="scale-bar-line" class="scale-bar-line" style="width: 50px;"></div>
+                <div id="scale-bar-text" class="scale-bar-text">1m</div>
+            </div>
+        </div>
+
+        <div class="canvas-container container-3d">
+            <canvas id="axoCanvas"></canvas>
+            <button class="add-floor-btn" onclick="addNewFloor()">➕ Add New Floor</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas2D = document.getElementById('floorplanCanvas');
+        const ctx2D = canvas2D.getContext('2d');
+        const canvasAxo = document.getElementById('axoCanvas');
+        const ctxAxo = canvasAxo.getContext('2d');
+        
+        const PIXELS_PER_METER = 30; 
+        let numFloors = 3; 
+        
+        // --- Global State ---
+        let currentFloorIndex = 0;
+        let lastModifiedFloorIndex = 0; 
+        let globalStairRect = null; 
+
+        // Dragging state for stairs
+        let isDraggingStairs = false;
+        let dragStartX, dragStartY;
+        let initialStairX, initialStairY;
+
+        const baseRoomDefs = [
+            { id: 'living', name: "Living Room", weight: 40, color: "#FFDDC1" },
+            { id: 'kitchen', name: "Kitchen", weight: 20, color: "#FFABAB" },
+            { id: 'bed1', name: "Bedroom 1", weight: 15, color: "#FFC3A0" },
+            { id: 'bed2', name: "Bedroom 2", weight: 15, color: "#D5AAFF" },
+            { id: 'bath', name: "Bathroom", weight: 10, color: "#85E3FF" }
+        ];
+
+        let floorStates = [];
+
+        function getFloorName(index) {
+            return index === 0 ? "Ground Floor" : `Floor ${index}`;
+        }
+
+        // --- Initialization ---
+        function init() {
+            for (let i = 0; i < numFloors; i++) {
+                createFloorState(i === 0);
+            }
+
+            buildSliderUI();
+            
+            if (document.getElementById('exit-strategy').value === 'stairwell') {
+                const state0 = floorStates[0];
+                const stairW = 3 * PIXELS_PER_METER;
+                const stairH = 4 * PIXELS_PER_METER;
+                globalStairRect = {
+                    id: 'stairs', name: "Stairwell", color: "#ccc",
+                    width: stairW, height: stairH,
+                    x: (state0.width * PIXELS_PER_METER - stairW) / 2,
+                    y: (state0.length * PIXELS_PER_METER - stairH) / 2
+                };
+            }
+
+            regenerateAllFloors();
+            draw2DView();
+            drawAxoView();
+            updateSidebarUI();
+            setupAxoInteractions();
+            setup2DInteractions(); 
+            
+            // Re-calculate scale bar if window resizes
+            window.addEventListener('resize', updateScaleBar);
+        }
+
+        function createFloorState(isInitialized) {
+            floorStates.push({
+                initialized: isInitialized,
+                width: 12,
+                length: 8,
+                roomWeights: baseRoomDefs.map(r => ({...r})),
+                layoutData: [],
+                internalDoors: [],
+                exitDoor: null
+            });
+        }
+
+        function addNewFloor() {
+            numFloors++;
+            createFloorState(false);
+            // Inherit dims from ground floor instantly
+            floorStates[numFloors-1].width = floorStates[0].width;
+            floorStates[numFloors-1].length = floorStates[0].length;
+            regenerateAllFloors();
+            switchToFloor(numFloors - 1);
+            
+            // Auto-scroll to top when a new floor is added
+            document.querySelector('.container-3d').scrollTop = 0;
+        }
+
+        function buildSliderUI() {
+            const container = document.getElementById('room-controls');
+            baseRoomDefs.forEach((room, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div class="input-row" style="margin-top:10px;">
+                        <label>${room.name}</label>
+                    </div>
+                    <div class="slider-row">
+                        <input type="range" id="slider-${index}" data-room-idx="${index}" min="5" max="100" value="${room.weight}" oninput="handleSliderChange(this)">
+                        <input type="number" id="num-${index}" data-room-idx="${index}" min="5" max="100" value="${room.weight}" oninput="handleSliderChange(this)">
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- Interaction Handling ---
+
+        function handleInputChange() {
+            saveSidebarSettingsToCurrentFloor();
+            lastModifiedFloorIndex = currentFloorIndex;
+            
+            const strategy = document.getElementById('exit-strategy').value;
+            if (strategy === 'stairwell' && !globalStairRect) {
+                 const state = floorStates[0];
+                 const stairW = 3 * PIXELS_PER_METER;
+                 const stairH = 4 * PIXELS_PER_METER;
+                 globalStairRect = {
+                     id: 'stairs', name: "Stairwell", color: "#ccc",
+                     width: stairW, height: stairH,
+                     x: (state.width * PIXELS_PER_METER - stairW) / 2,
+                     y: (state.length * PIXELS_PER_METER - stairH) / 2
+                 };
+                 regenerateAllFloors();
+            } else if (strategy === 'door') {
+                 globalStairRect = null;
+                 regenerateAllFloors();
+            } else {
+                 generateLayoutForFloor(currentFloorIndex);
+                 draw2DView();
+                 drawAxoView();
+            }
+        }
+
+        function handleSliderChange(element) {
+            const roomIdx = element.getAttribute('data-room-idx');
+            const value = element.value;
+            document.getElementById(`slider-${roomIdx}`).value = value;
+            document.getElementById(`num-${roomIdx}`).value = value;
+            floorStates[currentFloorIndex].roomWeights[roomIdx].weight = parseInt(value);
+            lastModifiedFloorIndex = currentFloorIndex;
+            generateLayoutForFloor(currentFloorIndex);
+            draw2DView();
+            drawAxoView();
+        }
+
+        // 1. A basic "Fitness Function" (AI Analyzer)
+function evaluateLayout(layoutData) {
+    let score = 0;
+    
+    // Example Rule: We want the Living Room to be exactly 40% of the total area.
+    // The closer it is, the higher the score.
+    const livingRoom = layoutData.find(room => room.id === 'living');
+    if (livingRoom) {
+        const area = livingRoom.width * livingRoom.height;
+        // Perfect area is roughly 38m² (based on a 12x8 floorplan)
+        const targetArea = 38 * (PIXELS_PER_METER * PIXELS_PER_METER); 
+        const difference = Math.abs(area - targetArea);
+        
+        // Lower difference = higher score
+        score += (100000 - difference); 
+    }
+    
+    // You will add more rules here later (e.g., adjacencies, window access)
+    return score;
+}
+
+// 2. The Headless Generator Loop
+function generateAndPickBestFloor() {
+    const state = floorStates[currentFloorIndex];
+    let activeRooms = state.roomWeights.map(r => ({...r, id: r.id}));
+    const canvasW = state.width * PIXELS_PER_METER;
+    const canvasH = state.length * PIXELS_PER_METER;
+    
+    let bestLayout = null;
+    let highestScore = -Infinity;
+    
+    // Generate 100 unseen candidate layouts
+    for(let i = 0; i < 100; i++) {
+        // Create a clean state object for this iteration
+        let tempState = { ...state, internalDoors: [] }; 
+        
+        // Generate candidate
+        let candidateLayout = partitionSpace(0, 0, canvasW, canvasH, activeRooms, tempState);
+        
+        // Score candidate
+        let currentScore = evaluateLayout(candidateLayout);
+        
+        // Keep it if it's the best one so far
+        if(currentScore > highestScore) {
+            highestScore = currentScore;
+            bestLayout = candidateLayout;
+            state.internalDoors = tempState.internalDoors; // Keep the doors of the winning layout
+        }
+    }
+    
+    console.log(`Best score from 100 generations: ${highestScore}`);
+    
+    // Apply the winning layout to the actual state
+    state.layoutData = bestLayout;
+    state.initialized = true;
+    
+    // Draw only the winner
+    draw2DView();
+    drawAxoView();
+}
+
+// Update the button in your HTML to call this new function:
+// <button onclick="generateAndPickBestFloor()">🧠 AI: Generate & Pick Best</button>
+
+        function switchToFloor(index) {
+            if (index < 0 || index >= numFloors || index === currentFloorIndex) return;
+            currentFloorIndex = index;
+            document.getElementById('current-floor-name').innerText = getFloorName(index);
+            inheritSettingsIfNeeded(index);
+            updateSidebarUI();
+            draw2DView();
+            drawAxoView();
+        }
+
+        function inheritSettingsIfNeeded(targetIndex) {
+            if (!floorStates[targetIndex].initialized && lastModifiedFloorIndex !== targetIndex) {
+                const source = floorStates[lastModifiedFloorIndex];
+                const target = floorStates[targetIndex];
+                target.width = source.width;
+                target.length = source.length;
+                target.roomWeights = source.roomWeights.map(r => ({...r, weight: r.weight}));
+                target.initialized = true; 
+            }
+        }
+
+        function saveSidebarSettingsToCurrentFloor() {
+            const floorState = floorStates[currentFloorIndex];
+            floorState.width = parseFloat(document.getElementById('b-width').value);
+            floorState.length = parseFloat(document.getElementById('b-length').value);
+            floorState.initialized = true;
+        }
+
+        function updateSidebarUI() {
+            const floorState = floorStates[currentFloorIndex];
+            document.getElementById('b-width').value = floorState.width;
+            document.getElementById('b-length').value = floorState.length;
+            document.getElementById('total-area-display').innerText = (floorState.width * floorState.length).toFixed(1);
+            floorState.roomWeights.forEach((room, index) => {
+                 document.getElementById(`slider-${index}`).value = room.weight;
+                 document.getElementById(`num-${index}`).value = room.weight;
+            });
+            
+            const strategy = document.getElementById('exit-strategy').value;
+            if (currentFloorIndex === 0 && strategy === 'stairwell') {
+                canvas2D.classList.add('grab-cursor');
+            } else {
+                canvas2D.classList.remove('grab-cursor');
+            }
+        }
+
+        function regenerateAllFloors() {
+            for (let i = 0; i < numFloors; i++) {
+                if (i===0 || floorStates[i].initialized) {
+                 generateLayoutForFloor(i);
+                }
+            }
+            draw2DView();
+            drawAxoView();
+        }
+
+        // --- Core Algorithm ---
+        function partitionSpace(x, y, width, height, rooms, stateObj) {
+            if (rooms.length === 0) return [];
+            if (rooms.length === 1) {
+                return [{ ...rooms[0], x: x, y: y, width: width, height: height }];
+            }
+
+            let currentRooms = [...rooms].sort(() => Math.random() - 0.5);
+            let group1 = [], group2 = [];
+            let sum1 = 0, sum2 = 0;
+
+            for (let room of currentRooms) {
+                if (sum1 <= sum2) { group1.push(room); sum1 += room.weight; } 
+                else { group2.push(room); sum2 += room.weight; }
+            }
+            
+            if (sum1 + sum2 === 0) return [];
+
+            const ratio = sum1 / (sum1 + sum2);
+
+            if (width > height) {
+                const splitWidth = width * ratio;
+                stateObj.internalDoors.push({ x: x + splitWidth, y: y + (height / 2), isVertical: true });
+                return [
+                    ...partitionSpace(x, y, splitWidth, height, group1, stateObj),
+                    ...partitionSpace(x + splitWidth, y, width - splitWidth, height, group2, stateObj)
+                ];
+            } else {
+                const splitHeight = height * ratio;
+                stateObj.internalDoors.push({ x: x + (width / 2), y: y + splitHeight, isVertical: false });
+                return [
+                    ...partitionSpace(x, y, width, splitHeight, group1, stateObj),
+                    ...partitionSpace(x, y + splitHeight, width, height - splitHeight, group2, stateObj)
+                ];
+            }
+        }
+
+        function generateLayoutForFloor(floorIndex) {
+            const state = floorStates[floorIndex];
+            state.internalDoors = []; 
+            state.exitDoor = null;
+
+            let activeRooms = state.roomWeights.map(r => ({...r, id: r.id}));
+            const strategy = document.getElementById('exit-strategy').value;
+            
+            if (strategy === 'stairwell' && globalStairRect) {
+                const floorWPix = state.width * PIXELS_PER_METER;
+                const floorHPix = state.length * PIXELS_PER_METER;
+                if (globalStairRect.x + globalStairRect.width > floorWPix) globalStairRect.x = floorWPix - globalStairRect.width;
+                if (globalStairRect.y + globalStairRect.height > floorHPix) globalStairRect.y = floorHPix - globalStairRect.height;
+            } else if (floorIndex === 0 && strategy === 'door') {
+                 state.exitDoor = { x: (state.width * PIXELS_PER_METER) / 2, y: state.length * PIXELS_PER_METER };
+            }
+
+            const canvasW = state.width * PIXELS_PER_METER;
+            const canvasH = state.length * PIXELS_PER_METER;
+            let layout = partitionSpace(0, 0, canvasW, canvasH, activeRooms, state);
+
+            if (strategy === 'stairwell' && globalStairRect) {
+                layout.push({ ...globalStairRect });
+                state.internalDoors = state.internalDoors.filter(d => 
+                    !(d.x > globalStairRect.x && d.x < globalStairRect.x + globalStairRect.width &&
+                        d.y > globalStairRect.y && d.y < globalStairRect.y + globalStairRect.height)
+                );
+            }
+
+            state.layoutData = layout;
+            state.initialized = true;
+        }
+
+        // --- 2D Drag Interaction ---
+        function setup2DInteractions() {
+            canvas2D.addEventListener('mousedown', handleMouseDown2D);
+            document.addEventListener('mousemove', handleMouseMove2D);
+            document.addEventListener('mouseup', handleMouseUp2D);
+        }
+
+        function getCanvasCoordinates(event, canvas) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+                x: (event.clientX - rect.left) * scaleX,
+                y: (event.clientY - rect.top) * scaleY
+            };
+        }
+
+        function handleMouseDown2D(e) {
+            const strategy = document.getElementById('exit-strategy').value;
+            if (currentFloorIndex !== 0 || strategy !== 'stairwell' || !globalStairRect) return;
+
+            const mousePos = getCanvasCoordinates(e, canvas2D);
+
+            if (mousePos.x > globalStairRect.x && mousePos.x < globalStairRect.x + globalStairRect.width &&
+                mousePos.y > globalStairRect.y && mousePos.y < globalStairRect.y + globalStairRect.height) {
+                
+                isDraggingStairs = true;
+                dragStartX = mousePos.x;
+                dragStartY = mousePos.y;
+                initialStairX = globalStairRect.x;
+                initialStairY = globalStairRect.y;
+                canvas2D.classList.add('grabbing-cursor');
+            }
+        }
+
+        function handleMouseMove2D(e) {
+            if (!isDraggingStairs) return;
+
+            const mousePos = getCanvasCoordinates(e, canvas2D);
+            const deltaX = mousePos.x - dragStartX;
+            const deltaY = mousePos.y - dragStartY;
+
+            let newX = initialStairX + deltaX;
+            let newY = initialStairY + deltaY;
+
+            const state = floorStates[0];
+            const floorW = state.width * PIXELS_PER_METER;
+            const floorH = state.length * PIXELS_PER_METER;
+
+            newX = Math.max(0, Math.min(newX, floorW - globalStairRect.width));
+            newY = Math.max(0, Math.min(newY, floorH - globalStairRect.height));
+
+            globalStairRect.x = newX;
+            globalStairRect.y = newY;
+
+            regenerateAllFloors();
+        }
+
+        function handleMouseUp2D() {
+            if (isDraggingStairs) {
+                isDraggingStairs = false;
+                canvas2D.classList.remove('grabbing-cursor');
+                regenerateAllFloors();
+            }
+        }
+
+        // --- Drawing Functions ---
+        function draw2DView() {
+            const state = floorStates[currentFloorIndex];
+            const w = state.width * PIXELS_PER_METER;
+            const h = state.length * PIXELS_PER_METER;
+            
+            canvas2D.width = w;
+            canvas2D.height = h;
+            ctx2D.clearRect(0, 0, canvas2D.width, canvas2D.height);
+
+            // Draw Rooms
+            state.layoutData.forEach(room => {
+                ctx2D.fillStyle = room.color;
+                ctx2D.fillRect(room.x, room.y, room.width, room.height);
+                ctx2D.strokeStyle = "#333";
+                ctx2D.lineWidth = 2;
+                ctx2D.strokeRect(room.x, room.y, room.width, room.height);
+
+                ctx2D.fillStyle = "#000";
+                ctx2D.font = "bold 12px Arial";
+                ctx2D.textAlign = "center";
+                ctx2D.textBaseline = "middle";
+                if(room.width > 40 && room.height > 20) {
+                    ctx2D.fillText(room.name, room.x + (room.width / 2), room.y + (room.height / 2));
+                }
+            });
+
+            // Draw Doors
+            ctx2D.fillStyle = "#8B4513";
+            const doorSize = 0.9 * PIXELS_PER_METER;
+            const doorThickness = 6;
+            state.internalDoors.forEach(door => {
+                if (door.isVertical) ctx2D.fillRect(door.x - doorThickness/2, door.y - doorSize/2, doorThickness, doorSize);
+                else ctx2D.fillRect(door.x - doorSize/2, door.y - doorThickness/2, doorSize, doorThickness);
+            });
+
+            if (state.exitDoor) {
+                ctx2D.fillStyle = "#28a745";
+                ctx2D.fillRect(state.exitDoor.x - doorSize/2, state.exitDoor.y - doorThickness/2, doorSize, doorThickness);
+            }
+
+            // After rendering 2D, explicitly update the HTML scale bar
+            updateScaleBar();
+        }
+
+        function updateScaleBar() {
+            const state = floorStates[currentFloorIndex];
+            const rect = canvas2D.getBoundingClientRect();
+            
+            // Calculate actual rendered scale based on object-fit: contain constraints
+            const scaleFactor = Math.min(rect.width / canvas2D.width, rect.height / canvas2D.height);
+            
+            // Adapt unit length based on building width
+            const scaleMeters = state.width <= 10 ? 1 : 5; 
+            
+            // Convert to true display pixels in the UI
+            const barWidthPx = scaleMeters * PIXELS_PER_METER * scaleFactor;
+
+            document.getElementById('scale-bar-line').style.width = barWidthPx + 'px';
+            document.getElementById('scale-bar-text').innerText = scaleMeters + 'm';
+        }
+
+        function drawAxoView() {
+            const floorHeightSpacing = 120;
+            
+            // Scale canvas height dynamically based on the number of floors to allow scrolling
+            const calculatedHeight = Math.max(600, (numFloors * floorHeightSpacing) + 100);
+            
+            canvasAxo.width = 300;
+            canvasAxo.height = calculatedHeight;
+            
+            // Apply CSS height explicitly so the container knows to scroll
+            canvasAxo.style.height = calculatedHeight + "px";
+            
+            ctxAxo.clearRect(0, 0, canvasAxo.width, canvasAxo.height);
+            
+            const startX = canvasAxo.width / 2;
+            
+            // Bottom floor origin point (calculated dynamically from bottom of canvas)
+            const bottomOriginY = canvasAxo.height - 100;
+
+            function toAxo(x, y, zOffset) {
+                const angle = Math.PI / 6;
+                const cosA = Math.cos(angle);
+                const sinA = Math.sin(angle);
+                const scale = 0.8; 
+                const ax = (x - y) * cosA * scale;
+                const ay = (x + y) * sinA * scale;
+                return { x: startX + ax, y: bottomOriginY + ay + zOffset };
+            }
+
+            // Draw from Bottom Floor to Top Floor (Painters Algorithm)
+            for (let i = 0; i < numFloors; i++) {
+                const state = floorStates[i];
+                if (!state.initialized) continue;
+                
+                // Lower floors drawn first at a lower (higher Y) coordinate
+                const zPos = -i * floorHeightSpacing; 
+                const isActive = i === currentFloorIndex;
+
+                ctxAxo.fillStyle = isActive ? "rgba(100, 150, 255, 0.2)" : "rgba(200, 200, 200, 0.1)";
+                ctxAxo.strokeStyle = isActive ? "#007bff" : "#ccc";
+                ctxAxo.lineWidth = isActive ? 2 : 1;
+
+                const totalW = state.width * PIXELS_PER_METER;
+                const totalH = state.length * PIXELS_PER_METER;
+                
+                const p1 = toAxo(0, 0, zPos);
+                const p2 = toAxo(totalW, 0, zPos);
+                const p3 = toAxo(totalW, totalH, zPos);
+                const p4 = toAxo(0, totalH, zPos);
+
+                ctxAxo.beginPath();
+                ctxAxo.moveTo(p1.x, p1.y);
+                ctxAxo.lineTo(p2.x, p2.y);
+                ctxAxo.lineTo(p3.x, p3.y);
+                ctxAxo.lineTo(p4.x, p4.y);
+                ctxAxo.closePath();
+                ctxAxo.fill();
+                ctxAxo.stroke();
+
+                state.layoutData.forEach(room => {
+                    ctxAxo.fillStyle = room.color + "CC";
+                    ctxAxo.strokeStyle = "#555";
+                    ctxAxo.lineWidth = 1;
+
+                    const r1 = toAxo(room.x, room.y, zPos);
+                    const r2 = toAxo(room.x + room.width, room.y, zPos);
+                    const r3 = toAxo(room.x + room.width, room.y + room.height, zPos);
+                    const r4 = toAxo(room.x, room.y + room.height, zPos);
+
+                    ctxAxo.beginPath();
+                    ctxAxo.moveTo(r1.x, r1.y);
+                    ctxAxo.lineTo(r2.x, r2.y);
+                    ctxAxo.lineTo(r3.x, r3.y);
+                    ctxAxo.lineTo(r4.x, r4.y);
+                    ctxAxo.closePath();
+                    ctxAxo.fill();
+                    ctxAxo.stroke();
+                });
+
+                // Move floor names to the absolute left
+                ctxAxo.fillStyle = isActive ? "#007bff" : "#666";
+                ctxAxo.font = (isActive ? "bold " : "") + "14px sans-serif";
+                ctxAxo.textAlign = "left";
+                
+                // Placed cleanly on the left edge parallel to the floor center
+                const floorCenterY = bottomOriginY + zPos;
+                ctxAxo.fillText(getFloorName(i), 15, floorCenterY);
+            }
+        }
+
+        function setupAxoInteractions() {
+            canvasAxo.addEventListener('mousedown', (e) => {
+                const rect = canvasAxo.getBoundingClientRect();
+                
+                // Account for real scale and container scrolling
+                const scaleY = canvasAxo.height / rect.height;
+                const clickYOnCanvas = (e.clientY - rect.top) * scaleY;
+                
+                const floorHeightSpacing = 120;
+                const buffer = floorHeightSpacing / 2; 
+                const bottomOriginY = canvasAxo.height - 100;
+
+                for (let i = 0; i < numFloors; i++) {
+                    const zPos = -i * floorHeightSpacing;
+                    const floorCenterY = bottomOriginY + zPos;
+                    
+                    if (clickYOnCanvas > floorCenterY - buffer && clickYOnCanvas < floorCenterY + buffer) {
+                        switchToFloor(i);
+                        break;
+                    }
+                }
+            });
+        }
+
+async function askLocalLLM(userPrompt) {
+    const systemPrompt = `You are an architectural assistant. 
+    Map the user's request to a JSON object with weights between 0.0 and 1.0. 
+    Available rules: "fire_safety", "open_concept", "large_kitchen".
+    Only output valid JSON. Example: {"fire_safety": 0.9, "open_concept": 0.2, "large_kitchen": 0.5}`;
+
+    try {
+        const response = await fetch('http://localhost:11434/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'llama3', // or whatever model you downloaded in Ollama
+                prompt: systemPrompt + "\nUser Request: " + userPrompt,
+                format: 'json',
+                stream: false
+            })
+        });
+
+        const data = await response.json();
+        const weights = JSON.parse(data.response);
+        console.log("LLM set these weights:", weights);
+        
+        return weights; // Use these weights in your master evaluation function!
+    } catch (error) {
+        console.error("LLM Error:", error);
+        return { fire_safety: 0.5, open_concept: 0.5, large_kitchen: 0.5 }; // Fallback
+    }
+}
+
+// The Master Evaluation Function
+function evaluateLayout(layoutData, state, llmWeights) {
+    let totalScore = 0;
+
+    // 1. Run Evaluator 1: Fire Safety
+    const fireScore = evaluateFireEscape(layoutData, state.exitDoor, PIXELS_PER_METER);
+    totalScore += (fireScore * llmWeights.fire_safety);
+
+    // 2. Run Evaluator 2: Large Kitchen (example)
+    const kitchen = layoutData.find(r => r.id === 'kitchen');
+    if (kitchen) {
+        const kitchenArea = (kitchen.width * kitchen.height) / (PIXELS_PER_METER**2);
+        totalScore += (kitchenArea * llmWeights.large_kitchen);
+    }
+
+    return totalScore;
+}
+
+        init();
+    </script>
+</body>
+</html>
