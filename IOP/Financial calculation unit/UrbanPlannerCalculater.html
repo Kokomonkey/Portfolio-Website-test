@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg2pdf.js/2.2.2/svg2pdf.umd.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; background-color: #050505; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
@@ -97,6 +99,9 @@
             <button id="btn-export-gh" class="bg-orange-600 hover:bg-orange-500 px-6 py-2 rounded-full text-white font-bold border border-orange-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export JSON for Grasshopper">
                 ⤓ Export to GH
             </button>
+            <button id="btn-export-pdf" class="bg-red-700 hover:bg-red-600 px-6 py-2 rounded-full text-white font-bold border border-red-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export A1 PDF Map">
+                ⤓ PDF Map
+            </button>
         </div>
 
         <div id="ui-left">
@@ -116,6 +121,10 @@
                     <input type="range" id="sunAltitude" min="0" max="90" value="60">
                 </div>
                 <button id="toggleSunAnim" class="btn-dark mt-2">Toggle Sun Animation</button>
+                <div class="control-group mt-3 border-t border-gray-700 pt-3">
+    <label>Camera Zoom Scale: <span id="zoomVal">1.0x</span></label>
+    <input type="range" id="camZoom" min="0.2" max="3.0" step="0.1" value="1.0">
+</div>
             </div>
 
             <div class="glass-panel w-full">
@@ -142,11 +151,15 @@
                         <div class="control-group">
                             <label>Typology</label>
                             <select id="typology-select" class="mb-3">
-                                <option value="rijtjeshuis">Rijtjeshuis (Row Houses)</option>
-                                <option value="grachtenpand">Grachtenpand (Canal Houses)</option>
-                                <option value="middelhoogbouw">Middelhoogbouw (L-Shape, Mid-Rise)</option>
-                                <option value="hoogbouw">Hoogbouw (Towers in a Park)</option>
-                            </select>
+    <option value="rijtjeshuis">Rijtjeshuis (Row Houses)</option>
+    <option value="grachtenpand">Grachtenpand (Canal Houses)</option>
+    <option value="twee_onder_een_kap">Twee-onder-een-kap (Semi-Detached)</option>
+    <option value="vrijstaand">Vrijstaande Woning (Detached Villa)</option>
+    <option value="stadsblok">Stadsblok (Perimeter U-Block)</option>
+    <option value="galerijflat">Galerijflat (Linear Slab Block)</option>
+    <option value="middelhoogbouw">Middelhoogbouw (L-Shape, Mid-Rise)</option>
+    <option value="hoogbouw">Hoogbouw (Towers in a Park)</option>
+</select>
                         </div>
                         <button id="btn-lock-generate" class="btn-dark btn-primary shadow-lg mb-2">🔒 Lock Area & Generate</button>
                         <button id="btn-delete-site" class="btn-dark btn-danger mt-2">Delete Entire Zone</button>
@@ -487,33 +500,70 @@
 
         // 2. Export SVG
         document.getElementById('btn-export-svg').addEventListener('click', () => {
-            let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" style="background:#f3f4f6;">\n`;
-            svgStr += `\n`;
-            
-            sites.forEach(site => {
-                let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-                svgStr += `  <polygon points="${sitePts}" fill="${site.isLocked ? '#e2e8f0' : '#dbeafe'}" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>\n`;
+    const typologyColors = {
+        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
+        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c', name: 'Grachtenpand (Canal)' },
+        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706', name: 'Twee-onder-een-kap' },
+        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a', name: 'Vrijstaand (Villa)' },
+        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7', name: 'Stadsblok (Perimeter)' },
+        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed', name: 'Galerijflat (Slab)' },
+        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3', name: 'Middelhoogbouw (L-Rise)' },
+        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569', name: 'Hoogbouw (Tower/Podium)' }
+    };
+
+    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" style="background:#f8fafc; font-family: sans-serif;">\n`;
+    let activeTypologies = new Set();
+    
+    // Draw Sites & Buildings
+    sites.forEach(site => {
+        if (site.isLocked) activeTypologies.add(site.typology);
+        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
+        
+        let fill = site.isLocked ? colors.fill : 'rgba(219, 234, 254, 0.4)';
+        let stroke = site.isLocked ? colors.stroke : '#94a3b8';
+        
+        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="8,6"/>\n`;
+        
+        if (site.isLocked) {
+            site.subBuildings.forEach(sub => {
+                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                // Solid building color matching the stroke, unless it has a greenhouse roof
+                let bColor = colors.stroke; 
+                if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
                 
-                if (site.isLocked) {
-                    site.subBuildings.forEach(sub => {
-                        let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
-                        let color = '#9b59b6'; 
-                        if(sub.layers[0] && sub.layers[0].type === 'Residence') color = '#e74c3c';
-                        if(sub.layers[0] && sub.layers[0].type === 'Greenhouse') color = '#2ecc71';
-                        svgStr += `  <polygon points="${subPts}" fill="${color}" stroke="#1e293b" stroke-width="1"/>\n`;
-                    });
-                }
+                svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
             });
-            svgStr += `</svg>`;
-            
-            const blob = new Blob([svgStr], {type: "image/svg+xml"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "dutch_urban_plan.svg";
-            a.click();
-            URL.revokeObjectURL(url);
+        }
+    });
+
+    // Draw Legend Panel
+    if (activeTypologies.size > 0) {
+        svgStr += `  <g transform="translate(580, 20)">\n`;
+        // Background box sizing based on active typologies
+        svgStr += `    <rect x="0" y="0" width="200" height="${activeTypologies.size * 25 + 40}" fill="white" stroke="#2d3436" stroke-width="2" rx="4" opacity="0.95"/>\n`;
+        svgStr += `    <text x="15" y="25" font-size="14" font-weight="bold" fill="#1e293b">URBAN LEGEND</text>\n`;
+        
+        let yOffset = 45;
+        activeTypologies.forEach(typ => {
+            let t = typologyColors[typ];
+            svgStr += `    <rect x="15" y="${yOffset - 11}" width="16" height="16" fill="${t.stroke}" rx="2"/>\n`;
+            svgStr += `    <text x="40" y="${yOffset + 2}" font-size="12" fill="#334155">${t.name}</text>\n`;
+            yOffset += 25;
         });
+        svgStr += `  </g>\n`;
+    }
+
+    svgStr += `</svg>`;
+    
+    const blob = new Blob([svgStr], {type: "image/svg+xml"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "masterplan_legend.svg";
+    a.click();
+    URL.revokeObjectURL(url);
+});
 
         // --- TRANSITIONS ---
         document.getElementById('btn-go-3d').addEventListener('click', () => {
@@ -666,70 +716,258 @@
         }
 
         // --- TYPOLOGY GENERATION LOGIC ---
-        function generateTypology(site) {
-            site.subBuildings = [];
-            
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            site.points.forEach(p => {
-                if(p.x < minX) minX = p.x; if(p.y < minY) minY = p.y;
-                if(p.x > maxX) maxX = p.x; if(p.y > maxY) maxY = p.y;
-            });
+        // --- FIXED GEOMETRY ENGINE ---
+function generateTypology(site) {
+    site.subBuildings = [];
 
-            let bWidthM, bHeightM, gapXM, gapYM, baseFloors, floorVariation, type, shapeType;
+    // SAFETY CHECK: Ensure polygon has enough valid points
+    if (!site.points || site.points.length < 3) return;
 
-            if (site.typology === 'rijtjeshuis') {
-                bWidthM = 6; bHeightM = 10; gapXM = 0; gapYM = 12; baseFloors = 2; floorVariation = 1; type = 'Residence'; shapeType = 'rect';
-            } else if (site.typology === 'grachtenpand') {
-                bWidthM = 5; bHeightM = 15; gapXM = 0; gapYM = 10; baseFloors = 4; floorVariation = 1; type = 'Residence'; shapeType = 'rect';
-            } else if (site.typology === 'middelhoogbouw') {
-                bWidthM = 25; bHeightM = 25; gapXM = 15; gapYM = 15; baseFloors = 4; floorVariation = 2; type = 'Residence'; shapeType = 'L';
-            } else { // hoogbouw
-                bWidthM = 24; bHeightM = 24; gapXM = 45; gapYM = 45; baseFloors = 15; floorVariation = 15; type = 'Residence'; shapeType = 'rect';
-            }
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    let cx = 0, cy = 0; 
+    site.points.forEach(p => {
+        if(p.x < minX) minX = p.x; if(p.y < minY) minY = p.y;
+        if(p.x > maxX) maxX = p.x; if(p.y > maxY) maxY = p.y;
+        cx += p.x; cy += p.y;
+    });
+    cx /= site.points.length; cy /= site.points.length;
 
-            let pxW = bWidthM * pixelsPerMeter;
-            let pxH = bHeightM * pixelsPerMeter;
-            let pxGapX = gapXM * pixelsPerMeter;
-            let pxGapY = gapYM * pixelsPerMeter;
+    // --- EDGE-BASED TYPOLOGIES ---
+    if (['rijtjeshuis', 'grachtenpand', 'stadsblok', 'galerijflat'].includes(site.typology)) {
+        let bWidthM, depthM, gapM, baseFloors, floorVariation, dropLongest;
+        
+        if (site.typology === 'rijtjeshuis') { bWidthM = 6; depthM = 10; gapM = 0; baseFloors = 2; floorVariation = 1; dropLongest = false; }
+        else if (site.typology === 'grachtenpand') { bWidthM = 5; depthM = 14; gapM = 0; baseFloors = 4; floorVariation = 2; dropLongest = false; }
+        else if (site.typology === 'stadsblok') { bWidthM = 12; depthM = 12; gapM = 0; baseFloors = 4; floorVariation = 3; dropLongest = true; } 
+        else { bWidthM = 60; depthM = 12; gapM = 20; baseFloors = 6; floorVariation = 2; dropLongest = false; }
 
-            for (let x = minX + (pxGapX/2); x < maxX - pxW; x += pxW + pxGapX) {
-                for (let y = minY + (pxGapY/2); y < maxY - pxH; y += pxH + pxGapY) {
-                    
-                    let cx = x + pxW/2; let cy = y + pxH/2;
-                    
-                    if (isPointInPolygon([cx, cy], site.points)) {
-                        let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
-                        let subLayers = [];
-                        for(let i=0; i<floorsCount; i++) {
-                            subLayers.push(createDefaultLayer(type, 3));
-                        }
-                        
-                        let pts = [];
-                        let area = 0;
+        let pxW = bWidthM * pixelsPerMeter; let pxDepth = depthM * pixelsPerMeter; let pxGap = gapM * pixelsPerMeter;
 
-                        if (shapeType === 'L') {
-                            let tM = 10; 
-                            let pxT = tM * pixelsPerMeter;
-                            pts = [
-                                {x: x, y: y}, {x: x+pxW, y: y}, {x: x+pxW, y: y+pxT}, 
-                                {x: x+pxT, y: y+pxT}, {x: x+pxT, y: y+pxH}, {x: x, y: y+pxH}
-                            ];
-                            area = (bWidthM * tM) + ((bHeightM - tM) * tM);
-                        } else {
-                            pts = [ {x: x, y: y}, {x: x+pxW, y: y}, {x: x+pxW, y: y+pxH}, {x: x, y: y+pxH} ];
-                            area = bWidthM * bHeightM;
-                        }
-
-                        site.subBuildings.push({
-                            id: 'sub-' + Date.now() + Math.random(),
-                            points: pts,
-                            area: area,
-                            layers: subLayers
-                        });
-                    }
-                }
+        let edges = [];
+        for(let i=0; i<site.points.length; i++) {
+            let p1 = site.points[i];
+            let p2 = site.points[(i+1) % site.points.length];
+            let len = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+            if (len > 0.1) { // CRASH FIX: Ignore zero-length lines
+                edges.push({ p1, p2, dx: p2.x - p1.x, dy: p2.y - p1.y, len: len, index: i });
             }
         }
+
+        if (edges.length === 0) return;
+
+        if (dropLongest && edges.length > 3) {
+            edges.sort((a,b) => b.len - a.len);
+            edges[0].dropped = true; 
+            edges.sort((a,b) => a.index - b.index);
+        }
+
+        edges.forEach(edge => {
+            if (edge.dropped) return;
+
+            let nx = -edge.dy / edge.len; let ny = edge.dx / edge.len;
+            
+            // Inward normal check
+            let testX = edge.p1.x + nx * pxDepth + (edge.dx/2); 
+            let testY = edge.p1.y + ny * pxDepth + (edge.dy/2);
+            if (!isPointInPolygon([testX, testY], site.points)) { nx = -nx; ny = -ny; }
+
+            let currentLen = 0;
+            while (currentLen + pxW <= edge.len) {
+                let startX = edge.p1.x + (edge.dx / edge.len) * currentLen;
+                let startY = edge.p1.y + (edge.dy / edge.len) * currentLen;
+                let endX = startX + (edge.dx / edge.len) * pxW;
+                let endY = startY + (edge.dy / edge.len) * pxW;
+
+                let pts = [
+                    {x: startX, y: startY}, {x: endX, y: endY},
+                    {x: endX + nx * pxDepth, y: endY + ny * pxDepth}, {x: startX + nx * pxDepth, y: startY + ny * pxDepth}
+                ];
+
+                let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
+                let subLayers = [];
+                for(let j=0; j<floorsCount; j++) subLayers.push(createDefaultLayer('Residence', 3));
+
+                site.subBuildings.push({ id: 'sub-' + Date.now() + Math.random(), points: pts, area: bWidthM * depthM, layers: subLayers });
+                currentLen += pxW + pxGap;
+            }
+        });
+        return;
+    }
+
+    // --- PODIUM BASED (Hoogbouw) ---
+    if (site.typology === 'hoogbouw') {
+        let pxOffset = 4 * pixelsPerMeter;
+        let podiumPts = []; 
+        site.points.forEach(p => {
+            let dx = cx - p.x; let dy = cy - p.y;
+            let dist = Math.hypot(dx, dy);
+            if (dist < 0.1) return; // CRASH FIX
+            let ratio = Math.max(0, (dist - pxOffset) / dist);
+            podiumPts.push({x: cx - dx * ratio, y: cy - dy * ratio}); 
+        });
+        
+        if(podiumPts.length < 3) return;
+        let podiumArea = calculateRealArea(podiumPts);
+        site.subBuildings.push({ id: 'podium-' + Date.now(), points: podiumPts, area: podiumArea, layers: [createDefaultLayer('Industry', 4.5), createDefaultLayer('Greenhouse', 1.5)] });
+
+        let numTowers = Math.max(1, Math.min(3, Math.floor(podiumArea / 1500)));
+        for(let i=0; i<numTowers; i++) {
+            let twM = 22, thM = 22; let pxtw = twM * pixelsPerMeter;
+            let tx = cx - pxtw/2 + ((Math.random() - 0.5) * pxOffset * 6);
+            let ty = cy - pxtw/2 + ((Math.random() - 0.5) * pxOffset * 6);
+            let towerPts = [ {x: tx, y: ty}, {x: tx+pxtw, y: ty}, {x: tx+pxtw, y: ty+pxtw}, {x: tx, y: ty+pxtw} ];
+            
+            let towerLayers = [createDefaultLayer('Industry', 4.5), createDefaultLayer('Greenhouse', 1.5)];
+            let floorsCount = 12 + Math.floor(Math.random() * 12);
+            for(let f=0; f<floorsCount; f++) towerLayers.push(createDefaultLayer('Residence', 3.2));
+            site.subBuildings.push({ id: 'tower-' + Date.now() + i, points: towerPts, area: twM * thM, layers: towerLayers });
+        }
+        return;
+    }
+
+    // --- ROTATED GRID BASED ---
+    let bWidthM = 10, bHeightM = 10, gapXM = 12, gapYM = 15, baseFloors = 2, floorVariation = 1, type = 'Residence';
+    if (site.typology === 'twee_onder_een_kap') { bWidthM = 14; gapXM = 6; }
+    else if (site.typology === 'middelhoogbouw') { bWidthM = 22; bHeightM = 22; gapXM = 18; gapYM = 18; baseFloors = 4; floorVariation = 2; }
+
+    let longestAngle = 0, maxLen = 0;
+    for(let i=0; i<site.points.length; i++) {
+        let p1 = site.points[i]; let p2 = site.points[(i+1)%site.points.length];
+        let len = Math.hypot(p2.x-p1.x, p2.y-p1.y);
+        if (len > maxLen) { maxLen = len; longestAngle = Math.atan2(p2.y-p1.y, p2.x-p1.x); }
+    }
+
+    let pxW = bWidthM * pixelsPerMeter, pxH = bHeightM * pixelsPerMeter;
+    let pxGapX = gapXM * pixelsPerMeter, pxGapY = gapYM * pixelsPerMeter;
+    let cosA = Math.cos(-longestAngle), sinA = Math.sin(-longestAngle);
+
+    let rMinX = Infinity, rMinY = Infinity, rMaxX = -Infinity, rMaxY = -Infinity;
+    site.points.forEach(p => {
+        let rx = (p.x - cx) * cosA - (p.y - cy) * sinA;
+        let ry = (p.x - cx) * sinA + (p.y - cy) * cosA;
+        if(rx < rMinX) rMinX = rx; if(ry < rMinY) rMinY = ry;
+        if(rx > rMaxX) rMaxX = rx; if(ry > rMaxY) rMaxY = ry;
+    });
+
+    for (let x = rMinX + pxGapX; x < rMaxX - pxW; x += pxW + pxGapX) {
+        for (let y = rMinY + pxGapY; y < rMaxY - pxH; y += pxH + pxGapY) {
+            let invCosA = Math.cos(longestAngle), invSinA = Math.sin(longestAngle);
+            let bx = cx + x * invCosA - y * invSinA; let by = cy + x * invSinA + y * invCosA;
+
+            if (isPointInPolygon([bx, by], site.points)) {
+                let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
+                let subLayers = [];
+                for(let i=0; i<floorsCount; i++) subLayers.push(createDefaultLayer(type, 3));
+                
+                let pts = [
+                    {x: bx, y: by}, {x: bx + pxW * invCosA, y: by + pxW * invSinA},
+                    {x: bx + pxW * invCosA - pxH * invSinA, y: by + pxW * invSinA + pxH * invCosA},
+                    {x: bx - pxH * invSinA, y: by + pxH * invCosA}
+                ];
+                site.subBuildings.push({ id: 'sub-' + Date.now() + Math.random(), points: pts, area: bWidthM * bHeightM, layers: subLayers });
+            }
+        }
+    }
+}
+
+// --- NEW PDF EXPORT LOGIC ---
+document.getElementById('btn-export-pdf').addEventListener('click', async () => {
+    // 1. Setup A1 Dimensions (594mm x 841mm)
+    const a1W = 594; const a1H = 841;
+    
+    // We are scaling 800px (1188 meters) to fit nicely on the A1 sheet at 1:10000.
+    // 1188m at 1:10000 = 118.8mm wide on the page.
+    // We will apply a transform to center the drawing.
+    const mapScale = 118.8 / 800; 
+    const offsetX = (a1W - (800 * mapScale)) / 2;
+    const offsetY = (a1H - (600 * mapScale)) / 2;
+
+    const typologyColors = {
+        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48' },
+        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c' },
+        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706' },
+        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a' },
+        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7' },
+        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed' },
+        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3' },
+        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569' }
+    };
+
+    // 2. Build the SVG String formatted for the PDF Layout
+    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a1W} ${a1H}" width="${a1W}mm" height="${a1H}mm" style="background:#ffffff; font-family: Helvetica, sans-serif;">\n`;
+    
+    // Outer Border
+    svgStr += `<rect x="15" y="15" width="${a1W - 30}" height="${a1H - 30}" fill="none" stroke="#1e293b" stroke-width="1.5"/>\n`;
+
+    // Map Wrapper
+    svgStr += `<g transform="translate(${offsetX}, ${offsetY}) scale(${mapScale})">\n`;
+    
+    sites.forEach(site => {
+        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
+        let fill = site.isLocked ? colors.fill : 'none';
+        let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
+        
+        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="4" stroke-dasharray="16,12"/>\n`;
+        
+        if (site.isLocked) {
+            site.subBuildings.forEach(sub => {
+                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                let bColor = colors.stroke; 
+                if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
+                svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="2"/>\n`;
+            });
+        }
+    });
+    svgStr += `</g>\n`;
+
+    // North Arrow (Top Right inside border)
+    svgStr += `
+    <g transform="translate(${a1W - 40}, 50)">
+        <circle cx="0" cy="0" r="10" fill="none" stroke="#1e293b" stroke-width="1"/>
+        <line x1="0" y1="0" x2="0" y2="-10" stroke="#1e293b" stroke-width="1.5"/>
+        <text x="0" y="-14" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">N</text>
+    </g>\n`;
+
+    // Scalebar (1:10000 -> 100m = 10mm) (Bottom Left)
+    svgStr += `
+    <g transform="translate(30, ${a1H - 40})">
+        <line x1="0" y1="0" x2="50" y2="0" stroke="#1e293b" stroke-width="1.5"/>
+        <line x1="0" y1="-2" x2="0" y2="2" stroke="#1e293b" stroke-width="1.5"/>
+        <line x1="25" y1="-1" x2="25" y2="1" stroke="#1e293b" stroke-width="0.5"/>
+        <line x1="50" y1="-2" x2="50" y2="2" stroke="#1e293b" stroke-width="1.5"/>
+        <text x="0" y="8" font-size="5" fill="#1e293b" text-anchor="middle">0</text>
+        <text x="50" y="8" font-size="5" fill="#1e293b" text-anchor="middle">500m</text>
+    </g>\n`;
+
+    // Credits & Texts (Bottom Center/Right)
+    svgStr += `
+        <text x="${a1W / 2}" y="${a1H - 35}" font-size="7" fill="#1e293b" text-anchor="middle">Urban Masterplan generated using UrbanPlannerCalculater by DouweDoesDesign (https://douwedoesdesign.com/)</text>
+        <text x="${a1W / 2}" y="${a1H - 25}" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">Scale 1 : 10000</text>
+    `;
+
+    svgStr += `</svg>`;
+
+    // 3. Convert SVG to PDF using jsPDF
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = svgStr;
+    const svgElement = tempDiv.querySelector('svg');
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', format: 'a1', unit: 'mm' });
+    
+    // Add the SVG to the PDF document
+    await doc.svg(svgElement, {
+        x: 0,
+        y: 0,
+        width: a1W,
+        height: a1H
+    });
+
+    // Download the PDF
+    doc.save("Urban_Masterplan_A1.pdf");
+});
+
 
         // --- 3D INTERACTION ---
         const raycaster = new THREE.Raycaster();
@@ -974,6 +1212,12 @@
             renderer.render(scene, camera);
         };
         animate();
+
+        document.getElementById('camZoom').addEventListener('input', e => { 
+    camera.zoom = parseFloat(e.target.value); 
+    camera.updateProjectionMatrix(); 
+    document.getElementById('zoomVal').innerText = e.target.value + 'x'; 
+});
 
     </script>
 </body>
