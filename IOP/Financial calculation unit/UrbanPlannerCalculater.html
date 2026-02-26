@@ -8,11 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <script>window.jsPDF = window.jspdf.jsPDF;</script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg2pdf.js/3.0.0/svg2pdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; background-color: #050505; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
@@ -495,137 +491,122 @@
             a.click();
         });
 
-        document.getElementById('btn-export-svg').addEventListener('click', () => {
-            const typologyColors = {
-                'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
-                'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c', name: 'Grachtenpand (Canal)' },
-                'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706', name: 'Twee-onder-een-kap' },
-                'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a', name: 'Vrijstaand (Villa)' },
-                'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7', name: 'Stadsblok (Perimeter)' },
-                'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed', name: 'Galerijflat (Slab)' },
-                'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3', name: 'Middelhoogbouw (L-Rise)' },
-                'hoogbouw': { fill: '#f1f5f9', stroke: '#475569', name: 'Hoogbouw (Tower/Podium)' }
-            };
-
-            let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 594 841" style="background:#f8fafc; font-family: sans-serif;">\n`;
-            let activeTypologies = new Set();
-            
-            sites.forEach(site => {
-                if (site.isLocked) activeTypologies.add(site.typology);
-                let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
-                
-                let fill = site.isLocked ? colors.fill : 'rgba(219, 234, 254, 0.4)';
-                let stroke = site.isLocked ? colors.stroke : '#94a3b8';
-                
-                let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-                svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="8,6"/>\n`;
-                
-                if (site.isLocked) {
-                    site.subBuildings.forEach(sub => {
-                        let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
-                        let bColor = colors.stroke; 
-                        if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
-                        svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
-                    });
-                }
-            });
-
-            if (activeTypologies.size > 0) {
-                let legendHeight = activeTypologies.size * 25 + 40;
-                let yOffsetPos = 841 - legendHeight - 20; 
-                
-                svgStr += `  <g transform="translate(20, ${yOffsetPos})">\n`;
-                svgStr += `    <rect x="0" y="0" width="200" height="${legendHeight}" fill="white" stroke="#2d3436" stroke-width="2" rx="4" opacity="0.95"/>\n`;
-                svgStr += `    <text x="15" y="25" font-size="14" font-weight="bold" fill="#1e293b">URBAN LEGEND</text>\n`;
-                
-                let yOffset = 45;
-                activeTypologies.forEach(typ => {
-                    let t = typologyColors[typ];
-                    svgStr += `    <rect x="15" y="${yOffset - 11}" width="16" height="16" fill="${t.stroke}" rx="2"/>\n`;
-                    svgStr += `    <text x="40" y="${yOffset + 2}" font-size="12" fill="#334155">${t.name}</text>\n`;
-                    yOffset += 25;
-                });
-                svgStr += `  </g>\n`;
-            }
-
-            svgStr += `</svg>`;
-            
-            const blob = new Blob([svgStr], {type: "image/svg+xml"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "masterplan_legend.svg";
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        // 3. Export PDF Map (A1 Portrait)
+       // 3. Export PDF Map (A1 Portrait) - Architectural Layout
 document.getElementById('btn-export-pdf').addEventListener('click', async () => {
-    const a1W = 594; const a1H = 841;
-    const mapScale = 1.0; 
-    const offsetX = 0;
-    const offsetY = 0;
-
     const typologyColors = {
-        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48' },
-        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c' },
-        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706' },
-        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a' },
-        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7' },
-        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed' },
-        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3' },
-        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569' }
+        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
+        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c', name: 'Grachtenpand (Canal)' },
+        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706', name: 'Twee-onder-een-kap' },
+        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a', name: 'Vrijstaand (Villa)' },
+        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7', name: 'Stadsblok (Perimeter)' },
+        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed', name: 'Galerijflat (Slab)' },
+        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3', name: 'Middelhoogbouw (L-Rise)' },
+        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569', name: 'Hoogbouw (Tower)' }
     };
 
-    // 1. Build your SVG String (Your existing code)
-    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a1W} ${a1H}" width="${a1W}mm" height="${a1H}mm" style="background:#ffffff; font-family: Helvetica, sans-serif;">\n`;
-    svgStr += `<rect x="15" y="15" width="${a1W - 30}" height="${a1H - 30}" fill="none" stroke="#1e293b" stroke-width="1.5"/>\n`;
-    svgStr += `<g transform="translate(${offsetX}, ${offsetY}) scale(${mapScale})">\n`;
-    
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    let hasPoints = false;
+    let activeTypologies = new Set();
+
     sites.forEach(site => {
-        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
-        let fill = site.isLocked ? colors.fill : 'none';
-        let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
-        
-        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="16,12"/>\n`;
-        
+        site.points.forEach(p => {
+            if (p.x < minX) minX = p.x; if (p.y < minY) minY = p.y;
+            if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y;
+            hasPoints = true;
+        });
         if (site.isLocked) {
+            activeTypologies.add(site.typology);
             site.subBuildings.forEach(sub => {
-                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
-                svgStr += `  <polygon points="${subPts}" fill="${colors.stroke}" stroke="#1e293b" stroke-width="1.5"/>\n`;
+                sub.points.forEach(p => {
+                    if (p.x < minX) minX = p.x; if (p.y < minY) minY = p.y;
+                    if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y;
+                });
             });
         }
     });
 
-    svgStr += `</g>\n</svg>`;
+    if (!hasPoints) { minX = 0; minY = 0; maxX = 594; maxY = 841; }
+    const pad = 20;
+    minX -= pad; minY -= pad;
+    const vW = (maxX - minX) + (pad * 2);
+    const vH = (maxY - minY) + (pad * 2);
 
-    try {
-        // 2. THE FIX: Parse the string into a real DOM Element
-        const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(svgStr, "image/svg+xml");
-        const svgElement = svgDoc.documentElement;
+    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX} ${minY} ${vW} ${vH}" width="100%" height="100%">\n`;
+    sites.forEach(site => {
+        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
+        let fill = site.isLocked ? colors.fill : 'none';
+        let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
+        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+        let strokeW = Math.max(0.2, vW / 600); 
+        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}" stroke-dasharray="16,12"/>\n`;
+        if (site.isLocked) {
+            site.subBuildings.forEach(sub => {
+                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                svgStr += `  <polygon points="${subPts}" fill="${colors.stroke}" stroke="#1e293b" stroke-width="${strokeW * 0.75}"/>\n`;
+            });
+        }
+    });
+    svgStr += `</svg>`;
+    const imgSrc = `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgStr)))}`;
 
-        // 3. Initialize jsPDF correctly using the UMD namespace
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a1'
+    let legendHtml = '';
+    activeTypologies.forEach(typ => {
+        let t = typologyColors[typ];
+        legendHtml += `<div style="display:flex;align-items:center;margin-bottom:20px;"><div style="width:40px;height:40px;background:${t.fill};border:3px solid ${t.stroke};margin-right:20px;border-radius:5px;"></div><span style="font-size:30px;font-family:sans-serif;font-weight:bold;">${t.name}</span></div>`;
+    });
+
+    const tempContainer = document.createElement('div');
+    tempContainer.id = 'pdf-export-container';
+    tempContainer.style = `width:2376px; height:3364px; position:fixed; top:0; left:0; z-index:-9999; background:white; padding:100px; box-sizing:border-box; display:flex; flex-direction:column;`;
+
+    tempContainer.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:8px solid #1e293b;padding-bottom:40px;margin-bottom:50px;">
+            <div><h1 style="font-size:90px;font-family:sans-serif;margin:0;font-weight:900;">Urban Masterplan</h1><p style="font-size:40px;color:#64748b;margin:10px 0 0 0;">Parametric Urban Planner Pro</p></div>
+            <div style="text-align:right;"><p style="font-size:36px;font-weight:bold;margin:0;">${new Date().toLocaleDateString('nl-NL')}</p></div>
+        </div>
+        <div style="flex:1;position:relative;border:6px dashed #cbd5e1;background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:40px;">
+            <img id="pdf-map-img" src="${imgSrc}" style="width:100%;height:100%;object-fit:contain;" />
+            <div style="position:absolute;bottom:80px;left:80px;background:white;padding:50px;border:6px solid #1e293b;border-radius:20px;box-shadow:0 30px 60px rgba(0,0,0,0.1); max-width: 600px;">
+                <h3 style="font-size:45px;margin:0 0-30px 0;font-weight:900;">LEGEND</h3>${legendHtml}
+            </div>
+            <div style="position:absolute;bottom:80px;right:80px;width:200px;height:200px;background:white;border-radius:50%;border:6px solid #1e293b;display:flex;align-items:center;justify-content:center;">
+                <svg viewBox="0 0 100 100" width="120" height="120"><polygon points="50,5 65,90 50,75 35,90" fill="#1e293b" /><text x="50" y="55" font-size="30" fill="white" font-weight="bold" text-anchor="middle">N</text></svg>
+            </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:50px;padding-top:40px;border-top:6px solid #cbd5e1;">
+            <p style="font-size:40px;font-weight:900;">&copy; DouweDoesDesign&trade;</p>
+        </div>
+    `;
+
+    document.body.appendChild(tempContainer);
+
+    // Wait for the image to actually "exist" in the browser's memory
+    const mapImg = document.getElementById('pdf-map-img');
+    await new Promise((resolve) => {
+        if (mapImg.complete) resolve();
+        else mapImg.onload = resolve;
+    });
+
+    const opt = {
+        margin: 0,
+        filename: 'DouweDoesDesign_Masterplan.pdf',
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: { 
+            scale: 1, // High base resolution container, so scale 1 is enough
+            useCORS: true,
+            logging: false,
+            width: 2376,
+            height: 3364
+        },
+        jsPDF: { unit: 'mm', format: 'a1', orientation: 'portrait' }
+    };
+
+    // Small delay to allow the layout engine to settle
+    setTimeout(() => {
+        html2pdf().set(opt).from(tempContainer).save().then(() => {
+            document.body.removeChild(tempContainer);
         });
-
-        // 4. Use the modern doc.svg() plugin method (requires async/await)
-        await doc.svg(svgElement, {
-            x: 0,
-            y: 0,
-            width: a1W,
-            height: a1H
-        });
-        
-        doc.save("Masterplan_Map.pdf");
-    } catch (error) {
-        console.error("Error generating PDF:", error);
-    }
+    }, 500);
 });
         // --- TRANSITIONS ---
         document.getElementById('btn-go-3d').addEventListener('click', () => {
@@ -1237,87 +1218,86 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
             document.getElementById('fin-total-cost').innerText = formatEuros(totalCosts);
         }
 
-        document.getElementById('btn-export-finance').addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', format: 'a4', unit: 'mm' });
-            const d = globalFinData;
+       document.getElementById('btn-export-finance').addEventListener('click', () => {
+    const d = globalFinData;
+    
+    let typoStatsHtml = '';
+    let typoStats = {};
+    sites.forEach(site => {
+        if(site.isLocked) {
+            const t = site.typology;
+            if(!typoStats[t]) typoStats[t] = { count: 0 };
+            typoStats[t].count += site.subBuildings.length;
+        }
+    });
+
+    for (const [typ, stats] of Object.entries(typoStats)) {
+        let niceName = typ.replace(/_/g, ' ').toUpperCase();
+        typoStatsHtml += `<li><strong>${niceName}:</strong> ${stats.count} gebouw(en) gegenereerd.</li>`;
+    }
+
+    // Build the report using standard HTML
+    const reportHtml = `
+        <div style="font-family: 'Helvetica', sans-serif; color: #1f2937; padding: 20px;">
+            <h1 style="border-bottom: 2px solid #1f2937; padding-bottom: 10px; font-size: 24px;">Financieel Vastgoedrekenmodel & Gebiedsplan</h1>
             
-            let typoStats = {};
-            sites.forEach(site => {
-                if(site.isLocked) {
-                    const t = site.typology;
-                    if(!typoStats[t]) typoStats[t] = { count: 0 };
-                    typoStats[t].count += site.subBuildings.length;
-                }
-            });
+            <h2 style="font-size: 18px; margin-top: 20px; color: #3b82f6;">1. Stedenbouwkundige Kenmerken</h2>
+            <ul style="list-style: none; padding-left: 0; line-height: 1.6;">
+                <li><strong>Totale Gebiedsoppervlakte:</strong> ${Math.round(d.totalSiteArea).toLocaleString()} m²</li>
+                <li><strong>Totale Bebouwde Oppervlakte:</strong> ${Math.round(d.totalFootprint).toLocaleString()} m²</li>
+                <li><strong>Wonen (BVO):</strong> ${Math.round(d.resAreaBVO).toLocaleString()} m²</li>
+                <li><strong>Industrie / Commercieel (BVO):</strong> ${Math.round(d.indAreaBVO).toLocaleString()} m²</li>
+            </ul>
 
-            doc.setFont("helvetica");
-            doc.setFontSize(16);
-            doc.text("Financieel Vastgoedrekenmodel & Gebiedsplan", 15, 20);
-            
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "bold");
-            doc.text("1. Stedenbouwkundige Kenmerken (Urban Metrics)", 15, 35);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.text(`Totale Gebiedsoppervlakte: ${Math.round(d.totalSiteArea).toLocaleString()} m²`, 20, 42);
-            doc.text(`Totale Bebouwde Oppervlakte (Voetafdruk): ${Math.round(d.totalFootprint).toLocaleString()} m²`, 20, 48);
-            doc.text(`Wonen (BVO): ${Math.round(d.resAreaBVO).toLocaleString()} m²`, 20, 54);
-            doc.text(`Industrie / Commercieel (BVO): ${Math.round(d.indAreaBVO).toLocaleString()} m²`, 20, 60);
+            <h2 style="font-size: 18px; margin-top: 20px; color: #3b82f6;">2. Woningbouw Programma (GO)</h2>
+            <ul style="list-style: none; padding-left: 0; line-height: 1.6;">
+                <li><strong>Totaal Gebruiksoppervlak Wonen:</strong> ${Math.round(d.resAreaGO).toLocaleString()} m²</li>
+                <li><strong>Sociale Huur (40% norm):</strong> ${Math.round(d.socialAreaGO).toLocaleString()} m² (ca. ${d.homesSocial} eenheden)</li>
+                <li><strong>Vrije Sector (60% norm):</strong> ${Math.round(d.freeAreaGO).toLocaleString()} m² (ca. ${d.homesFree} eenheden)</li>
+                <li><strong>Totaal Aantal Woningen:</strong> ${d.totalHomes} eenheden</li>
+            </ul>
 
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "bold");
-            doc.text("2. Woningbouw Programma (GO)", 15, 75);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.text(`Totaal Gebruiksoppervlak Wonen: ${Math.round(d.resAreaGO).toLocaleString()} m²`, 20, 82);
-            doc.text(`Sociale Huur (40% norm): ${Math.round(d.socialAreaGO).toLocaleString()} m² (ca. ${d.homesSocial} eenheden)`, 20, 88);
-            doc.text(`Vrije Sector (60% norm): ${Math.round(d.freeAreaGO).toLocaleString()} m² (ca. ${d.homesFree} eenheden)`, 20, 94);
-            doc.text(`Totaal Aantal Verwachte Woningen: ${d.totalHomes} eenheden`, 20, 100);
+            <h2 style="font-size: 18px; margin-top: 20px; color: #3b82f6;">3. Specificatie per Typologie</h2>
+            <ul style="line-height: 1.6; padding-left: 20px;">
+                ${typoStatsHtml}
+            </ul>
 
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "bold");
-            doc.text("3. Specificatie per Typologie (Gebouwen)", 15, 115);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            let yPos = 122;
-            for (const [typ, stats] of Object.entries(typoStats)) {
-                let niceName = typ.replace(/_/g, ' ').toUpperCase();
-                doc.text(`- ${niceName}: ${stats.count} gebouw(en) gegenereerd.`, 20, yPos);
-                yPos += 6;
-            }
+            <h2 style="font-size: 18px; margin-top: 20px; color: #c0392b;">4. Stichtingskosten</h2>
+            <ul style="list-style: none; padding-left: 0; line-height: 1.6;">
+                <li><strong>Grondkosten:</strong> ${formatEuros(d.costLand)}</li>
+                <li><strong>Bouwkosten Wonen:</strong> ${formatEuros(d.costBuildRes)}</li>
+                <li><strong>Bouwkosten Industrie/Groen:</strong> ${formatEuros(d.costBuildInd + (d.costBuildGrn || 0))}</li>
+                <li><strong>Bijkomende Kosten (20%):</strong> ${formatEuros(d.costAdditional)}</li>
+                <li style="font-size: 16px; font-weight: bold; margin-top: 10px;">TOTALE KOSTEN: ${formatEuros(d.totalCosts)}</li>
+            </ul>
 
-            yPos += 10;
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "bold");
-            doc.text("4. Stichtingskosten (Costs)", 15, yPos);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.text(`Grondkosten: ${formatEuros(d.costLand)}`, 20, yPos + 7);
-            doc.text(`Bouwkosten Wonen: ${formatEuros(d.costBuildRes)}`, 20, yPos + 13);
-            doc.text(`Bouwkosten Industrie/Groen: ${formatEuros(d.costBuildInd + (d.costBuildGrn || 0))}`, 20, yPos + 19);
-            doc.text(`Bijkomende Kosten (20%): ${formatEuros(d.costAdditional)}`, 20, yPos + 25);
-            doc.setFont("helvetica", "bold");
-            doc.text(`TOTALE KOSTEN: ${formatEuros(d.totalCosts)}`, 20, yPos + 32);
+            <h2 style="font-size: 18px; margin-top: 20px; color: #27ae60;">5. Opbrengsten</h2>
+            <ul style="list-style: none; padding-left: 0; line-height: 1.6;">
+                <li><strong>Verkoopwaarde Sociale Huur:</strong> ${formatEuros(d.revSocial)}</li>
+                <li><strong>Verkoopwaarde Vrije Sector:</strong> ${formatEuros(d.revFree)}</li>
+                <li><strong>Verkoopwaarde Commercieel/Industrie:</strong> ${formatEuros(d.revInd)}</li>
+                <li style="font-size: 16px; font-weight: bold; margin-top: 10px;">TOTALE OPBRENGSTEN: ${formatEuros(d.totalRevenue)}</li>
+            </ul>
 
-            yPos += 45;
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(12);
-            doc.text("5. Opbrengsten (Revenue)", 15, yPos);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.text(`Verkoopwaarde Sociale Huur: ${formatEuros(d.revSocial)}`, 20, yPos + 7);
-            doc.text(`Verkoopwaarde Vrije Sector: ${formatEuros(d.revFree)}`, 20, yPos + 13);
-            doc.text(`Verkoopwaarde Commercieel/Industrie: ${formatEuros(d.revInd)}`, 20, yPos + 19);
-            doc.setFont("helvetica", "bold");
-            doc.text(`TOTALE OPBRENGSTEN: ${formatEuros(d.totalRevenue)}`, 20, yPos + 26);
+            <div style="background-color: #f3f4f6; padding: 15px; margin-top: 30px; border-radius: 8px; border-left: 5px solid ${d.profit >= 0 ? '#27ae60' : '#c0392b'};">
+                <h2 style="margin: 0; font-size: 20px;">PROJECTRESULTAAT: ${formatEuros(d.profit)}</h2>
+            </div>
+        </div>
+    `;
 
-            yPos += 42;
-            doc.setFontSize(14);
-            doc.text(`PROJECTRESULTAAT (WINST/VERLIES): ${formatEuros(d.profit)}`, 15, yPos);
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = reportHtml;
 
-            doc.save("Vastgoedrekenmodel_Rapport.pdf");
-        });
+    const opt = {
+        margin:       15,
+        filename:     'Vastgoedrekenmodel_Rapport.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(tempContainer).save();
+});
 
         // --- ANIMATION LOOP ---
         const animate = function () {
