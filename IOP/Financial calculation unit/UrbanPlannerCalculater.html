@@ -16,10 +16,17 @@
         #page-1 { display: flex; flex-direction: column; height: 100vh; background: #f3f4f6; }
         #canvas-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; overflow: auto; padding: 20px;}
         #drawing-area {
-            width: 800px; height: 600px; background-color: white; background-size: contain;
-            background-repeat: no-repeat; background-position: center; position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 2px dashed #cbd5e1; cursor: crosshair;
-        }
+    width: 594px; /* A1 relative width */
+    height: 841px; /* A1 relative height */
+    background-color: white; 
+    background-size: contain;
+    background-repeat: no-repeat; 
+    background-position: center; 
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+    border: 2px dashed #cbd5e1; 
+    cursor: crosshair;
+}
         #svg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
         .drawing-active { border-color: #3b82f6 !important; }
 
@@ -225,13 +232,14 @@
 
     <script>
         // --- DATA STATE ---
-        let sites = []; 
-        let activeSiteId = null;
-        let activeSubId = null; 
-        let activeLayerId = null;
-        
-        const REAL_WIDTH_M = 1188;
-        const pixelsPerMeter = 800 / REAL_WIDTH_M;
+        // --- DATA STATE ---
+let sites = []; 
+let activeSiteId = null;
+let activeSubId = null; 
+let activeLayerId = null;
+
+const REAL_WIDTH_M = 1188; // Keep your real width relative to the physical site
+const pixelsPerMeter = 594 / REAL_WIDTH_M; // Changed from 800 to 594 to match A1 width
 
         function createDefaultLayer(type, height) {
             return { id: Date.now() + Math.random(), type: type, height: height, splitType: 'None', splitRatio: 50 };
@@ -273,6 +281,14 @@
             if (file.name.toLowerCase().endsWith('.svg')) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
+
+sites = []; // Empty the sites array
+            activeSiteId = null; // Clear selections
+            activeSubId = null;
+            // ----------------------------
+
+           
+
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(event.target.result, "image/svg+xml");
                     let parsedCount = 0;
@@ -871,16 +887,15 @@ function generateTypology(site) {
 }
 
 // --- NEW PDF EXPORT LOGIC ---
+// --- FIXED PDF EXPORT LOGIC ---
 document.getElementById('btn-export-pdf').addEventListener('click', async () => {
     // 1. Setup A1 Dimensions (594mm x 841mm)
     const a1W = 594; const a1H = 841;
     
-    // We are scaling 800px (1188 meters) to fit nicely on the A1 sheet at 1:10000.
-    // 1188m at 1:10000 = 118.8mm wide on the page.
-    // We will apply a transform to center the drawing.
-    const mapScale = 118.8 / 800; 
-    const offsetX = (a1W - (800 * mapScale)) / 2;
-    const offsetY = (a1H - (600 * mapScale)) / 2;
+    // We are scaling our 594px canvas to fit nicely on the A1 sheet at 1:10000.
+    const mapScale = 1.0; // 1:1 scale from px to mm since we matched the canvas
+    const offsetX = 0;
+    const offsetY = 0;
 
     const typologyColors = {
         'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48' },
@@ -908,14 +923,14 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
         let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
         
         let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="4" stroke-dasharray="16,12"/>\n`;
+        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="16,12"/>\n`;
         
         if (site.isLocked) {
             site.subBuildings.forEach(sub => {
                 let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
                 let bColor = colors.stroke; 
                 if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
-                svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="2"/>\n`;
+                svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
             });
         }
     });
@@ -940,7 +955,7 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
         <text x="50" y="8" font-size="5" fill="#1e293b" text-anchor="middle">500m</text>
     </g>\n`;
 
-    // Credits & Texts (Bottom Center/Right)
+    // Credits & Texts (Bottom Center)
     svgStr += `
         <text x="${a1W / 2}" y="${a1H - 35}" font-size="7" fill="#1e293b" text-anchor="middle">Urban Masterplan generated using UrbanPlannerCalculater by DouweDoesDesign (https://douwedoesdesign.com/)</text>
         <text x="${a1W / 2}" y="${a1H - 25}" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">Scale 1 : 10000</text>
@@ -948,7 +963,7 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
 
     svgStr += `</svg>`;
 
-    // 3. Convert SVG to PDF using jsPDF
+    // 3. Convert SVG to PDF using window.svg2pdf
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = svgStr;
     const svgElement = tempDiv.querySelector('svg');
@@ -956,19 +971,16 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', format: 'a1', unit: 'mm' });
     
-    // Add the SVG to the PDF document
-    await doc.svg(svgElement, {
+    // THE FIX: Use the standalone svg2pdf function attached to the window
+    await window.svg2pdf(svgElement, doc, {
         x: 0,
         y: 0,
         width: a1W,
         height: a1H
     });
 
-    // Download the PDF
     doc.save("Urban_Masterplan_A1.pdf");
 });
-
-
         // --- 3D INTERACTION ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
