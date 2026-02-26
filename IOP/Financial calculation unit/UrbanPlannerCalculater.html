@@ -15,18 +15,20 @@
         /* Page 1 (2D) Styles */
         #page-1 { display: flex; flex-direction: column; height: 100vh; background: #f3f4f6; }
         #canvas-container { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; overflow: auto; padding: 20px;}
+        
+        /* Scaled for A1 Portrait relative aspect */
         #drawing-area {
-    width: 594px; /* A1 relative width */
-    height: 841px; /* A1 relative height */
-    background-color: white; 
-    background-size: contain;
-    background-repeat: no-repeat; 
-    background-position: center; 
-    position: relative;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-    border: 2px dashed #cbd5e1; 
-    cursor: crosshair;
-}
+            width: 594px; 
+            height: 841px; 
+            background-color: white; 
+            background-size: contain;
+            background-repeat: no-repeat; 
+            background-position: center; 
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            border: 2px dashed #cbd5e1; 
+            cursor: crosshair;
+        }
         #svg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
         .drawing-active { border-color: #3b82f6 !important; }
 
@@ -41,7 +43,7 @@
         }
         #ui-left { position: absolute; top: 20px; left: 20px; width: 340px; display: flex; flex-direction: column; gap: 15px; pointer-events: none;}
         #ui-left > * { pointer-events: auto; }
-        #ui-right { position: absolute; top: 20px; right: 20px; width: 320px; }
+        #ui-right { position: absolute; top: 20px; right: 20px; width: 350px; }
         
         /* 3D UI Elements */
         h2 { margin-top: 0; font-size: 16px; color: #fff; border-bottom: 1px solid #444; padding-bottom: 8px; margin-bottom: 12px; }
@@ -71,7 +73,7 @@
         <header class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md z-10">
             <div>
                 <h1 class="text-xl font-bold">Step 1: Define Typology Zones</h1>
-                <p class="text-xs text-gray-400">Scale presumed at A1 @ 1:2000. Draw zones to be filled with typologies.</p>
+                <p class="text-xs text-gray-400">Scale presumed at A1 @ 1:10000. Draw zones to be filled with typologies.</p>
             </div>
             <div class="flex gap-4 items-center">
                 <input type="file" id="file-upload" accept=".svg, .png, .jpg" class="text-sm text-gray-300 w-64" title="Upload an SVG to parse polygons, or an image as background">
@@ -98,16 +100,19 @@
         
         <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 pointer-events-auto flex gap-4">
             <button id="btn-back-2d" class="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-white font-bold border border-gray-600 shadow-xl backdrop-blur-md opacity-90 transition">
-                ⬅ Back to 2D
+                ⬅ Back
             </button>
             <button id="btn-export-svg" class="bg-purple-700 hover:bg-purple-600 px-6 py-2 rounded-full text-white font-bold border border-purple-500 shadow-xl backdrop-blur-md opacity-90 transition">
-                ⤓ SVG
-            </button>
-            <button id="btn-export-gh" class="bg-orange-600 hover:bg-orange-500 px-6 py-2 rounded-full text-white font-bold border border-orange-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export JSON for Grasshopper">
-                ⤓ Export to GH
+                ⤓ Arch. SVG
             </button>
             <button id="btn-export-pdf" class="bg-red-700 hover:bg-red-600 px-6 py-2 rounded-full text-white font-bold border border-red-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export A1 PDF Map">
                 ⤓ PDF Map
+            </button>
+            <button id="btn-export-gh" class="bg-orange-600 hover:bg-orange-500 px-6 py-2 rounded-full text-white font-bold border border-orange-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export JSON for Grasshopper">
+                ⤓ GH JSON
+            </button>
+            <button id="btn-export-finance" class="bg-emerald-700 hover:bg-emerald-600 px-6 py-2 rounded-full text-white font-bold border border-emerald-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export Dutch Vastgoedrekenmodel Report">
+                ⤓ Fin. Report
             </button>
         </div>
 
@@ -128,10 +133,11 @@
                     <input type="range" id="sunAltitude" min="0" max="90" value="60">
                 </div>
                 <button id="toggleSunAnim" class="btn-dark mt-2">Toggle Sun Animation</button>
+                
                 <div class="control-group mt-3 border-t border-gray-700 pt-3">
-    <label>Camera Zoom Scale: <span id="zoomVal">1.0x</span></label>
-    <input type="range" id="camZoom" min="0.2" max="3.0" step="0.1" value="1.0">
-</div>
+                    <label>Camera Zoom Scale: <span id="zoomVal">1.0x</span></label>
+                    <input type="range" id="camZoom" min="0.2" max="3.0" step="0.1" value="1.0">
+                </div>
             </div>
 
             <div class="glass-panel w-full">
@@ -158,15 +164,15 @@
                         <div class="control-group">
                             <label>Typology</label>
                             <select id="typology-select" class="mb-3">
-    <option value="rijtjeshuis">Rijtjeshuis (Row Houses)</option>
-    <option value="grachtenpand">Grachtenpand (Canal Houses)</option>
-    <option value="twee_onder_een_kap">Twee-onder-een-kap (Semi-Detached)</option>
-    <option value="vrijstaand">Vrijstaande Woning (Detached Villa)</option>
-    <option value="stadsblok">Stadsblok (Perimeter U-Block)</option>
-    <option value="galerijflat">Galerijflat (Linear Slab Block)</option>
-    <option value="middelhoogbouw">Middelhoogbouw (L-Shape, Mid-Rise)</option>
-    <option value="hoogbouw">Hoogbouw (Towers in a Park)</option>
-</select>
+                                <option value="rijtjeshuis">Rijtjeshuis (Row Houses)</option>
+                                <option value="grachtenpand">Grachtenpand (Canal Houses)</option>
+                                <option value="twee_onder_een_kap">Twee-onder-een-kap (Semi-Detached)</option>
+                                <option value="vrijstaand">Vrijstaande Woning (Detached Villa)</option>
+                                <option value="stadsblok">Stadsblok (Perimeter U-Block)</option>
+                                <option value="galerijflat">Galerijflat (Linear Slab Block)</option>
+                                <option value="middelhoogbouw">Middelhoogbouw (L-Shape, Mid-Rise)</option>
+                                <option value="hoogbouw">Hoogbouw (Towers in a Park)</option>
+                            </select>
                         </div>
                         <button id="btn-lock-generate" class="btn-dark btn-primary shadow-lg mb-2">🔒 Lock Area & Generate</button>
                         <button id="btn-delete-site" class="btn-dark btn-danger mt-2">Delete Entire Zone</button>
@@ -205,11 +211,11 @@
             <h2>Urban & Financial Metrics</h2>
             <div class="flex flex-col gap-2 text-sm mt-4">
                 <div class="flex justify-between border-b border-gray-700 pb-1">
-                    <span class="text-red-400">Residential F.A.:</span>
+                    <span class="text-red-400">Res Area (BVO):</span>
                     <span id="fin-res-area" class="font-bold">0 m²</span>
                 </div>
                 <div class="flex justify-between border-b border-gray-700 pb-1">
-                    <span class="text-purple-400">Industrial F.A.:</span>
+                    <span class="text-purple-400">Ind Area (BVO):</span>
                     <span id="fin-ind-area" class="font-bold">0 m²</span>
                 </div>
                 
@@ -226,20 +232,20 @@
                     <span class="text-gray-300 font-bold">Est. Dev Cost:</span>
                     <span id="fin-total-cost" class="font-bold text-emerald-400">€ 0.00</span>
                 </div>
+                <div class="text-xs text-gray-500 italic mt-2 text-right">Click Fin. Report for details</div>
             </div>
         </div>
     </div>
 
     <script>
         // --- DATA STATE ---
-        // --- DATA STATE ---
-let sites = []; 
-let activeSiteId = null;
-let activeSubId = null; 
-let activeLayerId = null;
-
-const REAL_WIDTH_M = 1188; // Keep your real width relative to the physical site
-const pixelsPerMeter = 594 / REAL_WIDTH_M; // Changed from 800 to 594 to match A1 width
+        let sites = []; 
+        let activeSiteId = null;
+        let activeSubId = null; 
+        let activeLayerId = null;
+        
+        const REAL_WIDTH_M = 1188;
+        const pixelsPerMeter = 594 / REAL_WIDTH_M; // Mapped to A1 portrait Canvas Width
 
         function createDefaultLayer(type, height) {
             return { id: Date.now() + Math.random(), type: type, height: height, splitType: 'None', splitRatio: 50 };
@@ -281,37 +287,33 @@ const pixelsPerMeter = 594 / REAL_WIDTH_M; // Changed from 800 to 594 to match A
             if (file.name.toLowerCase().endsWith('.svg')) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-
-sites = []; // Empty the sites array
-            activeSiteId = null; // Clear selections
-            activeSubId = null;
-            // ----------------------------
-
-           
+                    // Reset State
+                    sites = []; 
+                    activeSiteId = null; 
+                    activeSubId = null;
 
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(event.target.result, "image/svg+xml");
                     let parsedCount = 0;
 
-                    // --- NEW: Calculate scaling based on SVG dimensions vs Canvas dimensions ---
+                    // Uniform Scaling to prevent 1D stretching
                     const svgNode = doc.querySelector('svg');
-                    let svgW = 1188; // fallback
-                    let svgH = 841;
+                    let svgW = 594; let svgH = 841; // Fallback
                     
                     if (svgNode) {
                         if (svgNode.getAttribute('viewBox')) {
                             const vb = svgNode.getAttribute('viewBox').split(/[\s,]+/);
-                            svgW = parseFloat(vb[2]);
-                            svgH = parseFloat(vb[3]);
+                            svgW = parseFloat(vb[2]); svgH = parseFloat(vb[3]);
                         } else if (svgNode.getAttribute('width')) {
                             svgW = parseFloat(svgNode.getAttribute('width'));
                             svgH = parseFloat(svgNode.getAttribute('height'));
                         }
                     }
                     
-                    const scaleX = (800 / svgW) * 0.8; 
-                    const scaleY = (600 / svgH) * 0.8;
-                    // -------------------------------------------------------------------------
+                    const canvasW = 594; const canvasH = 841;
+                    const scale = Math.min(canvasW / svgW, canvasH / svgH) * 0.9; 
+                    const offsetX = (canvasW - (svgW * scale)) / 2;
+                    const offsetY = (canvasH - (svgH * scale)) / 2;
 
                     // Parse Polygons and Polylines
                     const polygons = doc.querySelectorAll('polygon, polyline');
@@ -322,29 +324,13 @@ sites = []; // Empty the sites array
                         let pts = [];
                         for(let i=0; i < pointsList.length; i+=2) {
                             if(pointsList[i] !== undefined && pointsList[i+1] !== undefined) {
-                                // Apply the scale factor here
                                 pts.push({
-                                    x: parseFloat(pointsList[i]) * scaleX, 
-                                    y: parseFloat(pointsList[i+1]) * scaleY
+                                    x: (parseFloat(pointsList[i]) * scale) + offsetX, 
+                                    y: (parseFloat(pointsList[i+1]) * scale) + offsetY
                                 });
                             }
                         }
                         if(pts.length > 2) {
-                            sites.push({ id: 'site-' + Date.now() + Math.random(), points: pts, area: calculateRealArea(pts), isLocked: false, typology: 'rijtjeshuis', subBuildings: [] });
-                            parsedCount++;
-                        }
-                    });
-
-                    // Parse Rectangles
-                    const rects = doc.querySelectorAll('rect');
-                    rects.forEach(rect => {
-                        // Apply the scale factor here
-                        const x = parseFloat(rect.getAttribute('x') || 0) * scaleX;
-                        const y = parseFloat(rect.getAttribute('y') || 0) * scaleY;
-                        const w = parseFloat(rect.getAttribute('width') || 0) * scaleX;
-                        const h = parseFloat(rect.getAttribute('height') || 0) * scaleY;
-                        if(w > 0 && h > 0) {
-                            const pts = [ {x: x, y: y}, {x: x + w, y: y}, {x: x + w, y: y + h}, {x: x, y: y + h} ];
                             sites.push({ id: 'site-' + Date.now() + Math.random(), points: pts, area: calculateRealArea(pts), isLocked: false, typology: 'rijtjeshuis', subBuildings: [] });
                             parsedCount++;
                         }
@@ -400,6 +386,8 @@ sites = []; // Empty the sites array
             svg.querySelectorAll('.site-poly, .sub-poly').forEach(p => p.remove());
             
             sites.forEach(site => {
+                if (!site.points || site.points.length < 3) return;
+
                 const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
                 poly.setAttribute('points', site.points.map(p => `${p.x},${p.y}`).join(' '));
                 poly.setAttribute('class', 'site-poly');
@@ -435,21 +423,13 @@ sites = []; // Empty the sites array
         // 1. Export JSON for Grasshopper
         document.getElementById('btn-export-gh').addEventListener('click', () => {
             let ghData = {
-                metadata: {
-                    exportTime: new Date().toISOString(),
-                    unit: "meters"
-                },
+                metadata: { exportTime: new Date().toISOString(), unit: "meters" },
                 typologies: []
             };
 
             sites.forEach(site => {
-                // Only export if locked and contains buildings
                 if (site.isLocked && site.subBuildings.length > 0) {
-                    // We extract ONE archetype per zone. Since they start identical, subBuildings[0] is our baseline.
-                    // If the user clicked and modified a specific one, they might differ, but taking the first acts as the master typology.
                     let archetype = site.subBuildings[0];
-
-                    // Convert footprint points to Local Coordinate Meters (starting at 0,0)
                     let minX = Math.min(...archetype.points.map(p => p.x));
                     let minY = Math.min(...archetype.points.map(p => p.y));
 
@@ -462,9 +442,7 @@ sites = []; // Empty the sites array
                     let currentElevation = 0;
 
                     archetype.layers.forEach((layer, index) => {
-                        // Create a unique 'signature' to group identical floors
                         let signature = `${layer.type}_${layer.splitType}_${layer.splitRatio}_${layer.height}`;
-
                         let existing = uniqueFloors.find(uf => uf.signature === signature);
 
                         if (existing) {
@@ -472,7 +450,7 @@ sites = []; // Empty the sites array
                         } else {
                             uniqueFloors.push({
                                 signature: signature,
-                                name: index === 0 ? "Ground Floor" : "Deviant Floor", // Renamed later
+                                name: index === 0 ? "Ground Floor" : "Deviant Floor",
                                 levels: [index],
                                 baseElevationMeters: currentElevation,
                                 heightMeters: layer.height,
@@ -481,10 +459,9 @@ sites = []; // Empty the sites array
                                 splitRatio: layer.splitRatio
                             });
                         }
-                        currentElevation += layer.height; // Accumulate height for the next layer
+                        currentElevation += layer.height; 
                     });
 
-                    // Rename the floor type with the most levels to "Typical Floor" (if it isn't the ground floor)
                     let maxLevels = 0;
                     let typicalFloor = null;
                     uniqueFloors.forEach(uf => {
@@ -506,7 +483,6 @@ sites = []; // Empty the sites array
                 }
             });
 
-            // Trigger Download
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ghData, null, 2));
             const a = document.createElement('a');
             a.href = dataStr;
@@ -514,72 +490,150 @@ sites = []; // Empty the sites array
             a.click();
         });
 
-        // 2. Export SVG
+        // 2. Export Arch SVG
         document.getElementById('btn-export-svg').addEventListener('click', () => {
-    const typologyColors = {
-        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
-        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c', name: 'Grachtenpand (Canal)' },
-        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706', name: 'Twee-onder-een-kap' },
-        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a', name: 'Vrijstaand (Villa)' },
-        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7', name: 'Stadsblok (Perimeter)' },
-        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed', name: 'Galerijflat (Slab)' },
-        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3', name: 'Middelhoogbouw (L-Rise)' },
-        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569', name: 'Hoogbouw (Tower/Podium)' }
-    };
+            const typologyColors = {
+                'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
+                'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c', name: 'Grachtenpand (Canal)' },
+                'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706', name: 'Twee-onder-een-kap' },
+                'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a', name: 'Vrijstaand (Villa)' },
+                'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7', name: 'Stadsblok (Perimeter)' },
+                'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed', name: 'Galerijflat (Slab)' },
+                'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3', name: 'Middelhoogbouw (L-Rise)' },
+                'hoogbouw': { fill: '#f1f5f9', stroke: '#475569', name: 'Hoogbouw (Tower/Podium)' }
+            };
 
-    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" style="background:#f8fafc; font-family: sans-serif;">\n`;
-    let activeTypologies = new Set();
-    
-    // Draw Sites & Buildings
-    sites.forEach(site => {
-        if (site.isLocked) activeTypologies.add(site.typology);
-        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
-        
-        let fill = site.isLocked ? colors.fill : 'rgba(219, 234, 254, 0.4)';
-        let stroke = site.isLocked ? colors.stroke : '#94a3b8';
-        
-        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="8,6"/>\n`;
-        
-        if (site.isLocked) {
-            site.subBuildings.forEach(sub => {
-                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
-                // Solid building color matching the stroke, unless it has a greenhouse roof
-                let bColor = colors.stroke; 
-                if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
+            let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 594 841" style="background:#f8fafc; font-family: sans-serif;">\n`;
+            let activeTypologies = new Set();
+            
+            sites.forEach(site => {
+                if (site.isLocked) activeTypologies.add(site.typology);
+                let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
                 
-                svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
+                let fill = site.isLocked ? colors.fill : 'rgba(219, 234, 254, 0.4)';
+                let stroke = site.isLocked ? colors.stroke : '#94a3b8';
+                
+                let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+                svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="8,6"/>\n`;
+                
+                if (site.isLocked) {
+                    site.subBuildings.forEach(sub => {
+                        let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                        let bColor = colors.stroke; 
+                        if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
+                        svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
+                    });
+                }
             });
-        }
-    });
 
-    // Draw Legend Panel
-    if (activeTypologies.size > 0) {
-        svgStr += `  <g transform="translate(580, 20)">\n`;
-        // Background box sizing based on active typologies
-        svgStr += `    <rect x="0" y="0" width="200" height="${activeTypologies.size * 25 + 40}" fill="white" stroke="#2d3436" stroke-width="2" rx="4" opacity="0.95"/>\n`;
-        svgStr += `    <text x="15" y="25" font-size="14" font-weight="bold" fill="#1e293b">URBAN LEGEND</text>\n`;
-        
-        let yOffset = 45;
-        activeTypologies.forEach(typ => {
-            let t = typologyColors[typ];
-            svgStr += `    <rect x="15" y="${yOffset - 11}" width="16" height="16" fill="${t.stroke}" rx="2"/>\n`;
-            svgStr += `    <text x="40" y="${yOffset + 2}" font-size="12" fill="#334155">${t.name}</text>\n`;
-            yOffset += 25;
+            if (activeTypologies.size > 0) {
+                svgStr += `  <g transform="translate(370, 20)">\n`;
+                svgStr += `    <rect x="0" y="0" width="200" height="${activeTypologies.size * 25 + 40}" fill="white" stroke="#2d3436" stroke-width="2" rx="4" opacity="0.95"/>\n`;
+                svgStr += `    <text x="15" y="25" font-size="14" font-weight="bold" fill="#1e293b">URBAN LEGEND</text>\n`;
+                
+                let yOffset = 45;
+                activeTypologies.forEach(typ => {
+                    let t = typologyColors[typ];
+                    svgStr += `    <rect x="15" y="${yOffset - 11}" width="16" height="16" fill="${t.stroke}" rx="2"/>\n`;
+                    svgStr += `    <text x="40" y="${yOffset + 2}" font-size="12" fill="#334155">${t.name}</text>\n`;
+                    yOffset += 25;
+                });
+                svgStr += `  </g>\n`;
+            }
+
+            svgStr += `</svg>`;
+            
+            const blob = new Blob([svgStr], {type: "image/svg+xml"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "masterplan_legend.svg";
+            a.click();
+            URL.revokeObjectURL(url);
         });
-        svgStr += `  </g>\n`;
-    }
 
-    svgStr += `</svg>`;
-    
-    const blob = new Blob([svgStr], {type: "image/svg+xml"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "masterplan_legend.svg";
-    a.click();
-    URL.revokeObjectURL(url);
-});
+        // 3. Export PDF Map (A1 Portrait)
+        document.getElementById('btn-export-pdf').addEventListener('click', async () => {
+            const a1W = 594; const a1H = 841;
+            const mapScale = 1.0; 
+            const offsetX = 0;
+            const offsetY = 0;
+
+            const typologyColors = {
+                'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48' },
+                'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c' },
+                'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706' },
+                'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a' },
+                'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7' },
+                'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed' },
+                'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3' },
+                'hoogbouw': { fill: '#f1f5f9', stroke: '#475569' }
+            };
+
+            let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a1W} ${a1H}" width="${a1W}mm" height="${a1H}mm" style="background:#ffffff; font-family: Helvetica, sans-serif;">\n`;
+            
+            svgStr += `<rect x="15" y="15" width="${a1W - 30}" height="${a1H - 30}" fill="none" stroke="#1e293b" stroke-width="1.5"/>\n`;
+            svgStr += `<g transform="translate(${offsetX}, ${offsetY}) scale(${mapScale})">\n`;
+            
+            sites.forEach(site => {
+                let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
+                let fill = site.isLocked ? colors.fill : 'none';
+                let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
+                
+                let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+                svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="16,12"/>\n`;
+                
+                if (site.isLocked) {
+                    site.subBuildings.forEach(sub => {
+                        let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                        let bColor = colors.stroke; 
+                        if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
+                        svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
+                    });
+                }
+            });
+            svgStr += `</g>\n`;
+
+            svgStr += `
+            <g transform="translate(${a1W - 40}, 50)">
+                <circle cx="0" cy="0" r="10" fill="none" stroke="#1e293b" stroke-width="1"/>
+                <line x1="0" y1="0" x2="0" y2="-10" stroke="#1e293b" stroke-width="1.5"/>
+                <text x="0" y="-14" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">N</text>
+            </g>\n`;
+
+            svgStr += `
+            <g transform="translate(30, ${a1H - 40})">
+                <line x1="0" y1="0" x2="50" y2="0" stroke="#1e293b" stroke-width="1.5"/>
+                <line x1="0" y1="-2" x2="0" y2="2" stroke="#1e293b" stroke-width="1.5"/>
+                <line x1="25" y1="-1" x2="25" y2="1" stroke="#1e293b" stroke-width="0.5"/>
+                <line x1="50" y1="-2" x2="50" y2="2" stroke="#1e293b" stroke-width="1.5"/>
+                <text x="0" y="8" font-size="5" fill="#1e293b" text-anchor="middle">0</text>
+                <text x="50" y="8" font-size="5" fill="#1e293b" text-anchor="middle">500m</text>
+            </g>\n`;
+
+            svgStr += `
+                <text x="${a1W / 2}" y="${a1H - 35}" font-size="7" fill="#1e293b" text-anchor="middle">Urban Masterplan generated using UrbanPlannerCalculater by DouweDoesDesign (https://douwedoesdesign.com/)</text>
+                <text x="${a1W / 2}" y="${a1H - 25}" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">Scale 1 : 10000</text>
+            `;
+
+            svgStr += `</svg>`;
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = svgStr;
+            const svgElement = tempDiv.querySelector('svg');
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', format: 'a1', unit: 'mm' });
+            
+            await window.svg2pdf(svgElement, doc, {
+                x: 0,
+                y: 0,
+                width: a1W,
+                height: a1H
+            });
+
+            doc.save("Urban_Masterplan_A1.pdf");
+        });
 
         // --- TRANSITIONS ---
         document.getElementById('btn-go-3d').addEventListener('click', () => {
@@ -653,8 +707,9 @@ sites = []; // Empty the sites array
 
         function buildFloors(group, subBuilding, parentSiteId) {
             const shape = new THREE.Shape();
+            // Centering around 0,0 for 3D view (offsetting by half canvas size)
             subBuilding.points.forEach((p, index) => {
-                const x = p.x - 400; const y = -(p.y - 300);
+                const x = p.x - 297; const y = -(p.y - 420);
                 if (index === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
             });
 
@@ -703,7 +758,7 @@ sites = []; // Empty the sites array
                 
                 const shape = new THREE.Shape();
                 site.points.forEach((p, index) => {
-                    const x = p.x - 400; const y = -(p.y - 300);
+                    const x = p.x - 297; const y = -(p.y - 420);
                     if (index === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
                 });
                 
@@ -732,255 +787,154 @@ sites = []; // Empty the sites array
         }
 
         // --- TYPOLOGY GENERATION LOGIC ---
-        // --- FIXED GEOMETRY ENGINE ---
-function generateTypology(site) {
-    site.subBuildings = [];
+        function generateTypology(site) {
+            site.subBuildings = [];
 
-    // SAFETY CHECK: Ensure polygon has enough valid points
-    if (!site.points || site.points.length < 3) return;
+            if (!site.points || site.points.length < 3) return;
 
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    let cx = 0, cy = 0; 
-    site.points.forEach(p => {
-        if(p.x < minX) minX = p.x; if(p.y < minY) minY = p.y;
-        if(p.x > maxX) maxX = p.x; if(p.y > maxY) maxY = p.y;
-        cx += p.x; cy += p.y;
-    });
-    cx /= site.points.length; cy /= site.points.length;
-
-    // --- EDGE-BASED TYPOLOGIES ---
-    if (['rijtjeshuis', 'grachtenpand', 'stadsblok', 'galerijflat'].includes(site.typology)) {
-        let bWidthM, depthM, gapM, baseFloors, floorVariation, dropLongest;
-        
-        if (site.typology === 'rijtjeshuis') { bWidthM = 6; depthM = 10; gapM = 0; baseFloors = 2; floorVariation = 1; dropLongest = false; }
-        else if (site.typology === 'grachtenpand') { bWidthM = 5; depthM = 14; gapM = 0; baseFloors = 4; floorVariation = 2; dropLongest = false; }
-        else if (site.typology === 'stadsblok') { bWidthM = 12; depthM = 12; gapM = 0; baseFloors = 4; floorVariation = 3; dropLongest = true; } 
-        else { bWidthM = 60; depthM = 12; gapM = 20; baseFloors = 6; floorVariation = 2; dropLongest = false; }
-
-        let pxW = bWidthM * pixelsPerMeter; let pxDepth = depthM * pixelsPerMeter; let pxGap = gapM * pixelsPerMeter;
-
-        let edges = [];
-        for(let i=0; i<site.points.length; i++) {
-            let p1 = site.points[i];
-            let p2 = site.points[(i+1) % site.points.length];
-            let len = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-            if (len > 0.1) { // CRASH FIX: Ignore zero-length lines
-                edges.push({ p1, p2, dx: p2.x - p1.x, dy: p2.y - p1.y, len: len, index: i });
-            }
-        }
-
-        if (edges.length === 0) return;
-
-        if (dropLongest && edges.length > 3) {
-            edges.sort((a,b) => b.len - a.len);
-            edges[0].dropped = true; 
-            edges.sort((a,b) => a.index - b.index);
-        }
-
-        edges.forEach(edge => {
-            if (edge.dropped) return;
-
-            let nx = -edge.dy / edge.len; let ny = edge.dx / edge.len;
-            
-            // Inward normal check
-            let testX = edge.p1.x + nx * pxDepth + (edge.dx/2); 
-            let testY = edge.p1.y + ny * pxDepth + (edge.dy/2);
-            if (!isPointInPolygon([testX, testY], site.points)) { nx = -nx; ny = -ny; }
-
-            let currentLen = 0;
-            while (currentLen + pxW <= edge.len) {
-                let startX = edge.p1.x + (edge.dx / edge.len) * currentLen;
-                let startY = edge.p1.y + (edge.dy / edge.len) * currentLen;
-                let endX = startX + (edge.dx / edge.len) * pxW;
-                let endY = startY + (edge.dy / edge.len) * pxW;
-
-                let pts = [
-                    {x: startX, y: startY}, {x: endX, y: endY},
-                    {x: endX + nx * pxDepth, y: endY + ny * pxDepth}, {x: startX + nx * pxDepth, y: startY + ny * pxDepth}
-                ];
-
-                let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
-                let subLayers = [];
-                for(let j=0; j<floorsCount; j++) subLayers.push(createDefaultLayer('Residence', 3));
-
-                site.subBuildings.push({ id: 'sub-' + Date.now() + Math.random(), points: pts, area: bWidthM * depthM, layers: subLayers });
-                currentLen += pxW + pxGap;
-            }
-        });
-        return;
-    }
-
-    // --- PODIUM BASED (Hoogbouw) ---
-    if (site.typology === 'hoogbouw') {
-        let pxOffset = 4 * pixelsPerMeter;
-        let podiumPts = []; 
-        site.points.forEach(p => {
-            let dx = cx - p.x; let dy = cy - p.y;
-            let dist = Math.hypot(dx, dy);
-            if (dist < 0.1) return; // CRASH FIX
-            let ratio = Math.max(0, (dist - pxOffset) / dist);
-            podiumPts.push({x: cx - dx * ratio, y: cy - dy * ratio}); 
-        });
-        
-        if(podiumPts.length < 3) return;
-        let podiumArea = calculateRealArea(podiumPts);
-        site.subBuildings.push({ id: 'podium-' + Date.now(), points: podiumPts, area: podiumArea, layers: [createDefaultLayer('Industry', 4.5), createDefaultLayer('Greenhouse', 1.5)] });
-
-        let numTowers = Math.max(1, Math.min(3, Math.floor(podiumArea / 1500)));
-        for(let i=0; i<numTowers; i++) {
-            let twM = 22, thM = 22; let pxtw = twM * pixelsPerMeter;
-            let tx = cx - pxtw/2 + ((Math.random() - 0.5) * pxOffset * 6);
-            let ty = cy - pxtw/2 + ((Math.random() - 0.5) * pxOffset * 6);
-            let towerPts = [ {x: tx, y: ty}, {x: tx+pxtw, y: ty}, {x: tx+pxtw, y: ty+pxtw}, {x: tx, y: ty+pxtw} ];
-            
-            let towerLayers = [createDefaultLayer('Industry', 4.5), createDefaultLayer('Greenhouse', 1.5)];
-            let floorsCount = 12 + Math.floor(Math.random() * 12);
-            for(let f=0; f<floorsCount; f++) towerLayers.push(createDefaultLayer('Residence', 3.2));
-            site.subBuildings.push({ id: 'tower-' + Date.now() + i, points: towerPts, area: twM * thM, layers: towerLayers });
-        }
-        return;
-    }
-
-    // --- ROTATED GRID BASED ---
-    let bWidthM = 10, bHeightM = 10, gapXM = 12, gapYM = 15, baseFloors = 2, floorVariation = 1, type = 'Residence';
-    if (site.typology === 'twee_onder_een_kap') { bWidthM = 14; gapXM = 6; }
-    else if (site.typology === 'middelhoogbouw') { bWidthM = 22; bHeightM = 22; gapXM = 18; gapYM = 18; baseFloors = 4; floorVariation = 2; }
-
-    let longestAngle = 0, maxLen = 0;
-    for(let i=0; i<site.points.length; i++) {
-        let p1 = site.points[i]; let p2 = site.points[(i+1)%site.points.length];
-        let len = Math.hypot(p2.x-p1.x, p2.y-p1.y);
-        if (len > maxLen) { maxLen = len; longestAngle = Math.atan2(p2.y-p1.y, p2.x-p1.x); }
-    }
-
-    let pxW = bWidthM * pixelsPerMeter, pxH = bHeightM * pixelsPerMeter;
-    let pxGapX = gapXM * pixelsPerMeter, pxGapY = gapYM * pixelsPerMeter;
-    let cosA = Math.cos(-longestAngle), sinA = Math.sin(-longestAngle);
-
-    let rMinX = Infinity, rMinY = Infinity, rMaxX = -Infinity, rMaxY = -Infinity;
-    site.points.forEach(p => {
-        let rx = (p.x - cx) * cosA - (p.y - cy) * sinA;
-        let ry = (p.x - cx) * sinA + (p.y - cy) * cosA;
-        if(rx < rMinX) rMinX = rx; if(ry < rMinY) rMinY = ry;
-        if(rx > rMaxX) rMaxX = rx; if(ry > rMaxY) rMaxY = ry;
-    });
-
-    for (let x = rMinX + pxGapX; x < rMaxX - pxW; x += pxW + pxGapX) {
-        for (let y = rMinY + pxGapY; y < rMaxY - pxH; y += pxH + pxGapY) {
-            let invCosA = Math.cos(longestAngle), invSinA = Math.sin(longestAngle);
-            let bx = cx + x * invCosA - y * invSinA; let by = cy + x * invSinA + y * invCosA;
-
-            if (isPointInPolygon([bx, by], site.points)) {
-                let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
-                let subLayers = [];
-                for(let i=0; i<floorsCount; i++) subLayers.push(createDefaultLayer(type, 3));
-                
-                let pts = [
-                    {x: bx, y: by}, {x: bx + pxW * invCosA, y: by + pxW * invSinA},
-                    {x: bx + pxW * invCosA - pxH * invSinA, y: by + pxW * invSinA + pxH * invCosA},
-                    {x: bx - pxH * invSinA, y: by + pxH * invCosA}
-                ];
-                site.subBuildings.push({ id: 'sub-' + Date.now() + Math.random(), points: pts, area: bWidthM * bHeightM, layers: subLayers });
-            }
-        }
-    }
-}
-
-// --- NEW PDF EXPORT LOGIC ---
-// --- FIXED PDF EXPORT LOGIC ---
-document.getElementById('btn-export-pdf').addEventListener('click', async () => {
-    // 1. Setup A1 Dimensions (594mm x 841mm)
-    const a1W = 594; const a1H = 841;
-    
-    // We are scaling our 594px canvas to fit nicely on the A1 sheet at 1:10000.
-    const mapScale = 1.0; // 1:1 scale from px to mm since we matched the canvas
-    const offsetX = 0;
-    const offsetY = 0;
-
-    const typologyColors = {
-        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48' },
-        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c' },
-        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706' },
-        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a' },
-        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7' },
-        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed' },
-        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3' },
-        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569' }
-    };
-
-    // 2. Build the SVG String formatted for the PDF Layout
-    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a1W} ${a1H}" width="${a1W}mm" height="${a1H}mm" style="background:#ffffff; font-family: Helvetica, sans-serif;">\n`;
-    
-    // Outer Border
-    svgStr += `<rect x="15" y="15" width="${a1W - 30}" height="${a1H - 30}" fill="none" stroke="#1e293b" stroke-width="1.5"/>\n`;
-
-    // Map Wrapper
-    svgStr += `<g transform="translate(${offsetX}, ${offsetY}) scale(${mapScale})">\n`;
-    
-    sites.forEach(site => {
-        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
-        let fill = site.isLocked ? colors.fill : 'none';
-        let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
-        
-        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="16,12"/>\n`;
-        
-        if (site.isLocked) {
-            site.subBuildings.forEach(sub => {
-                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
-                let bColor = colors.stroke; 
-                if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
-                svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            let cx = 0, cy = 0; 
+            site.points.forEach(p => {
+                if(p.x < minX) minX = p.x; if(p.y < minY) minY = p.y;
+                if(p.x > maxX) maxX = p.x; if(p.y > maxY) maxY = p.y;
+                cx += p.x; cy += p.y;
             });
+            cx /= site.points.length; cy /= site.points.length;
+
+            if (['rijtjeshuis', 'grachtenpand', 'stadsblok', 'galerijflat'].includes(site.typology)) {
+                let bWidthM, depthM, gapM, baseFloors, floorVariation, dropLongest;
+                
+                if (site.typology === 'rijtjeshuis') { bWidthM = 6; depthM = 10; gapM = 0; baseFloors = 2; floorVariation = 1; dropLongest = false; }
+                else if (site.typology === 'grachtenpand') { bWidthM = 5; depthM = 14; gapM = 0; baseFloors = 4; floorVariation = 2; dropLongest = false; }
+                else if (site.typology === 'stadsblok') { bWidthM = 12; depthM = 12; gapM = 0; baseFloors = 4; floorVariation = 3; dropLongest = true; } 
+                else { bWidthM = 60; depthM = 12; gapM = 20; baseFloors = 6; floorVariation = 2; dropLongest = false; }
+
+                let pxW = bWidthM * pixelsPerMeter; let pxDepth = depthM * pixelsPerMeter; let pxGap = gapM * pixelsPerMeter;
+
+                let edges = [];
+                for(let i=0; i<site.points.length; i++) {
+                    let p1 = site.points[i];
+                    let p2 = site.points[(i+1) % site.points.length];
+                    let len = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+                    if (len > 0.1) {
+                        edges.push({ p1, p2, dx: p2.x - p1.x, dy: p2.y - p1.y, len: len, index: i });
+                    }
+                }
+
+                if (edges.length === 0) return;
+
+                if (dropLongest && edges.length > 3) {
+                    edges.sort((a,b) => b.len - a.len);
+                    edges[0].dropped = true; 
+                    edges.sort((a,b) => a.index - b.index);
+                }
+
+                edges.forEach(edge => {
+                    if (edge.dropped) return;
+
+                    let nx = -edge.dy / edge.len; let ny = edge.dx / edge.len;
+                    
+                    let testX = edge.p1.x + nx * pxDepth + (edge.dx/2); 
+                    let testY = edge.p1.y + ny * pxDepth + (edge.dy/2);
+                    if (!isPointInPolygon([testX, testY], site.points)) { nx = -nx; ny = -ny; }
+
+                    let currentLen = 0;
+                    while (currentLen + pxW <= edge.len) {
+                        let startX = edge.p1.x + (edge.dx / edge.len) * currentLen;
+                        let startY = edge.p1.y + (edge.dy / edge.len) * currentLen;
+                        let endX = startX + (edge.dx / edge.len) * pxW;
+                        let endY = startY + (edge.dy / edge.len) * pxW;
+
+                        let pts = [
+                            {x: startX, y: startY}, {x: endX, y: endY},
+                            {x: endX + nx * pxDepth, y: endY + ny * pxDepth}, {x: startX + nx * pxDepth, y: startY + ny * pxDepth}
+                        ];
+
+                        let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
+                        let subLayers = [];
+                        for(let j=0; j<floorsCount; j++) subLayers.push(createDefaultLayer('Residence', 3));
+
+                        site.subBuildings.push({ id: 'sub-' + Date.now() + Math.random(), points: pts, area: bWidthM * depthM, layers: subLayers });
+                        currentLen += pxW + pxGap;
+                    }
+                });
+                return;
+            }
+
+            if (site.typology === 'hoogbouw') {
+                let pxOffset = 4 * pixelsPerMeter;
+                let podiumPts = []; 
+                site.points.forEach(p => {
+                    let dx = cx - p.x; let dy = cy - p.y;
+                    let dist = Math.hypot(dx, dy);
+                    if (dist < 0.1) return;
+                    let ratio = Math.max(0, (dist - pxOffset) / dist);
+                    podiumPts.push({x: cx - dx * ratio, y: cy - dy * ratio}); 
+                });
+                
+                if(podiumPts.length < 3) return;
+                let podiumArea = calculateRealArea(podiumPts);
+                site.subBuildings.push({ id: 'podium-' + Date.now(), points: podiumPts, area: podiumArea, layers: [createDefaultLayer('Industry', 4.5), createDefaultLayer('Greenhouse', 1.5)] });
+
+                let numTowers = Math.max(1, Math.min(3, Math.floor(podiumArea / 1500)));
+                for(let i=0; i<numTowers; i++) {
+                    let twM = 22, thM = 22; let pxtw = twM * pixelsPerMeter;
+                    let tx = cx - pxtw/2 + ((Math.random() - 0.5) * pxOffset * 6);
+                    let ty = cy - pxtw/2 + ((Math.random() - 0.5) * pxOffset * 6);
+                    let towerPts = [ {x: tx, y: ty}, {x: tx+pxtw, y: ty}, {x: tx+pxtw, y: ty+pxtw}, {x: tx, y: ty+pxtw} ];
+                    
+                    let towerLayers = [createDefaultLayer('Industry', 4.5), createDefaultLayer('Greenhouse', 1.5)];
+                    let floorsCount = 12 + Math.floor(Math.random() * 12);
+                    for(let f=0; f<floorsCount; f++) towerLayers.push(createDefaultLayer('Residence', 3.2));
+                    site.subBuildings.push({ id: 'tower-' + Date.now() + i, points: towerPts, area: twM * thM, layers: towerLayers });
+                }
+                return;
+            }
+
+            let bWidthM = 10, bHeightM = 10, gapXM = 12, gapYM = 15, baseFloors = 2, floorVariation = 1, type = 'Residence';
+            if (site.typology === 'twee_onder_een_kap') { bWidthM = 14; gapXM = 6; }
+            else if (site.typology === 'middelhoogbouw') { bWidthM = 22; bHeightM = 22; gapXM = 18; gapYM = 18; baseFloors = 4; floorVariation = 2; }
+
+            let longestAngle = 0, maxLen = 0;
+            for(let i=0; i<site.points.length; i++) {
+                let p1 = site.points[i]; let p2 = site.points[(i+1)%site.points.length];
+                let len = Math.hypot(p2.x-p1.x, p2.y-p1.y);
+                if (len > maxLen) { maxLen = len; longestAngle = Math.atan2(p2.y-p1.y, p2.x-p1.x); }
+            }
+
+            let pxW = bWidthM * pixelsPerMeter, pxH = bHeightM * pixelsPerMeter;
+            let pxGapX = gapXM * pixelsPerMeter, pxGapY = gapYM * pixelsPerMeter;
+            let cosA = Math.cos(-longestAngle), sinA = Math.sin(-longestAngle);
+
+            let rMinX = Infinity, rMinY = Infinity, rMaxX = -Infinity, rMaxY = -Infinity;
+            site.points.forEach(p => {
+                let rx = (p.x - cx) * cosA - (p.y - cy) * sinA;
+                let ry = (p.x - cx) * sinA + (p.y - cy) * cosA;
+                if(rx < rMinX) rMinX = rx; if(ry < rMinY) rMinY = ry;
+                if(rx > rMaxX) rMaxX = rx; if(ry > rMaxY) rMaxY = ry;
+            });
+
+            for (let x = rMinX + pxGapX; x < rMaxX - pxW; x += pxW + pxGapX) {
+                for (let y = rMinY + pxGapY; y < rMaxY - pxH; y += pxH + pxGapY) {
+                    let invCosA = Math.cos(longestAngle), invSinA = Math.sin(longestAngle);
+                    let bx = cx + x * invCosA - y * invSinA; let by = cy + x * invSinA + y * invCosA;
+
+                    if (isPointInPolygon([bx, by], site.points)) {
+                        let floorsCount = baseFloors + Math.floor(Math.random() * (floorVariation + 1));
+                        let subLayers = [];
+                        for(let i=0; i<floorsCount; i++) subLayers.push(createDefaultLayer(type, 3));
+                        
+                        let pts = [
+                            {x: bx, y: by}, {x: bx + pxW * invCosA, y: by + pxW * invSinA},
+                            {x: bx + pxW * invCosA - pxH * invSinA, y: by + pxW * invSinA + pxH * invCosA},
+                            {x: bx - pxH * invSinA, y: by + pxH * invCosA}
+                        ];
+                        site.subBuildings.push({ id: 'sub-' + Date.now() + Math.random(), points: pts, area: bWidthM * bHeightM, layers: subLayers });
+                    }
+                }
+            }
         }
-    });
-    svgStr += `</g>\n`;
 
-    // North Arrow (Top Right inside border)
-    svgStr += `
-    <g transform="translate(${a1W - 40}, 50)">
-        <circle cx="0" cy="0" r="10" fill="none" stroke="#1e293b" stroke-width="1"/>
-        <line x1="0" y1="0" x2="0" y2="-10" stroke="#1e293b" stroke-width="1.5"/>
-        <text x="0" y="-14" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">N</text>
-    </g>\n`;
-
-    // Scalebar (1:10000 -> 100m = 10mm) (Bottom Left)
-    svgStr += `
-    <g transform="translate(30, ${a1H - 40})">
-        <line x1="0" y1="0" x2="50" y2="0" stroke="#1e293b" stroke-width="1.5"/>
-        <line x1="0" y1="-2" x2="0" y2="2" stroke="#1e293b" stroke-width="1.5"/>
-        <line x1="25" y1="-1" x2="25" y2="1" stroke="#1e293b" stroke-width="0.5"/>
-        <line x1="50" y1="-2" x2="50" y2="2" stroke="#1e293b" stroke-width="1.5"/>
-        <text x="0" y="8" font-size="5" fill="#1e293b" text-anchor="middle">0</text>
-        <text x="50" y="8" font-size="5" fill="#1e293b" text-anchor="middle">500m</text>
-    </g>\n`;
-
-    // Credits & Texts (Bottom Center)
-    svgStr += `
-        <text x="${a1W / 2}" y="${a1H - 35}" font-size="7" fill="#1e293b" text-anchor="middle">Urban Masterplan generated using UrbanPlannerCalculater by DouweDoesDesign (https://douwedoesdesign.com/)</text>
-        <text x="${a1W / 2}" y="${a1H - 25}" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">Scale 1 : 10000</text>
-    `;
-
-    svgStr += `</svg>`;
-
-    // 3. Convert SVG to PDF using window.svg2pdf
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = svgStr;
-    const svgElement = tempDiv.querySelector('svg');
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', format: 'a1', unit: 'mm' });
-    
-    // THE FIX: Use the standalone svg2pdf function attached to the window
-    await window.svg2pdf(svgElement, doc, {
-        x: 0,
-        y: 0,
-        width: a1W,
-        height: a1H
-    });
-
-    doc.save("Urban_Masterplan_A1.pdf");
-});
         // --- 3D INTERACTION ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -1017,6 +971,7 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
         document.getElementById('sunAltitude').addEventListener('input', e => { sunLight.position.y = e.target.value * 5.5; document.getElementById('altitudeVal').innerText = e.target.value + '°'; });
         document.getElementById('toggleSunAnim').addEventListener('click', () => { isSunAnimating = !isSunAnimating; });
         document.getElementById('volSlider').addEventListener('input', (e) => { document.getElementById('volVal').innerText = e.target.value; });
+        document.getElementById('camZoom').addEventListener('input', e => { camera.zoom = parseFloat(e.target.value); camera.updateProjectionMatrix(); document.getElementById('zoomVal').innerText = e.target.value + 'x'; });
 
         document.getElementById('btn-volumize').addEventListener('click', () => {
             const floorsToAdd = parseInt(document.getElementById('volSlider').value);
@@ -1156,56 +1111,127 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
             }
         });
 
-        // --- FINANCIALS & URBAN METRICS ---
+        // --- FINANCIALS & URBAN METRICS (DUTCH VASTGOEDREKENMODEL) ---
         function formatEuros(number) {
             return "€ " + number.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
 
+        let globalFinData = {};
+
         function updateFinancials() {
-            let resArea = 0, indArea = 0, greenArea = 0;
-            let totalFootprint = 0;
-            let totalSiteArea = 0;
+            let resAreaBVO = 0, indAreaBVO = 0, greenAreaBVO = 0;
+            let totalFootprint = 0; let totalSiteArea = 0;
             
             sites.forEach(site => {
                 totalSiteArea += site.area;
-
                 if (site.isLocked) {
                     site.subBuildings.forEach(sub => {
                         totalFootprint += sub.area;
-
                         sub.layers.forEach(layer => {
                             const ratio1 = layer.splitType && layer.splitType !== 'None' ? (layer.splitRatio || 50) / 100 : 1;
                             const ratio2 = 1 - ratio1;
 
-                            if(layer.type === 'Residence') resArea += sub.area * ratio1;
-                            if(layer.type === 'Industry') indArea += sub.area * ratio1;
-                            if(layer.type === 'Greenhouse') greenArea += sub.area * ratio1;
+                            if(layer.type === 'Residence') resAreaBVO += sub.area * ratio1;
+                            if(layer.type === 'Industry') indAreaBVO += sub.area * ratio1;
+                            if(layer.type === 'Greenhouse') greenAreaBVO += sub.area * ratio1;
 
-                            if(layer.splitType === 'Residence') resArea += sub.area * ratio2;
-                            if(layer.splitType === 'Industry') indArea += sub.area * ratio2;
-                            if(layer.splitType === 'Greenhouse') greenArea += sub.area * ratio2;
+                            if(layer.splitType === 'Residence') resAreaBVO += sub.area * ratio2;
+                            if(layer.splitType === 'Industry') indAreaBVO += sub.area * ratio2;
+                            if(layer.splitType === 'Greenhouse') greenAreaBVO += sub.area * ratio2;
                         });
                     });
                 }
             });
             
-            const totalGrossFloorArea = resArea + indArea + greenArea;
-            const fsi = totalSiteArea > 0 ? (totalGrossFloorArea / totalSiteArea).toFixed(2) : "0.00";
+            const resAreaGO = resAreaBVO * 0.85;
+            const indAreaGO = indAreaBVO * 0.85;
+            
+            const socialAreaGO = resAreaGO * 0.40;
+            const freeAreaGO = resAreaGO * 0.60;
+            
+            const avgSocialHomeSize = 65;
+            const avgFreeHomeSize = 90; 
+            const homesSocial = Math.round(socialAreaGO / avgSocialHomeSize) || 0;
+            const homesFree = Math.round(freeAreaGO / avgFreeHomeSize) || 0;
+            const totalHomes = homesSocial + homesFree;
+
+            const costLand = totalFootprint * 600; 
+            const costBuildRes = resAreaBVO * 1800; 
+            const costBuildInd = indAreaBVO * 1400; 
+            const costBuildGrn = greenAreaBVO * 800;
+            const costAdditional = (costBuildRes + costBuildInd) * 0.20; 
+            const totalCosts = costLand + costBuildRes + costBuildInd + costBuildGrn + costAdditional;
+
+            const revSocial = socialAreaGO * 1800; 
+            const revFree = freeAreaGO * 5500; 
+            const revInd = indAreaGO * 2200;
+            const totalRevenue = revSocial + revFree + revInd;
+            
+            const profit = totalRevenue - totalCosts;
+
+            globalFinData = {
+                resAreaBVO, indAreaBVO, totalSiteArea, totalFootprint,
+                resAreaGO, socialAreaGO, freeAreaGO, homesSocial, homesFree, totalHomes,
+                costLand, costBuildRes, costBuildInd, costAdditional, totalCosts,
+                revSocial, revFree, revInd, totalRevenue, profit
+            };
+
+            const fsi = totalSiteArea > 0 ? ((resAreaBVO + indAreaBVO + greenAreaBVO) / totalSiteArea).toFixed(2) : "0.00";
             const coverage = totalSiteArea > 0 ? Math.round((totalFootprint / totalSiteArea) * 100) : 0;
 
-            const unitCostRes = 1850;
-            const unitCostInd = 1200;
-
-            const totalCost = (resArea * unitCostRes) + (indArea * unitCostInd);
-
-            document.getElementById('fin-res-area').innerText = Math.round(resArea).toLocaleString() + ' m²';
-            document.getElementById('fin-ind-area').innerText = Math.round(indArea).toLocaleString() + ' m²';
-            
+            document.getElementById('fin-res-area').innerText = Math.round(resAreaBVO).toLocaleString() + ' m²';
+            document.getElementById('fin-ind-area').innerText = Math.round(indAreaBVO).toLocaleString() + ' m²';
             document.getElementById('fin-fsi').innerText = fsi;
             document.getElementById('fin-coverage').innerText = coverage + '%';
-
-            document.getElementById('fin-total-cost').innerText = formatEuros(totalCost);
+            document.getElementById('fin-total-cost').innerText = formatEuros(totalCosts);
         }
+
+        document.getElementById('btn-export-finance').addEventListener('click', () => {
+            const d = globalFinData;
+            
+            let report = `=================================================\n`;
+            report += `  DUTCH URBAN MASTERPLAN - FINANCIAL REPORT\n`;
+            report += `=================================================\n\n`;
+            
+            report += `--- URBAN METRICS ---\n`;
+            report += `Total Site Area:        ${Math.round(d.totalSiteArea).toLocaleString()} m2\n`;
+            report += `Ground Footprint:       ${Math.round(d.totalFootprint).toLocaleString()} m2\n`;
+            report += `Residential Area (BVO): ${Math.round(d.resAreaBVO).toLocaleString()} m2\n`;
+            report += `Industrial Area (BVO):  ${Math.round(d.indAreaBVO).toLocaleString()} m2\n\n`;
+
+            report += `--- RESIDENTIAL BREAKDOWN (GO) ---\n`;
+            report += `Total Usable Area (GO): ${Math.round(d.resAreaGO).toLocaleString()} m2\n`;
+            report += `Social Rent (40% req):  ${Math.round(d.socialAreaGO).toLocaleString()} m2 (${d.homesSocial} units @ ~65m2)\n`;
+            report += `Free Market (60%):      ${Math.round(d.freeAreaGO).toLocaleString()} m2 (${d.homesFree} units @ ~90m2)\n`;
+            report += `Total Homes Expected:   ${d.totalHomes} units\n\n`;
+
+            report += `--- COSTS (STICHTINGSKOSTEN) ---\n`;
+            report += `Land Acquisition Costs: € ${Math.round(d.costLand).toLocaleString()}\n`;
+            report += `Construction (Res):     € ${Math.round(d.costBuildRes).toLocaleString()}\n`;
+            report += `Construction (Ind):     € ${Math.round(d.costBuildInd).toLocaleString()}\n`;
+            report += `Additional/Fees (20%):  € ${Math.round(d.costAdditional).toLocaleString()}\n`;
+            report += `-------------------------------------------------\n`;
+            report += `TOTAL COSTS:            € ${Math.round(d.totalCosts).toLocaleString()}\n\n`;
+
+            report += `--- REVENUE (OPBRENGSTEN) ---\n`;
+            report += `Social Housing Value:   € ${Math.round(d.revSocial).toLocaleString()}\n`;
+            report += `Free Market Sales:      € ${Math.round(d.revFree).toLocaleString()}\n`;
+            report += `Commercial/Ind Sales:   € ${Math.round(d.revInd).toLocaleString()}\n`;
+            report += `-------------------------------------------------\n`;
+            report += `TOTAL REVENUE:          € ${Math.round(d.totalRevenue).toLocaleString()}\n\n`;
+
+            report += `=================================================\n`;
+            report += `PROJECT RESULT (WINST/VERLIES): € ${Math.round(d.profit).toLocaleString()}\n`;
+            report += `=================================================\n`;
+
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "Vastgoedrekenmodel_Report.txt";
+            a.click();
+            URL.revokeObjectURL(url);
+        });
 
         // --- ANIMATION LOOP ---
         const animate = function () {
@@ -1224,12 +1250,6 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
             renderer.render(scene, camera);
         };
         animate();
-
-        document.getElementById('camZoom').addEventListener('input', e => { 
-    camera.zoom = parseFloat(e.target.value); 
-    camera.updateProjectionMatrix(); 
-    document.getElementById('zoomVal').innerText = e.target.value + 'x'; 
-});
 
     </script>
 </body>
