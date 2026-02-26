@@ -289,7 +289,6 @@
             if (file.name.toLowerCase().endsWith('.svg')) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    // Reset State
                     sites = []; 
                     activeSiteId = null; 
                     activeSubId = null;
@@ -298,9 +297,8 @@
                     const doc = parser.parseFromString(event.target.result, "image/svg+xml");
                     let parsedCount = 0;
 
-                    // Uniform Scaling to prevent 1D stretching
                     const svgNode = doc.querySelector('svg');
-                    let svgW = 594; let svgH = 841; // Fallback
+                    let svgW = 594; let svgH = 841; 
                     
                     if (svgNode) {
                         if (svgNode.getAttribute('viewBox')) {
@@ -317,7 +315,6 @@
                     const offsetX = (canvasW - (svgW * scale)) / 2;
                     const offsetY = (canvasH - (svgH * scale)) / 2;
 
-                    // Parse Polygons and Polylines
                     const polygons = doc.querySelectorAll('polygon, polyline');
                     polygons.forEach(poly => {
                         const pointsStr = poly.getAttribute('points');
@@ -384,8 +381,10 @@
             render2D();
         }
 
+        // OPTIMIZATION: Use DocumentFragment to prevent excessive layout reflows
         function render2D() {
             svg.querySelectorAll('.site-poly, .sub-poly').forEach(p => p.remove());
+            const fragment = document.createDocumentFragment(); 
             
             sites.forEach(site => {
                 if (!site.points || site.points.length < 3) return;
@@ -397,7 +396,7 @@
                 poly.setAttribute('stroke', site.isLocked ? '#27ae60' : '#2563eb');
                 poly.setAttribute('stroke-width', '2');
                 poly.setAttribute('stroke-dasharray', site.isLocked ? '4 2' : 'none');
-                svg.appendChild(poly);
+                fragment.appendChild(poly);
 
                 if (site.isLocked) {
                     site.subBuildings.forEach(sub => {
@@ -413,16 +412,16 @@
                         subPoly.setAttribute('stroke', '#111');
                         subPoly.setAttribute('stroke-width', '1');
                         subPoly.style.opacity = '0.8';
-                        svg.appendChild(subPoly);
+                        fragment.appendChild(subPoly);
                     });
                 }
             });
+            
+            svg.appendChild(fragment); 
             updateFinancials();
         }
 
         // --- EXPORT DATA LOGIC ---
-        
-        // 1. Export JSON for Grasshopper
         document.getElementById('btn-export-gh').addEventListener('click', () => {
             let ghData = {
                 metadata: { exportTime: new Date().toISOString(), unit: "meters" },
@@ -492,7 +491,6 @@
             a.click();
         });
 
-        // 2. Export Arch SVG
         document.getElementById('btn-export-svg').addEventListener('click', () => {
             const typologyColors = {
                 'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
@@ -529,7 +527,6 @@
             });
 
             if (activeTypologies.size > 0) {
-                // Pin to Bottom Left (Canvas Height 841 - Legend Height)
                 let legendHeight = activeTypologies.size * 25 + 40;
                 let yOffsetPos = 841 - legendHeight - 20; 
                 
@@ -559,89 +556,73 @@
         });
 
         // 3. Export PDF Map (A1 Portrait)
-        document.getElementById('btn-export-pdf').addEventListener('click', async () => {
-            const a1W = 594; const a1H = 841;
-            const mapScale = 1.0; 
-            const offsetX = 0;
-            const offsetY = 0;
+document.getElementById('btn-export-pdf').addEventListener('click', async () => {
+    const a1W = 594; const a1H = 841;
+    const mapScale = 1.0; 
+    const offsetX = 0;
+    const offsetY = 0;
 
-            const typologyColors = {
-                'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48' },
-                'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c' },
-                'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706' },
-                'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a' },
-                'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7' },
-                'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed' },
-                'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3' },
-                'hoogbouw': { fill: '#f1f5f9', stroke: '#475569' }
-            };
+    const typologyColors = {
+        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48' },
+        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c' },
+        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706' },
+        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a' },
+        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7' },
+        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed' },
+        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3' },
+        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569' }
+    };
 
-            let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a1W} ${a1H}" width="${a1W}mm" height="${a1H}mm" style="background:#ffffff; font-family: Helvetica, sans-serif;">\n`;
-            
-            svgStr += `<rect x="15" y="15" width="${a1W - 30}" height="${a1H - 30}" fill="none" stroke="#1e293b" stroke-width="1.5"/>\n`;
-            svgStr += `<g transform="translate(${offsetX}, ${offsetY}) scale(${mapScale})">\n`;
-            
-            sites.forEach(site => {
-                let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
-                let fill = site.isLocked ? colors.fill : 'none';
-                let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
-                
-                let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-                svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="16,12"/>\n`;
-                
-                if (site.isLocked) {
-                    site.subBuildings.forEach(sub => {
-                        let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
-                        let bColor = colors.stroke; 
-                        if(sub.layers.length && sub.layers[sub.layers.length-1].type === 'Greenhouse') bColor = '#4caf50';
-                        svgStr += `  <polygon points="${subPts}" fill="${bColor}" stroke="#1e293b" stroke-width="1.5"/>\n`;
-                    });
-                }
+    // 1. Build your SVG String (Your existing code)
+    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a1W} ${a1H}" width="${a1W}mm" height="${a1H}mm" style="background:#ffffff; font-family: Helvetica, sans-serif;">\n`;
+    svgStr += `<rect x="15" y="15" width="${a1W - 30}" height="${a1H - 30}" fill="none" stroke="#1e293b" stroke-width="1.5"/>\n`;
+    svgStr += `<g transform="translate(${offsetX}, ${offsetY}) scale(${mapScale})">\n`;
+    
+    sites.forEach(site => {
+        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
+        let fill = site.isLocked ? colors.fill : 'none';
+        let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
+        
+        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="2" stroke-dasharray="16,12"/>\n`;
+        
+        if (site.isLocked) {
+            site.subBuildings.forEach(sub => {
+                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                svgStr += `  <polygon points="${subPts}" fill="${colors.stroke}" stroke="#1e293b" stroke-width="1.5"/>\n`;
             });
-            svgStr += `</g>\n`;
+        }
+    });
 
-            svgStr += `
-            <g transform="translate(${a1W - 40}, 50)">
-                <circle cx="0" cy="0" r="10" fill="none" stroke="#1e293b" stroke-width="1"/>
-                <line x1="0" y1="0" x2="0" y2="-10" stroke="#1e293b" stroke-width="1.5"/>
-                <text x="0" y="-14" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">N</text>
-            </g>\n`;
+    svgStr += `</g>\n</svg>`;
 
-            svgStr += `
-            <g transform="translate(30, ${a1H - 40})">
-                <line x1="0" y1="0" x2="50" y2="0" stroke="#1e293b" stroke-width="1.5"/>
-                <line x1="0" y1="-2" x2="0" y2="2" stroke="#1e293b" stroke-width="1.5"/>
-                <line x1="25" y1="-1" x2="25" y2="1" stroke="#1e293b" stroke-width="0.5"/>
-                <line x1="50" y1="-2" x2="50" y2="2" stroke="#1e293b" stroke-width="1.5"/>
-                <text x="0" y="8" font-size="5" fill="#1e293b" text-anchor="middle">0</text>
-                <text x="50" y="8" font-size="5" fill="#1e293b" text-anchor="middle">500m</text>
-            </g>\n`;
+    try {
+        // 2. THE FIX: Parse the string into a real DOM Element
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgStr, "image/svg+xml");
+        const svgElement = svgDoc.documentElement;
 
-            svgStr += `
-                <text x="${a1W / 2}" y="${a1H - 35}" font-size="7" fill="#1e293b" text-anchor="middle">Urban Masterplan generated using UrbanPlannerCalculater by DouweDoesDesign (https://douwedoesdesign.com/)</text>
-                <text x="${a1W / 2}" y="${a1H - 25}" font-size="6" font-weight="bold" fill="#1e293b" text-anchor="middle">Scale 1 : 10000</text>
-            `;
-
-            svgStr += `</svg>`;
-
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = svgStr;
-            const svgElement = tempDiv.querySelector('svg');
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', format: 'a1', unit: 'mm' });
-            
-            // Fixed svg2pdf syntax for modern versions
-            await doc.svg(svgElement, {
-                x: 0,
-                y: 0,
-                width: a1W,
-                height: a1H
-            });
-
-            doc.save("Urban_Masterplan_A1.pdf");
+        // 3. Initialize jsPDF correctly using the UMD namespace
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a1'
         });
 
+        // 4. Use the modern doc.svg() plugin method (requires async/await)
+        await doc.svg(svgElement, {
+            x: 0,
+            y: 0,
+            width: a1W,
+            height: a1H
+        });
+        
+        doc.save("Masterplan_Map.pdf");
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+    }
+});
         // --- TRANSITIONS ---
         document.getElementById('btn-go-3d').addEventListener('click', () => {
             page1.style.display = 'none'; page2.style.display = 'block';
@@ -664,10 +645,13 @@
         const canvas3D = document.getElementById('glcanvas');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x050505);
-        scene.fog = new THREE.FogExp2(0x050505, 0.0005);
+        scene.fog = new THREE.FogExp2(0x050505, 0.0001);
         
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 5000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: true, preserveDrawingBuffer: true });
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 50000);
+        
+        // OPTIMIZATION: Set Power Preference and cap pixel ratio to prevent retina 4K slow downs
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: true, preserveDrawingBuffer: true, powerPreference: "high-performance" });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -688,34 +672,51 @@
         sunLight.shadow.camera.far = 2000; sunLight.shadow.bias = -0.0005;
         scene.add(sunLight);
 
-       // Make the ground plane large enough for the new 10x meter scale
-        const floorObj = new THREE.Mesh(new THREE.PlaneGeometry(20000, 20000), new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 }));
-        floorObj.rotation.x = -Math.PI / 2; floorObj.receiveShadow = true;
+        const floorObj = new THREE.Mesh(
+            new THREE.PlaneGeometry(20000, 20000), 
+            new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 })
+        );
+        floorObj.rotation.x = -Math.PI / 2; floorObj.receiveShadow = true; floorObj.position.y = -1;
         scene.add(floorObj);
 
         let buildingMeshes = [];
         let buildingGroups = [];
 
+        const materialCache = {}; 
+
         function getMaterialForType(type, isSelected, isContainer = false, typology = null) {
+            const key = `${type}_${isSelected}_${isContainer}_${typology}`;
+            
+            if (materialCache[key]) return materialCache[key];
+
+            let mat;
             if (isContainer) {
                 let baseColor = isSelected ? 0x3b82f6 : 0x444444; 
                 let opacity = 0.2;
                 if (typology === 'hoogbouw' || typology === 'middelhoogbouw') { baseColor = 0x27ae60; opacity = 0.15; } 
                 if (typology === 'grachtenpand') { baseColor = 0x555555; opacity = 0.3; } 
-                return new THREE.MeshBasicMaterial({ color: baseColor, transparent: true, opacity: opacity, side: THREE.DoubleSide });
+                
+                mat = new THREE.MeshBasicMaterial({ 
+                    color: baseColor, transparent: true, opacity: opacity, side: THREE.DoubleSide,
+                    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1
+                });
+            } else {
+                let color = 0x9b59b6; let roughness = 0.8; let metalness = 0.1;
+                if(type === 'Residence') { color = 0xe74c3c; roughness = 0.9; }
+                if(type === 'Greenhouse') { color = 0x2ecc71; roughness = 0.2; metalness = 0.8; }
+                
+                mat = new THREE.MeshStandardMaterial({
+                    color: color, roughness: roughness, metalness: metalness,
+                    emissive: isSelected ? 0x3b82f6 : 0x000000, emissiveIntensity: isSelected ? 0.4 : 0
+                });
             }
-            let color = 0x9b59b6; let roughness = 0.8; let metalness = 0.1;
-            if(type === 'Residence') { color = 0xe74c3c; roughness = 0.9; }
-            if(type === 'Greenhouse') { color = 0x2ecc71; roughness = 0.2; metalness = 0.8; }
-            return new THREE.MeshStandardMaterial({
-                color: color, roughness: roughness, metalness: metalness,
-                emissive: isSelected ? 0x3b82f6 : 0x000000, emissiveIntensity: isSelected ? 0.4 : 0
-            });
+            
+            materialCache[key] = mat; 
+            return mat;
         }
 
         function buildFloors(group, subBuilding, parentSiteId) {
             const shape = new THREE.Shape();
-            // Scale by 10 to map the 2D pixel grid directly to 3D real-world meters
             subBuilding.points.forEach((p, index) => {
                 const x = (p.x - 297) * 10; 
                 const y = -(p.y - 420) * 10;
@@ -728,31 +729,39 @@
                 const isSelectedBuilding = (activeSubId === subBuilding.id && !activeLayerId);
                 const isHighlighted = isSelectedLayer || isSelectedBuilding;
                 
-                // Height is now mapped exactly 1:1 in meters
                 const displayHeight = layer.height;
+                
+                // OPTIMIZATION: Define minimal extrusion properties once 
+                const baseExtrudeOpts = { bevelEnabled: false, steps: 1, curveSegments: 1 };
 
                 if (layer.splitType && layer.splitType !== 'None') {
                     const ratio1 = (layer.splitRatio || 50) / 100;
                     const h1 = displayHeight * ratio1;
-                    const mesh1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h1, bevelEnabled: false }), getMaterialForType(layer.type, isHighlighted));
+                    const mesh1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h1, ...baseExtrudeOpts }), getMaterialForType(layer.type, isHighlighted));
                     mesh1.rotation.x = -Math.PI / 2; mesh1.position.y = currentElevation;
                     mesh1.castShadow = true; mesh1.receiveShadow = true;
                     mesh1.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
+                    mesh1.matrixAutoUpdate = false; 
+                    mesh1.updateMatrix();
                     group.add(mesh1); buildingMeshes.push(mesh1);
                     currentElevation += h1;
 
                     const h2 = displayHeight * (1 - ratio1);
-                    const mesh2 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h2, bevelEnabled: false }), getMaterialForType(layer.splitType, isHighlighted));
+                    const mesh2 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h2, ...baseExtrudeOpts }), getMaterialForType(layer.splitType, isHighlighted));
                     mesh2.rotation.x = -Math.PI / 2; mesh2.position.y = currentElevation;
                     mesh2.castShadow = true; mesh2.receiveShadow = true;
                     mesh2.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
+                    mesh2.matrixAutoUpdate = false; 
+                    mesh2.updateMatrix();
                     group.add(mesh2); buildingMeshes.push(mesh2);
                     currentElevation += h2;
                 } else {
-                    const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: displayHeight, bevelEnabled: false }), getMaterialForType(layer.type, isHighlighted));
+                    const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: displayHeight, ...baseExtrudeOpts }), getMaterialForType(layer.type, isHighlighted));
                     mesh.rotation.x = -Math.PI / 2; mesh.position.y = currentElevation;
                     mesh.castShadow = true; mesh.receiveShadow = true;
                     mesh.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
+                    mesh.matrixAutoUpdate = false; 
+                    mesh.updateMatrix();
                     group.add(mesh); buildingMeshes.push(mesh);
                     currentElevation += displayHeight;
                 }
@@ -760,7 +769,17 @@
         }
 
         function build3DScene() {
-            buildingGroups.forEach(g => scene.remove(g));
+            // OPTIMIZATION: Free GPU Memory to prevent crashing when modifying large scenes
+            buildingGroups.forEach(g => {
+                g.traverse((child) => {
+                    if (child.isMesh) {
+                        child.geometry.dispose(); 
+                        // Materials are cached intentionally, so no need to dispose them here
+                    }
+                });
+                scene.remove(g);
+            });
+            
             buildingGroups = [];
             buildingMeshes = [];
 
@@ -776,10 +795,12 @@
                 
                 const isSelectedZone = (activeSiteId === site.id);
                 const padMat = getMaterialForType(null, isSelectedZone && !site.isLocked, true, site.isLocked ? site.typology : null);
-                const padMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false }), padMat);
+                const padMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false, steps: 1, curveSegments: 1 }), padMat);
                 padMesh.rotation.x = -Math.PI / 2;
                 padMesh.position.y = 0;
                 padMesh.userData = { siteId: site.id }; 
+                padMesh.matrixAutoUpdate = false; 
+                padMesh.updateMatrix();
                 group.add(padMesh);
                 buildingMeshes.push(padMesh);
 
@@ -792,7 +813,7 @@
             });
 
             if (camera.position.y === 0 || camera.position.y === 400) {
-                camera.position.set(0, 3000, 4500); // Zoomed out for the correct 1:10k scale
+                camera.position.set(0, 3000, 4500); 
                 camera.lookAt(0, 0, 0);
             }
             updateFinancials();
@@ -1217,7 +1238,6 @@
             const doc = new jsPDF({ orientation: 'portrait', format: 'a4', unit: 'mm' });
             const d = globalFinData;
             
-            // Gather typology breakdown
             let typoStats = {};
             sites.forEach(site => {
                 if(site.isLocked) {
