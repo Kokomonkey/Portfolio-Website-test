@@ -147,6 +147,7 @@
                     <input type="range" id="volSlider" min="1" max="10" value="2">
                 </div>
                 <button id="btn-volumize" class="btn-dark">Volumize All Buildings</button>
+                <button id="btn-fill-random" class="btn-dark btn-primary mt-2">🎲 Fill All with Random Typology</button>
             </div>
 
             <div id="inspector-panel" class="glass-panel w-full">
@@ -244,8 +245,9 @@
         let activeSubId = null; 
         let activeLayerId = null;
         
-        const REAL_WIDTH_M = 1188;
-        const pixelsPerMeter = 594 / REAL_WIDTH_M; // Mapped to A1 portrait Canvas Width
+        // A1 Width is 594mm. At 1:10000, this represents 5940 meters.
+        const REAL_WIDTH_M = 5940; 
+        const pixelsPerMeter = 594 / REAL_WIDTH_M; // 0.1 (Meaning 1 pixel = 10 meters)
 
         function createDefaultLayer(type, height) {
             return { id: Date.now() + Math.random(), type: type, height: height, splitType: 'None', splitRatio: 50 };
@@ -527,8 +529,12 @@
             });
 
             if (activeTypologies.size > 0) {
-                svgStr += `  <g transform="translate(370, 20)">\n`;
-                svgStr += `    <rect x="0" y="0" width="200" height="${activeTypologies.size * 25 + 40}" fill="white" stroke="#2d3436" stroke-width="2" rx="4" opacity="0.95"/>\n`;
+                // Pin to Bottom Left (Canvas Height 841 - Legend Height)
+                let legendHeight = activeTypologies.size * 25 + 40;
+                let yOffsetPos = 841 - legendHeight - 20; 
+                
+                svgStr += `  <g transform="translate(20, ${yOffsetPos})">\n`;
+                svgStr += `    <rect x="0" y="0" width="200" height="${legendHeight}" fill="white" stroke="#2d3436" stroke-width="2" rx="4" opacity="0.95"/>\n`;
                 svgStr += `    <text x="15" y="25" font-size="14" font-weight="bold" fill="#1e293b">URBAN LEGEND</text>\n`;
                 
                 let yOffset = 45;
@@ -625,7 +631,8 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', format: 'a1', unit: 'mm' });
             
-            await window.svg2pdf(svgElement, doc, {
+            // Fixed svg2pdf syntax for modern versions
+            await doc.svg(svgElement, {
                 x: 0,
                 y: 0,
                 width: a1W,
@@ -681,7 +688,8 @@
         sunLight.shadow.camera.far = 2000; sunLight.shadow.bias = -0.0005;
         scene.add(sunLight);
 
-        const floorObj = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 }));
+       // Make the ground plane large enough for the new 10x meter scale
+        const floorObj = new THREE.Mesh(new THREE.PlaneGeometry(20000, 20000), new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 }));
         floorObj.rotation.x = -Math.PI / 2; floorObj.receiveShadow = true;
         scene.add(floorObj);
 
@@ -707,9 +715,10 @@
 
         function buildFloors(group, subBuilding, parentSiteId) {
             const shape = new THREE.Shape();
-            // Centering around 0,0 for 3D view (offsetting by half canvas size)
+            // Scale by 10 to map the 2D pixel grid directly to 3D real-world meters
             subBuilding.points.forEach((p, index) => {
-                const x = p.x - 297; const y = -(p.y - 420);
+                const x = (p.x - 297) * 10; 
+                const y = -(p.y - 420) * 10;
                 if (index === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
             });
 
@@ -718,7 +727,9 @@
                 const isSelectedLayer = (activeLayerId === layer.id);
                 const isSelectedBuilding = (activeSubId === subBuilding.id && !activeLayerId);
                 const isHighlighted = isSelectedLayer || isSelectedBuilding;
-                const displayHeight = layer.height * 2;
+                
+                // Height is now mapped exactly 1:1 in meters
+                const displayHeight = layer.height;
 
                 if (layer.splitType && layer.splitType !== 'None') {
                     const ratio1 = (layer.splitRatio || 50) / 100;
@@ -758,7 +769,8 @@
                 
                 const shape = new THREE.Shape();
                 site.points.forEach((p, index) => {
-                    const x = p.x - 297; const y = -(p.y - 420);
+                    const x = (p.x - 297) * 10; 
+                    const y = -(p.y - 420) * 10;
                     if (index === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
                 });
                 
@@ -779,8 +791,8 @@
                 buildingGroups.push(group);
             });
 
-            if (camera.position.y === 0) {
-                camera.position.set(0, 400, 600);
+            if (camera.position.y === 0 || camera.position.y === 400) {
+                camera.position.set(0, 3000, 4500); // Zoomed out for the correct 1:10k scale
                 camera.lookAt(0, 0, 0);
             }
             updateFinancials();
@@ -986,6 +998,20 @@
             build3DScene(); renderSidebarUI(); updateFinancials();
         });
 
+        document.getElementById('btn-fill-random').addEventListener('click', () => {
+            const types = ['rijtjeshuis', 'grachtenpand', 'twee_onder_een_kap', 'vrijstaand', 'stadsblok', 'galerijflat', 'middelhoogbouw', 'hoogbouw'];
+            sites.forEach(site => {
+                if (!site.isLocked) {
+                    site.typology = types[Math.floor(Math.random() * types.length)];
+                    generateTypology(site);
+                    site.isLocked = true;
+                }
+            });
+            build3DScene();
+            renderSidebarUI();
+            updateFinancials();
+        });
+
         document.getElementById('btn-lock-generate').addEventListener('click', () => {
             if(!activeSiteId) return;
             const site = sites.find(s => s.id === activeSiteId);
@@ -1187,50 +1213,86 @@
         }
 
         document.getElementById('btn-export-finance').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', format: 'a4', unit: 'mm' });
             const d = globalFinData;
             
-            let report = `=================================================\n`;
-            report += `  DUTCH URBAN MASTERPLAN - FINANCIAL REPORT\n`;
-            report += `=================================================\n\n`;
+            // Gather typology breakdown
+            let typoStats = {};
+            sites.forEach(site => {
+                if(site.isLocked) {
+                    const t = site.typology;
+                    if(!typoStats[t]) typoStats[t] = { count: 0 };
+                    typoStats[t].count += site.subBuildings.length;
+                }
+            });
+
+            doc.setFont("helvetica");
+            doc.setFontSize(16);
+            doc.text("Financieel Vastgoedrekenmodel & Gebiedsplan", 15, 20);
             
-            report += `--- URBAN METRICS ---\n`;
-            report += `Total Site Area:        ${Math.round(d.totalSiteArea).toLocaleString()} m2\n`;
-            report += `Ground Footprint:       ${Math.round(d.totalFootprint).toLocaleString()} m2\n`;
-            report += `Residential Area (BVO): ${Math.round(d.resAreaBVO).toLocaleString()} m2\n`;
-            report += `Industrial Area (BVO):  ${Math.round(d.indAreaBVO).toLocaleString()} m2\n\n`;
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("1. Stedenbouwkundige Kenmerken (Urban Metrics)", 15, 35);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(`Totale Gebiedsoppervlakte: ${Math.round(d.totalSiteArea).toLocaleString()} m²`, 20, 42);
+            doc.text(`Totale Bebouwde Oppervlakte (Voetafdruk): ${Math.round(d.totalFootprint).toLocaleString()} m²`, 20, 48);
+            doc.text(`Wonen (BVO): ${Math.round(d.resAreaBVO).toLocaleString()} m²`, 20, 54);
+            doc.text(`Industrie / Commercieel (BVO): ${Math.round(d.indAreaBVO).toLocaleString()} m²`, 20, 60);
 
-            report += `--- RESIDENTIAL BREAKDOWN (GO) ---\n`;
-            report += `Total Usable Area (GO): ${Math.round(d.resAreaGO).toLocaleString()} m2\n`;
-            report += `Social Rent (40% req):  ${Math.round(d.socialAreaGO).toLocaleString()} m2 (${d.homesSocial} units @ ~65m2)\n`;
-            report += `Free Market (60%):      ${Math.round(d.freeAreaGO).toLocaleString()} m2 (${d.homesFree} units @ ~90m2)\n`;
-            report += `Total Homes Expected:   ${d.totalHomes} units\n\n`;
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("2. Woningbouw Programma (GO)", 15, 75);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(`Totaal Gebruiksoppervlak Wonen: ${Math.round(d.resAreaGO).toLocaleString()} m²`, 20, 82);
+            doc.text(`Sociale Huur (40% norm): ${Math.round(d.socialAreaGO).toLocaleString()} m² (ca. ${d.homesSocial} eenheden)`, 20, 88);
+            doc.text(`Vrije Sector (60% norm): ${Math.round(d.freeAreaGO).toLocaleString()} m² (ca. ${d.homesFree} eenheden)`, 20, 94);
+            doc.text(`Totaal Aantal Verwachte Woningen: ${d.totalHomes} eenheden`, 20, 100);
 
-            report += `--- COSTS (STICHTINGSKOSTEN) ---\n`;
-            report += `Land Acquisition Costs: € ${Math.round(d.costLand).toLocaleString()}\n`;
-            report += `Construction (Res):     € ${Math.round(d.costBuildRes).toLocaleString()}\n`;
-            report += `Construction (Ind):     € ${Math.round(d.costBuildInd).toLocaleString()}\n`;
-            report += `Additional/Fees (20%):  € ${Math.round(d.costAdditional).toLocaleString()}\n`;
-            report += `-------------------------------------------------\n`;
-            report += `TOTAL COSTS:            € ${Math.round(d.totalCosts).toLocaleString()}\n\n`;
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("3. Specificatie per Typologie (Gebouwen)", 15, 115);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            let yPos = 122;
+            for (const [typ, stats] of Object.entries(typoStats)) {
+                let niceName = typ.replace(/_/g, ' ').toUpperCase();
+                doc.text(`- ${niceName}: ${stats.count} gebouw(en) gegenereerd.`, 20, yPos);
+                yPos += 6;
+            }
 
-            report += `--- REVENUE (OPBRENGSTEN) ---\n`;
-            report += `Social Housing Value:   € ${Math.round(d.revSocial).toLocaleString()}\n`;
-            report += `Free Market Sales:      € ${Math.round(d.revFree).toLocaleString()}\n`;
-            report += `Commercial/Ind Sales:   € ${Math.round(d.revInd).toLocaleString()}\n`;
-            report += `-------------------------------------------------\n`;
-            report += `TOTAL REVENUE:          € ${Math.round(d.totalRevenue).toLocaleString()}\n\n`;
+            yPos += 10;
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("4. Stichtingskosten (Costs)", 15, yPos);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(`Grondkosten: ${formatEuros(d.costLand)}`, 20, yPos + 7);
+            doc.text(`Bouwkosten Wonen: ${formatEuros(d.costBuildRes)}`, 20, yPos + 13);
+            doc.text(`Bouwkosten Industrie/Groen: ${formatEuros(d.costBuildInd + (d.costBuildGrn || 0))}`, 20, yPos + 19);
+            doc.text(`Bijkomende Kosten (20%): ${formatEuros(d.costAdditional)}`, 20, yPos + 25);
+            doc.setFont("helvetica", "bold");
+            doc.text(`TOTALE KOSTEN: ${formatEuros(d.totalCosts)}`, 20, yPos + 32);
 
-            report += `=================================================\n`;
-            report += `PROJECT RESULT (WINST/VERLIES): € ${Math.round(d.profit).toLocaleString()}\n`;
-            report += `=================================================\n`;
+            yPos += 45;
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.text("5. Opbrengsten (Revenue)", 15, yPos);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(`Verkoopwaarde Sociale Huur: ${formatEuros(d.revSocial)}`, 20, yPos + 7);
+            doc.text(`Verkoopwaarde Vrije Sector: ${formatEuros(d.revFree)}`, 20, yPos + 13);
+            doc.text(`Verkoopwaarde Commercieel/Industrie: ${formatEuros(d.revInd)}`, 20, yPos + 19);
+            doc.setFont("helvetica", "bold");
+            doc.text(`TOTALE OPBRENGSTEN: ${formatEuros(d.totalRevenue)}`, 20, yPos + 26);
 
-            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "Vastgoedrekenmodel_Report.txt";
-            a.click();
-            URL.revokeObjectURL(url);
+            yPos += 42;
+            doc.setFontSize(14);
+            doc.text(`PROJECTRESULTAAT (WINST/VERLIES): ${formatEuros(d.profit)}`, 15, yPos);
+
+            doc.save("Vastgoedrekenmodel_Rapport.pdf");
         });
 
         // --- ANIMATION LOOP ---
