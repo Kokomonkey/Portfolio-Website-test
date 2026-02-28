@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
+    <title>IOP1 Map Generator | [DOUWEDOESDESIGN]</title>
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --accent-color: #ffffff;
+            --alert-color: #ff3300;
+            --grid-color: rgba(0,0,0,0.15);
+            --ui-font: 'Courier New', Courier, monospace;
+            --paper-color: #f0f0f0; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: var(--ui-font);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2vw;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .back-btn {
+            position: fixed; top: 30px; left: 30px;
+            text-decoration: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            z-index: 100;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        .info-panel {
+            width: 220px;
+            flex-shrink: 0;
+            text-align: left;
+            margin-left: 2vw;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h2 {
+            font-size: 1.2rem; text-transform: uppercase;
+            border-bottom: 2px solid var(--alert-color);
+            padding-bottom: 5px; margin-bottom: 5px;
+        }
+
+        p { font-size: 0.75rem; line-height: 1.4; color: #888; }
+        
+        .tracker-box {
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 0.7rem;
+            color: var(--alert-color);
+            font-weight: bold;
+            font-family: var(--ui-font);
+        }
+
+        /* --- MAP VIEWPORT (A3 Landscape) --- */
+        .plan-viewport {
+            /* Use width-based sizing so landscape fits the screen better */
+            width: 65vw; 
+            max-height: 90vh;
+            /* A3 Aspect Ratio Landscape: 420mm / 297mm = 1.414 */
+            aspect-ratio: 420 / 297; 
+            background-color: var(--paper-color);
+            position: relative;
+            border: 1px solid #333;
+            overflow: hidden;
+            cursor: crosshair; 
+        }
+
+        /* The visible layers in the browser */
+        .plan-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            pointer-events: none;
+            mix-blend-mode: multiply; 
+        }
+
+        .plan-layer.active { display: block; }
+
+        .plan-layer img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* --- OVERLAYS --- */
+        .grid-overlay {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px; 
+            pointer-events: none; display: none; z-index: 10;
+        }
+        .grid-overlay.active { display: block; }
+
+        .interaction-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 40;
+        }
+
+        .temp-text-input {
+            position: absolute; background: transparent; border: 1px dashed #000; color: #000;
+            font-family: var(--ui-font); font-weight: bold; font-size: 14px; padding: 2px;
+            z-index: 100; display: none;
+        }
+
+        .map-overlay {
+            position: absolute; bottom: 20px; right: 20px;
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            z-index: 50; color: #000; pointer-events: none;
+        }
+        .north-arrow {
+            width: 40px; height: 40px; border: 2px solid #000; border-radius: 50%; position: relative;
+        }
+        .north-arrow::after {
+            content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 50%; background: #000; transform: translateX(-50%);
+        }
+        .north-arrow::before {
+            content: 'N'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: bold;
+        }
+        .scale-marker {
+            font-size: 0.7rem; border-top: 2px solid #000; padding-top: 2px; width: 50px; text-align: center; font-weight: bold;
+        }
+
+        .map-title-input {
+            position: absolute; top: 20px; left: 20px; background: transparent; border: none;
+            border-bottom: 2px solid #000; color: #000; font-family: var(--ui-font); font-size: 1.5rem;
+            font-weight: bold; text-transform: uppercase; width: 300px; z-index: 50;
+        }
+        .map-title-input:focus { outline: none; border-color: var(--alert-color); }
+
+        /* --- CONTROLS PANEL --- */
+        .controls-panel {
+            width: 250px; /* Slightly wider to accommodate scrollbar comfortably */
+            margin-right: 2vw;
+            display: flex; flex-direction: column; gap: 8px;
+            justify-content: center;
+        }
+
+        /* SCROLL CONTAINER: Optimized for 40-50 layers */
+        .scroll-container {
+            overflow-y: auto;
+            max-height: 55vh; /* Increased height so more layers are visible at once */
+            padding-right: 10px;
+            border: 1px solid #222; /* Subtle visual container */
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+        }
+        .scroll-container::-webkit-scrollbar { width: 6px; }
+        .scroll-container::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+        .scroll-container::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .scroll-container::-webkit-scrollbar-thumb:hover { background: var(--alert-color); }
+
+        .control-group {
+            border: 1px solid #333; background: var(--bg-color);
+            padding: 8px; margin-bottom: 5px; transition: border-color 0.3s;
+        }
+        .control-group.active { border-color: var(--alert-color); }
+
+        .layer-header {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; font-size: 0.75rem; text-transform: uppercase; color: #666;
+        }
+        .control-group.active .layer-header { color: var(--accent-color); }
+        
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; }
+        .control-group.active .status-dot { background: var(--alert-color); box-shadow: 0 0 5px var(--alert-color); }
+
+        .opacity-slider-container {
+            margin-top: 8px; display: flex; align-items: center; gap: 5px;
+            opacity: 0.3; pointer-events: none;
+        }
+        .control-group.active .opacity-slider-container { opacity: 1; pointer-events: all; }
+
+        input[type=range] { -webkit-appearance: none; width: 100%; height: 2px; background: #333; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: #666; cursor: pointer; border: 1px solid #000; }
+        .control-group.active input[type=range]::-webkit-slider-thumb { background: var(--alert-color); border-color: #fff; }
+
+        /* TOOLS */
+        .tool-row { display: flex; gap: 5px; margin-top: 5px; }
+        
+        .feature-toggle {
+            flex: 1; border: 1px dashed #555; color: #888; padding: 8px; text-transform: uppercase; font-size: 0.7rem;
+            background: transparent; cursor: pointer; text-align: center;
+        }
+        .feature-toggle:hover { border-color: #888; }
+        .feature-toggle.active { background: rgba(255,50,0,0.2); color: var(--alert-color); border-style: solid; border-color: var(--alert-color); }
+
+        /* SAVE SLOTS */
+        .slot-btn {
+            flex: 1; background: #111; border: 1px solid #333; color: #555;
+            padding: 5px; font-size: 0.7rem; cursor: pointer; font-family: var(--ui-font);
+        }
+        .slot-btn:hover { color: #fff; border-color: #666; }
+        .slot-btn:active { background: var(--alert-color); }
+
+        .export-btn {
+            margin-top: 15px; background-color: var(--alert-color); color: var(--bg-color); border: none; padding: 12px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase; font-family: var(--ui-font); font-size: 0.8rem;
+        }
+        .export-btn:hover { background-color: #fff; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">←</a>
+
+    <div class="info-panel">
+        <div>
+            <h2>IOP1 Generator</h2>
+            <p>High-Fidelity Output System.</p>
+        </div>
+        
+        <div class="tracker-box" id="coord-tracker">
+            X: 0000 <br> Y: 0000
+        </div>
+        <div class="tracker-box" id="measure-output" style="display:none; color: #00ff00;">
+            DIST: 0m
+        </div>
+        <div class="tracker-box" style="color: #666;">
+            A3 @ 1:20,000<br>
+            W: 8,400m<br>
+            H: 5,940m
+        </div>
+    </div>
+
+    <div class="plan-viewport" id="viewport">
+        
+        <input type="text" class="map-title-input" id="mapTitle" value="SITE IOP1" spellcheck="false">
+        <input type="text" class="temp-text-input" id="tempTextInput">
+        
+        <div class="grid-overlay" id="gridLayer"></div>
+        
+        <canvas class="interaction-layer" id="interactionCanvas"></canvas>
+
+        <div class="plan-layer active" id="layer-base" data-src="Maps/BaseA3.svg">
+            <img src="Maps/BaseA3.svg" onerror="this.src='https://placehold.co/2800x2000/FFF/000?text=BaseA3+Landscape+Missing'">
+        </div>
+        <div class="plan-layer" id="layer-water" data-src="Maps/WaterA3.svg">
+            <img src="Maps/WaterA3.svg" onerror="this.src='https://placehold.co/2800x2000/transparent/00F?text=WaterA3+Missing'">
+        </div>
+        <div class="plan-layer" id="layer-hoogte" data-src="Maps/HoogtekaartA3.svg">
+            <img src="Maps/HoogtekaartA3.svg" onerror="this.src='https://placehold.co/2800x2000/transparent/888?text=HoogtekaartA3+Missing'">
+        </div>
+        <div class="map-overlay">
+            <div class="north-arrow"></div>
+            <div class="scale-marker">1:20000</div>
+        </div>
+    </div>
+
+    <div class="controls-panel">
+        <label style="font-size:0.7rem; color:#666;">LAYERS / OPACITY</label>
+
+        <div class="scroll-container">
+            <div class="control-group active" id="ctrl-base">
+                <div class="layer-header" onclick="toggleLayer('layer-base', 'ctrl-base')">Base Map <div class="status-dot"></div></div>
+                <div class="opacity-slider-container"><input type="range" min="0" max="1" step="0.1" value="1" oninput="updateOpacity('layer-base', this.value)"></div>
+            </div>
+            <div class="control-group" id="ctrl-water">
+                <div class="layer-header" onclick="toggleLayer('layer-water', 'ctrl-water')">Water <div class="status-dot"></div></div>
+                <div class="opacity-slider-container"><input type="range" min="0" max="1" step="0.1" value="1" oninput="updateOpacity('layer-water', this.value)"></div>
+            </div>
+            <div class="control-group" id="ctrl-hoogte">
+                <div class="layer-header" onclick="toggleLayer('layer-hoogte', 'ctrl-hoogte')">Hoogtekaart <div class="status-dot"></div></div>
+                <div class="opacity-slider-container"><input type="range" min="0" max="1" step="0.1" value="1" oninput="updateOpacity('layer-hoogte', this.value)"></div>
+            </div>
+            </div>
+
+        <label style="font-size:0.7rem; color:#666; margin-top:5px;">TOOLS</label>
+        <div class="tool-row">
+            <button class="feature-toggle" onclick="toggleGrid(this)">Ref Grid</button>
+            <button class="feature-toggle" id="btn-measure" onclick="setTool('measure')">Measure</button>
+        </div>
+        
+        <label style="font-size:0.7rem; color:#666; margin-top:5px;">ANNOTATION</label>
+        <div class="tool-row">
+            <button class="feature-toggle" id="btn-rect" onclick="setTool('rect')">Rect</button>
+            <button class="feature-toggle" id="btn-circ" onclick="setTool('circ')">Circle</button>
+            <button class="feature-toggle" id="btn-text" onclick="setTool('text')">Text</button>
+        </div>
+        <button class="feature-toggle" onclick="clearAnnotations()" style="margin-top:2px;">Clear All</button>
+
+        <label style="font-size:0.7rem; color:#666; margin-top:5px;">QUICK SAVE</label>
+        <div class="tool-row">
+            <button class="slot-btn" onmousedown="startSave(1)" onmouseup="endSave(1)" onclick="loadState(1)">Q1</button>
+            <button class="slot-btn" onmousedown="startSave(2)" onmouseup="endSave(2)" onclick="loadState(2)">Q2</button>
+            <button class="slot-btn" onmousedown="startSave(3)" onmouseup="endSave(3)" onclick="loadState(3)">Q3</button>
+        </div>
+
+        <button class="export-btn" onclick="generateUltraResExport()">Export (A3)</button>
+    </div>
+
+    <script>
+        // --- CONSTANTS & STATE ---
+        // A3 Dimensions (Landscape)
+        const A3_WIDTH_MM = 420;
+        const A3_HEIGHT_MM = 297;
+        const MAP_SCALE = 20000;
+        
+        // Real World Dimensions in Meters updated for A3
+        const REAL_WIDTH_M = (A3_WIDTH_MM / 1000) * MAP_SCALE; // 8400m
+        const REAL_HEIGHT_M = (A3_HEIGHT_MM / 1000) * MAP_SCALE; // 5940m
+
+        let currentTool = null;
+        let isDrawing = false;
+        let startX = 0, startY = 0;
+        
+        // Persistent Shapes Array
+        let drawnShapes = []; 
+
+        const canvas = document.getElementById('interactionCanvas');
+        const ctx = canvas.getContext('2d');
+        const viewport = document.getElementById('viewport');
+
+        // --- INIT & RESIZE ---
+        function resizeCanvas() {
+            canvas.width = viewport.clientWidth;
+            canvas.height = viewport.clientHeight;
+            redrawCanvas();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // --- LAYER LOGIC ---
+        function toggleLayer(layerId, ctrlId) {
+            const layer = document.getElementById(layerId);
+            const ctrl = document.getElementById(ctrlId);
+            if(layer.classList.contains('active')) {
+                layer.classList.remove('active'); ctrl.classList.remove('active');
+            } else {
+                layer.classList.add('active'); ctrl.classList.add('active');
+            }
+        }
+
+        function updateOpacity(layerId, val) {
+            const layer = document.getElementById(layerId);
+            layer.style.opacity = val;
+            layer.setAttribute('data-opacity', val); 
+        }
+
+        function toggleGrid(btn) {
+            document.getElementById('gridLayer').classList.toggle('active');
+            btn.classList.toggle('active');
+        }
+
+        // --- TOOL SELECTOR ---
+        function setTool(toolName) {
+            ['btn-measure', 'btn-rect', 'btn-circ', 'btn-text'].forEach(id => {
+                document.getElementById(id).classList.remove('active');
+            });
+
+            if (currentTool === toolName) {
+                currentTool = null;
+                viewport.style.cursor = "crosshair";
+                document.getElementById('measure-output').style.display = 'none';
+            } else {
+                currentTool = toolName;
+                document.getElementById(`btn-${toolName}`).classList.add('active');
+                viewport.style.cursor = toolName === 'text' ? "text" : "crosshair";
+                
+                if(toolName !== 'measure') {
+                    document.getElementById('measure-output').style.display = 'none';
+                    redrawCanvas(); 
+                }
+            }
+        }
+
+        function clearAnnotations() {
+            drawnShapes = [];
+            redrawCanvas();
+        }
+
+        // --- INTERACTION HANDLERS ---
+        viewport.addEventListener('mousedown', (e) => {
+            if (!currentTool) return;
+            const rect = canvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+            isDrawing = true;
+
+            if(currentTool === 'text') {
+                handleTextInput(startX, startY);
+                isDrawing = false; 
+            }
+        });
+
+        viewport.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const metersPerPixel = REAL_WIDTH_M / rect.width;
+            const realX = (mouseX * metersPerPixel).toFixed(0);
+            const realY = (mouseY * metersPerPixel).toFixed(0);
+            document.getElementById('coord-tracker').innerHTML = `X: ${realX}m <br> Y: ${realY}m`;
+
+            if (!isDrawing) return;
+            redrawCanvas(); 
+
+            ctx.strokeStyle = "#ff0000";
+            ctx.lineWidth = 2;
+            const w = mouseX - startX;
+            const h = mouseY - startY;
+
+            if (currentTool === 'measure') {
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(mouseX, mouseY);
+                ctx.stroke();
+
+                const distPx = Math.sqrt(w*w + h*h);
+                const distM = Math.round(distPx * metersPerPixel);
+                const out = document.getElementById('measure-output');
+                out.style.display = 'block';
+                out.innerText = `DIST: ${distM}m`;
+            } 
+            else if (currentTool === 'rect') {
+                ctx.strokeRect(startX, startY, w, h);
+            } 
+            else if (currentTool === 'circ') {
+                const radius = Math.sqrt(w*w + h*h);
+                ctx.beginPath();
+                ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+        });
+
+        viewport.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            isDrawing = false;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const w = mouseX - startX;
+            const h = mouseY - startY;
+
+            if (currentTool === 'rect') {
+                drawnShapes.push({ type: 'rect', x: startX, y: startY, w: w, h: h });
+            } else if (currentTool === 'circ') {
+                const radius = Math.sqrt(w*w + h*h);
+                drawnShapes.push({ type: 'circ', x: startX, y: startY, r: radius });
+            }
+        });
+
+        function handleTextInput(x, y) {
+            const input = document.getElementById('tempTextInput');
+            input.style.left = x + 'px';
+            input.style.top = y + 'px';
+            input.style.display = 'block';
+            input.value = '';
+            input.focus();
+            input.onkeydown = null;
+            
+            input.onkeydown = function(e) {
+                if(e.key === 'Enter') {
+                    if(this.value.trim() !== "") {
+                        drawnShapes.push({ type: 'text', x: x, y: y, content: this.value });
+                        redrawCanvas();
+                    }
+                    this.style.display = 'none';
+                }
+            };
+        }
+
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#ff0000"; ctx.fillStyle = "#ff0000"; ctx.lineWidth = 2;
+            ctx.font = "bold 14px Courier New";
+
+            drawnShapes.forEach(s => {
+                ctx.beginPath();
+                if (s.type === 'rect') {
+                    ctx.strokeRect(s.x, s.y, s.w, s.h);
+                } else if (s.type === 'circ') {
+                    ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+                    ctx.stroke();
+                } else if (s.type === 'text') {
+                    ctx.fillText(s.content, s.x, s.y);
+                }
+            });
+        }
+
+        // --- SAVE/LOAD ---
+        let saveTimer;
+        function startSave(slot) {
+            saveTimer = setTimeout(() => {
+                const state = { layers: [], shapes: drawnShapes, title: document.getElementById('mapTitle').value };
+                document.querySelectorAll('.plan-layer').forEach(layer => {
+                    if(layer.classList.contains('active')) {
+                        state.layers.push({ id: layer.id, opacity: layer.style.opacity || "1" });
+                    }
+                });
+                localStorage.setItem(`iop1_slot_${slot}`, JSON.stringify(state));
+                alert(`VIEW SAVED TO Q${slot}`);
+            }, 1000);
+        }
+        function endSave(slot) { clearTimeout(saveTimer); }
+        function loadState(slot) {
+            const data = localStorage.getItem(`iop1_slot_${slot}`);
+            if(!data) return;
+            const state = JSON.parse(data);
+
+            document.querySelectorAll('.plan-layer').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.control-group').forEach(c => c.classList.remove('active'));
+            
+            state.layers.forEach(item => {
+                const layer = document.getElementById(item.id);
+                const ctrlId = item.id.replace('layer-', 'ctrl-');
+                const ctrl = document.getElementById(ctrlId);
+                const slider = ctrl.querySelector('input[type=range]');
+                if(layer && ctrl) {
+                    layer.classList.add('active'); ctrl.classList.add('active');
+                    layer.style.opacity = item.opacity; layer.setAttribute('data-opacity', item.opacity);
+                    if(slider) slider.value = item.opacity;
+                }
+            });
+
+            if(state.shapes) { drawnShapes = state.shapes; redrawCanvas(); }
+            if(state.title) document.getElementById('mapTitle').value = state.title;
+        }
+
+        // --- EXPORT (A3) ---
+        async function generateUltraResExport() {
+            const btn = document.querySelector('.export-btn');
+            const originalText = btn.innerText;
+            const title = document.getElementById('mapTitle').value;
+            
+            btn.innerText = "GENERATING...";
+            btn.style.opacity = 0.5; btn.style.cursor = "wait";
+
+            try {
+                // High Res A3 Landscape Canvas (~300 DPI)
+                const width = 4960; const height = 3508; 
+                const canvas = document.createElement('canvas');
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+
+                // 1. Background
+                ctx.fillStyle = "#f0f0f0"; ctx.fillRect(0, 0, width, height);
+
+                // 2. Grid
+                if(document.getElementById('gridLayer').classList.contains('active')) drawGrid(ctx, width, height); 
+
+                // 3. Map Layers
+                const activeLayers = Array.from(document.querySelectorAll('.plan-layer.active'));
+                for (const layerDiv of activeLayers) {
+                    const imgSrc = layerDiv.getAttribute('data-src');
+                    const opacity = layerDiv.getAttribute('data-opacity') || 1;
+                    const finalSrc = imgSrc || layerDiv.querySelector('img').src; 
+                    await drawImageToCanvas(ctx, finalSrc, width, height, opacity);
+                }
+
+                // 4. Annotations (Scaled)
+                const screenW = document.getElementById('interactionCanvas').width;
+                const scaleFactor = width / screenW;
+                
+                ctx.strokeStyle = "#ff0000"; ctx.fillStyle = "#ff0000"; ctx.lineWidth = 5;
+                ctx.font = "bold 60px Courier New";
+
+                drawnShapes.forEach(s => {
+                    ctx.beginPath();
+                    if (s.type === 'rect') {
+                        ctx.strokeRect(s.x * scaleFactor, s.y * scaleFactor, s.w * scaleFactor, s.h * scaleFactor);
+                    } else if (s.type === 'circ') {
+                        ctx.arc(s.x * scaleFactor, s.y * scaleFactor, s.r * scaleFactor, 0, 2 * Math.PI);
+                        ctx.stroke();
+                    } else if (s.type === 'text') {
+                        ctx.fillText(s.content, s.x * scaleFactor, s.y * scaleFactor);
+                    }
+                });
+
+                // 5. Overlay
+                drawOverlay(ctx, width, height, title);
+
+                // 6. Download
+                const link = document.createElement('a');
+                const cleanTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                link.download = `${cleanTitle}_A3_UltraRes.png`;
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    link.href = url; link.click(); URL.revokeObjectURL(url); 
+                    btn.innerText = "DONE!";
+                    setTimeout(() => { btn.innerText = originalText; btn.style.opacity = 1; btn.style.cursor = "pointer"; }, 2000);
+                }, 'image/png');
+
+            } catch (err) { console.error(err); alert("Export failed."); btn.innerText = "ERROR"; }
+        }
+
+        function drawGrid(ctx, w, h) {
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.strokeStyle = "rgba(0,0,0,0.15)";
+            ctx.lineWidth = 2; 
+            const gridSize = 150; 
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+            for (let y = 0; y <= h; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+            ctx.stroke();
+            ctx.globalCompositeOperation = 'source-over'; 
+        }
+
+        function drawImageToCanvas(ctx, src, w, h, opacity) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous"; 
+                img.onload = () => {
+                    ctx.globalCompositeOperation = 'multiply';
+                    ctx.globalAlpha = parseFloat(opacity);
+                    ctx.drawImage(img, 0, 0, w, h);
+                    ctx.globalAlpha = 1.0;
+                    resolve();
+                };
+                img.onerror = () => { resolve(); }; 
+                img.src = src;
+            });
+        }
+
+        function drawOverlay(ctx, w, h, titleText) {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = '#000000'; ctx.fillStyle = '#000000'; ctx.lineWidth = 5; 
+            const margin = 150; const cx = w - margin - 80; const cy = h - margin - 120;
+            ctx.font = "bold 120px Courier New"; ctx.textAlign = "left"; ctx.fillText(titleText, 100, 150);
+            const radius = 80;
+            ctx.beginPath(); ctx.arc(cx, cy, radius, 0, 2 * Math.PI); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - radius); ctx.stroke();
+            ctx.font = "bold 60px Courier New"; ctx.textAlign = "center"; ctx.fillText("N", cx, cy - radius - 20);
+            const scaleY = cy + radius + 40; const scaleWidth = 250;
+            ctx.beginPath(); ctx.moveTo(cx - scaleWidth/2, scaleY); ctx.lineTo(cx + scaleWidth/2, scaleY);
+            ctx.moveTo(cx - scaleWidth/2, scaleY); ctx.lineTo(cx - scaleWidth/2, scaleY - 15);
+            ctx.moveTo(cx + scaleWidth/2, scaleY); ctx.lineTo(cx + scaleWidth/2, scaleY - 15); ctx.stroke();
+            ctx.font = "bold 40px Courier New"; ctx.fillText("1:20000", cx, scaleY + 60);
+        }
+    </script>
+</body>
+</html>
