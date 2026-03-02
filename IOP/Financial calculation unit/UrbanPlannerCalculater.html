@@ -89,7 +89,7 @@
         <div id="canvas-container">
             <div id="drawing-area">
                 <svg id="svg-overlay">
-                    <polyline id="temp-line" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4"></polyline>
+                    <polyline id="temp-line" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4"></polyline>
                 </svg>
             </div>
         </div>
@@ -102,7 +102,7 @@
             <button id="btn-back-2d" class="bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-full text-white font-bold border border-gray-600 shadow-xl backdrop-blur-md opacity-90 transition">
                 ⬅ Back
             </button>
-            <button id="btn-export-svg" class="bg-purple-700 hover:bg-purple-600 px-6 py-2 rounded-full text-white font-bold border border-purple-500 shadow-xl backdrop-blur-md opacity-90 transition">
+            <button id="btn-export-svg" class="bg-purple-700 hover:bg-purple-600 px-6 py-2 rounded-full text-white font-bold border border-purple-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export Architectural Vector SVG">
                 ⤓ Arch. SVG
             </button>
             <button id="btn-export-pdf" class="bg-red-700 hover:bg-red-600 px-6 py-2 rounded-full text-white font-bold border border-red-500 shadow-xl backdrop-blur-md opacity-90 transition" title="Export A1 PDF Map">
@@ -123,18 +123,8 @@
             </button>
 
             <div id="settings-panel" class="glass-panel w-full">
-                <h2>Environment Lighting</h2>
-                <div class="control-group">
-                    <label>Sun Rotation: <span id="azimuthVal">45°</span></label>
-                    <input type="range" id="sunAzimuth" min="0" max="360" value="45">
-                </div>
-                <div class="control-group">
-                    <label>Sun Height: <span id="altitudeVal">60°</span></label>
-                    <input type="range" id="sunAltitude" min="0" max="90" value="60">
-                </div>
-                <button id="toggleSunAnim" class="btn-dark mt-2">Toggle Sun Animation</button>
-                
-                <div class="control-group mt-3 border-t border-gray-700 pt-3">
+                <h2>Camera Controls</h2>
+                <div class="control-group mt-1">
                     <label>Camera Zoom Scale: <span id="zoomVal">1.0x</span></label>
                     <input type="range" id="camZoom" min="0.2" max="3.0" step="0.1" value="1.0">
                 </div>
@@ -392,9 +382,10 @@
                 const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
                 poly.setAttribute('points', site.points.map(p => `${p.x},${p.y}`).join(' '));
                 poly.setAttribute('class', 'site-poly');
-                poly.setAttribute('fill', site.isLocked ? 'rgba(39, 174, 96, 0.1)' : 'rgba(59, 130, 246, 0.4)');
+                poly.setAttribute('fill', site.isLocked ? 'rgba(39, 174, 96, 0.1)' : 'rgba(59, 130, 246, 0.2)');
                 poly.setAttribute('stroke', site.isLocked ? '#27ae60' : '#2563eb');
-                poly.setAttribute('stroke-width', '2');
+                poly.setAttribute('stroke-width', '1'); // Thinner architectural lines
+                poly.setAttribute('vector-effect', 'non-scaling-stroke');
                 poly.setAttribute('stroke-dasharray', site.isLocked ? '4 2' : 'none');
                 fragment.appendChild(poly);
 
@@ -410,7 +401,8 @@
                         
                         subPoly.setAttribute('fill', color);
                         subPoly.setAttribute('stroke', '#111');
-                        subPoly.setAttribute('stroke-width', '1');
+                        subPoly.setAttribute('stroke-width', '0.5'); // Crisp sub-building lines
+                        subPoly.setAttribute('vector-effect', 'non-scaling-stroke');
                         subPoly.style.opacity = '0.8';
                         fragment.appendChild(subPoly);
                     });
@@ -491,123 +483,145 @@
             a.click();
         });
 
-       // 3. Export PDF Map (A1 Portrait) - Architectural Layout
-document.getElementById('btn-export-pdf').addEventListener('click', async () => {
-    const typologyColors = {
-        'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
-        'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c', name: 'Grachtenpand (Canal)' },
-        'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706', name: 'Twee-onder-een-kap' },
-        'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a', name: 'Vrijstaand (Villa)' },
-        'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7', name: 'Stadsblok (Perimeter)' },
-        'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed', name: 'Galerijflat (Slab)' },
-        'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3', name: 'Middelhoogbouw (L-Rise)' },
-        'hoogbouw': { fill: '#f1f5f9', stroke: '#475569', name: 'Hoogbouw (Tower)' }
-    };
+        // Generate SVG string utility (used by PDF and SVG Export)
+        function generateArchitecturalSVG(isPDF = false) {
+            const typologyColors = {
+                'rijtjeshuis': { fill: '#ffe4e6', stroke: '#e11d48', name: 'Rijtjeshuis (Row House)' },
+                'grachtenpand': { fill: '#ffedd5', stroke: '#ea580c', name: 'Grachtenpand (Canal)' },
+                'twee_onder_een_kap': { fill: '#fef3c7', stroke: '#d97706', name: 'Twee-onder-een-kap' },
+                'vrijstaand': { fill: '#dcfce7', stroke: '#16a34a', name: 'Vrijstaand (Villa)' },
+                'stadsblok': { fill: '#e0f2fe', stroke: '#0284c7', name: 'Stadsblok (Perimeter)' },
+                'galerijflat': { fill: '#ede9fe', stroke: '#7c3aed', name: 'Galerijflat (Slab)' },
+                'middelhoogbouw': { fill: '#fae8ff', stroke: '#c026d3', name: 'Middelhoogbouw (L-Rise)' },
+                'hoogbouw': { fill: '#f1f5f9', stroke: '#475569', name: 'Hoogbouw (Tower)' }
+            };
 
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    let hasPoints = false;
-    let activeTypologies = new Set();
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            let hasPoints = false;
+            let activeTypologies = new Set();
 
-    sites.forEach(site => {
-        site.points.forEach(p => {
-            if (p.x < minX) minX = p.x; if (p.y < minY) minY = p.y;
-            if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y;
-            hasPoints = true;
-        });
-        if (site.isLocked) {
-            activeTypologies.add(site.typology);
-            site.subBuildings.forEach(sub => {
-                sub.points.forEach(p => {
+            sites.forEach(site => {
+                site.points.forEach(p => {
                     if (p.x < minX) minX = p.x; if (p.y < minY) minY = p.y;
                     if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y;
+                    hasPoints = true;
                 });
+                if (site.isLocked) {
+                    activeTypologies.add(site.typology);
+                    site.subBuildings.forEach(sub => {
+                        sub.points.forEach(p => {
+                            if (p.x < minX) minX = p.x; if (p.y < minY) minY = p.y;
+                            if (p.x > maxX) maxX = p.x; if (p.y > maxY) maxY = p.y;
+                        });
+                    });
+                }
             });
-        }
-    });
 
-    if (!hasPoints) { minX = 0; minY = 0; maxX = 594; maxY = 841; }
-    const pad = 20;
-    minX -= pad; minY -= pad;
-    const vW = (maxX - minX) + (pad * 2);
-    const vH = (maxY - minY) + (pad * 2);
+            if (!hasPoints) { minX = 0; minY = 0; maxX = 594; maxY = 841; }
+            const pad = 20;
+            minX -= pad; minY -= pad;
+            const vW = (maxX - minX) + (pad * 2);
+            const vH = (maxY - minY) + (pad * 2);
 
-    let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX} ${minY} ${vW} ${vH}" width="100%" height="100%">\n`;
-    sites.forEach(site => {
-        let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
-        let fill = site.isLocked ? colors.fill : 'none';
-        let stroke = site.isLocked ? colors.stroke : '#cbd5e1';
-        let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
-        let strokeW = Math.max(0.2, vW / 600); 
-        svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}" stroke-dasharray="16,12"/>\n`;
-        if (site.isLocked) {
-            site.subBuildings.forEach(sub => {
-                let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
-                svgStr += `  <polygon points="${subPts}" fill="${colors.stroke}" stroke="#1e293b" stroke-width="${strokeW * 0.75}"/>\n`;
+            let svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX} ${minY} ${vW} ${vH}" width="100%" height="100%">\n`;
+            
+            // Background to ensure white export
+            if (!isPDF) svgStr += `<rect x="${minX}" y="${minY}" width="${vW}" height="${vH}" fill="white" />\n`;
+
+            sites.forEach(site => {
+                let colors = typologyColors[site.typology] || { fill: '#e2e8f0', stroke: '#94a3b8' };
+                // Pure architectural style if SVG export, otherwise slight tint for PDF map
+                let fill = site.isLocked ? (isPDF ? colors.fill : '#f9fafb') : 'none';
+                let stroke = site.isLocked ? (isPDF ? colors.stroke : '#111827') : '#cbd5e1';
+                let sitePts = site.points.map(p => `${p.x},${p.y}`).join(' ');
+                
+                // Fixed thin stroke for architectural styling
+                let strokeW = "0.5"; 
+                svgStr += `  <polygon points="${sitePts}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}" vector-effect="non-scaling-stroke" stroke-dasharray="4,4"/>\n`;
+                
+                if (site.isLocked) {
+                    site.subBuildings.forEach(sub => {
+                        let subPts = sub.points.map(p => `${p.x},${p.y}`).join(' ');
+                        let bldgFill = isPDF ? 'white' : '#e5e7eb';
+                        let bldgStroke = isPDF ? colors.stroke : '#000000';
+                        svgStr += `  <polygon points="${subPts}" fill="${bldgFill}" stroke="${bldgStroke}" stroke-width="0.75" vector-effect="non-scaling-stroke"/>\n`;
+                    });
+                }
             });
+            svgStr += `</svg>`;
+            
+            return { svgStr, activeTypologies, typologyColors };
         }
-    });
-    svgStr += `</svg>`;
-    const imgSrc = `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgStr)))}`;
 
-    let legendHtml = '';
-    activeTypologies.forEach(typ => {
-        let t = typologyColors[typ];
-        legendHtml += `<div style="display:flex;align-items:center;margin-bottom:20px;"><div style="width:40px;height:40px;background:${t.fill};border:3px solid ${t.stroke};margin-right:20px;border-radius:5px;"></div><span style="font-size:30px;font-family:sans-serif;font-weight:bold;">${t.name}</span></div>`;
-    });
-
-    const tempContainer = document.createElement('div');
-    tempContainer.id = 'pdf-export-container';
-    tempContainer.style = `width:2376px; height:3364px; position:fixed; top:0; left:0; z-index:-9999; background:white; padding:100px; box-sizing:border-box; display:flex; flex-direction:column;`;
-
-    tempContainer.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:8px solid #1e293b;padding-bottom:40px;margin-bottom:50px;">
-            <div><h1 style="font-size:90px;font-family:sans-serif;margin:0;font-weight:900;">Urban Masterplan</h1><p style="font-size:40px;color:#64748b;margin:10px 0 0 0;">Parametric Urban Planner Pro</p></div>
-            <div style="text-align:right;"><p style="font-size:36px;font-weight:bold;margin:0;">${new Date().toLocaleDateString('nl-NL')}</p></div>
-        </div>
-        <div style="flex:1;position:relative;border:6px dashed #cbd5e1;background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:40px;">
-            <img id="pdf-map-img" src="${imgSrc}" style="width:100%;height:100%;object-fit:contain;" />
-            <div style="position:absolute;bottom:80px;left:80px;background:white;padding:50px;border:6px solid #1e293b;border-radius:20px;box-shadow:0 30px 60px rgba(0,0,0,0.1); max-width: 600px;">
-                <h3 style="font-size:45px;margin:0 0-30px 0;font-weight:900;">LEGEND</h3>${legendHtml}
-            </div>
-            <div style="position:absolute;bottom:80px;right:80px;width:200px;height:200px;background:white;border-radius:50%;border:6px solid #1e293b;display:flex;align-items:center;justify-content:center;">
-                <svg viewBox="0 0 100 100" width="120" height="120"><polygon points="50,5 65,90 50,75 35,90" fill="#1e293b" /><text x="50" y="55" font-size="30" fill="white" font-weight="bold" text-anchor="middle">N</text></svg>
-            </div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:50px;padding-top:40px;border-top:6px solid #cbd5e1;">
-            <p style="font-size:40px;font-weight:900;">&copy; DouweDoesDesign&trade;</p>
-        </div>
-    `;
-
-    document.body.appendChild(tempContainer);
-
-    // Wait for the image to actually "exist" in the browser's memory
-    const mapImg = document.getElementById('pdf-map-img');
-    await new Promise((resolve) => {
-        if (mapImg.complete) resolve();
-        else mapImg.onload = resolve;
-    });
-
-    const opt = {
-        margin: 0,
-        filename: 'DouweDoesDesign_Masterplan.pdf',
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { 
-            scale: 1, // High base resolution container, so scale 1 is enough
-            useCORS: true,
-            logging: false,
-            width: 2376,
-            height: 3364
-        },
-        jsPDF: { unit: 'mm', format: 'a1', orientation: 'portrait' }
-    };
-
-    // Small delay to allow the layout engine to settle
-    setTimeout(() => {
-        html2pdf().set(opt).from(tempContainer).save().then(() => {
-            document.body.removeChild(tempContainer);
+        // Export Architectural SVG
+        document.getElementById('btn-export-svg').addEventListener('click', () => {
+            const { svgStr } = generateArchitecturalSVG(false);
+            const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Architectural_Map.svg';
+            a.click();
         });
-    }, 500);
-});
+
+        // Export PDF Map (A1 Portrait) - Fixes Zoom & Clipping issue
+        document.getElementById('btn-export-pdf').addEventListener('click', async () => {
+            const { svgStr, activeTypologies, typologyColors } = generateArchitecturalSVG(true);
+
+            let legendHtml = '';
+            activeTypologies.forEach(typ => {
+                let t = typologyColors[typ];
+                legendHtml += `<div style="display:flex;align-items:center;margin-bottom:20px;"><div style="width:40px;height:40px;background:${t.fill};border:2px solid ${t.stroke};margin-right:20px;border-radius:5px;"></div><span style="font-size:30px;font-family:sans-serif;font-weight:bold;">${t.name}</span></div>`;
+            });
+
+            const tempContainer = document.createElement('div');
+            tempContainer.id = 'pdf-export-container';
+            // Absolute positioning off-screen fixes html2canvas viewport bugs vs fixed
+            tempContainer.style = `width:2376px; height:3364px; position:absolute; top:0; left:-10000px; background:white; padding:100px; box-sizing:border-box; display:flex; flex-direction:column;`;
+
+            tempContainer.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:6px solid #1e293b;padding-bottom:40px;margin-bottom:50px;">
+                    <div><h1 style="font-size:90px;font-family:sans-serif;margin:0;font-weight:900;">Urban Masterplan</h1><p style="font-size:40px;color:#64748b;margin:10px 0 0 0;">Parametric Urban Planner Pro</p></div>
+                    <div style="text-align:right;"><p style="font-size:36px;font-weight:bold;margin:0;">${new Date().toLocaleDateString('nl-NL')}</p></div>
+                </div>
+                <div style="flex:1;position:relative;border:4px solid #cbd5e1;background:#f8fafc;display:flex;align-items:center;justify-content:center;padding:40px;">
+                    ${svgStr}
+                    <div style="position:absolute;bottom:80px;left:80px;background:white;padding:50px;border:4px solid #1e293b;border-radius:20px;box-shadow:0 30px 60px rgba(0,0,0,0.1); max-width: 600px;">
+                        <h3 style="font-size:45px;margin:0 0 30px 0;font-weight:900;">LEGEND</h3>${legendHtml}
+                    </div>
+                    <div style="position:absolute;bottom:80px;right:80px;width:200px;height:200px;background:white;border-radius:50%;border:4px solid #1e293b;display:flex;align-items:center;justify-content:center;">
+                        <svg viewBox="0 0 100 100" width="120" height="120"><polygon points="50,5 65,90 50,75 35,90" fill="#1e293b" /><text x="50" y="55" font-size="30" fill="white" font-weight="bold" text-anchor="middle">N</text></svg>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:50px;padding-top:40px;border-top:4px solid #cbd5e1;">
+                    <p style="font-size:40px;font-weight:900;">&copy; DouweDoesDesign&trade;</p>
+                </div>
+            `;
+
+            document.body.appendChild(tempContainer);
+
+            const opt = {
+                margin: 0,
+                filename: 'DouweDoesDesign_Masterplan.pdf',
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { 
+                    scale: 1,
+                    useCORS: true,
+                    logging: false,
+                    width: 2376,
+                    height: 3364,
+                    windowWidth: 2376, // This locks the viewport ratio to prevent zooming
+                    windowHeight: 3364
+                },
+                jsPDF: { unit: 'mm', format: 'a1', orientation: 'portrait' }
+            };
+
+            setTimeout(() => {
+                html2pdf().set(opt).from(tempContainer).save().then(() => {
+                    document.body.removeChild(tempContainer);
+                });
+            }, 500);
+        });
+
         // --- TRANSITIONS ---
         document.getElementById('btn-go-3d').addEventListener('click', () => {
             page1.style.display = 'none'; page2.style.display = 'block';
@@ -634,34 +648,28 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
         
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 50000);
         
-        // OPTIMIZATION: Set Power Preference and cap pixel ratio to prevent retina 4K slow downs
         const renderer = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: true, preserveDrawingBuffer: true, powerPreference: "high-performance" });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        // Shadow map calculation removed for massive performance boost
 
         const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
         orbitControls.enableDamping = true;
         orbitControls.dampingFactor = 0.05;
         orbitControls.maxPolarAngle = Math.PI / 2 - 0.01;
 
-        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x111111, 0.4);
+        const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x111111, 0.6);
         scene.add(hemiLight);
 
-        const sunLight = new THREE.DirectionalLight(0xfff5e6, 2.0);
-        sunLight.castShadow = true;
-        sunLight.shadow.mapSize.width = 4096; sunLight.shadow.mapSize.height = 4096;
-        const d = 500;
-        sunLight.shadow.camera.left = -d; sunLight.shadow.camera.right = d;
-        sunLight.shadow.camera.top = d; sunLight.shadow.camera.bottom = -d;
-        sunLight.shadow.camera.far = 2000; sunLight.shadow.bias = -0.0005;
+        // Simple static directional light replacing the heavy shadow sun
+        const sunLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
+        sunLight.position.set(500, 1000, 500);
         scene.add(sunLight);
 
         const floorObj = new THREE.Mesh(
             new THREE.PlaneGeometry(20000, 20000), 
             new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 })
         );
-        floorObj.rotation.x = -Math.PI / 2; floorObj.receiveShadow = true; floorObj.position.y = -1;
+        floorObj.rotation.x = -Math.PI / 2; floorObj.position.y = -1;
         scene.add(floorObj);
 
         let buildingMeshes = [];
@@ -716,7 +724,6 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
                 
                 const displayHeight = layer.height;
                 
-                // OPTIMIZATION: Define minimal extrusion properties once 
                 const baseExtrudeOpts = { bevelEnabled: false, steps: 1, curveSegments: 1 };
 
                 if (layer.splitType && layer.splitType !== 'None') {
@@ -724,7 +731,6 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
                     const h1 = displayHeight * ratio1;
                     const mesh1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h1, ...baseExtrudeOpts }), getMaterialForType(layer.type, isHighlighted));
                     mesh1.rotation.x = -Math.PI / 2; mesh1.position.y = currentElevation;
-                    mesh1.castShadow = true; mesh1.receiveShadow = true;
                     mesh1.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
                     mesh1.matrixAutoUpdate = false; 
                     mesh1.updateMatrix();
@@ -734,7 +740,6 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
                     const h2 = displayHeight * (1 - ratio1);
                     const mesh2 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h2, ...baseExtrudeOpts }), getMaterialForType(layer.splitType, isHighlighted));
                     mesh2.rotation.x = -Math.PI / 2; mesh2.position.y = currentElevation;
-                    mesh2.castShadow = true; mesh2.receiveShadow = true;
                     mesh2.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
                     mesh2.matrixAutoUpdate = false; 
                     mesh2.updateMatrix();
@@ -743,7 +748,6 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
                 } else {
                     const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: displayHeight, ...baseExtrudeOpts }), getMaterialForType(layer.type, isHighlighted));
                     mesh.rotation.x = -Math.PI / 2; mesh.position.y = currentElevation;
-                    mesh.castShadow = true; mesh.receiveShadow = true;
                     mesh.userData = { siteId: parentSiteId, subId: subBuilding.id, layerId: layer.id };
                     mesh.matrixAutoUpdate = false; 
                     mesh.updateMatrix();
@@ -754,12 +758,10 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
         }
 
         function build3DScene() {
-            // OPTIMIZATION: Free GPU Memory to prevent crashing when modifying large scenes
             buildingGroups.forEach(g => {
                 g.traverse((child) => {
                     if (child.isMesh) {
                         child.geometry.dispose(); 
-                        // Materials are cached intentionally, so no need to dispose them here
                     }
                 });
                 scene.remove(g);
@@ -984,10 +986,6 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
         });
 
-        let isSunAnimating = false;
-        document.getElementById('sunAzimuth').addEventListener('input', e => { sunLight.position.x = Math.cos(e.target.value * Math.PI/180) * 500; sunLight.position.z = Math.sin(e.target.value * Math.PI/180) * 500; document.getElementById('azimuthVal').innerText = e.target.value + '°'; });
-        document.getElementById('sunAltitude').addEventListener('input', e => { sunLight.position.y = e.target.value * 5.5; document.getElementById('altitudeVal').innerText = e.target.value + '°'; });
-        document.getElementById('toggleSunAnim').addEventListener('click', () => { isSunAnimating = !isSunAnimating; });
         document.getElementById('volSlider').addEventListener('input', (e) => { document.getElementById('volVal').innerText = e.target.value; });
         document.getElementById('camZoom').addEventListener('input', e => { camera.zoom = parseFloat(e.target.value); camera.updateProjectionMatrix(); document.getElementById('zoomVal').innerText = e.target.value + 'x'; });
 
@@ -1303,16 +1301,6 @@ document.getElementById('btn-export-pdf').addEventListener('click', async () => 
         const animate = function () {
             requestAnimationFrame(animate);
             orbitControls.update();
-            
-            if (isSunAnimating) {
-                let az = parseFloat(document.getElementById('sunAzimuth').value);
-                az = (az + 0.5) % 360;
-                document.getElementById('sunAzimuth').value = az;
-                sunLight.position.x = Math.cos(az * Math.PI/180) * 500; 
-                sunLight.position.z = Math.sin(az * Math.PI/180) * 500;
-                document.getElementById('azimuthVal').innerText = Math.round(az) + '°';
-            }
-
             renderer.render(scene, camera);
         };
         animate();
