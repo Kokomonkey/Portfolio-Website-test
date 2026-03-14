@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
+const vm = require('vm');
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,15 +23,33 @@ const loadJSON = (file) => {
     }
 };
 
-// 2. Safely load workflow.js (Browser-compatible)
+// 2. Safely load workflow.js (Node VM approach)
 const loadWorkflow = () => {
     const wfPath = path.join(__dirname, 'workflow.js');
     if (!fs.existsSync(wfPath)) return [];
+    
     try {
         const content = fs.readFileSync(wfPath, 'utf8');
-        // Cleanly strip the browser-specific parts to get pure JSON
-        const jsonStr = content.replace('window.workflowData =', '').replace(';', '').trim();
-        return JSON.parse(jsonStr);
+        
+        // Create a fake "browser" environment so the script doesn't crash
+        const sandbox = { 
+            window: {}, 
+            module: {} 
+        };
+        
+        vm.createContext(sandbox);
+        vm.runInContext(content, sandbox);
+        
+        // Grab the data from either window or module.exports
+        const extractedData = sandbox.window.workflowData || sandbox.module.exports || [];
+        
+        // Optional: Log it once so you know it worked!
+        if (extractedData.length > 0 && !global.loggedWorkflow) {
+            console.log(`✅ Loaded ${extractedData.length} workflow phases successfully.`);
+            global.loggedWorkflow = true; 
+        }
+        
+        return extractedData;
     } catch (e) {
         console.error("⚠️ Error loading workflow.js:", e.message);
         return [];
@@ -168,22 +187,32 @@ app.get('/', (req, res) => {
 
                 <div class="card">
                     <form action="/decide" method="POST">
-                        <h2>✏️ Edit & Verify</h2>
-                        <input type="hidden" name="id" value="${c.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}">
-                        <input type="hidden" name="website_url" value="${c.website_url}">
-                        <input type="hidden" name="logo_url" value="${c.logo_url || ''}">
+    <h2>✏️ Edit & Verify</h2>
+    <input type="hidden" name="id" value="${c.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}">
 
-                        <div class="row">
-                            <div class="col">
-                                <label>Tool Name</label>
-                                <input type="text" name="name" value="${c.name}">
-                            </div>
-                            <div class="col">
-                                <label>Provider / Company</label>
-                                <input type="text" name="provider" value="${c.provider || ''}">
-                            </div>
-                        </div>
+    <div class="row">
+        <div class="col">
+            <label>Tool Name</label>
+            <input type="text" name="name" value="${c.name}">
+        </div>
+        <div class="col">
+            <label>Provider / Company</label>
+            <input type="text" name="provider" value="${c.provider || ''}">
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col">
+            <label>Website URL</label>
+            <input type="text" name="website_url" value="${c.website_url}">
+        </div>
+        <div class="col">
+            <label>Logo URL</label>
+            <input type="text" name="logo_url" value="${c.logo_url || ''}">
+        </div>
+    </div>
+
+    <div class="section-header">📸 Workflow Images</div>
                         <div class="section-header">📸 Workflow Images</div>
                         <div class="row">
                             <div class="col">

@@ -1,10 +1,16 @@
 const fs = require('fs');
+const vm = require('vm'); // 🆕 Added vm module for safe loading
 
 const WHITELIST_PATH = './whitelist.json';
 const DATABASE_PATH = './database.js';
 const WORKFLOW_PATH = './workflow.js';
 
 const whitelist = fs.existsSync(WHITELIST_PATH) ? JSON.parse(fs.readFileSync(WHITELIST_PATH)) : [];
+
+if (whitelist.length === 0) {
+    console.log("⚠️ No new candidates in whitelist to merge.");
+    process.exit(0);
+}
 
 // 1. UPDATE DATABASE.JS
 console.log("🔄 Merging Whitelist into Database...");
@@ -14,11 +20,11 @@ const newDatabase = whitelist.map(item => ({
     provider: item.provider,
     website_url: item.website_url,
     logo_url: item.logo_url,
-    image_url_1: item.image_url_1 || "", // 🆕 Ensure these map
-    image_url_2: item.image_url_2 || "", // 🆕 Ensure these map
+    image_url_1: item.image_url_1 || "",
+    image_url_2: item.image_url_2 || "",
     
     description_short: item.description_short,
-    description_long: item.description_long, // 🆕 Ensure these map
+    description_long: item.description_long,
     
     primary_function: item.primary_function,
     integration_type: item.integration_type || "Service",
@@ -45,28 +51,47 @@ fs.writeFileSync(DATABASE_PATH, dbContent);
 console.log(`✅ database.js updated with ${newDatabase.length} entries.`);
 
 // 2. UPDATE WORKFLOW.JS
-// Load existing workflow to preserve structure, but inject new IDs
+console.log("🔄 Updating Workflow references...");
 let workflow = [];
 try {
     const wfRaw = fs.readFileSync(WORKFLOW_PATH, 'utf8');
-    workflow = JSON.parse(wfRaw.replace('window.workflowData =', '').replace(';', '').trim());
-} catch(e) { console.log("⚠️ Could not load workflow structure, starting fresh."); }
+    
+    // 🆕 Safely execute the file to extract the array, just like the review server
+    const sandbox = { window: {}, module: {} };
+    vm.createContext(sandbox);
+    vm.runInContext(wfRaw, sandbox);
+    
+    workflow = sandbox.window.workflowData || sandbox.module.exports || [];
+} catch(e) { 
+    console.log("⚠️ Could not load workflow structure, starting fresh. Error:", e.message); 
+}
+
+let addedRefs = 0;
 
 whitelist.forEach(tool => {
     if (tool.workflow_target) {
         const { phaseIndex, taskIndex } = tool.workflow_target;
+        
+        // Ensure the nested arrays exist before pushing
         if (workflow[phaseIndex] && workflow[phaseIndex].tasks[taskIndex]) {
             const task = workflow[phaseIndex].tasks[taskIndex];
+            
             if (!task.ai_refs) task.ai_refs = [];
             
             // Only add if not already there
             if (!task.ai_refs.includes(tool.id)) {
                 task.ai_refs.push(tool.id);
+                addedRefs++;
             }
+        } else {
+            console.log(`⚠️ Could not find Phase ${phaseIndex}, Task ${taskIndex} for tool ${tool.id}`);
         }
     }
 });
 
-const wfContent = `window.workflowData = ${JSON.stringify(workflow, null, 4)};`;
+// 🆕 Re-attach the module.exports block so the review_server doesn't break on reload
+const wfContent = `window.workflowData = ${JSON.stringify(workflow, null, 4)};\n\nif(typeof module !== 'undefined') module.exports = window.workflowData;`;
+
 fs.writeFileSync(WORKFLOW_PATH, wfContent);
-console.log(`✅ workflow.js updated with new tool references.`);
+console.log(`✅ workflow.js updated successfully! Added ${addedRefs} new AI references.`);
+

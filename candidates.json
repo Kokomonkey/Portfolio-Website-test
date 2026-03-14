@@ -1,25 +1,5 @@
 [
   {
-    "name": "Raven AI",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://media.licdn.com/dms/image/v2/D560BAQHoe2zUwX8zrg/company-logo_200_200/company-logo_200_200/0/1685046361998/ravenai_logo?e=2147483647&v=beta&t=fWFZf43hzaLZzTg4IPpOl_-vTGVHq_yFcvoKo3h5XlQ",
-    "image_urls": [
-      "https://i.ytimg.com/vi/4c0g-I6Vz-U/maxresdefault.jpg",
-      "https://i.ytimg.com/vi/ve-T7vEHIII/hqdefault.jpg"
-    ]
-  },
-  {
-    "name": "Archivinci",
-    "suggested_category": "Backlog",
-    "website_url": "",
-    "logo_url": "https://static.wixstatic.com/media/80eeb4_ce8eb039772948d4ad2b8696739eea35~mv2.png/v1/fill/w_2500,h_1406,al_c/80eeb4_ce8eb039772948d4ad2b8696739eea35~mv2.png",
-    "image_urls": [
-      "https://static.wixstatic.com/media/02f1ab_10749fb047d740cb8f2965764286f060~mv2.webp/v1/fill/w_757,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/archivinci-ai-render-interface-exterior-module.webp",
-      "https://static.wixstatic.com/media/02f1ab_fb2d28c6da6b471481ed80a23c9867b3~mv2.webp"
-    ]
-  },
-  {
     "name": "Renderahouse",
     "suggested_category": "Backlog",
     "website_url": "",

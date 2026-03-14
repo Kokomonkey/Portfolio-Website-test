@@ -1213,6 +1213,33 @@
         const animate = function () { requestAnimationFrame(animate); orbitControls.update(); renderer.render(scene, camera); };
         animate();
 
+        // Import the Tauri Shell API to talk to Python
+const { Command } = window.__TAURI__.shell;
+
+async function calculateWithPythonBrain(areaSqm) {
+    try {
+        const payload = JSON.stringify({ area_sqm: areaSqm });
+        
+        // Call the binary registered in tauri.conf.json
+        const command = Command.sidecar('binaries/brain', [payload]);
+        const output = await command.execute();
+
+        if (output.code === 0) {
+            const result = JSON.parse(output.stdout);
+            console.log("Python Backend Response:", result);
+            alert(`AI Calculation Complete!\nProfit: €${result.net_profit}`);
+            // Here you would trigger UI updates based on result
+        } else {
+            console.error("Python Error:", output.stderr);
+        }
+    } catch (err) {
+        console.error("Failed to execute sidecar:", err);
+    }
+}
+
+// Example usage: bind this to a button in your UI
+// document.getElementById("calc-btn").addEventListener("click", () => calculateWithPythonBrain(5000));
+
     </script>
 </body>
 </html>
