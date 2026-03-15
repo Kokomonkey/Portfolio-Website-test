@@ -23,7 +23,7 @@ const loadJSON = (file) => {
     }
 };
 
-// 2. Safely load workflow.js (Node VM approach)
+// 2. Safely load workflow.js (Node VM + Regex Fallback approach)
 const loadWorkflow = () => {
     const wfPath = path.join(__dirname, 'workflow.js');
     if (!fs.existsSync(wfPath)) return [];
@@ -31,25 +31,26 @@ const loadWorkflow = () => {
     try {
         const content = fs.readFileSync(wfPath, 'utf8');
         
-        // Create a fake "browser" environment so the script doesn't crash
-        const sandbox = { 
-            window: {}, 
-            module: {} 
-        };
-        
+        // Approach A: Try the Sandbox
+        const sandbox = { window: {}, module: {} };
         vm.createContext(sandbox);
         vm.runInContext(content, sandbox);
+        let extractedData = sandbox.window.workflowData || sandbox.module.exports;
         
-        // Grab the data from either window or module.exports
-        const extractedData = sandbox.window.workflowData || sandbox.module.exports || [];
+        // Approach B: Fallback if Sandbox fails on first boot
+        if (!extractedData || extractedData.length === 0) {
+            const match = content.match(/\[[\s\S]*\]/); // Grabs everything between [ and ]
+            if (match) {
+                extractedData = JSON.parse(match[0]);
+            }
+        }
         
-        // Optional: Log it once so you know it worked!
-        if (extractedData.length > 0 && !global.loggedWorkflow) {
+        if (extractedData && extractedData.length > 0 && !global.loggedWorkflow) {
             console.log(`✅ Loaded ${extractedData.length} workflow phases successfully.`);
             global.loggedWorkflow = true; 
         }
         
-        return extractedData;
+        return extractedData || [];
     } catch (e) {
         console.error("⚠️ Error loading workflow.js:", e.message);
         return [];
@@ -207,25 +208,24 @@ app.get('/', (req, res) => {
             <input type="text" name="website_url" value="${c.website_url}">
         </div>
         <div class="col">
-            <label>Logo URL</label>
-            <input type="text" name="logo_url" value="${c.logo_url || ''}">
+            <label>Logo Filename</label>
+            <input type="text" name="logo_url" placeholder="e.g., logo.png" value="${c.logo_url || ''}">
         </div>
     </div>
 
     <div class="section-header">📸 Workflow Images</div>
-                        <div class="section-header">📸 Workflow Images</div>
-                        <div class="row">
-                            <div class="col">
-                                <label>Screenshot 1 URL</label>
-                                <input type="text" name="image_url_1" value="${images[0] || ''}">
-                                ${images[0] ? `<img src="${images[0]}" class="img-preview">` : ''}
-                            </div>
-                            <div class="col">
-                                <label>Screenshot 2 URL</label>
-                                <input type="text" name="image_url_2" value="${images[1] || ''}">
-                                ${images[1] ? `<img src="${images[1]}" class="img-preview">` : ''}
-                            </div>
-                        </div>
+    <div class="row">
+        <div class="col">
+            <label>Screenshot 1 Filename</label>
+            <input type="text" name="image_url_1" placeholder="e.g., ui_pic1.jpg" value="${images[0] || ''}">
+            ${images[0] ? `<img src="${images[0]}" class="img-preview">` : ''}
+        </div>
+        <div class="col">
+            <label>Screenshot 2 Filename</label>
+            <input type="text" name="image_url_2" placeholder="e.g., ui_pic2.jpg" value="${images[1] || ''}">
+            ${images[1] ? `<img src="${images[1]}" class="img-preview">` : ''}
+        </div>
+    </div>
 
                         <div class="section-header">📊 Classification</div>
                         <div class="row">
@@ -309,9 +309,25 @@ app.get('/', (req, res) => {
 
 // --- 💾 SAVE HANDLER ---
 
+// --- 💾 SAVE HANDLER ---
+
 app.post('/decide', (req, res) => {
     const decision = req.body.decision;
     const oldCandidate = candidates.shift(); // Remove current item from queue
+
+    // 🆕 Helper function to safely format local image paths
+    const formatImagePath = (input) => {
+        if (!input || input.trim() === '') return "";
+        let cleanInput = input.trim();
+        
+        // If it's already a full web URL or already has the path, leave it alone
+        if (cleanInput.startsWith('http') || cleanInput.startsWith('Recourses/')) {
+            return cleanInput;
+        }
+        
+        // Otherwise, prepend your local folder path
+        return `Recourses/AI_Images/${cleanInput}`;
+    };
 
     if (decision === 'approve') {
         console.log(`\n💾 Saving: ${req.body.name}`);
@@ -332,11 +348,11 @@ app.post('/decide', (req, res) => {
             name: req.body.name,
             provider: req.body.provider,
             website_url: req.body.website_url,
-            logo_url: req.body.logo_url,
             
-            // Images (Ensure these are captured)
-            image_url_1: req.body.image_url_1,
-            image_url_2: req.body.image_url_2,
+            // 🆕 Apply formatting to the image variables
+            logo_url: formatImagePath(req.body.logo_url),
+            image_url_1: formatImagePath(req.body.image_url_1),
+            image_url_2: formatImagePath(req.body.image_url_2),
             
             // Text
             description_short: req.body.description_short,

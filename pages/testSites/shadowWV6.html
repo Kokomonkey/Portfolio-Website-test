@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Urban Shadow Simulator</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; }
+        #ui-panel {
+            position: absolute; bottom: 20px; left: 20px; width: 320px;
+            background: rgba(20, 25, 30, 0.9); color: white;
+            padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1);
+        }
+        h2 { margin: 0 0 15px 0; font-size: 1.2rem; color: #4DA8DA; }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.9rem; margin-bottom: 5px; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        button {
+            background: #4DA8DA; color: #121212; border: none; padding: 8px 12px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;
+            margin-bottom: 8px; transition: background 0.2s;
+        }
+        button:hover { background: #6AC0F0; }
+        .toggle-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem;}
+        input[type="checkbox"] { cursor: pointer; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div id="ui-panel">
+        <h2>🏙️ Shadow Simulator</h2>
+        
+        <div class="control-group">
+            <label for="heightSlider">Skyscraper Height: <span id="heightVal">15</span> Stories</label>
+            <input type="range" id="heightSlider" min="1" max="50" value="15">
+        </div>
+
+        <div class="control-group">
+            <label for="timeSlider">Time of Day: <span id="timeVal">12:00</span></label>
+            <input type="range" id="timeSlider" min="8" max="18" step="0.1" value="12">
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+
+        <div class="toggle-group">
+            <label for="cinematicToggle">🎥 Cinematic Auto-Rotate</label>
+            <input type="checkbox" id="cinematicToggle">
+        </div>
+
+        <div class="toggle-group">
+            <label for="neonToggle">🌃 Cyberpunk Mode</label>
+            <input type="checkbox" id="neonToggle">
+        </div>
+
+        <button id="ufoBtn">🛸 Summon UFO</button>
+    </div>
+
+    <script>
+        // --- 1. Basic Setup ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(60, 40, 60);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 0, 0);
+        controls.maxPolarAngle = Math.PI / 2 - 0.05; // Don't go below ground
+
+        // --- 2. Lighting & Sky ---
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.6); // Base fill
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 200;
+        const d = 40;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        scene.add(sunLight);
+
+        // --- 3. Build the City ---
+        const cityMaterials = []; // Store materials to toggle neon mode later
+        
+        // Ground
+        const groundGeo = new THREE.PlaneGeometry(200, 200);
+        const groundMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+        cityMaterials.push(groundMat);
+
+        // Grid of buildings
+        const blockSize = 10;
+        const gap = 4;
+        for (let x = -2; x <= 2; x++) {
+            for (let z = -2; z <= 2; z++) {
+                // The Park (Center)
+                if (x === 0 && z === 0) {
+                    const parkMat = new THREE.MeshStandardMaterial({ color: 0x3d8c40 });
+                    const park = new THREE.Mesh(new THREE.PlaneGeometry(blockSize+2, blockSize+2), parkMat);
+                    park.rotation.x = -Math.PI / 2;
+                    park.position.y = 0.1;
+                    park.receiveShadow = true;
+                    scene.add(park);
+                    cityMaterials.push(parkMat);
+
+                    // Add a tree
+                    const treeGeo = new THREE.ConeGeometry(1, 3, 8);
+                    const treeMat = new THREE.MeshStandardMaterial({ color: 0x245926 });
+                    const tree = new THREE.Mesh(treeGeo, treeMat);
+                    tree.position.set(0, 1.5, 0);
+                    tree.castShadow = true;
+                    scene.add(tree);
+                    cityMaterials.push(treeMat);
+                    continue; 
+                }
+
+                // The Target Skyscraper Plot (South East of park)
+                if (x === 1 && z === 1) continue; 
+
+                // Standard Buildings
+                const stories = Math.floor(Math.random() * 8) + 1;
+                const h = stories * 1.5;
+                const geo = new THREE.BoxGeometry(blockSize, h, blockSize);
+                const mat = new THREE.MeshStandardMaterial({ color: Math.random() > 0.5 ? 0x8b7355 : 0x666666 });
+                const bldg = new THREE.Mesh(geo, mat);
+                bldg.position.set(x * (blockSize + gap), h / 2, z * (blockSize + gap));
+                bldg.castShadow = true;
+                bldg.receiveShadow = true;
+                scene.add(bldg);
+                cityMaterials.push(mat);
+            }
+        }
+
+        // The Adjustable Skyscraper
+        const skyMat = new THREE.MeshStandardMaterial({ color: 0x4DA8DA, roughness: 0.2, metalness: 0.8 });
+        const skyGeo = new THREE.BoxGeometry(blockSize, 1, blockSize); // Unit height, scaled later
+        const skyscraper = new THREE.Mesh(skyGeo, skyMat);
+        // Position at (1,1) grid slot
+        skyscraper.position.set(1 * (blockSize + gap), 0.5, 1 * (blockSize + gap)); 
+        skyscraper.castShadow = true;
+        skyscraper.receiveShadow = true;
+        scene.add(skyscraper);
+        cityMaterials.push(skyMat);
+
+        // --- 4. Fun Feature: Micro Traffic ---
+        const cars = [];
+        for(let i=0; i<5; i++) {
+            const carMat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+            const car = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 0.8), carMat);
+            car.castShadow = true;
+            scene.add(car);
+            cars.push({ mesh: car, angle: i * (Math.PI / 2.5) });
+            cityMaterials.push(carMat);
+        }
+
+        // --- 5. Fun Feature: UFO ---
+        const ufoGroup = new THREE.Group();
+        const disk = new THREE.Mesh(new THREE.TorusGeometry(3, 1, 16, 50), new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.9 }));
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(2.5, 16, 16, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshStandardMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.7 }));
+        disk.rotation.x = Math.PI / 2;
+        ufoGroup.add(disk);
+        ufoGroup.add(dome);
+        ufoGroup.position.set(0, 100, 0); // Hide initially
+        ufoGroup.castShadow = true;
+        scene.add(ufoGroup);
+        let ufoActive = false;
+        let ufoTime = 0;
+
+        // --- Logic & UI Hooks ---
+        const heightSlider = document.getElementById('heightSlider');
+        const heightVal = document.getElementById('heightVal');
+        const timeSlider = document.getElementById('timeSlider');
+        const timeVal = document.getElementById('timeVal');
+        
+        function updateSkyscraper() {
+            const stories = parseInt(heightSlider.value);
+            heightVal.innerText = stories;
+            const newHeight = stories * 1.5;
+            skyscraper.scale.y = newHeight;
+            skyscraper.position.y = newHeight / 2;
+        }
+
+        function updateTime() {
+            const time = parseFloat(timeSlider.value);
+            
+            // Format time display
+            const hrs = Math.floor(time);
+            const mins = Math.floor((time - hrs) * 60);
+            timeVal.innerText = `${hrs}:${mins.toString().padStart(2, '0')}`;
+
+            // Map 8-18 to angle (morning = east, evening = west)
+            const fraction = (time - 8) / 10; // 0 to 1
+            const angle = Math.PI - (fraction * Math.PI); // PI to 0
+            
+            // Move Sun
+            const radius = 60;
+            sunLight.position.x = Math.cos(angle) * radius;
+            sunLight.position.y = Math.sin(angle) * radius;
+            sunLight.position.z = 20; // Bias slightly south
+
+            // Fun Feature: Dynamic Sky
+            if (fraction < 0.2 || fraction > 0.8) {
+                // Sunrise / Sunset
+                scene.background = new THREE.Color(0xff8c42);
+                ambientLight.color.setHex(0xffaa88);
+                sunLight.color.setHex(0xff7733);
+            } else {
+                // Midday
+                scene.background = new THREE.Color(0x87CEEB);
+                ambientLight.color.setHex(0xaaaaaa);
+                sunLight.color.setHex(0xffffff);
+            }
+        }
+
+        heightSlider.addEventListener('input', updateSkyscraper);
+        timeSlider.addEventListener('input', updateTime);
+        
+        // Init values
+        updateSkyscraper();
+        updateTime();
+
+        // Fun Features Toggles
+        document.getElementById('cinematicToggle').addEventListener('change', (e) => {
+            controls.autoRotate = e.target.checked;
+            controls.autoRotateSpeed = 2.0;
+        });
+
+        document.getElementById('neonToggle').addEventListener('change', (e) => {
+            const isNeon = e.target.checked;
+            cityMaterials.forEach(mat => {
+                mat.wireframe = isNeon;
+                if(isNeon) {
+                    mat.emissive = new THREE.Color(0x00ffcc);
+                    scene.background = new THREE.Color(0x050510);
+                } else {
+                    mat.emissive = new THREE.Color(0x000000);
+                    updateTime(); // reset sky
+                }
+            });
+        });
+
+        document.getElementById('ufoBtn').addEventListener('click', () => {
+            ufoActive = !ufoActive;
+            if(!ufoActive) ufoGroup.position.set(0, 100, 0); // Hide
+        });
+
+        // --- Render Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+
+            // Animate Traffic
+            const radius = 9; // Drive around the park
+            cars.forEach(carObj => {
+                carObj.angle += 0.02;
+                carObj.mesh.position.x = Math.cos(carObj.angle) * radius;
+                carObj.mesh.position.z = Math.sin(carObj.angle) * radius;
+                carObj.mesh.rotation.y = -carObj.angle;
+            });
+
+            // Animate UFO
+            if (ufoActive) {
+                ufoTime += 0.05;
+                const targetX = skyscraper.position.x;
+                const targetZ = skyscraper.position.z;
+                ufoGroup.position.x = targetX + Math.sin(ufoTime) * 10;
+                ufoGroup.position.z = targetZ + Math.cos(ufoTime) * 10;
+                ufoGroup.position.y = skyscraper.scale.y + 10 + Math.sin(ufoTime * 2) * 2;
+                ufoGroup.rotation.z = Math.sin(ufoTime) * 0.2;
+                disk.rotation.z += 0.1; // Spin disk
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
