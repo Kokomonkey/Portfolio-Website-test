@@ -1,0 +1,740 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.2945, 48.8584] },
+      "properties": { "name": "Eiffel Tower", "architect": "Gustave Eiffel", "year": 1889, "style": "Lattice Tower" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [78.0421, 27.1751] },
+      "properties": { "name": "Taj Mahal", "architect": "Ustad Ahmad Lahori", "year": 1653, "style": "Mughal Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.4922, 41.8902] },
+      "properties": { "name": "Colosseum", "architect": "Vespasian and Titus", "year": 80, "style": "Roman Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [151.2153, -33.8568] },
+      "properties": { "name": "Sydney Opera House", "architect": "Jørn Utzon", "year": 1973, "style": "Expressionist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9857, 40.7484] },
+      "properties": { "name": "Empire State Building", "architect": "Shreve, Lamb & Harmon", "year": 1931, "style": "Art Deco" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [55.2708, 25.1972] },
+      "properties": { "name": "Burj Khalifa", "architect": "Adrian Smith", "year": 2010, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [10.3966, 43.7230] },
+      "properties": { "name": "Leaning Tower of Pisa", "architect": "Bonanno Pisano", "year": 1372, "style": "Romanesque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1246, 51.5007] },
+      "properties": { "name": "Big Ben (Elizabeth Tower)", "architect": "Augustus Pugin", "year": 1859, "style": "Gothic Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.1744, 41.4036] },
+      "properties": { "name": "Sagrada Família", "architect": "Antoni Gaudí", "year": 2026, "style": "Modernisme" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [23.7266, 37.9715] },
+      "properties": { "name": "Parthenon", "architect": "Ictinus and Callicrates", "year": -432, "style": "Classical Greek" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [31.1342, 29.9792] },
+      "properties": { "name": "Great Pyramid of Giza", "architect": "Hemiunu", "year": -2560, "style": "Ancient Egyptian" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-72.5450, -13.1631] },
+      "properties": { "name": "Machu Picchu", "architect": "Pachacuti (Inca Emperor)", "year": 1450, "style": "Inca Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-43.2105, -22.9519] },
+      "properties": { "name": "Christ the Redeemer", "architect": "Paul Landowski & Heitor da Silva Costa", "year": 1931, "style": "Art Deco" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [37.6231, 55.7525] },
+      "properties": { "name": "St. Basil's Cathedral", "architect": "Postnik Yakovlev", "year": 1561, "style": "Russian Byzantine" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0365, 38.8977] },
+      "properties": { "name": "White House", "architect": "James Hoban", "year": 1800, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9767, 40.7516] },
+      "properties": { "name": "Chrysler Building", "architect": "William Van Alen", "year": 1930, "style": "Art Deco" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-87.6359, 41.8781] },
+      "properties": { "name": "Willis Tower", "architect": "Fazlur Rahman Khan & Bruce Graham", "year": 1973, "style": "International Style" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [101.7116, 3.1578] },
+      "properties": { "name": "Petronas Twin Towers", "architect": "César Pelli", "year": 1998, "style": "Postmodern Islamic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.5645, 25.0339] },
+      "properties": { "name": "Taipei 101", "architect": "C.Y. Lee", "year": 2004, "style": "Postmodern" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.7454, 35.6586] },
+      "properties": { "name": "Tokyo Tower", "architect": "Tachū Naitō", "year": 1958, "style": "Lattice Tower" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [116.3907, 39.9163] },
+      "properties": { "name": "Forbidden City", "architect": "Kuai Xiang", "year": 1420, "style": "Traditional Chinese" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [28.9795, 41.0082] },
+      "properties": { "name": "Hagia Sophia", "architect": "Isidore of Miletus & Anthemius of Tralles", "year": 537, "style": "Byzantine" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [11.2560, 43.7731] },
+      "properties": { "name": "Florence Cathedral (Duomo)", "architect": "Filippo Brunelleschi", "year": 1436, "style": "Renaissance" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.3396, 45.4345] },
+      "properties": { "name": "St. Mark's Basilica", "architect": "Domenico I Contarini", "year": 1092, "style": "Italo-Byzantine" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [9.1914, 45.4641] },
+      "properties": { "name": "Milan Cathedral", "architect": "Simone da Orsenigo", "year": 1965, "style": "Gothic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [13.3777, 52.5163] },
+      "properties": { "name": "Brandenburg Gate", "architect": "Carl Gotthard Langhans", "year": 1791, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [10.7498, 47.5576] },
+      "properties": { "name": "Neuschwanstein Castle", "architect": "Eduard Riedel", "year": 1886, "style": "Romanesque Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [16.3122, 48.1849] },
+      "properties": { "name": "Schönbrunn Palace", "architect": "Johann Bernhard Fischer von Erlach", "year": 1743, "style": "Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [14.4014, 50.0908] },
+      "properties": { "name": "Prague Castle", "architect": "Mathias of Arras", "year": 870, "style": "Gothic / Romanesque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [19.0456, 47.5071] },
+      "properties": { "name": "Hungarian Parliament Building", "architect": "Imre Steindl", "year": 1904, "style": "Gothic Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [4.8852, 52.3600] },
+      "properties": { "name": "Rijksmuseum", "architect": "Pierre Cuypers", "year": 1885, "style": "Gothic / Renaissance Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [4.3415, 50.8949] },
+      "properties": { "name": "Atomium", "architect": "André Waterkeyn", "year": 1958, "style": "Modernist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-79.3871, 43.6426] },
+      "properties": { "name": "CN Tower", "architect": "John Andrews", "year": 1976, "style": "Structural Expressionism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-122.3493, 47.6205] },
+      "properties": { "name": "Space Needle", "architect": "John Graham & Company", "year": 1962, "style": "Googie / Modernist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0091, 38.8899] },
+      "properties": { "name": "United States Capitol", "architect": "William Thornton", "year": 1800, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.4768, 41.8986] },
+      "properties": { "name": "Pantheon (Rome)", "architect": "Apollodorus of Damascus", "year": 125, "style": "Roman Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-2.9350, 43.2687] },
+      "properties": { "name": "Guggenheim Museum Bilbao", "architect": "Frank Gehry", "year": 1997, "style": "Deconstructivism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9597, 40.7830] },
+      "properties": { "name": "Guggenheim Museum New York", "architect": "Frank Lloyd Wright", "year": 1959, "style": "Modern Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-79.4678, 39.9062] },
+      "properties": { "name": "Fallingwater", "architect": "Frank Lloyd Wright", "year": 1939, "style": "Organic Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [55.1852, 25.1412] },
+      "properties": { "name": "Burj Al Arab", "architect": "Tom Wright", "year": 1999, "style": "High-tech Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [103.8598, 1.2834] },
+      "properties": { "name": "Marina Bay Sands", "architect": "Moshe Safdie", "year": 2010, "style": "Postmodern" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [91.1172, 29.6580] },
+      "properties": { "name": "Potala Palace", "architect": "Lozang Gyatso", "year": 1649, "style": "Tibetan Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [103.8670, 13.4125] },
+      "properties": { "name": "Angkor Wat", "architect": "Suryavarman II", "year": 1150, "style": "Khmer Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [35.4444, 30.3285] },
+      "properties": { "name": "Al-Khazneh (Petra)", "architect": "Aretas IV", "year": 100, "style": "Nabataean Classic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.1619, 41.3954] },
+      "properties": { "name": "Casa Milà", "architect": "Antoni Gaudí", "year": 1912, "style": "Modernisme" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.1649, 41.3916] },
+      "properties": { "name": "Casa Batlló", "architect": "Antoni Gaudí", "year": 1906, "style": "Modernisme" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3376, 48.8606] },
+      "properties": { "name": "Louvre Museum", "architect": "Pierre Lescot", "year": 1793, "style": "French Renaissance" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.1204, 48.8049] },
+      "properties": { "name": "Palace of Versailles", "architect": "Louis Le Vau & Jules Hardouin-Mansart", "year": 1682, "style": "French Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3499, 48.8530] },
+      "properties": { "name": "Notre-Dame de Paris", "architect": "Maurice de Sully", "year": 1345, "style": "French Gothic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9897, 40.7411] },
+      "properties": { "name": "Flatiron Building", "architect": "Daniel Burnham", "year": 1902, "style": "Beaux-Arts" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-74.0134, 40.7127] },
+      "properties": { "name": "One World Trade Center", "architect": "David Childs", "year": 2014, "style": "Modernist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.0984, 51.5138] },
+      "properties": { "name": "St Paul's Cathedral", "architect": "Christopher Wren", "year": 1711, "style": "English Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1273, 51.4993] },
+      "properties": { "name": "Westminster Abbey", "architect": "Henry of Reyns", "year": 1090, "style": "Gothic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.0762, 51.5081] },
+      "properties": { "name": "Tower of London", "architect": "Gundulf of Rochester", "year": 1078, "style": "Norman Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.0865, 51.5045] },
+      "properties": { "name": "The Shard", "architect": "Renzo Piano", "year": 2012, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.0803, 51.5145] },
+      "properties": { "name": "The Gherkin (30 St Mary Axe)", "architect": "Norman Foster", "year": 2003, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1419, 51.5014] },
+      "properties": { "name": "Buckingham Palace", "architect": "John Nash", "year": 1850, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3522, 48.8606] },
+      "properties": { "name": "Centre Pompidou", "architect": "Renzo Piano & Richard Rogers", "year": 1977, "style": "High-tech Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3431, 48.8867] },
+      "properties": { "name": "Sacré-Cœur", "architect": "Paul Abadie", "year": 1914, "style": "Romano-Byzantine" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.2950, 48.8738] },
+      "properties": { "name": "Arc de Triomphe", "architect": "Jean Chalgrin", "year": 1836, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3464, 48.8462] },
+      "properties": { "name": "Panthéon (Paris)", "architect": "Jacques-Germain Soufflot", "year": 1790, "style": "Neoclassicism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3316, 48.8719] },
+      "properties": { "name": "Palais Garnier", "architect": "Charles Garnier", "year": 1875, "style": "Beaux-Arts" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3265, 48.8599] },
+      "properties": { "name": "Musée d'Orsay", "architect": "Victor Laloux", "year": 1900, "style": "Beaux-Arts" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.3449, 48.8554] },
+      "properties": { "name": "Sainte-Chapelle", "architect": "Pierre de Montreuil", "year": 1248, "style": "Rayonnant Gothic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [2.0284, 48.9244] },
+      "properties": { "name": "Villa Savoye", "architect": "Le Corbusier", "year": 1931, "style": "Modernist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-88.5367, 41.6341] },
+      "properties": { "name": "Farnsworth House", "architect": "Mies van der Rohe", "year": 1951, "style": "International Style" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9719, 40.7580] },
+      "properties": { "name": "Seagram Building", "architect": "Mies van der Rohe", "year": 1958, "style": "International Style" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9723, 40.7593] },
+      "properties": { "name": "Lever House", "architect": "Gordon Bunshaft", "year": 1952, "style": "International Style" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-118.2500, 34.0553] },
+      "properties": { "name": "Walt Disney Concert Hall", "architect": "Frank Gehry", "year": 2003, "style": "Deconstructivism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-82.5515, 35.5406] },
+      "properties": { "name": "Biltmore Estate", "architect": "Richard Morris Hunt", "year": 1895, "style": "Châteauesque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-87.5961, 41.7897] },
+      "properties": { "name": "Robie House", "architect": "Frank Lloyd Wright", "year": 1909, "style": "Prairie School" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.4975, 41.1425] },
+      "properties": { "name": "Glass House", "architect": "Philip Johnson", "year": 1949, "style": "Modernist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-74.0083, 40.7123] },
+      "properties": { "name": "Woolworth Building", "architect": "Cass Gilbert", "year": 1913, "style": "Neo-Gothic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9786, 40.7587] },
+      "properties": { "name": "Rockefeller Center", "architect": "Raymond Hood", "year": 1939, "style": "Art Deco" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-73.9772, 40.7527] },
+      "properties": { "name": "Grand Central Terminal", "architect": "Warren and Wetmore", "year": 1913, "style": "Beaux-Arts" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0501, 38.8893] },
+      "properties": { "name": "Lincoln Memorial", "architect": "Henry Bacon", "year": 1922, "style": "Beaux-Arts" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0365, 38.8814] },
+      "properties": { "name": "Jefferson Memorial", "architect": "John Russell Pope", "year": 1943, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0044, 38.8906] },
+      "properties": { "name": "United States Supreme Court Building", "architect": "Cass Gilbert", "year": 1935, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0563, 38.8719] },
+      "properties": { "name": "The Pentagon", "architect": "George Bergstrom", "year": 1943, "style": "Stripped Classicism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-122.4028, 37.7952] },
+      "properties": { "name": "Transamerica Pyramid", "architect": "William Pereira", "year": 1972, "style": "Futurist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-122.4229, 37.8269] },
+      "properties": { "name": "Alcatraz Main Prison", "architect": "Reuben B. Turner", "year": 1912, "style": "Military Functional" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-115.1764, 36.1126] },
+      "properties": { "name": "Bellagio Hotel", "architect": "Jon Jerde", "year": 1998, "style": "Italianate Postmodern" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [113.5574, 22.1469] },
+      "properties": { "name": "The Venetian Macao", "architect": "Aedas", "year": 2007, "style": "Postmodern Italianate" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [77.2588, 28.5535] },
+      "properties": { "name": "Lotus Temple", "architect": "Fariborz Sahba", "year": 1986, "style": "Expressionist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [75.8267, 26.9239] },
+      "properties": { "name": "Hawa Mahal", "architect": "Lal Chand Ustad", "year": 1799, "style": "Rajput Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [77.2410, 28.6562] },
+      "properties": { "name": "Red Fort", "architect": "Ustad Ahmad Lahori", "year": 1648, "style": "Mughal Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [77.1855, 28.5244] },
+      "properties": { "name": "Qutub Minar", "architect": "Qutb al-Din Aibak", "year": 1199, "style": "Indo-Islamic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [88.3426, 22.5448] },
+      "properties": { "name": "Victoria Memorial", "architect": "William Emerson", "year": 1921, "style": "Indo-Saracenic Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [76.6552, 12.3051] },
+      "properties": { "name": "Mysore Palace", "architect": "Henry Irwin", "year": 1912, "style": "Indo-Saracenic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [72.8347, 18.9220] },
+      "properties": { "name": "Gateway of India", "architect": "George Wittet", "year": 1924, "style": "Indo-Saracenic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [72.8347, 18.9398] },
+      "properties": { "name": "Chhatrapati Shivaji Maharaj Terminus", "architect": "Frederick William Stevens", "year": 1887, "style": "Victorian Gothic Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [74.8765, 31.6200] },
+      "properties": { "name": "Harmandir Sahib (Golden Temple)", "architect": "Guru Arjan", "year": 1589, "style": "Sikh Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [78.1213, 9.9195] },
+      "properties": { "name": "Meenakshi Temple", "architect": "Viswanatha Nayakar", "year": 1623, "style": "Dravidian Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [79.1318, 10.7828] },
+      "properties": { "name": "Brihadisvara Temple", "architect": "Raja Raja Chola I", "year": 1010, "style": "Dravidian Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.2038, -7.6079] },
+      "properties": { "name": "Borobudur", "architect": "Gunadharma", "year": 825, "style": "Javanese Buddhist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [110.4915, -7.7520] },
+      "properties": { "name": "Prambanan", "architect": "Rakai Pikatan", "year": 850, "style": "Hindu Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [96.1495, 16.7984] },
+      "properties": { "name": "Shwedagon Pagoda", "architect": "Mon People", "year": 1300, "style": "Burmese Buddhist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [100.4925, 13.7516] },
+      "properties": { "name": "Temple of the Emerald Buddha", "architect": "King Rama I", "year": 1784, "style": "Thai Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [100.4913, 13.7500] },
+      "properties": { "name": "Grand Palace (Bangkok)", "architect": "King Rama I", "year": 1782, "style": "Thai Traditional" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [100.4886, 13.7437] },
+      "properties": { "name": "Wat Arun", "architect": "King Rama II", "year": 1851, "style": "Khmer-style Prang" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [101.7006, 3.1412] },
+      "properties": { "name": "Merdeka 118", "architect": "Fender Katsalidis", "year": 2023, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.5058, 31.2335] },
+      "properties": { "name": "Shanghai Tower", "architect": "Gensler", "year": 2015, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.4952, 31.2397] },
+      "properties": { "name": "Oriental Pearl Tower", "architect": "Jiang Huan Chen", "year": 1994, "style": "Modernist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.5054, 31.2372] },
+      "properties": { "name": "Jin Mao Tower", "architect": "SOM (Skidmore, Owings & Merrill)", "year": 1999, "style": "Postmodern High-Tech" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.5076, 31.2368] },
+      "properties": { "name": "Shanghai World Financial Center", "architect": "Kohn Pedersen Fox", "year": 2008, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [116.4594, 39.9144] },
+      "properties": { "name": "CCTV Headquarters", "architect": "Rem Koolhaas & Ole Scheeren", "year": 2012, "style": "Deconstructivism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [116.3956, 39.9915] },
+      "properties": { "name": "Beijing National Stadium (Bird's Nest)", "architect": "Herzog & de Meuron", "year": 2008, "style": "Deconstructivism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [116.4069, 39.8822] },
+      "properties": { "name": "Temple of Heaven", "architect": "Ming Dynasty Architects", "year": 1420, "style": "Traditional Chinese" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [116.2731, 39.9996] },
+      "properties": { "name": "Summer Palace", "architect": "Qing Dynasty Architects", "year": 1750, "style": "Traditional Chinese" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [91.1311, 29.6528] },
+      "properties": { "name": "Jokhang Temple", "architect": "King Songtsen Gampo", "year": 652, "style": "Tibetan Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.5244, 25.0886] },
+      "properties": { "name": "Taipei Performing Arts Center", "architect": "OMA", "year": 2022, "style": "Contemporary" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [121.5186, 25.0345] },
+      "properties": { "name": "Chiang Kai-shek Memorial Hall", "architect": "Yang Cho-cheng", "year": 1980, "style": "Traditional Chinese Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [135.5262, 34.6873] },
+      "properties": { "name": "Osaka Castle", "architect": "Toyotomi Hideyoshi", "year": 1583, "style": "Azuchi-Momoyama" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [134.6939, 34.8394] },
+      "properties": { "name": "Himeji Castle", "architect": "Akamatsu Norimura", "year": 1333, "style": "Japanese Castle Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [135.7292, 35.0393] },
+      "properties": { "name": "Kinkaku-ji (Golden Pavilion)", "architect": "Ashikaga Yoshimitsu", "year": 1397, "style": "Muromachi Period" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.8107, 35.7100] },
+      "properties": { "name": "Tokyo Skytree", "architect": "Nikken Sekkei", "year": 2012, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [139.7300, 35.6605] },
+      "properties": { "name": "Roppongi Hills Mori Tower", "architect": "Kohn Pedersen Fox", "year": 2003, "style": "Modernist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [126.9882, 37.5511] },
+      "properties": { "name": "N Seoul Tower", "architect": "Jangjong Ryul", "year": 1971, "style": "Lattice Tower" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [126.9770, 37.5796] },
+      "properties": { "name": "Gyeongbokgung Palace", "architect": "Jeong Do-jeon", "year": 1395, "style": "Joseon Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [127.0096, 37.5665] },
+      "properties": { "name": "Dongdaemun Design Plaza", "architect": "Zaha Hadid", "year": 2014, "style": "Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [125.7408, 39.0366] },
+      "properties": { "name": "Ryugyong Hotel", "architect": "Baikdoosan Architects", "year": 1992, "style": "Futurist / Expressionist" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [28.9768, 41.0054] },
+      "properties": { "name": "Blue Mosque", "architect": "Sedefkar Mehmed Agha", "year": 1616, "style": "Islamic / Ottoman" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [28.9833, 41.0115] },
+      "properties": { "name": "Topkapi Palace", "architect": "Alaüddin", "year": 1459, "style": "Ottoman" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [28.9744, 41.0256] },
+      "properties": { "name": "Galata Tower", "architect": "Genoese Constructors", "year": 1348, "style": "Romanesque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [28.9996, 41.0396] },
+      "properties": { "name": "Dolmabahçe Palace", "architect": "Garabet Balyan", "year": 1856, "style": "Baroque / Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [28.9780, 41.0083] },
+      "properties": { "name": "Basilica Cistern", "architect": "Emperor Justinian I", "year": 532, "style": "Byzantine" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [35.2354, 31.7780] },
+      "properties": { "name": "Dome of the Rock", "architect": "Raja ibn Haywah", "year": 691, "style": "Umayyad / Islamic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [35.2298, 31.7784] },
+      "properties": { "name": "Church of the Holy Sepulchre", "architect": "Constantine the Great (Original)", "year": 335, "style": "Romanesque / Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [35.2358, 31.7761] },
+      "properties": { "name": "Al-Aqsa Mosque", "architect": "Caliph Umar", "year": 705, "style": "Islamic" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [36.2736, 34.7569] },
+      "properties": { "name": "Krak des Chevaliers", "architect": "Hospitaller Knights", "year": 1142, "style": "Crusader Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [30.3146, 59.9405] },
+      "properties": { "name": "Winter Palace", "architect": "Francesco Bartolomeo Rastrelli", "year": 1762, "style": "Elizabethan Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [37.6180, 55.7554] },
+      "properties": { "name": "State Historical Museum", "architect": "Vladimir Sherwood", "year": 1883, "style": "Russian Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [37.6186, 55.7601] },
+      "properties": { "name": "Bolshoi Theatre", "architect": "Joseph Bové", "year": 1825, "style": "Neoclassical" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [30.3957, 59.7159] },
+      "properties": { "name": "Catherine Palace", "architect": "Johann Friedrich Braunstein", "year": 1717, "style": "Rococo" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [29.9070, 59.8845] },
+      "properties": { "name": "Peterhof Palace", "architect": "Jean-Baptiste Le Blond", "year": 1714, "style": "Petrine Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [30.3286, 59.9401] },
+      "properties": { "name": "Church of the Savior on Spilled Blood", "architect": "Alfred Parland", "year": 1907, "style": "Russian Revival" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [30.5568, 50.4346] },
+      "properties": { "name": "Kyiv Pechersk Lavra", "architect": "Anthony of Kiev", "year": 1051, "style": "Ukrainian Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [30.5143, 50.4528] },
+      "properties": { "name": "St. Sophia's Cathedral, Kyiv", "architect": "Octaviano Mancini", "year": 1037, "style": "Byzantine / Ukrainian Baroque" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [21.0060, 52.2318] },
+      "properties": { "name": "Palace of Culture and Science", "architect": "Lev Rudnev", "year": 1955, "style": "Socialist Realism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [19.9355, 50.0543] },
+      "properties": { "name": "Wawel Castle", "architect": "Bartolomeo Berrecci", "year": 1536, "style": "Romanesque / Renaissance" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-5.5708, 42.5979] },
+      "properties": { "name": "Casa de los Botines", "architect": "Antoni Gaudí", "year": 1892, "style": "Neo-Gothic / Modernisme" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-4.7796, 37.8792] },
+      "properties": { "name": "Mosque-Cathedral of Córdoba", "architect": "Abd al-Rahman I", "year": 785, "style": "Moorish / Renaissance" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-3.5881, 37.1760] },
+      "properties": { "name": "Alhambra", "architect": "Nasrid Emirs", "year": 1238, "style": "Moorish Architecture" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-3.7144, 40.4180] },
+      "properties": { "name": "Royal Palace of Madrid", "architect": "Filippo Juvarra & Giovanni Battista Sacchetti", "year": 1755, "style": "Baroque / Classicism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.3503, 39.4542] },
+      "properties": { "name": "City of Arts and Sciences", "architect": "Santiago Calatrava", "year": 1998, "style": "High-tech / Neo-Futurism" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-9.2159, 38.6916] },
+      "properties": { "name": "Belém Tower", "architect": "Francisco de Arruda", "year": 1519, "style": "Manueline" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-9.2045, 38.6979] },
+      "properties": { "name": "Jerónimos Monastery", "architect": "Diogo de Boitaca", "year": 1601, "style": "Manueline" }
+    }
+  ]
+}
