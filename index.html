@@ -550,44 +550,33 @@
         const counterDisplay = document.getElementById('visit-count');
         const namespace = 'douwedoesdesign';
         const key = 'homepage';
-        
-        // Get today's date as a string (e.g., "2023-10-27")
         const today = new Date().toISOString().split('T')[0];
-        
-        // Check local storage for the last visit date
         const lastVisitDate = localStorage.getItem('ddd_last_visit');
+        const cachedCount = localStorage.getItem('ddd_cached_count');
 
-        let apiUrl = '';
+        // Show cached count immediately while we load
+        if (cachedCount) counterDisplay.innerText = cachedCount;
 
         if (lastVisitDate === today) {
-            // CASE A: They have already visited today.
-            // We use the READ-ONLY endpoint (no '/up' at the end)
-            // This gets the number without adding to it.
-            apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}`;
+            // Already visited today — use cached count to avoid CORS error on read-only endpoint
             console.log("Welcome back! Not counting you twice today");
+            if (!cachedCount) counterDisplay.innerText = "N/A";
         } else {
-            // CASE B: First visit of the day (or ever).
-            // We use the '/up' endpoint to increment the count.
-            apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
-            
-            // Save today's date so we don't count them again until tomorrow
+            // First visit of the day — increment via /up endpoint
             localStorage.setItem('ddd_last_visit', today);
-            console.log("New visitor (or new day)! Count incremented.");
+            fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    counterDisplay.innerText = data.count;
+                    localStorage.setItem('ddd_cached_count', data.count);
+                })
+                .catch(() => {
+                    if (!cachedCount) counterDisplay.innerText = "N/A";
+                });
         }
-        
-        // Execute the Fetch
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                counterDisplay.innerText = data.count;
-            })
-            .catch(error => {
-                console.error('Error loading counter:', error);
-                counterDisplay.innerText = "N/A";
-            });
     });
 </script>
 
