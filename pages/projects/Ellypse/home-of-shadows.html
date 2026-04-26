@@ -30,14 +30,22 @@
             height: 11vh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 2vh;
+            justify-content: space-between;
+            padding: 0 2vh;
             background: rgba(0,0,0,0.88);
-            border-bottom: 1px solid #222;
+            border-bottom: 1px solid #333;
             z-index: 100;
+        }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 1.5vh;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             pointer-events: none;
         }
-        .page-header * { pointer-events: auto; }
 
         .logo-placeholder {
             height: 5.5vh; width: 5.5vh;
@@ -56,28 +64,24 @@
 
         /* Navigation buttons */
         .nav-btn {
-            position: fixed;
             text-decoration: none;
-            z-index: 200;
-            border: 1px solid rgba(255,255,255,0.35);
-            background-color: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.5);
+            background-color: transparent;
             color: var(--accent-color);
-            padding: 1vh 1.8vh;
+            padding: 0.8vh 1.6vh;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 1.4vh;
+            font-size: 1.3vh;
             cursor: pointer;
-            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
             font-family: 'Courier New', Courier, monospace;
             letter-spacing: 1px;
+            white-space: nowrap;
         }
         .nav-btn:hover {
             background-color: var(--accent-color);
             color: var(--bg-color);
-            border-color: var(--accent-color);
         }
-        .nav-btn.back  { top: 2vh; left: 2vh; }
-        .nav-btn.prev  { bottom: 2.5vh; left: 2vh; }
 
         /* Poster viewport */
         .poster-viewport {
@@ -153,14 +157,15 @@
 <body>
 
     <div class="page-header">
-        <div class="logo-placeholder">
-            <img src="../../../Recourses/Logos/DDD.jpg" />
+        <a href="../EscherGarden/escher-garden.html" class="nav-btn">← Escher's Garden</a>
+        <div class="header-center">
+            <div class="logo-placeholder">
+                <img src="../../../Recourses/Logos/DDD.jpg" />
+            </div>
+            <h1>Home of Shadows</h1>
         </div>
-        <h1>Home of Shadows</h1>
+        <a href="../../../projects.html" class="nav-btn">Projects →</a>
     </div>
-
-    <a href="../../../projects.html" class="nav-btn back">← Projects</a>
-    <a href="../EscherGarden/escher-garden.html" class="nav-btn prev">← Escher's Garden</a>
     <div id="zoomLevel">100%</div>
 
     <div class="poster-viewport" id="posterViewport">
