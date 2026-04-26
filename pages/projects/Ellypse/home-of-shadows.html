@@ -148,6 +148,45 @@
             pointer-events: none;
         }
 
+        /* Page controls */
+        #pageControls {
+            position: fixed;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            gap: 1.2vh;
+            z-index: 300;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.6vh 1.5vh;
+        }
+        .pg-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.4);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.4vh;
+            font-weight: bold;
+            padding: 0.4vh 1vh;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            line-height: 1;
+        }
+        .pg-btn:hover:not(:disabled) {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+        .pg-btn:disabled { opacity: 0.2; cursor: default; }
+        #pageIndicator {
+            font-size: 1.3vh;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            min-width: 6ch;
+            text-align: center;
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 1.5vh; letter-spacing: 0; }
             #minimap { width: 100px; }
@@ -178,6 +217,12 @@
         <div id="minimapVP"></div>
     </div>
 
+    <div id="pageControls">
+        <button class="pg-btn" id="prevPage">&#8249;</button>
+        <span id="pageIndicator">1 / 1</span>
+        <button class="pg-btn" id="nextPage">&#8250;</button>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -185,38 +230,61 @@
 
         const PDF_URL = 'HomeOfShadows.pdf';
 
-        const viewport   = document.getElementById('posterViewport');
-        const canvas     = document.getElementById('posterCanvas');
-        const ctx        = canvas.getContext('2d');
-        const loading    = document.getElementById('loadingText');
-        const minimap    = document.getElementById('minimap');
-        const mmCanvas   = document.getElementById('minimapCanvas');
-        const mmCtx      = mmCanvas.getContext('2d');
-        const mmVP       = document.getElementById('minimapVP');
-        const zoomLevel  = document.getElementById('zoomLevel');
+        const viewport      = document.getElementById('posterViewport');
+        const canvas        = document.getElementById('posterCanvas');
+        const ctx           = canvas.getContext('2d');
+        const loading       = document.getElementById('loadingText');
+        const minimap       = document.getElementById('minimap');
+        const mmCanvas      = document.getElementById('minimapCanvas');
+        const mmCtx         = mmCanvas.getContext('2d');
+        const mmVP          = document.getElementById('minimapVP');
+        const zoomLevel     = document.getElementById('zoomLevel');
+        const pageControls  = document.getElementById('pageControls');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const btnPrev       = document.getElementById('prevPage');
+        const btnNext       = document.getElementById('nextPage');
 
-        let state = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+        let state       = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+        let pdfDoc      = null;
+        let currentPage = 1;
+        let totalPages  = 1;
+        let rendering   = false;
 
-        // Load and render PDF page 1
-        pdfjsLib.getDocument(PDF_URL).promise
-            .then(pdf => pdf.getPage(1))
-            .then(page => {
-                const dpr = window.devicePixelRatio || 1;
+        pdfjsLib.getDocument(PDF_URL).promise.then(pdf => {
+            pdfDoc     = pdf;
+            totalPages = pdf.numPages;
+            return renderPage(1);
+        }).catch(() => { loading.textContent = 'Error loading poster.'; });
+
+        function renderPage(num) {
+            if (rendering) return;
+            rendering = true;
+            loading.style.display = 'block';
+            canvas.style.display  = 'none';
+            minimap.style.display = 'none';
+
+            state.scale  = 1;
+            state.pointX = 0;
+            state.pointY = 0;
+            canvas.style.transform = 'translate(0px,0px) scale(1)';
+
+            return pdfDoc.getPage(num).then(page => {
+                const dpr         = window.devicePixelRatio || 1;
                 const renderScale = 3 * dpr;
-                const pdfVP = page.getViewport({ scale: renderScale });
+                const pdfVP       = page.getViewport({ scale: renderScale });
 
                 canvas.width  = pdfVP.width;
                 canvas.height = pdfVP.height;
 
-                const vpW  = viewport.clientWidth  * 0.90;
-                const vpH  = viewport.clientHeight * 0.94;
+                const vpW   = viewport.clientWidth  * 0.90;
+                const vpH   = viewport.clientHeight * 0.94;
                 const ratio = Math.min(vpW / (pdfVP.width / dpr), vpH / (pdfVP.height / dpr));
                 canvas.style.width  = (pdfVP.width  / dpr * ratio) + 'px';
                 canvas.style.height = (pdfVP.height / dpr * ratio) + 'px';
 
                 return page.render({ canvasContext: ctx, viewport: pdfVP }).promise;
-            })
-            .then(() => {
+            }).then(() => {
+                rendering             = false;
                 loading.style.display = 'none';
                 canvas.style.display  = 'block';
 
@@ -226,11 +294,27 @@
                 mmCanvas.width  = mmW;
                 mmCanvas.height = Math.round(mmW * cH / cW);
                 minimap.style.height = mmCanvas.height + 'px';
+                mmCtx.clearRect(0, 0, mmCanvas.width, mmCanvas.height);
                 mmCtx.drawImage(canvas, 0, 0, mmCanvas.width, mmCanvas.height);
                 minimap.style.display = 'block';
                 updateMinimap();
-            })
-            .catch(() => { loading.textContent = 'Error loading poster.'; });
+
+                currentPage               = num;
+                pageIndicator.textContent = `${currentPage} / ${totalPages}`;
+                btnPrev.disabled          = currentPage <= 1;
+                btnNext.disabled          = currentPage >= totalPages;
+                pageControls.style.display = totalPages > 1 ? 'flex' : 'none';
+                zoomLevel.textContent     = '100%';
+            });
+        }
+
+        btnPrev.addEventListener('click', () => { if (currentPage > 1) renderPage(currentPage - 1); });
+        btnNext.addEventListener('click', () => { if (currentPage < totalPages) renderPage(currentPage + 1); });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentPage < totalPages) renderPage(currentPage + 1);
+            if (e.key === 'ArrowLeft'  && currentPage > 1)          renderPage(currentPage - 1);
+        });
 
         function applyTransform() {
             canvas.style.transform = `translate(${state.pointX}px,${state.pointY}px) scale(${state.scale})`;
