@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../Recourses/Logos/DDD.jpg">
+    <title>Escher's Garden | DouweDoesDesign</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .page-header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 11vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2vh;
+            background: rgba(0,0,0,0.88);
+            border-bottom: 1px solid #222;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .page-header * { pointer-events: auto; }
+
+        .logo-placeholder {
+            height: 5.5vh; width: 5.5vh;
+            background-color: var(--accent-color);
+            display: flex; justify-content: center; align-items: center;
+            filter: invert(1);
+        }
+        .logo-placeholder img { max-height: 100%; width: auto; }
+
+        h1 {
+            font-size: 2.2vh;
+            letter-spacing: 0.5vh;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* Navigation buttons */
+        .nav-btn {
+            position: fixed;
+            text-decoration: none;
+            z-index: 200;
+            border: 1px solid rgba(255,255,255,0.35);
+            background-color: rgba(0,0,0,0.7);
+            color: var(--accent-color);
+            padding: 1vh 1.8vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.4vh;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+        }
+        .nav-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border-color: var(--accent-color);
+        }
+        .nav-btn.back { top: 2vh; left: 2vh; }
+        .nav-btn.next { bottom: 2.5vh; right: 195px; }
+
+        /* Poster viewport */
+        .poster-viewport {
+            position: fixed;
+            top: 11vh; left: 0;
+            width: 100vw;
+            height: 89vh;
+            overflow: hidden;
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .poster-viewport:active { cursor: grabbing; }
+
+        canvas#posterCanvas {
+            display: block;
+            box-shadow: 0 0 60px rgba(255,255,255,0.06);
+        }
+
+        /* Loading */
+        .loading {
+            color: #555;
+            font-size: 1.4vh;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: pulse 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes pulse { from { opacity: 0.2; } to { opacity: 0.8; } }
+
+        /* Minimap */
+        #minimap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 160px;
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(0,0,0,0.8);
+            overflow: hidden;
+            z-index: 300;
+            pointer-events: none;
+            display: none;
+        }
+        #minimapCanvas {
+            width: 100%;
+            display: block;
+            opacity: 0.55;
+        }
+        #minimapVP {
+            position: absolute;
+            border: 1px solid rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.08);
+            top: 0; left: 0;
+            pointer-events: none;
+        }
+        #zoomLevel {
+            position: fixed;
+            bottom: 26px;
+            right: 195px;
+            color: rgba(255,255,255,0.3);
+            font-size: 1.1vh;
+            letter-spacing: 2px;
+            z-index: 300;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.5vh; letter-spacing: 0; }
+            #minimap { width: 100px; }
+            .nav-btn.next { right: 115px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <div class="logo-placeholder">
+            <img src="../../../Recourses/Logos/DDD.jpg" />
+        </div>
+        <h1>Escher's Garden</h1>
+    </div>
+
+    <a href="../../../projects.html" class="nav-btn back">← Projects</a>
+    <a href="../Ellypse/home-of-shadows.html" class="nav-btn next">Home of Shadows →</a>
+    <div id="zoomLevel">100%</div>
+
+    <div class="poster-viewport" id="posterViewport">
+        <p class="loading" id="loadingText">Loading poster...</p>
+        <canvas id="posterCanvas"></canvas>
+    </div>
+
+    <div id="minimap">
+        <canvas id="minimapCanvas"></canvas>
+        <div id="minimapVP"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        const PDF_URL = 'EscherPoster.pdf';
+
+        const viewport   = document.getElementById('posterViewport');
+        const canvas     = document.getElementById('posterCanvas');
+        const ctx        = canvas.getContext('2d');
+        const loading    = document.getElementById('loadingText');
+        const minimap    = document.getElementById('minimap');
+        const mmCanvas   = document.getElementById('minimapCanvas');
+        const mmCtx      = mmCanvas.getContext('2d');
+        const mmVP       = document.getElementById('minimapVP');
+        const zoomLevel  = document.getElementById('zoomLevel');
+
+        let state = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+
+        // Load and render PDF page 1
+        pdfjsLib.getDocument(PDF_URL).promise
+            .then(pdf => pdf.getPage(1))
+            .then(page => {
+                const dpr = window.devicePixelRatio || 1;
+                const renderScale = 3 * dpr;
+                const pdfVP = page.getViewport({ scale: renderScale });
+
+                canvas.width  = pdfVP.width;
+                canvas.height = pdfVP.height;
+
+                // Natural display size to fit inside the viewport
+                const vpW = viewport.clientWidth  * 0.90;
+                const vpH = viewport.clientHeight * 0.94;
+                const ratio = Math.min(vpW / (pdfVP.width / dpr), vpH / (pdfVP.height / dpr));
+                canvas.style.width  = (pdfVP.width  / dpr * ratio) + 'px';
+                canvas.style.height = (pdfVP.height / dpr * ratio) + 'px';
+
+                return page.render({ canvasContext: ctx, viewport: pdfVP }).promise;
+            })
+            .then(() => {
+                loading.style.display = 'none';
+                canvas.style.display  = 'block';
+
+                // Build minimap thumbnail
+                const mmW = 160;
+                const cW  = parseInt(canvas.style.width);
+                const cH  = parseInt(canvas.style.height);
+                mmCanvas.width  = mmW;
+                mmCanvas.height = Math.round(mmW * cH / cW);
+                minimap.style.height = mmCanvas.height + 'px';
+                mmCtx.drawImage(canvas, 0, 0, mmCanvas.width, mmCanvas.height);
+                minimap.style.display = 'block';
+                updateMinimap();
+            })
+            .catch(() => { loading.textContent = 'Error loading poster.'; });
+
+        // --- Transform ---
+        function applyTransform() {
+            canvas.style.transform = `translate(${state.pointX}px,${state.pointY}px) scale(${state.scale})`;
+            zoomLevel.textContent  = Math.round(state.scale * 100) + '%';
+            updateMinimap();
+        }
+
+        // --- Minimap ---
+        function updateMinimap() {
+            const cRect = canvas.getBoundingClientRect();
+            const vRect = viewport.getBoundingClientRect();
+            const mmW   = mmCanvas.width;
+            const mmH   = mmCanvas.height;
+            if (!cRect.width || !mmW) return;
+
+            const sx = mmW / cRect.width;
+            const sy = mmH / cRect.height;
+
+            const visL = Math.max(0, vRect.left - cRect.left);
+            const visT = Math.max(0, vRect.top  - cRect.top);
+            const visR = Math.min(cRect.width,  vRect.right  - cRect.left);
+            const visB = Math.min(cRect.height, vRect.bottom - cRect.top);
+
+            mmVP.style.left   = (visL * sx) + 'px';
+            mmVP.style.top    = (visT * sy) + 'px';
+            mmVP.style.width  = Math.max(4, (visR - visL) * sx) + 'px';
+            mmVP.style.height = Math.max(4, (visB - visT) * sy) + 'px';
+        }
+
+        // --- Zoom at cursor ---
+        function zoomAtCursor(e, newScale) {
+            const rect = canvas.getBoundingClientRect();
+            if (!rect.width) return;
+            const nW  = rect.width  / state.scale;
+            const nH  = rect.height / state.scale;
+            const nCX = rect.left + rect.width  / 2 - state.pointX;
+            const nCY = rect.top  + rect.height / 2 - state.pointY;
+            const fx  = (e.clientX - rect.left) / rect.width;
+            const fy  = (e.clientY - rect.top)  / rect.height;
+            state.scale  = Math.max(0.25, Math.min(10, newScale));
+            state.pointX = e.clientX + nW * state.scale * (0.5 - fx) - nCX;
+            state.pointY = e.clientY + nH * state.scale * (0.5 - fy) - nCY;
+            applyTransform();
+        }
+
+        // Wheel zoom
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+            zoomAtCursor(e, state.scale * factor);
+        }, { passive: false });
+
+        // Pan start
+        viewport.addEventListener('mousedown', (e) => {
+            state.panning = true;
+            state.startX  = e.clientX - state.pointX;
+            state.startY  = e.clientY - state.pointY;
+            viewport.style.cursor = 'grabbing';
+        });
+
+        // Pan move
+        window.addEventListener('mousemove', (e) => {
+            if (!state.panning) return;
+            state.pointX = e.clientX - state.startX;
+            state.pointY = e.clientY - state.startY;
+            applyTransform();
+        });
+
+        // Pan end
+        window.addEventListener('mouseup', () => {
+            if (state.panning) {
+                state.panning = false;
+                viewport.style.cursor = 'grab';
+            }
+        });
+
+        // Double-click reset
+        viewport.addEventListener('dblclick', () => {
+            state.scale  = 1;
+            state.pointX = 0;
+            state.pointY = 0;
+            applyTransform();
+        });
+
+        // Touch pinch support
+        let lastTouchDist = null;
+        let lastTouchMid  = null;
+        viewport.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastTouchDist = Math.sqrt(dx*dx + dy*dy);
+                lastTouchMid  = {
+                    clientX: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                    clientY: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                };
+            } else if (e.touches.length === 1) {
+                state.panning = true;
+                state.startX  = e.touches[0].clientX - state.pointX;
+                state.startY  = e.touches[0].clientY - state.pointY;
+            }
+        }, { passive: true });
+
+        viewport.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length === 2) {
+                const dx   = e.touches[0].clientX - e.touches[1].clientX;
+                const dy   = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (lastTouchDist) zoomAtCursor(lastTouchMid, state.scale * dist / lastTouchDist);
+                lastTouchDist = dist;
+                lastTouchMid  = {
+                    clientX: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                    clientY: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                };
+            } else if (e.touches.length === 1 && state.panning) {
+                state.pointX = e.touches[0].clientX - state.startX;
+                state.pointY = e.touches[0].clientY - state.startY;
+                applyTransform();
+            }
+        }, { passive: false });
+
+        viewport.addEventListener('touchend', () => {
+            state.panning = false;
+            lastTouchDist = null;
+        });
+    </script>
+</body>
+</html>

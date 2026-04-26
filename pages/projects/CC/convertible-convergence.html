@@ -315,6 +315,39 @@
             display: none; flex-direction: column; align-items: center;
         }
 
+        /* --- MINIMAP --- */
+        #posterMinimap {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            width: 160px;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(0,0,0,0.75);
+            overflow: hidden;
+            z-index: 5010;
+            pointer-events: none;
+            display: none;
+        }
+        #minimapPosterImg {
+            width: 100%; display: block; opacity: 0.5;
+        }
+        #minimapPosterVP {
+            position: absolute;
+            border: 1px solid rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.1);
+            top: 0; left: 0;
+            pointer-events: none;
+            transition: all 0.05s linear;
+        }
+        #posterZoomLevel {
+            position: absolute;
+            bottom: 8px; left: 10px;
+            color: rgba(255,255,255,0.4);
+            font-size: 1vh;
+            letter-spacing: 2px;
+            z-index: 5010;
+            pointer-events: none;
+        }
+
         .poster-header-bar {
             width: 100%; height: 15vh;
             display: flex; justify-content: center; align-items: center;
@@ -476,6 +509,11 @@
         <div class="poster-viewport" id="posterViewport">
             <img src="Recourses/CCPoster.jpg" class="full-poster-img" id="posterImage" />
         </div>
+        <div id="posterMinimap">
+            <img id="minimapPosterImg" />
+            <div id="minimapPosterVP"></div>
+        </div>
+        <div id="posterZoomLevel">100%</div>
     </div>
 
     <script>
@@ -698,55 +736,104 @@
         applyTransform(mainImg);
     });
 
-    // --- SINGLE VIEW / POSTER LOGIC (Reusing same variables) ---
+    // --- POSTER MODAL LOGIC ---
     const posterModal = document.getElementById('posterModal');
     const posterViewport = document.getElementById('posterViewport');
     const posterImg = document.getElementById('posterImage');
     const posterTitle = document.querySelector('.poster-header-bar h1');
+    const posterMinimap = document.getElementById('posterMinimap');
+    const minimapPosterImg = document.getElementById('minimapPosterImg');
+    const minimapPosterVP = document.getElementById('minimapPosterVP');
+    const posterZoomLevel = document.getElementById('posterZoomLevel');
 
     let posterState = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
 
     function openPoster() { openSingleView('Recourses/CCPoster.jpg', 'Convertible Convergence'); }
-    
+
     function openSingleView(imagePath, titleText) {
-        posterImg.src = imagePath; 
-        posterTitle.innerText = titleText; 
+        posterImg.src = imagePath;
+        posterTitle.innerText = titleText;
         posterModal.style.display = 'flex';
         posterState = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
-        posterImg.style.transform = `translate(0px, 0px) scale(1)`;
+        posterImg.style.transform = 'translate(0px,0px) scale(1)';
+        minimapPosterImg.src = imagePath;
+        posterMinimap.style.display = 'block';
+        posterZoomLevel.textContent = '100%';
+        posterImg.onload = updatePosterMinimap;
+        if (posterImg.complete) updatePosterMinimap();
     }
-    
-    function closePoster() { posterModal.style.display = 'none'; }
+
+    function closePoster() {
+        posterModal.style.display = 'none';
+        posterMinimap.style.display = 'none';
+    }
 
     function updatePosterTransform() {
-        posterImg.style.transform = `translate(${posterState.pointX}px, ${posterState.pointY}px) scale(${posterState.scale})`;
+        posterImg.style.transform = `translate(${posterState.pointX}px,${posterState.pointY}px) scale(${posterState.scale})`;
+        posterZoomLevel.textContent = Math.round(posterState.scale * 100) + '%';
+        updatePosterMinimap();
     }
 
-    // Attach Poster Events (Similar to Gallery but separate elements)
+    function updatePosterMinimap() {
+        const imgRect = posterImg.getBoundingClientRect();
+        const vpRect = posterViewport.getBoundingClientRect();
+        const mmW = posterMinimap.clientWidth;
+        if (!imgRect.width || !mmW) return;
+
+        const mmH = Math.round(mmW * imgRect.height / imgRect.width);
+        posterMinimap.style.height = mmH + 'px';
+
+        const scaleX = mmW / imgRect.width;
+        const scaleY = mmH / imgRect.height;
+
+        const visL = Math.max(0, vpRect.left - imgRect.left);
+        const visT = Math.max(0, vpRect.top - imgRect.top);
+        const visR = Math.min(imgRect.width, vpRect.right - imgRect.left);
+        const visB = Math.min(imgRect.height, vpRect.bottom - imgRect.top);
+
+        minimapPosterVP.style.left   = (visL * scaleX) + 'px';
+        minimapPosterVP.style.top    = (visT * scaleY) + 'px';
+        minimapPosterVP.style.width  = Math.max(4, (visR - visL) * scaleX) + 'px';
+        minimapPosterVP.style.height = Math.max(4, (visB - visT) * scaleY) + 'px';
+    }
+
+    function zoomPosterAtCursor(e, newScale) {
+        const rect = posterImg.getBoundingClientRect();
+        if (!rect.width) return;
+        const naturalW = rect.width / posterState.scale;
+        const naturalH = rect.height / posterState.scale;
+        const naturalCX = rect.left + rect.width / 2 - posterState.pointX;
+        const naturalCY = rect.top + rect.height / 2 - posterState.pointY;
+        const fx = (e.clientX - rect.left) / rect.width;
+        const fy = (e.clientY - rect.top) / rect.height;
+        posterState.scale = Math.max(0.3, Math.min(8, newScale));
+        posterState.pointX = e.clientX + naturalW * posterState.scale * (0.5 - fx) - naturalCX;
+        posterState.pointY = e.clientY + naturalH * posterState.scale * (0.5 - fy) - naturalCY;
+        updatePosterTransform();
+    }
+
     posterViewport.addEventListener('wheel', (e) => {
         e.preventDefault();
-        const xs = (e.clientX - posterState.pointX) / posterState.scale;
-        const ys = (e.clientY - posterState.pointY) / posterState.scale;
-        const delta = -e.deltaY;
-        (delta > 0) ? (posterState.scale *= 1.1) : (posterState.scale /= 1.1);
-        if(posterState.scale < 0.5) posterState.scale = 0.5;
-        if(posterState.scale > 5) posterState.scale = 5;
-        posterState.pointX = e.clientX - xs * posterState.scale;
-        posterState.pointY = e.clientY - ys * posterState.scale;
-        updatePosterTransform();
-    });
+        const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+        zoomPosterAtCursor(e, posterState.scale * factor);
+    }, { passive: false });
 
     posterViewport.addEventListener('mousedown', (e) => {
         posterState.panning = true;
         posterState.startX = e.clientX - posterState.pointX;
         posterState.startY = e.clientY - posterState.pointY;
+        posterViewport.style.cursor = 'grabbing';
     });
 
-    window.addEventListener('mouseup', () => { posterState.panning = false; });
+    window.addEventListener('mouseup', () => {
+        if (posterState.panning) {
+            posterState.panning = false;
+            posterViewport.style.cursor = 'grab';
+        }
+    });
 
     window.addEventListener('mousemove', (e) => {
         if (!posterState.panning) return;
-        e.preventDefault();
         posterState.pointX = e.clientX - posterState.startX;
         posterState.pointY = e.clientY - posterState.startY;
         updatePosterTransform();

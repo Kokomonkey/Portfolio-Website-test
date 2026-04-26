@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #0f1117;
+  color: #f0f0f0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.react-flow__controls {
+  background: #1e2130;
+  border: 1px solid #2d3148;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.react-flow__controls-button {
+  background: #1e2130;
+  border-bottom: 1px solid #2d3148;
+  color: #a0a8c0;
+  fill: #a0a8c0;
+}
+
+.react-flow__controls-button:hover {
+  background: #2d3148;
+  color: #fff;
+  fill: #fff;
+}
+
+.react-flow__minimap {
+  background: #1e2130;
+  border: 1px solid #2d3148;
+  border-radius: 8px;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+@keyframes nodeAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Node hover lift */
+.react-flow__node .flow-node {
+  transition: box-shadow 0.15s ease, transform 0.15s ease, opacity 0.3s, border-color 0.3s;
+}
+.react-flow__node:hover .flow-node {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18) !important;
+}
+.react-flow__node.selected .flow-node {
+  animation: nodeSelect 0.2s ease both;
+}
+
+@keyframes nodeSelect {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+/* Button press micro-animation */
+button:active {
+  transform: scale(0.95);
+  transition: transform 0.1s;
+}
+
+/* Risk halo animations */
+@keyframes criticalGlow {
+  0%, 100% { outline: 2px solid rgba(239,68,68,0.2); outline-offset: 1px; }
+  50%       { outline: 2px solid rgba(239,68,68,0.85); outline-offset: 1px; }
+}
+.flow-node--critical {
+  animation: criticalGlow 2s ease-in-out infinite;
+}
+.flow-node--medium {
+  outline: 2px solid rgba(245,158,11,0.55);
+  outline-offset: 1px;
+}

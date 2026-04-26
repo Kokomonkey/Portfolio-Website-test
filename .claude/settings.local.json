@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create *)",
+      "Read(//c/Users/douwe/OneDrive - Delft University of Technology/Documents/Bouwkunde/Bachelor 3/IOP2/📚 00 Course Info//**)",
+      "Read(//c/Users/douwe/OneDrive - Delft University of Technology/Documents/Bouwkunde/Bachelor 3/IOP2/📅 05 Weken//**)",
+      "Read(//c/Users/douwe/OneDrive - Delft University of Technology/Documents/Bouwkunde/Bachelor 3/IOP2/📋 03 Brief & Program//**)",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}
