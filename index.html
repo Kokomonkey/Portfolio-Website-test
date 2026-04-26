@@ -563,7 +563,7 @@
             // CASE A: They have already visited today.
             // We use the READ-ONLY endpoint (no '/up' at the end)
             // This gets the number without adding to it.
-            apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}/`;
+            apiUrl = `https://api.counterapi.dev/v1/${namespace}/${key}`;
             console.log("Welcome back! Not counting you twice today");
         } else {
             // CASE B: First visit of the day (or ever).
@@ -577,13 +577,16 @@
         
         // Execute the Fetch
         fetch(apiUrl)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
             .then(data => {
                 counterDisplay.innerText = data.count;
             })
             .catch(error => {
                 console.error('Error loading counter:', error);
-                counterDisplay.innerText = "ERR";
+                counterDisplay.innerText = "N/A";
             });
     });
 </script>
