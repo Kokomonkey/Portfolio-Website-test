@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Crematorium — Chronologisch Ontwerp</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e0e0e0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+#toolbar{background:#161b22;padding:8px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #21262d;flex-shrink:0;flex-wrap:wrap}
+#toolbar h1{font-size:13px;font-weight:700;color:#e94560;margin-right:8px;white-space:nowrap}
+.btn{padding:5px 12px;border:1px solid #30363d;background:#21262d;color:#c9d1d9;border-radius:4px;cursor:pointer;font-size:12px;transition:all .15s}
+.btn:hover{background:#30363d;border-color:#58a6ff}
+.btn.active{background:#1f6feb;border-color:#388bfd;color:#fff}
+.btn-save{background:#0d4429;border-color:#196c2e;color:#56d364}
+.btn-save:hover{background:#196c2e}
+.sep{width:1px;height:20px;background:#30363d}
+
+#main{display:flex;flex:1;overflow:hidden}
+
+#sidebar{width:270px;background:#161b22;border-right:1px solid #21262d;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+#sidebar-tabs{display:flex;border-bottom:1px solid #21262d;flex-shrink:0}
+.tab{flex:1;padding:8px 4px;text-align:center;font-size:11px;cursor:pointer;color:#6e7681;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:#c9d1d9}
+.tab.active{color:#e0e0e0;border-bottom-color:#e94560}
+#sidebar-content{flex:1;overflow-y:auto;overflow-x:hidden}
+
+.sec-head{padding:7px 10px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:6px}
+.sec-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.palette-item{padding:7px 10px;cursor:grab;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .1s;user-select:none}
+.palette-item:hover{background:rgba(255,255,255,.05)}
+.palette-item.full{opacity:.4;cursor:default}
+.room-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.room-info{flex:1;min-width:0}
+.room-name{font-size:11px;color:#c9d1d9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-meta{font-size:9px;color:#484f58;margin-top:1px}
+.count-badge{font-size:10px;font-weight:700;min-width:28px;text-align:center;padding:1px 5px;border-radius:8px;background:#21262d;flex-shrink:0}
+
+.adj-item{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);border-left:3px solid transparent}
+.adj-item.req{border-left-color:#e94560}
+.adj-item.rec{border-left-color:#e3b341}
+.adj-desc{font-size:11px;color:#c9d1d9;line-height:1.3;margin-bottom:4px}
+.adj-status{font-size:10px;padding:1px 7px;border-radius:8px;display:inline-block}
+.s-ok{background:#0d4429;color:#56d364}
+.s-warn{background:#3d1a1a;color:#f85149}
+.s-pend{background:#1c2128;color:#6e7681}
+
+.route-item{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
+.route-from{color:#79c0ff}
+.route-arrow{color:#484f58;padding:1px 0}
+.route-to{color:#79c0ff}
+.route-del{margin-top:4px;padding:2px 8px;background:#3d1a1a;color:#f85149;border:1px solid #5a1d1d;border-radius:3px;font-size:10px;cursor:pointer}
+.route-del:hover{background:#5a1d1d}
+
+#canvas-wrap{flex:1;overflow:auto;position:relative;cursor:default}
+#canvas{position:relative;width:5000px;height:4000px;background-color:#0d1117;background-image:radial-gradient(circle,#1e2a3a 1px,transparent 1px);background-size:20px 20px}
+
+.room-block{position:absolute;border-radius:3px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:5px;border:1.5px solid;user-select:none;overflow:hidden;transition:box-shadow .1s}
+.room-block .rid{font-size:8px;opacity:.6;line-height:1;margin-bottom:1px;font-weight:600}
+.room-block .rlabel{font-size:10px;font-weight:600;line-height:1.2;color:#e6edf3}
+.room-block .rarea{font-size:8px;opacity:.5;margin-top:2px}
+.room-block:hover{box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+.room-block.is-source{box-shadow:0 0 0 3px #e94560!important}
+.room-block.mode-select{cursor:move}
+.room-block.mode-connect{cursor:crosshair}
+.room-block.mode-delete{cursor:no-drop}
+
+#svg-layer{position:absolute;top:0;left:0;width:5000px;height:4000px;overflow:visible}
+.conn-hit{pointer-events:stroke;cursor:pointer;stroke:rgba(0,0,0,0);stroke-width:14;fill:none}
+.conn-vis{pointer-events:none;fill:none;stroke-width:2;stroke-dasharray:7 3}
+.conn-vis:hover{stroke-width:3}
+
+#statusbar{background:#161b22;padding:4px 14px;font-size:10px;color:#484f58;border-top:1px solid #21262d;flex-shrink:0;display:flex;gap:16px}
+#statusbar span{white-space:nowrap}
+
+.notif{position:fixed;top:56px;right:20px;background:#0d4429;color:#56d364;padding:9px 18px;border-radius:5px;font-size:12px;z-index:9999;border:1px solid #196c2e;animation:fadein .2s}
+@keyframes fadein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>Crematorium Design</h1>
+  <button class="btn active" id="btn-select" onclick="setMode('select')">&#9654; Selecteer</button>
+  <button class="btn" id="btn-connect" onclick="setMode('connect')">&#x2192; Verbind</button>
+  <button class="btn" id="btn-delete" onclick="setMode('delete')">&#x2715; Verwijder</button>
+  <div class="sep"></div>
+  <button class="btn btn-save" onclick="saveLayout()">Opslaan</button>
+  <button class="btn" onclick="loadLayout()">Laden</button>
+  <button class="btn" onclick="exportJSON()">Export JSON</button>
+  <button class="btn" onclick="clearAll()">Leegmaken</button>
+  <div class="sep"></div>
+  <span style="font-size:10px;color:#484f58">[S] Selecteer &nbsp;[C] Verbind &nbsp;[D] Verwijder &nbsp;[Esc] Annuleer</span>
+</div>
+
+<div id="main">
+  <div id="sidebar">
+    <div id="sidebar-tabs">
+      <div class="tab active" id="tab-palette" onclick="showTab('palette')">Ruimtes</div>
+      <div class="tab" id="tab-adj" onclick="showTab('adj')">Relaties</div>
+      <div class="tab" id="tab-routes" onclick="showTab('routes')">Routes</div>
+    </div>
+    <div id="sidebar-content">
+      <div id="panel-palette"></div>
+      <div id="panel-adj" style="display:none"></div>
+      <div id="panel-routes" style="display:none"></div>
+    </div>
+  </div>
+
+  <div id="canvas-wrap">
+    <div id="canvas">
+      <svg id="svg-layer">
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <polygon points="0 0,7 2.5,0 5" fill="#58a6ff"/>
+          </marker>
+          <marker id="arr-req" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <polygon points="0 0,7 2.5,0 5" fill="#e94560"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div id="statusbar">
+  <span id="st-mode">Modus: Selecteer</span>
+  <span id="st-rooms">Ruimtes: 0</span>
+  <span id="st-conns">Routes: 0</span>
+  <span id="st-hint">Sleep ruimtes vanuit het paneel naar het canvas</span>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────────
+
+const SEC_NAMES = {1:'Entree',2:'Afscheid',3:'Ovenruimte',4:'Backoffice',5:'Horeca'};
+const SEC_COLOR = {1:'#58a6ff',2:'#bc8cff',3:'#f85149',4:'#3fb950',5:'#e3b341'};
+const SEC_BG    = {1:'#0d1e33',2:'#1a0d33',3:'#2d0b0b',4:'#0b2816',5:'#2d1e0b'};
+
+const ROOMS = [
+  {id:'1.1',name:'Publieksingang',area:20,count:2,sec:1,note:'Tochtsluis'},
+  {id:'1.2',name:'Entreeruimte & Receptie',area:70,count:2,sec:1,note:'Koppelen aan 2.7 & 2.8'},
+  {id:'1.4',name:'Garderobe Bezoekers',area:50,count:1,sec:1},
+  {id:'1.5',name:'WC Dames',area:2.5,count:4,sec:1},
+  {id:'1.6',name:'WC Heren',area:2.5,count:4,sec:1},
+  {id:'1.7',name:'WC Gemengd',area:2.5,count:2,sec:1},
+  {id:'1.8',name:'MIVA Toilet',area:8,count:2,sec:1,note:'Incl. babyverzorging'},
+  {id:'2.1',name:'Opbaarruimte',area:18,count:4,sec:2,note:'Via condoleance; 24/7 pas'},
+  {id:'2.2',name:'Grote Aula',area:360,count:1,sec:2,note:'250 pers; verbinding 4.4'},
+  {id:'2.3',name:'Kleine Aula',area:150,count:1,sec:2,note:'100 pers; verbinding 4.4'},
+  {id:'2.4',name:"Bergruimte Aula's",area:50,count:1,sec:2},
+  {id:'2.5',name:'Familiekamer Klein',area:35,count:1,sec:2,note:'Max 20 pers; incl. toilet'},
+  {id:'2.6',name:'Familiekamer Groot',area:35,count:1,sec:2,note:'Max 20 pers; incl. toilet'},
+  {id:'2.7',name:'Condoleance Kleine Aula',area:100,count:1,sec:2,note:'100 pers; AV-systemen'},
+  {id:'2.8',name:'Condoleance Grote Aula',area:170,count:1,sec:2,note:'250 pers; AV-systemen'},
+  {id:'2.9',name:'Berging Condoleance',area:6,count:2,sec:2},
+  {id:'2.10',name:'Stilteruimte',area:50,count:1,sec:2},
+  {id:'2.11',name:"Tech. Ruimte Aula's",area:200,count:1,sec:2,note:'HVAC, audio, video'},
+  {id:'3.1',name:'Wachtruimte Familie',area:30,count:1,sec:3},
+  {id:'3.2',name:'Inbrengen Kist',area:20,count:1,sec:3},
+  {id:'3.3',name:'Afgifte Urnen',area:25,count:1,sec:3},
+  {id:'3.4',name:'Crematieruimte',area:100,count:1,sec:3,note:'4 ovens'},
+  {id:'3.5',name:'Filterinstallaties',area:120,count:1,sec:3},
+  {id:'3.6',name:'Tech. Hoogspanning',area:15,count:1,sec:3},
+  {id:'3.7',name:'Losplaats Lijkkisten',area:7.5,count:1,sec:3,note:'3 opstelplaatsen'},
+  {id:'3.8',name:'Koelkamer Lijkkisten',area:30,count:1,sec:3,note:'8 lijkkisten'},
+  {id:'3.9',name:'Opslag Bloemen',area:10,count:1,sec:3},
+  {id:'3.10',name:'Asbehandeling',area:15,count:1,sec:3},
+  {id:'3.11',name:'Afvalopslag',area:10,count:1,sec:3},
+  {id:'4.1',name:'Kantoor Personeel',area:50,count:1,sec:4,note:'8 personen'},
+  {id:'4.2',name:'Kantoor Directie',area:25,count:1,sec:4,note:'1 persoon'},
+  {id:'4.3',name:'Reproruimte',area:10,count:1,sec:4},
+  {id:'4.4',name:'Kantine Personeel',area:25,count:1,sec:4},
+  {id:'4.5',name:'Wacht Begraf.ond.',area:15,count:1,sec:4},
+  {id:'4.6',name:'Vergaderruimte',area:50,count:1,sec:4,note:'25 personen'},
+  {id:'4.7',name:'WC Dames (Back)',area:2.5,count:2,sec:4},
+  {id:'4.8',name:'WC Heren (Back)',area:2.5,count:2,sec:4},
+  {id:'4.9',name:'WC Gemengd (Back)',area:2.5,count:2,sec:4},
+  {id:'4.10',name:'MIVA Toilet (Back)',area:8,count:1,sec:4},
+  {id:'4.11',name:'Douche & Kleed H',area:4,count:1,sec:4,note:'Incl. kluisjes'},
+  {id:'4.12',name:'Douche & Kleed D',area:4,count:1,sec:4,note:'Incl. kluisjes'},
+  {id:'4.13',name:'Personeelsingang',area:8,count:1,sec:4,note:'Tochtsluis'},
+  {id:'4.14',name:'EHBO Ruimte',area:10,count:1,sec:4},
+  {id:'4.15',name:'Berging (Back)',area:4,count:1,sec:4},
+  {id:'4.16',name:'Buitenruimte Pers.',area:30,count:1,sec:4},
+  {id:'5.1',name:'Entree Horeca',area:10,count:1,sec:5},
+  {id:'5.2',name:'Keuken',area:40,count:1,sec:5,note:'Verbinding condoleance & bar'},
+  {id:'5.3',name:'Spoelkeuken',area:15,count:1,sec:5},
+  {id:'5.4',name:'Berging Voeding',area:10,count:1,sec:5},
+  {id:'5.5',name:'Schoonmaakkast',area:4,count:1,sec:5},
+  {id:'5.6',name:'Cafetaria / Condoleance',area:300,count:1,sec:5,note:'Op te delen 80-80-140m²'},
+  {id:'5.7',name:'Bar',area:15,count:2,sec:5},
+  {id:'5.8',name:'Opslag Bar',area:15,count:1,sec:5},
+  {id:'5.9',name:'Opslag Stoelen',area:20,count:1,sec:5},
+  {id:'5.10',name:'Afvalopslag (H)',area:8,count:1,sec:5},
+  {id:'5.11',name:'Tech. Ruimte (H)',area:15,count:1,sec:5},
+  {id:'5.12',name:'WC Dames (H)',area:2.5,count:4,sec:5},
+  {id:'5.13',name:'WC Heren (H)',area:2.5,count:4,sec:5},
+  {id:'5.14',name:'WC Gemengd (H)',area:2.5,count:4,sec:5},
+  {id:'5.15',name:'MIVA Toilet (H)',area:8,count:2,sec:5},
+  {id:'5.16',name:'Entree Personeel (H)',area:8,count:1,sec:5},
+  {id:'5.17',name:'Sanitair Personeel (H)',area:6,count:1,sec:5},
+  {id:'5.18',name:'Buitenberging Terras',area:15,count:1,sec:5},
+];
+
+const ADJ_RULES = [
+  {id:'R1',sev:'req',desc:'1.2 Entreeruimte → grenst aan 2.7 én 2.8 (condoleance)',from:'1.2',groups:[['2.7'],['2.8']]},
+  {id:'R2',sev:'req',desc:'2.1 Opbaarruimte → toegankelijk vanuit condoleance (2.7 of 2.8)',from:'2.1',groups:[['2.7','2.8']]},
+  {id:'R3',sev:'req',desc:'2.2 Grote Aula → interne verbinding met 4.4 Kantine',from:'2.2',groups:[['4.4']]},
+  {id:'R4',sev:'req',desc:'2.3 Kleine Aula → interne verbinding met 4.4 Kantine',from:'2.3',groups:[['4.4']]},
+  {id:'R5',sev:'rec',desc:'5.2 Keuken → verbinding met condoleance (2.7/2.8) én bar (5.7)',from:'5.2',groups:[['2.7','2.8'],['5.7']]},
+  {id:'R6',sev:'rec',desc:'2.5 Familiekamer Klein → nabij kleine aula 2.3',from:'2.5',groups:[['2.3']]},
+  {id:'R7',sev:'rec',desc:'2.6 Familiekamer Groot → nabij grote aula 2.2',from:'2.6',groups:[['2.2']]},
+  {id:'R8',sev:'rec',desc:'3.7 Losplaats → verbinding met 3.8 Koelkamer',from:'3.7',groups:[['3.8']]},
+  {id:'R9',sev:'rec',desc:'5.6 Cafetaria → verbinding met 5.2 Keuken',from:'5.6',groups:[['5.2']]},
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+
+const GRID = 20, SCALE = 10, MIN_SZ = 80;
+let rooms = [], conns = [], mode = 'select', srcId = null, drag = null;
+let rId = 1, cId = 1;
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+
+const snap  = v => Math.round(v / GRID) * GRID;
+const bsz   = area => Math.max(MIN_SZ, snap(Math.sqrt(area) * SCALE));
+const rtype = id => ROOMS.find(r => r.id === id);
+const pcount= tid => rooms.filter(r => r.tid === tid).length;
+const col   = sec => SEC_COLOR[sec];
+const bg    = sec => SEC_BG[sec];
+const $ = id => document.getElementById(id);
+
+// ── PALETTE ──────────────────────────────────────────────────────────────────
+
+function renderPalette() {
+  let h = '', last = null;
+  for (const t of ROOMS) {
+    if (t.sec !== last) {
+      last = t.sec;
+      h += `<div class="sec-head" style="background:${bg(t.sec)};color:${col(t.sec)}">
+        <div class="sec-dot" style="background:${col(t.sec)}"></div>
+        ${t.sec}. ${SEC_NAMES[t.sec]}
+      </div>`;
+    }
+    const placed = pcount(t.id);
+    const rem = t.count - placed;
+    const full = rem <= 0;
+    const c = col(t.sec);
+    h += `<div class="palette-item${full?' full':''}"
+      draggable="${!full}"
+      ondragstart="pdragstart(event,'${t.id}')"
+      title="${t.id} ${t.name}${t.note?' | '+t.note:''} | ${t.area}m²"
+    >
+      <div class="room-dot" style="background:${c}"></div>
+      <div class="room-info">
+        <div class="room-name">${t.id} ${t.name}</div>
+        <div class="room-meta">${t.area}m²${t.note?' · '+t.note.slice(0,28):''}</div>
+      </div>
+      <div class="count-badge" style="color:${c}">${placed}/${t.count}</div>
+    </div>`;
+  }
+  $('panel-palette').innerHTML = h;
+}
+
+// ── ADJACENCY ────────────────────────────────────────────────────────────────
+
+function connectedTypeIds(roomId) {
+  const ids = [];
+  for (const c of conns) {
+    if (c.from === roomId) { const r = rooms.find(x=>x.id===c.to);   if(r) ids.push(r.tid); }
+    if (c.to   === roomId) { const r = rooms.find(x=>x.id===c.from); if(r) ids.push(r.tid); }
+  }
+  return ids;
+}
+
+function evalRule(rule) {
+  const fromRooms = rooms.filter(r => r.tid === rule.from);
+  if (!fromRooms.length) return 'pend';
+  for (const fr of fromRooms) {
+    const ctids = connectedTypeIds(fr.id);
+    for (const grp of rule.groups) {
+      if (!grp.some(tid => ctids.includes(tid))) return 'warn';
+    }
+  }
+  return 'ok';
+}
+
+function renderAdj() {
+  let h = `<div style="padding:8px 10px;font-size:10px;color:#484f58;border-bottom:1px solid #21262d">
+    Ruimtelijke relaties uit PvE — <span style="color:#e94560">▮</span> Vereist &nbsp;<span style="color:#e3b341">▮</span> Aanbevolen
+  </div>`;
+  for (const rule of ADJ_RULES) {
+    const st = evalRule(rule);
+    const cls = st==='ok'?'s-ok':st==='warn'?'s-warn':'s-pend';
+    const txt = st==='ok'?'✓ Voldaan':st==='warn'?'⚠ Niet voldaan':'· Te plaatsen';
+    h += `<div class="adj-item ${rule.sev}">
+      <div class="adj-desc">${rule.desc}</div>
+      <span class="adj-status ${cls}">${txt}</span>
+    </div>`;
+  }
+  $('panel-adj').innerHTML = h;
+}
+
+// ── ROUTES PANEL ─────────────────────────────────────────────────────────────
+
+function renderRoutes() {
+  if (!conns.length) {
+    $('panel-routes').innerHTML = '<div style="padding:20px;text-align:center;color:#484f58;font-size:11px">Geen routes.<br>Gebruik "Verbind" modus.</div>';
+    return;
+  }
+  let h = `<div style="padding:8px 10px;font-size:10px;color:#484f58;border-bottom:1px solid #21262d">${conns.length} verbinding(en)</div>`;
+  for (const c of conns) {
+    const fr = rooms.find(r=>r.id===c.from), to = rooms.find(r=>r.id===c.to);
+    if (!fr||!to) continue;
+    const ft = rtype(fr.tid), tt = rtype(to.tid);
+    h += `<div class="route-item">
+      <div class="route-from">${ft.id} ${ft.name}</div>
+      <div class="route-arrow">→</div>
+      <div class="route-to">${tt.id} ${tt.name}</div>
+      <button class="route-del" onclick="delConn('${c.id}')">Verwijder</button>
+    </div>`;
+  }
+  $('panel-routes').innerHTML = h;
+}
+
+// ── CANVAS RENDER ────────────────────────────────────────────────────────────
+
+function renderCanvas() {
+  const canvas = $('canvas');
+  canvas.querySelectorAll('.room-block').forEach(e=>e.remove());
+  for (const room of rooms) {
+    const t = rtype(room.tid);
+    const c = col(t.sec);
+    const div = document.createElement('div');
+    div.className = `room-block mode-${mode}${srcId===room.id?' is-source':''}`;
+    div.id = 'rm-'+room.id;
+    div.style.cssText = `left:${room.x}px;top:${room.y}px;width:${room.w}px;height:${room.h}px;background:${bg(t.sec)};border-color:${c}`;
+    div.innerHTML = `<div class="rid" style="color:${c}">${t.id}</div>
+      <div class="rlabel">${t.name}</div>
+      <div class="rarea">${t.area} m²</div>`;
+    div.addEventListener('mousedown', e => onRoomMD(e, room.id));
+    div.addEventListener('click',     e => onRoomClick(e, room.id));
+    canvas.appendChild(div);
+  }
+  renderConns();
+  renderPalette();
+  renderAdj();
+  renderRoutes();
+  updateStatus();
+}
+
+// ── SVG CONNECTIONS ───────────────────────────────────────────────────────────
+
+function renderConns() {
+  const svg = $('svg-layer');
+  svg.querySelectorAll('.conn-group').forEach(e=>e.remove());
+  for (const c of conns) {
+    const fr = rooms.find(r=>r.id===c.from), to = rooms.find(r=>r.id===c.to);
+    if (!fr||!to) continue;
+    const pts = route(fr, to);
+    const d = pts.map((p,i)=>`${i?'L':'M'}${p[0]},${p[1]}`).join(' ');
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('class','conn-group');
+    g.setAttribute('data-id', c.id);
+
+    const hit = document.createElementNS('http://www.w3.org/2000/svg','path');
+    hit.setAttribute('class','conn-hit');
+    hit.setAttribute('d',d);
+    hit.addEventListener('click', e=>{ e.stopPropagation(); if(mode==='delete') delConn(c.id); });
+
+    const vis = document.createElementNS('http://www.w3.org/2000/svg','path');
+    vis.setAttribute('class','conn-vis');
+    vis.setAttribute('d',d);
+    vis.setAttribute('stroke','#58a6ff');
+    vis.setAttribute('marker-end','url(#arr)');
+
+    g.appendChild(hit);
+    g.appendChild(vis);
+    svg.appendChild(g);
+  }
+}
+
+// ── ORTHOGONAL ROUTING ────────────────────────────────────────────────────────
+
+function route(a, b) {
+  const ax=a.x+a.w/2, ay=a.y+a.h/2;
+  const bx=b.x+b.w/2, by=b.y+b.h/2;
+  const dx=bx-ax, dy=by-ay;
+  let sx,sy,ex,ey;
+  if (Math.abs(dx)>=Math.abs(dy)) {
+    sx = dx>=0 ? a.x+a.w : a.x; ex = dx>=0 ? b.x : b.x+b.w;
+    sy=ay; ey=by;
+    const mx=(sx+ex)/2;
+    return [[sx,sy],[mx,sy],[mx,ey],[ex,ey]];
+  } else {
+    sy = dy>=0 ? a.y+a.h : a.y; ey = dy>=0 ? b.y : b.y+b.h;
+    sx=ax; ex=bx;
+    const my=(sy+ey)/2;
+    return [[sx,sy],[sx,my],[ex,my],[ex,ey]];
+  }
+}
+
+// ── PALETTE DRAG ──────────────────────────────────────────────────────────────
+
+let pdragTid = null;
+function pdragstart(e, tid) {
+  const t = rtype(tid);
+  if (pcount(tid) >= t.count) { e.preventDefault(); return; }
+  pdragTid = tid;
+  e.dataTransfer.effectAllowed = 'copy';
+  e.dataTransfer.setData('text/plain', tid);
+}
+
+function initDrop() {
+  const canvas = $('canvas');
+  canvas.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+  canvas.addEventListener('drop', e => {
+    e.preventDefault();
+    const tid = e.dataTransfer.getData('text/plain') || pdragTid;
+    if (!tid) return;
+    const t = rtype(tid);
+    if (!t || pcount(tid) >= t.count) return;
+    const rect = canvas.getBoundingClientRect();
+    const sz = bsz(t.area);
+    const x = snap(Math.max(0, e.clientX - rect.left - sz/2));
+    const y = snap(Math.max(0, e.clientY - rect.top  - sz/2));
+    rooms.push({ id:'r'+rId++, tid, x, y, w:sz, h:sz });
+    pdragTid = null;
+    renderCanvas();
+  });
+}
+
+// ── ROOM DRAG ─────────────────────────────────────────────────────────────────
+
+function onRoomMD(e, id) {
+  if (mode !== 'select') return;
+  e.stopPropagation();
+  const room = rooms.find(r=>r.id===id);
+  if (!room) return;
+  const rect = $('canvas').getBoundingClientRect();
+  drag = { id, ox: e.clientX - rect.left - room.x, oy: e.clientY - rect.top - room.y };
+  document.addEventListener('mousemove', onMM);
+  document.addEventListener('mouseup', onMU);
+  e.preventDefault();
+}
+
+function onMM(e) {
+  if (!drag) return;
+  const rect = $('canvas').getBoundingClientRect();
+  const room = rooms.find(r=>r.id===drag.id);
+  if (!room) return;
+  room.x = snap(Math.max(0, e.clientX - rect.left - drag.ox));
+  room.y = snap(Math.max(0, e.clientY - rect.top  - drag.oy));
+  const el = $('rm-'+room.id);
+  if (el) { el.style.left=room.x+'px'; el.style.top=room.y+'px'; }
+  renderConns();
+}
+
+function onMU() {
+  drag = null;
+  document.removeEventListener('mousemove', onMM);
+  document.removeEventListener('mouseup', onMU);
+  renderAdj();
+}
+
+// ── ROOM CLICK ────────────────────────────────────────────────────────────────
+
+function onRoomClick(e, id) {
+  e.stopPropagation();
+  if (mode === 'delete') { delRoom(id); return; }
+  if (mode === 'connect') {
+    if (!srcId) {
+      srcId = id;
+      const el = $('rm-'+id);
+      if (el) el.classList.add('is-source');
+      updateStatus('Klik op een tweede ruimte om te verbinden...');
+    } else if (srcId !== id) {
+      const exists = conns.find(c=>(c.from===srcId&&c.to===id)||(c.from===id&&c.to===srcId));
+      if (!exists) conns.push({id:'c'+cId++, from:srcId, to:id});
+      const el = $('rm-'+srcId);
+      if (el) el.classList.remove('is-source');
+      srcId = null;
+      renderCanvas();
+    }
+  }
+}
+
+// ── DELETE OPS ────────────────────────────────────────────────────────────────
+
+function delConn(id) { conns = conns.filter(c=>c.id!==id); renderCanvas(); }
+function delRoom(id) {
+  rooms = rooms.filter(r=>r.id!==id);
+  conns = conns.filter(c=>c.from!==id&&c.to!==id);
+  renderCanvas();
+}
+
+// ── MODE ──────────────────────────────────────────────────────────────────────
+
+function setMode(m) {
+  if (srcId) { const el=$('rm-'+srcId); if(el) el.classList.remove('is-source'); srcId=null; }
+  mode = m;
+  document.querySelectorAll('#toolbar .btn').forEach(b=>b.classList.remove('active'));
+  $('btn-'+m).classList.add('active');
+  document.querySelectorAll('.room-block').forEach(el=>{
+    el.classList.remove('mode-select','mode-connect','mode-delete');
+    el.classList.add('mode-'+m);
+  });
+  updateStatus();
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+
+function showTab(t) {
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+  $('tab-'+t).classList.add('active');
+  ['palette','adj','routes'].forEach(p=>$('panel-'+p).style.display='none');
+  $('panel-'+t).style.display='block';
+  if (t==='adj') renderAdj();
+  if (t==='routes') renderRoutes();
+}
+
+// ── SAVE / LOAD ───────────────────────────────────────────────────────────────
+
+function saveLayout() {
+  localStorage.setItem('crema-layout', JSON.stringify({rooms,conns,rId,cId}));
+  notify('Layout opgeslagen ✓');
+}
+function loadLayout() {
+  const s = localStorage.getItem('crema-layout');
+  if (!s) { notify('Geen opgeslagen layout gevonden.'); return; }
+  const d = JSON.parse(s);
+  rooms=d.rooms||[]; conns=d.conns||[]; rId=d.rId||rId; cId=d.cId||cId;
+  renderCanvas(); notify('Layout geladen ✓');
+}
+function exportJSON() {
+  const data = {
+    project:'Crematorium Chronologisch Ontwerp',
+    date:new Date().toISOString(),
+    rooms:rooms.map(r=>({...r,type:rtype(r.tid)})),
+    connections:conns.map(c=>({
+      ...c,
+      fromType:rtype(rooms.find(r=>r.id===c.from)?.tid),
+      toType:rtype(rooms.find(r=>r.id===c.to)?.tid),
+    })),
+  };
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download='crematorium-layout.json'; a.click();
+}
+function clearAll() {
+  if (!confirm('Alle ruimtes en routes verwijderen?')) return;
+  rooms=[]; conns=[]; renderCanvas();
+}
+
+// ── STATUS ────────────────────────────────────────────────────────────────────
+
+function updateStatus(hint) {
+  const names={select:'Selecteer & Versleep',connect:'Verbind Route',delete:'Verwijder'};
+  $('st-mode').textContent='Modus: '+names[mode];
+  $('st-rooms').textContent='Ruimtes: '+rooms.length;
+  $('st-conns').textContent='Routes: '+conns.length;
+  $('st-hint').textContent=hint||'Sleep ruimtes naar het canvas · S/C/D wisselt modus · Ctrl+S opslaan';
+}
+
+function notify(msg) {
+  const n=document.createElement('div');
+  n.className='notif'; n.textContent=msg;
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(),2400);
+}
+
+// ── KEYBOARD ─────────────────────────────────────────────────────────────────
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName==='INPUT') return;
+  if (e.key==='s'||e.key==='S') setMode('select');
+  if (e.key==='c'||e.key==='C') setMode('connect');
+  if (e.key==='d'||e.key==='D') setMode('delete');
+  if (e.key==='Escape') { setMode('select'); }
+  if ((e.ctrlKey||e.metaKey)&&e.key==='s') { e.preventDefault(); saveLayout(); }
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+
+function init() {
+  renderPalette(); renderAdj(); renderRoutes(); initDrop(); updateStatus();
+  const saved = localStorage.getItem('crema-layout');
+  if (saved) {
+    try {
+      const d=JSON.parse(saved);
+      if (d.rooms&&d.rooms.length) {
+        rooms=d.rooms; conns=d.conns||[]; rId=d.rId||rId; cId=d.cId||cId;
+        renderCanvas(); notify('Vorige sessie hersteld');
+      }
+    } catch(e){}
+  }
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
