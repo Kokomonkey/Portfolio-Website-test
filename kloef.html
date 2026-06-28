@@ -459,6 +459,28 @@ body {
     background: var(--bg);
 }
 
+/* Sync status indicator */
+.sync-status {
+    margin: 10px 8px 4px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.72em;
+    font-weight: 600;
+    background: rgba(255,255,255,0.05);
+    color: #c9b8a4;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: inherit;
+    width: calc(100% - 16px);
+}
+.sync-status:hover { background: rgba(255,255,255,0.1); }
+.sync-status.not-setup { background: rgba(224,142,60,0.18); color: #e8b87a; border-color: rgba(224,142,60,0.4); }
+.sync-status.idle      { background: rgba(122,155,118,0.18); color: #a8d0a3; border-color: rgba(122,155,118,0.3); }
+.sync-status.syncing   { background: rgba(107,142,158,0.18); color: #9ec1d0; border-color: rgba(107,142,158,0.3); }
+.sync-status.error     { background: rgba(193,67,46,0.18); color: #e89a8c; border-color: rgba(193,67,46,0.4); }
+
 /* Welcome intro overlay */
 .welcome-overlay {
     position: fixed;
@@ -578,6 +600,31 @@ body {
             <button class="person-opt girlfriend" data-person="girlfriend">Her</button>
             <button class="person-opt ilian" data-person="ilian">Ilian</button>
         </div>
+        <button class="sync-status not-setup" id="sync-status" onclick="openSyncSetup()">⚙️ Setup sync</button>
+    </div>
+</div>
+
+<!-- SYNC SETUP MODAL -->
+<div class="modal-backdrop" id="syncModal" onclick="if(event.target===this) closeSyncSetup()">
+    <div class="modal">
+        <button class="close-x" onclick="closeSyncSetup()">×</button>
+        <h3>☁️ Sync setup</h3>
+        <p style="color:var(--text-muted);font-size:0.9em;margin-bottom:14px;">
+            Paste the Google Apps Script Web app URL here. Both devices that share data
+            need to use the same URL.
+        </p>
+        <div class="field-group">
+            <label class="field-label">Web app URL</label>
+            <input type="text" id="sync-url-input" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="saveSyncUrl()">Save & sync</button>
+            <button class="btn btn-ghost" onclick="closeSyncSetup()">Cancel</button>
+            <button class="btn btn-link" onclick="clearSyncUrl()" style="margin-left:auto;">Disconnect</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:0.78em;margin-top:14px;line-height:1.5;">
+            Need help? Open <code>KLOEF-SYNC-SETUP.md</code> in the repo for step-by-step instructions.
+        </p>
     </div>
 </div>
 
@@ -762,8 +809,10 @@ function loadState() {
 }
 function saveState() {
     localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    scheduleSyncPush();
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function nowTs() { return Date.now(); }
 
 /* ── PERSON PICKER ──────────────────────────────────────────────────── */
 function setPerson(p) {
@@ -845,7 +894,7 @@ function renderCalendar() {
     grid.innerHTML = days.map(d => {
         const iso = fmtISODate(d);
         const isToday = iso === todayISO;
-        const tasks = state.tasks.filter(t => t.date === iso)
+        const tasks = state.tasks.filter(t => !t.deleted && t.date === iso)
                                  .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
         return `
             <div class="day-col ${isToday ? 'today' : ''}">
@@ -892,6 +941,7 @@ function addTask(e) {
         task_type: f.task_type.value,
         is_completed: false,
         person: currentPerson,
+        updated_at: nowTs(),
     });
     saveState();
     f.reset();
@@ -902,12 +952,16 @@ function toggleTask(id) {
     const t = state.tasks.find(t => t.id === id);
     if (!t) return;
     t.is_completed = !t.is_completed;
+    t.updated_at = nowTs();
     saveState();
     renderCalendar();
 }
 function deleteTask(id) {
     if (!confirm('Delete this task?')) return;
-    state.tasks = state.tasks.filter(t => t.id !== id);
+    const t = state.tasks.find(t => t.id === id);
+    if (!t) return;
+    t.deleted = true;
+    t.updated_at = nowTs();
     saveState();
     renderCalendar();
 }
@@ -926,6 +980,7 @@ function addBook(e) {
         is_reading: false,
         is_finished: false,
         person: currentPerson,
+        updated_at: nowTs(),
     });
     saveState();
     f.reset();
@@ -933,12 +988,13 @@ function addBook(e) {
 }
 function renderBooks() {
     const grid = document.getElementById('books-grid');
-    if (!state.books.length) {
+    const items = state.books.filter(b => !b.deleted);
+    if (!items.length) {
         grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
             <div class="empty-icon">📖</div>Add your first book above.</div>`;
         return;
     }
-    grid.innerHTML = state.books.map(b => `
+    grid.innerHTML = items.map(b => `
         <div class="lib-card">
             ${b.cover_url
                 ? `<img src="${escapeAttr(b.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>📖</div>'">`
@@ -963,6 +1019,7 @@ function updateBookProgress(id) {
     const n = Math.max(0, Math.min(b.total_pages, parseInt(v) || 0));
     b.pages_read = n;
     b.is_finished = n >= b.total_pages;
+    b.updated_at = nowTs();
     saveState();
     renderBooks();
 }
@@ -979,6 +1036,7 @@ function addMovie(e) {
         cover_url: f.cover_url.value.trim(),
         watched: false,
         person: currentPerson,
+        updated_at: nowTs(),
     });
     saveState();
     f.reset();
@@ -987,8 +1045,8 @@ function addMovie(e) {
 function renderMovies() {
     const wl = document.getElementById('movies-watchlist');
     const wd = document.getElementById('movies-watched');
-    const watchlist = state.movies.filter(m => !m.watched);
-    const watched = state.movies.filter(m => m.watched);
+    const watchlist = state.movies.filter(m => !m.deleted && !m.watched);
+    const watched = state.movies.filter(m => !m.deleted && m.watched);
     wl.innerHTML = watchlist.length ? watchlist.map(movieCard).join('') :
         `<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">🎬</div>Nothing on the watchlist yet.</div>`;
     wd.innerHTML = watched.length ? watched.map(movieCard).join('') :
@@ -1014,6 +1072,7 @@ function markMovieWatched(id) {
     const m = state.movies.find(x => x.id === id);
     if (!m) return;
     m.watched = true;
+    m.updated_at = nowTs();
     saveState();
     renderMovies();
 }
@@ -1030,6 +1089,7 @@ function addSeries(e) {
         episodes_watched: 0,
         cover_url: f.cover_url.value.trim(),
         person: currentPerson,
+        updated_at: nowTs(),
     });
     saveState();
     f.reset();
@@ -1037,12 +1097,13 @@ function addSeries(e) {
 }
 function renderSeries() {
     const grid = document.getElementById('series-grid');
-    if (!state.series.length) {
+    const items = state.series.filter(s => !s.deleted);
+    if (!items.length) {
         grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
             <div class="empty-icon">📺</div>Add a series above.</div>`;
         return;
     }
-    grid.innerHTML = state.series.map(s => `
+    grid.innerHTML = items.map(s => `
         <div class="lib-card">
             ${s.cover_url
                 ? `<img src="${escapeAttr(s.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>📺</div>'">`
@@ -1064,6 +1125,7 @@ function updateSeriesProgress(id) {
     const v = prompt(`Episodes watched (0–${s.total_episodes}):`, s.episodes_watched);
     if (v === null) return;
     s.episodes_watched = Math.max(0, Math.min(s.total_episodes, parseInt(v) || 0));
+    s.updated_at = nowTs();
     saveState();
     renderSeries();
 }
@@ -1079,6 +1141,7 @@ function addAnime(e) {
         episodes_watched: 0,
         cover_url: f.cover_url.value.trim(),
         person: currentPerson,
+        updated_at: nowTs(),
     });
     saveState();
     f.reset();
@@ -1086,12 +1149,13 @@ function addAnime(e) {
 }
 function renderAnime() {
     const grid = document.getElementById('anime-grid');
-    if (!state.anime.length) {
+    const items = state.anime.filter(a => !a.deleted);
+    if (!items.length) {
         grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
             <div class="empty-icon">🍙</div>Add an anime above.</div>`;
         return;
     }
-    grid.innerHTML = state.anime.map(a => `
+    grid.innerHTML = items.map(a => `
         <div class="lib-card">
             ${a.cover_url
                 ? `<img src="${escapeAttr(a.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>🍙</div>'">`
@@ -1113,6 +1177,7 @@ function updateAnimeProgress(id) {
     const v = prompt(`Episodes watched (0–${a.total_episodes}):`, a.episodes_watched);
     if (v === null) return;
     a.episodes_watched = Math.max(0, Math.min(a.total_episodes, parseInt(v) || 0));
+    a.updated_at = nowTs();
     saveState();
     renderAnime();
 }
@@ -1120,7 +1185,10 @@ function updateAnimeProgress(id) {
 /* ── COMMON ─────────────────────────────────────────────────────────── */
 function deleteItem(kind, id) {
     if (!confirm('Remove this item?')) return;
-    state[kind] = state[kind].filter(x => x.id !== id);
+    const it = state[kind].find(x => x.id === id);
+    if (!it) return;
+    it.deleted = true;
+    it.updated_at = nowTs();
     saveState();
     if (kind === 'books') renderBooks();
     if (kind === 'movies') renderMovies();
@@ -1147,6 +1215,158 @@ function closeSidebar() {
     document.getElementById('sidebar-overlay').classList.remove('visible');
 }
 
+/* ── SYNC (Google Sheets via Apps Script) ───────────────────────────── */
+const SYNC_URL_KEY = 'kloef_sync_url';
+let syncUrl = localStorage.getItem(SYNC_URL_KEY) || '';
+let syncStatus = 'idle';
+let pushTimer = null;
+let pullTimer = null;
+
+function updateSyncStatusUI() {
+    const el = document.getElementById('sync-status');
+    if (!el) return;
+    if (!syncUrl) {
+        el.textContent = '⚙️ Setup sync';
+        el.className = 'sync-status not-setup';
+        return;
+    }
+    const labels = {
+        idle: '☁️ Synced',
+        syncing: '⟳ Syncing…',
+        error: '⚠️ Sync error — tap to fix',
+    };
+    el.textContent = labels[syncStatus] || labels.idle;
+    el.className = 'sync-status ' + syncStatus;
+}
+
+function setSyncStatus(s) {
+    syncStatus = s;
+    updateSyncStatusUI();
+}
+
+function mergeStates(a, b) {
+    const lists = ['tasks', 'books', 'movies', 'series', 'anime'];
+    const out = {};
+    for (const k of lists) {
+        const map = new Map();
+        for (const it of (a[k] || [])) map.set(it.id, it);
+        for (const it of (b[k] || [])) {
+            const ex = map.get(it.id);
+            if (!ex) { map.set(it.id, it); continue; }
+            if (it.deleted && !ex.deleted) { map.set(it.id, it); continue; }
+            if (ex.deleted && !it.deleted) { continue; }
+            const eU = ex.updated_at || 0;
+            const iU = it.updated_at || 0;
+            if (iU > eU) map.set(it.id, it);
+        }
+        out[k] = Array.from(map.values());
+    }
+    return out;
+}
+
+function rerenderActive() {
+    const active = document.querySelector('.page.active');
+    if (!active) return;
+    const name = active.id.replace('page-', '');
+    if (name === 'calendar') renderCalendar();
+    if (name === 'books') renderBooks();
+    if (name === 'movies') renderMovies();
+    if (name === 'series') renderSeries();
+    if (name === 'anime') renderAnime();
+}
+
+async function pullSync() {
+    if (!syncUrl) return;
+    setSyncStatus('syncing');
+    try {
+        const r = await fetch(syncUrl + '?t=' + Date.now(), { cache: 'no-store' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        if (!j || !j.ok) throw new Error('Bad response');
+        const remote = j.state || {};
+        state = mergeStates(state, remote);
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        rerenderActive();
+        setSyncStatus('idle');
+    } catch (e) {
+        console.warn('pullSync failed:', e);
+        setSyncStatus('error');
+    }
+}
+
+function scheduleSyncPush() {
+    if (!syncUrl) return;
+    if (pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(pushSync, 700);
+}
+
+async function pushSync() {
+    if (!syncUrl) return;
+    setSyncStatus('syncing');
+    try {
+        const r = await fetch(syncUrl, {
+            method: 'POST',
+            body: JSON.stringify(state),
+            // Default text/plain content-type avoids CORS preflight on Apps Script
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        if (!j || !j.ok) throw new Error('Bad response');
+        // Server returns the merged state — adopt it locally
+        state = j.state || state;
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        rerenderActive();
+        setSyncStatus('idle');
+    } catch (e) {
+        console.warn('pushSync failed:', e);
+        setSyncStatus('error');
+    }
+}
+
+function startPullPolling() {
+    if (pullTimer) clearInterval(pullTimer);
+    if (!syncUrl) return;
+    pullTimer = setInterval(() => {
+        if (document.visibilityState === 'visible') pullSync();
+    }, 15000);
+}
+
+function openSyncSetup() {
+    document.getElementById('sync-url-input').value = syncUrl;
+    document.getElementById('syncModal').classList.add('open');
+}
+function closeSyncSetup() {
+    document.getElementById('syncModal').classList.remove('open');
+}
+function saveSyncUrl() {
+    const v = document.getElementById('sync-url-input').value.trim();
+    if (!v) { alert('Paste a URL first.'); return; }
+    if (!/^https:\/\/script\.google\.com\//.test(v)) {
+        if (!confirm('That doesn\'t look like a Google Apps Script URL. Save anyway?')) return;
+    }
+    syncUrl = v;
+    localStorage.setItem(SYNC_URL_KEY, syncUrl);
+    closeSyncSetup();
+    updateSyncStatusUI();
+    startPullPolling();
+    // Push current local state first (so the other side picks it up), then pull merged result
+    pushSync();
+}
+function clearSyncUrl() {
+    if (!confirm('Disconnect sync? Your local data stays on this device.')) return;
+    syncUrl = '';
+    localStorage.removeItem(SYNC_URL_KEY);
+    if (pullTimer) clearInterval(pullTimer);
+    setSyncStatus('idle');
+    updateSyncStatusUI();
+    closeSyncSetup();
+}
+
+// Refresh on tab focus so you see the other person's changes when you come back
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && syncUrl) pullSync();
+});
+
 /* ── WELCOME INTRO ──────────────────────────────────────────────────── */
 function showWelcome(person) {
     const labels = { douwe: 'Douwe', girlfriend: 'Her', ilian: 'Ilian' };
@@ -1161,13 +1381,18 @@ function showWelcome(person) {
 /* ── INIT ───────────────────────────────────────────────────────────── */
 renderPersonPicker();
 showPage('calendar');
+updateSyncStatusUI();
+if (syncUrl) {
+    pullSync();
+    startPullPolling();
+}
 if (VALID_PERSONS.includes(urlPerson)) {
     showWelcome(urlPerson);
     // Clean URL so a refresh doesn't replay the intro
     history.replaceState({}, '', window.location.pathname);
 }
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeTaskModal();
+    if (e.key === 'Escape') { closeTaskModal(); closeSyncSetup(); }
 });
 </script>
 
