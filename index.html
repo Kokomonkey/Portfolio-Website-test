@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
 
-    <script src="config.js"></script> 
-    
+    <script src="config.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpeg" href="Recourses/Logos/DDD.jpg">
@@ -18,133 +16,161 @@
     <meta property="og:title" content="DouweDoesDesign | AI in Architecture">
     <meta property="og:description" content="Explore my personal portfolio on AI-driven architecture and design workflows.">
     <meta property="og:image" content="Recourses/Logos/DDD.jpg">
-    <meta property="og:url" content="https://douwedoesdesign.com"> 
+    <meta property="og:url" content="https://douwedoesdesign.com">
+
     <style>
-        /* --- CSS VARIABLES & RESET --- */
+        /* ── VARIABLES & RESET ─────────────────────────────── */
         :root {
-            --bg-color: #000000;
-            --accent-color: #ffffff;
-            --transition-speed: 0.3s;
-            
-            /* NEW DIMENSIONS BASED ON VERTICALITY (vh) */
-            --header-height: 15vh;     /* Header is exactly 15% of screen */
-            --square-size: 20vh;       /* Squares are 20% of screen height */
-            --gap-size: 2vh;           /* Gaps are small relative to height */
+            --bg:             #0a1628;
+            --fg:             #ffffff;
+            --cyan:           #00c8ff;
+            --cyan-dim:       rgba(0, 200, 255, 0.18);
+            --grid-major:     rgba(0, 200, 255, 0.07);
+            --grid-minor:     rgba(0, 200, 255, 0.025);
+            --speed:          0.3s;
+            --header-h:       15vh;
+            --sq:             20vh;
+            --gap:            2vh;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { cursor: none; }
+        * { cursor: none !important; }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            font-family: 'Courier New', Courier, monospace; 
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(var(--grid-major) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            color: var(--fg);
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
-            
-            /* FORCE NO SCROLLING */
-            height: 100vh; 
-            overflow: hidden; 
-            justify-content: center; /* Center everything vertically */
+            height: 100vh;
+            overflow: hidden;
+            justify-content: center;
         }
 
-        /* --- BACK BUTTON --- */
-        .back-btn {
+        /* ── CUSTOM CURSOR ─────────────────────────────────── */
+        /* Main: white crosshair dot — thin vertical line is the element itself */
+        #cur-main {
             position: fixed;
-            top: 2vh;
-            left: 2vh; /* Adjusted to vh for consistency */
-            text-decoration: none;
-            z-index: 100;
-            border: 2px solid var(--accent-color);
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            padding: 1vh 2vh; /* Responsive padding */
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 2vh; 
-            transition: all var(--transition-speed) ease;
+            pointer-events: none;
+            z-index: 10001;
+            top: 0; left: 0;
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.92);
+            will-change: transform;
+        }
+        /* Horizontal bar of the crosshair */
+        #cur-main::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 20px; height: 1px;
+            background: rgba(255, 255, 255, 0.92);
+            transform: translate(-50%, -50%);
+        }
+        /* Center dot */
+        #cur-main::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 4px; height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        .back-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
+        /* Follower: lagging cyan square — CAD selection box */
+        #cur-follow {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            top: 0; left: 0;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--cyan);
+            opacity: 0.75;
+            will-change: transform, width, height;
+            transition: width 0.15s ease, height 0.15s ease, opacity 0.2s ease;
         }
 
-        /* --- HEADER SECTION (Strict 15vh) --- */
+        @keyframes tileReveal {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── HEADER ────────────────────────────────────────── */
         header {
-            height: var(--header-height);
+            height: var(--header-h);
             display: flex;
-            flex-direction: row; /* Side-by-side to save vertical space */
+            flex-direction: row;
             align-items: center;
             justify-content: center;
             gap: 2vh;
-            margin-bottom: 4vh; /* Space between header and grid */
+            margin-bottom: 4vh;
         }
 
         .logo-placeholder {
-            /* Logo scales with height */
-            height: 10vh; 
-            width: 10vh; 
-            background-color: var(--accent-color);
+            height: 10vh;
+            width: 10vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            filter: invert(1);
         }
-        
-        /* Adjust image inside logo to fit */
         .logo-placeholder img {
-            max-height: 100%;
-            width: auto;
+            max-height: 100%; width: auto;
+            filter: invert(1);
+            mix-blend-mode: screen;
+            opacity: 0.35;
+        }
+
+        .title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        /* Dimension-line markers flanking the title */
+        .h1-rule {
+            display: flex;
+            align-items: center;
         }
 
         h1 {
-            font-size: 4vh; /* Text scales with height */
+            font-size: 4vh;
             letter-spacing: 0.5vh;
             text-transform: uppercase;
             font-weight: 700;
             line-height: 1;
         }
 
-        /* --- NEW TITLE CONTAINER & ROADMAP BUTTON --- */
-        .title-container {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Aligns text/button to the left relative to each other */
-            justify-content: center;
-        }
-
         .roadmap-btn {
             margin-top: 1vh;
             font-size: 1.5vh;
             text-decoration: none;
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
             padding: 0.5vh 1.5vh;
             text-transform: uppercase;
             font-weight: bold;
-            transition: all var(--transition-speed) ease;
+            transition: all var(--speed) ease;
             letter-spacing: 0.2vh;
         }
-
         .roadmap-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-            cursor: pointer;
+            background-color: var(--cyan);
+            color: var(--bg);
         }
 
-        /* MOBILE TWEAK: Center the button on mobile */
-        @media (max-width: 768px) {
-            .title-container {
-                align-items: center; /* Center align on mobile */
-            }
-        }
-
-        /* --- GRID SECTION --- */
+        /* ── GRID ──────────────────────────────────────────── */
         main {
             display: flex;
             justify-content: center;
@@ -153,273 +179,237 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); 
-            gap: var(--gap-size); 
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap);
             width: fit-content;
         }
 
-        /* --- INTERACTIVE SQUARES --- */
         .grid-item {
-            display: block; 
+            display: block;
             text-decoration: none;
-            
-            /* ENTRANCE ANIMATION SETTINGS */
-            opacity: 0; 
-            animation-duration: 2s; 
-            animation-timing-function: cubic-bezier(0.16, 1, 0.5, 1); 
-            animation-fill-mode: forwards;
+            opacity: 0;
+            animation: tileReveal 0.4s cubic-bezier(0.16, 1, 0.5, 1) forwards;
         }
-        
-        /* Style for WIP triggers to look clickable */
-        .wip-trigger {
-            cursor: pointer;
-        }
+        .grid-item:nth-child(1) { animation-delay: 0.04s; }
+        .grid-item:nth-child(2) { animation-delay: 0.09s; }
+        .grid-item:nth-child(3) { animation-delay: 0.14s; }
+        .grid-item:nth-child(4) { animation-delay: 0.19s; }
+        .grid-item:nth-child(5) { animation-delay: 0.24s; }
+        .grid-item:nth-child(6) { animation-delay: 0.29s; }
+        .grid-item:nth-child(7) { animation-delay: 0.34s; }
+        .grid-item:nth-child(8) { animation-delay: 0.39s; }
+        .grid-item:nth-child(9) { animation-delay: 0.44s; }
 
+        /* ── SQUARE TILES ──────────────────────────────────── */
         .square {
-            /* SIZE BASED ON HEIGHT NOW */
-            width: var(--square-size);
-            height: var(--square-size);
-            
-            background-color: var(--bg-color); 
-            border: 2px solid var(--accent-color); 
+            width: var(--sq);
+            height: var(--sq);
+            background-color: rgba(10, 22, 40, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             display: flex;
             justify-content: center;
-            align-items: center; 
-            transition: all var(--transition-speed) ease;
-            cursor: pointer;
+            align-items: center;
+            transition: border-color var(--speed) ease,
+                        box-shadow var(--speed) ease,
+                        background-color var(--speed) ease;
+            position: relative;
             overflow: hidden;
-            position: relative; 
         }
 
-        .square-icon {
-            width: 50%;
-            height: 50%;
-            background-color: var(--accent-color); 
-            transition: all var(--transition-speed) ease;
+        /* Architectural corner tick-marks */
+        .cm {
+            position: absolute;
+            width: 7px; height: 7px;
+            border-style: solid;
+            border-color: var(--cyan);
+            border-width: 0;
+            opacity: 0;
+            transition: opacity var(--speed) ease;
+            z-index: 5;
+            pointer-events: none;
         }
-        
-        /* UPDATED: If using IMG tag for icon */
+        .cm.tl { top: 5px;    left: 5px;  border-top-width: 1px; border-left-width: 1px; }
+        .cm.tr { top: 5px;    right: 5px; border-top-width: 1px; border-right-width: 1px; }
+        .cm.bl { bottom: 5px; left: 5px;  border-bottom-width: 1px; border-left-width: 1px; }
+        .cm.br { bottom: 5px; right: 5px; border-bottom-width: 1px; border-right-width: 1px; }
+
         .square-img {
-            width: 100%;        /* Changed from 50% to fill square */
-            height: 100%;       /* Changed from auto to fill square */
-            object-fit: cover;  /* Ensures image fills without stretching */
-            transition: all var(--transition-speed) ease;
-            filter: invert(1);  /* Assuming black PNGs/JPGs */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter var(--speed) ease, transform var(--speed) ease;
+            filter: invert(1);
         }
 
         .square-text {
             position: absolute;
-            bottom: 5%; 
+            bottom: 5%;
             left: 0;
             width: 100%;
             text-align: center;
             z-index: 10;
-            
-            /* UPDATED: Default color is White (accent) */
-            color: var(--accent-color); 
+            color: var(--fg);
             font-weight: bold;
             text-transform: uppercase;
-            
-            /* Text size relative to the square height */
-            font-size: calc(var(--square-size) / 9);
-            
-            /* UPDATED: Visible by default */
-            opacity: 1;
-            transform: translateY(0); 
-            transition: all var(--transition-speed) ease;
+            font-size: calc(var(--sq) / 9);
+            transition: color var(--speed) ease;
         }
 
-        /* --- HOVER EFFECTS --- */
+        /* Small entry arrow — top-right on hover */
+        .square-enter {
+            position: absolute;
+            top: 7%; right: 7%;
+            font-size: calc(var(--sq) / 17);
+            color: var(--cyan);
+            opacity: 0;
+            letter-spacing: 0.08em;
+            transition: opacity var(--speed) ease;
+            z-index: 10;
+        }
+
+        /* ── HOVER ─────────────────────────────────────────── */
         .grid-item:hover .square {
-            transform: scale(1.05); /* Reduced scale slightly to prevent overlap */
-            background-color: var(--accent-color); 
-            border-color: var(--accent-color);
-            z-index: 8; 
+            border-color: var(--cyan);
+            box-shadow: 0 0 18px var(--cyan-dim), inset 0 0 28px rgba(0, 200, 255, 0.04);
+            background-color: rgba(0, 18, 36, 0.92);
         }
+        .grid-item:hover .cm          { opacity: 1; }
+        .grid-item:hover .square-img  { transform: translateY(-8%); filter: invert(1) brightness(1.12); }
+        .grid-item:hover .square-text { color: var(--cyan); }
+        .grid-item:hover .square-enter{ opacity: 0.7; }
 
-        .grid-item:hover .square-icon {
-            background-color: var(--bg-color); 
-            transform: translateY(-15%); 
-        }
-        
-        .grid-item:hover .square-img {
-            filter: none;
-            transform: translateY(-7%);
-        }
-
-        .grid-item:hover .square-text {
-            /* UPDATED: Invert text color to Black (bg-color) on hover */
-            color: var(--bg-color);
-            opacity: 1; 
-            transform: translateY(0);
-        }
-
-        /* --- MODAL (POPUP) STYLES --- */
+        /* ── MODAL ─────────────────────────────────────────── */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; 
-            z-index: 200; 
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.82);
             align-items: center;
             justify-content: center;
         }
-
         .modal-content {
-            background-color: var(--bg-color);
-            border: 2px solid var(--accent-color);
+            background-color: var(--bg);
+            border: 1px solid var(--cyan);
+            box-shadow: 0 0 30px var(--cyan-dim);
             padding: 4vh;
             width: 80%;
             max-width: 500px;
             text-align: center;
             position: relative;
-            animation: slideFromBottom 0.5s ease;
+            animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.5, 1) forwards;
         }
-
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
         .close-btn {
-            color: var(--accent-color);
+            color: var(--fg);
             position: absolute;
-            top: 10px;
-            right: 20px;
+            top: 10px; right: 20px;
             font-size: 2rem;
             font-weight: bold;
-            cursor: pointer;
             line-height: 1;
         }
-
-        .close-btn:hover {
-            color: #ccc;
-        }
-
+        .close-btn:hover { color: var(--cyan); }
         .modal-text {
-            color: var(--accent-color);
-            font-size: 1.2rem;
+            color: var(--fg);
+            font-size: 1.1rem;
             margin-bottom: 3vh;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-
         .modal-contact-btn {
             display: inline-block;
             padding: 1vh 3vh;
-            border: 2px solid var(--accent-color);
-            background-color: var(--bg-color);
-            color: var(--accent-color);
+            border: 1px solid var(--fg);
+            background-color: transparent;
+            color: var(--fg);
             text-decoration: none;
             font-weight: bold;
             text-transform: uppercase;
-            transition: all var(--transition-speed) ease;
+            transition: all var(--speed) ease;
         }
-
         .modal-contact-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
+            background-color: var(--cyan);
+            border-color: var(--cyan);
+            color: var(--bg);
         }
 
-        /* --- ANIMATION KEYFRAMES --- */
-        @keyframes slideFromTop { 0% { transform: translateY(-100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes slideFromBottom { 0% { transform: translateY(100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes slideFromLeft { 0% { transform: translateX(-100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes slideFromRight { 0% { transform: translateX(100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-
-        /* --- VISITOR COUNTER --- */
+        /* ── VISITOR COUNTER ───────────────────────────────── */
         .visitor-counter {
             position: fixed;
-            bottom: 2vh;
-            right: 2vh;
-            color: var(--accent-color);
-            background-color: var(--bg-color);
-            border: 2px solid var(--accent-color);
+            bottom: 2vh; right: 2vh;
+            color: var(--cyan);
+            background-color: rgba(10, 22, 40, 0.85);
+            border: 1px solid var(--cyan);
             padding: 1vh 2vh;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 1vh; 
+            font-size: 1vh;
             z-index: 100;
             display: flex;
             gap: 1vh;
-            transition: all var(--transition-speed) ease;
+            letter-spacing: 0.06em;
+            transition: all var(--speed) ease;
         }
-
         .visitor-counter:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
+            background-color: var(--cyan);
+            color: var(--bg);
         }
 
-        /* --- MOBILE RESPONSIVENESS (Add this at the bottom of your CSS) --- */
+        /* ── MOBILE ────────────────────────────────────────── */
         @media (max-width: 768px) {
-            
-            /* 1. ALLOW SCROLLING */
-            body {
-                height: auto;           /* Let page grow as needed */
-                min-height: 100vh;      /* At least full screen */
-                overflow-y: auto;       /* Enable vertical scrolling */
-                padding-bottom: 50px;   /* Add space at the bottom */
-                display: block;         /* Stack elements normally */
-            }
+            html { cursor: auto; }
+            * { cursor: auto !important; }
+            #cur-main, #cur-follow { display: none; }
 
-            /* 2. ADJUST HEADER */
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+                padding-bottom: 50px;
+                display: block;
+            }
             header {
-                height: auto;           /* Let header grow naturally */
+                height: auto;
                 padding: 20px 0;
-                flex-direction: column; /* Stack Logo and Text vertically */
+                flex-direction: column;
                 margin-bottom: 20px;
             }
-
-            h1 {
-                font-size: 2rem;        /* Readable pixel size instead of vh */
-                margin-top: 10px;
-                text-align: center;
-                color: white;
-            }
-
-            /* 3. CHANGE GRID TO 2 COLUMNS */
+            h1 { font-size: 2rem; margin-top: 10px; text-align: center; }
             .grid-container {
-                grid-template-columns: repeat(2, 1fr); /* 2 Columns instead of 3 */
-                width: 90%;             /* Use 90% of screen width */
-                margin: 0 auto;         /* Center the grid */
-                gap: 15px;              /* Smaller gap */
+                grid-template-columns: repeat(2, 1fr);
+                width: 90%;
+                margin: 0 auto;
+                gap: 15px;
             }
-
-            /* 4. SQUARE SIZING */
             .square {
-                /* Make squares based on Width, not Height */
-                width: 100%;            
-                height: 40vw;           /* Squares are 40% of screen width */
-                border-width: 1px;      /* Thinner borders look better on mobile */
-                filter: invert();
+                width: 100%;
+                height: 40vw;
+                border-width: 1px;
             }
-
-            /* 5. TEXT ALWAYS VISIBLE (No Hover needed) */
-            .square-text {
-                opacity: 1;             /* Always show text */
-                transform: translateY(0);
-                font-size: 0.8rem;
-                /* Background removed to match requested style, 
-                   but keeping text contrast is important */
-                bottom: 5%;
-                color: black; /* Inverted due to square filter on mobile */
-            }
-            
-            /* Optional: Adjust image visibility if text covers it */
-            .square-img {
-                filter: none;           /* Don't invert colors by default if preferred */
-            }
+            .square-text { font-size: 0.8rem; }
+            .square-img { filter: invert(1); }
+            .title-container { align-items: center; }
+            .grid-item { opacity: 1; animation: none; }
         }
-
     </style>
 </head>
 <body>
 
+    <!-- Cursor elements -->
+    <div id="cur-follow"></div>
+    <div id="cur-main"></div>
+
     <header>
         <div class="logo-placeholder">
-            <img src="Recourses/Logos/DDD.jpg" />
+            <img src="Recourses/Logos/DDD.jpg" alt="DDD Logo"/>
         </div>
-        
         <div class="title-container">
-            <h1>DouweDoesDesign</h1>
+            <div class="h1-rule">
+                <h1>DouweDoesDesign</h1>
+            </div>
             <a href="Roadmap.html" class="roadmap-btn">feature roadmap</a>
         </div>
     </header>
@@ -429,64 +419,91 @@
 
             <a href="projects.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/Projects.jpg" alt="Projects Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/Projects.jpg" alt="Projects" class="square-img">
                     <span class="square-text">Projects</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="Workflow.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/Workflow.jpg" alt="Workflow Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/Workflow.jpg" alt="Workflow" class="square-img">
                     <span class="square-text">Workflow</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="ai-limitations.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/AIGeneration.jpg" alt="AI-Generation Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/AIGeneration.jpg" alt="AI-Limitations" class="square-img">
                     <span class="square-text">AI-Limitations</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="about.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/About.jpg" alt="About Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/About.jpg" alt="About" class="square-img">
                     <span class="square-text">About</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="testSites.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/TestSites.jpg" alt="Test Sites Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/TestSites.jpg" alt="Playground" class="square-img">
                     <span class="square-text">Playground</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="contact.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/Contact.jpg" alt="Contact Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/Contact.jpg" alt="Contact" class="square-img">
                     <span class="square-text">Contact</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="DouweDoesBenchmarks.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/Playground.jpg" alt="Archive Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/Playground.jpg" alt="Benchmarks" class="square-img">
                     <span class="square-text">Benchmarks</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="MaterialData/public_material_portal.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/Playground.jpg" alt="Playground Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/Playground.jpg" alt="Material Database" class="square-img">
                     <span class="square-text">Material Database</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
             <a href="updates.html" class="grid-item">
                 <div class="square">
-                    <img src="Recourses/Logos/Index/Updates.jpg" alt="Blog Logo" class="square-img">
+                    <div class="cm tl"></div><div class="cm tr"></div>
+                    <div class="cm bl"></div><div class="cm br"></div>
+                    <img src="Recourses/Logos/Index/Updates.jpg" alt="Updates" class="square-img">
                     <span class="square-text">Updates</span>
+                    <span class="square-enter">→</span>
                 </div>
             </a>
 
@@ -501,83 +518,107 @@
     <div id="wip-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <p class="modal-text">This page is yet to be added, do you have any ideas of what to place here? Then please contact me personally.</p>
+            <p class="modal-text">This page is yet to be added. Do you have ideas for what to place here? Please reach out.</p>
             <a href="contact.html" class="modal-contact-btn">Contact Me</a>
         </div>
     </div>
 
-</body>
-
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        
-        // --- 1. GRID ANIMATION LOGIC ---
-        const squares = document.querySelectorAll('.grid-item');
-        const animations = [
-            'slideFromTop', 
-            'slideFromBottom', 
-            'slideFromLeft', 
-            'slideFromRight'
-        ];
+document.addEventListener("DOMContentLoaded", function () {
 
-        squares.forEach((square) => {
-            const randomIndex = Math.floor(Math.random() * animations.length);
-            square.style.animationName = animations[randomIndex];
-        });
+    // ── 1. CUSTOM CURSOR ────────────────────────────────────────
+    const curMain   = document.getElementById('cur-main');
+    const curFollow = document.getElementById('cur-follow');
 
-        // --- 2. POPUP LOGIC ---
-        const modal = document.getElementById("wip-modal");
-        const triggers = document.querySelectorAll(".wip-trigger");
-        const closeBtn = document.querySelector(".close-btn");
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    let fx = mx, fy = my;
+    let hovering = false;
 
-        if (modal && triggers.length > 0) {
-            triggers.forEach(trigger => {
-                trigger.addEventListener("click", () => {
-                    modal.style.display = "flex";
-                });
-            });
-            closeBtn.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-            window.addEventListener("click", (event) => {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            });
-        }
-
-        // --- 3. SMART UNIQUE VISITOR COUNTER ---
-        const counterDisplay = document.getElementById('visit-count');
-        const namespace = 'douwedoesdesign';
-        const key = 'homepage';
-        const today = new Date().toISOString().split('T')[0];
-        const lastVisitDate = localStorage.getItem('ddd_last_visit');
-        const cachedCount = localStorage.getItem('ddd_cached_count');
-
-        // Show cached count immediately while we load
-        if (cachedCount) counterDisplay.innerText = cachedCount;
-
-        if (lastVisitDate === today) {
-            // Already visited today — use cached count to avoid CORS error on read-only endpoint
-            console.log("Welcome back! Not counting you twice today");
-            if (!cachedCount) counterDisplay.innerText = "N/A";
-        } else {
-            // First visit of the day — increment via /up endpoint
-            localStorage.setItem('ddd_last_visit', today);
-            fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    counterDisplay.innerText = data.count;
-                    localStorage.setItem('ddd_cached_count', data.count);
-                })
-                .catch(() => {
-                    if (!cachedCount) counterDisplay.innerText = "N/A";
-                });
-        }
+    document.addEventListener('mousemove', e => {
+        mx = e.clientX;
+        my = e.clientY;
+        // Main cursor tracks exactly — offset so center of crosshair is at pointer
+        curMain.style.transform = `translate(${mx - 0.5}px, ${my - 10}px)`;
     });
+
+    // Follower lerps behind with a CAD-selection-box feel
+    const LERP = 0.09;
+    (function loop() {
+        fx += (mx - fx) * LERP;
+        fy += (my - fy) * LERP;
+        const sz = hovering ? 52 : 36;
+        curFollow.style.width  = sz + 'px';
+        curFollow.style.height = sz + 'px';
+        curFollow.style.transform = `translate(${fx - sz * 0.5}px, ${fy - sz * 0.5}px)`;
+        requestAnimationFrame(loop);
+    })();
+
+    // Grow follower when over interactive elements
+    document.querySelectorAll('a, button, .wip-trigger, .close-btn').forEach(el => {
+        el.addEventListener('mouseenter', () => hovering = true);
+        el.addEventListener('mouseleave', () => hovering = false);
+    });
+
+    // ── 3. MODAL LOGIC ───────────────────────────────────────────
+    const modal    = document.getElementById('wip-modal');
+    const triggers = document.querySelectorAll('.wip-trigger');
+    const closeBtn = document.querySelector('.close-btn');
+
+    if (modal && triggers.length > 0) {
+        triggers.forEach(t => t.addEventListener('click', () => modal.style.display = 'flex'));
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+    }
+
+    // ── 3.5 SECRET PASSCODES ────────────────────────────────────
+    // 'Kloef' → opens shared page as Douwe (blue)
+    // 'Angus' → opens shared page as Ilian (purple)
+    (function () {
+        const CODES = {
+            'Kloef': 'kloef.html?as=douwe',
+            'Angus': 'kloef.html?as=ilian',
+        };
+        const MAX_LEN = Math.max(...Object.keys(CODES).map(s => s.length));
+        let buffer = '';
+        document.addEventListener('keydown', e => {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+            if (e.key.length !== 1) return;
+            buffer += e.key;
+            if (buffer.length > MAX_LEN) buffer = buffer.slice(-MAX_LEN);
+            for (const code in CODES) {
+                if (buffer.endsWith(code)) {
+                    buffer = '';
+                    window.location.href = CODES[code];
+                    return;
+                }
+            }
+        });
+    })();
+
+    // ── 4. VISITOR COUNTER ───────────────────────────────────────
+    const counter    = document.getElementById('visit-count');
+    const namespace  = 'douwedoesdesign';
+    const key        = 'homepage';
+    const today      = new Date().toISOString().split('T')[0];
+    const lastVisit  = localStorage.getItem('ddd_last_visit');
+    const cached     = localStorage.getItem('ddd_cached_count');
+
+    if (cached) counter.innerText = cached;
+
+    if (lastVisit === today) {
+        if (!cached) counter.innerText = 'N/A';
+    } else {
+        localStorage.setItem('ddd_last_visit', today);
+        fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+            .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+            .then(d => {
+                counter.innerText = d.count;
+                localStorage.setItem('ddd_cached_count', d.count);
+            })
+            .catch(() => { if (!cached) counter.innerText = 'N/A'; });
+    }
+});
 </script>
 
 </html>
