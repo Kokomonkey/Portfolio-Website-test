@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="../Recourses/Logos/DDD.jpg">
+    <title>Douwe — Architectural Portfolio</title>
+    <meta name="description" content="Architectural portfolio of Douwe — TU Delft / NUS Singapore. Projects, drawings and process.">
+    <meta property="og:title" content="Douwe — Architectural Portfolio">
+    <meta property="og:image" content="../Recourses/Logos/DDD.jpg">
+
+    <style>
+        /* ─────────────────────────────────────────────────────────────
+           VARIABLES & RESET
+           ───────────────────────────────────────────────────────────── */
+        :root {
+            --bg:        #ffffff;
+            --fg:        #0a0a0a;
+            --muted:     #6e6e6e;
+            --line:      #0a0a0a;
+            --line-fade: rgba(10,10,10,0.18);
+            --grid:      rgba(10,10,10,0.05);
+            --hilite:    #ff3a00;       /* sparse accent — vermillion */
+            --speed:     0.45s;
+            --ease:      cubic-bezier(0.2, 0.8, 0.2, 1);
+
+            --sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --mono:  'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            /* Stays light by design — architecture portfolios read better on paper-white */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--sans);
+            font-weight: 300;
+            line-height: 1.45;
+            font-size: 15px;
+            letter-spacing: 0.01em;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        ::selection { background: var(--fg); color: var(--bg); }
+
+        /* ─────────────────────────────────────────────────────────────
+           CUSTOM CURSOR — geometric crosshair with lagging ring
+           ───────────────────────────────────────────────────────────── */
+        #cur-dot, #cur-ring {
+            position: fixed; pointer-events: none; z-index: 9999;
+            top: 0; left: 0; will-change: transform;
+        }
+        #cur-dot {
+            width: 5px; height: 5px;
+            background: var(--fg);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #cur-ring {
+            width: 30px; height: 30px;
+            border: 1px solid var(--fg);
+            border-radius: 0;
+            transform: translate(-50%, -50%);
+            transition: width 0.25s var(--ease), height 0.25s var(--ease),
+                        border-color 0.25s var(--ease), opacity 0.25s var(--ease);
+            opacity: 0.55;
+        }
+        #cur-ring.hover {
+            width: 56px; height: 56px;
+            opacity: 1;
+            border-color: var(--fg);
+        }
+        #cur-ring.accent { border-color: var(--hilite); }
+
+        /* ─────────────────────────────────────────────────────────────
+           PRELOADER / HERO ANIMATION
+           ───────────────────────────────────────────────────────────── */
+        #preloader {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            z-index: 9000;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 0.9s var(--ease), visibility 0.9s var(--ease);
+        }
+        #preloader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .pre-stage {
+            width: min(78vw, 720px);
+            aspect-ratio: 1 / 1;
+            position: relative;
+        }
+        .pre-svg { width: 100%; height: 100%; overflow: visible; }
+        .pre-svg path, .pre-svg line, .pre-svg polyline, .pre-svg polygon, .pre-svg rect, .pre-svg circle {
+            fill: none;
+            stroke: var(--fg);
+            stroke-width: 1;
+            vector-effect: non-scaling-stroke;
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: draw 2.4s var(--ease) forwards;
+        }
+        .pre-svg .accent-line {
+            stroke: var(--hilite);
+            stroke-width: 1.25;
+        }
+        .pre-svg .dim {
+            stroke: var(--muted);
+            stroke-width: 0.5;
+        }
+        .pre-svg text {
+            fill: var(--muted);
+            font-family: var(--mono);
+            font-size: 8px;
+            letter-spacing: 0.08em;
+            opacity: 0;
+            animation: fadeIn 0.6s var(--ease) forwards;
+            animation-delay: 2.2s;
+        }
+        @keyframes draw    { to { stroke-dashoffset: 0; } }
+        @keyframes fadeIn  { to { opacity: 1; } }
+
+        /* Stagger the drawing */
+        .pre-svg .L1 { animation-delay: 0.05s; }
+        .pre-svg .L2 { animation-delay: 0.25s; }
+        .pre-svg .L3 { animation-delay: 0.45s; }
+        .pre-svg .L4 { animation-delay: 0.65s; }
+        .pre-svg .L5 { animation-delay: 0.85s; }
+        .pre-svg .L6 { animation-delay: 1.05s; }
+        .pre-svg .L7 { animation-delay: 1.25s; }
+        .pre-svg .L8 { animation-delay: 1.45s; }
+        .pre-svg .L9 { animation-delay: 1.65s; }
+
+        .pre-meta {
+            position: absolute; left: 0; right: 0;
+            display: flex; justify-content: space-between;
+            font-family: var(--mono); font-size: 10px;
+            color: var(--muted); letter-spacing: 0.12em;
+            text-transform: uppercase;
+            opacity: 0; animation: fadeIn 0.6s var(--ease) forwards;
+        }
+        .pre-meta.top    { top: -2.5em;    animation-delay: 0.1s; }
+        .pre-meta.bot    { bottom: -2.5em; animation-delay: 0.3s; }
+        .pre-meta span:nth-child(2) { color: var(--fg); }
+
+        .pre-name {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0;
+            transition: opacity 0.8s var(--ease) 2.5s;
+            pointer-events: none;
+        }
+        #preloader.reveal .pre-name { opacity: 1; }
+        #preloader.reveal .pre-svg { opacity: 0.06; transition: opacity 0.8s var(--ease); }
+
+        .pre-name h1 {
+            font-family: var(--sans);
+            font-size: clamp(2.4rem, 8vw, 6rem);
+            font-weight: 200;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            margin: 0;
+        }
+        .pre-name .role {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 1.4em;
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           NAV BAR
+           ───────────────────────────────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.4rem 2.2rem;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--line-fade);
+            z-index: 200;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(-100%);
+            transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+        }
+        body.loaded nav { opacity: 1; transform: translateY(0); }
+
+        .nav-mark {
+            display: flex; align-items: center; gap: 0.8em;
+            text-decoration: none; color: var(--fg);
+        }
+        .nav-mark .logo-sq {
+            width: 14px; height: 14px;
+            border: 1px solid var(--fg);
+            position: relative;
+        }
+        .nav-mark .logo-sq::after {
+            content: ''; position: absolute;
+            inset: 3px;
+            background: var(--fg);
+        }
+
+        .nav-links { display: flex; gap: 2.4rem; }
+        .nav-links a {
+            color: var(--fg);
+            text-decoration: none;
+            position: relative;
+            transition: color var(--speed) var(--ease);
+        }
+        .nav-links a::before {
+            content: attr(data-num);
+            color: var(--muted);
+            margin-right: 0.5em;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; left: 0;
+            width: 0; height: 1px;
+            background: var(--fg);
+            transition: width var(--speed) var(--ease);
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        .nav-meta { color: var(--muted); }
+        .nav-meta .live-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--hilite);
+            border-radius: 50%;
+            margin-right: 0.6em;
+            vertical-align: middle;
+            animation: pulse 1.6s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50%      { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           GRID BACKGROUND
+           ───────────────────────────────────────────────────────────── */
+        .grid-bg {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(var(--grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Edge column rulers */
+        .edge-ruler {
+            position: fixed;
+            top: 0; bottom: 0;
+            width: 24px;
+            font-family: var(--mono);
+            font-size: 8.5px;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+            border-right: 1px solid var(--line-fade);
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 1.5rem;
+            z-index: 50;
+            pointer-events: none;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+        .edge-ruler.left  { left: 0; }
+        .edge-ruler.right { left: auto; right: 0;
+            border-right: none; border-left: 1px solid var(--line-fade);
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           LAYOUT
+           ───────────────────────────────────────────────────────────── */
+        main {
+            margin: 0 24px;
+            padding-top: 5rem;
+            position: relative;
+        }
+
+        section {
+            padding: 6rem 4rem;
+            position: relative;
+            border-bottom: 1px solid var(--line-fade);
+        }
+
+        .sec-header {
+            display: grid;
+            grid-template-columns: 1fr 4fr 1fr;
+            gap: 2rem;
+            align-items: baseline;
+            margin-bottom: 4rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid var(--line-fade);
+        }
+        .sec-num {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        .sec-title {
+            font-family: var(--sans);
+            font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+            font-weight: 200;
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+        .sec-meta {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+            text-align: right;
+        }
+
+        /* Reveal-on-scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+        }
+        .reveal.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           HERO (after preloader)
+           ───────────────────────────────────────────────────────────── */
+        #hero {
+            min-height: calc(100vh - 5rem);
+            padding-top: 0;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line-fade);
+        }
+        .hero-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 6rem 4rem 2rem 4rem;
+        }
+        .hero-tag {
+            font-family: var(--mono);
+            font-size: 10.5px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .hero-tag .bullet {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--fg);
+            margin-right: 0.8em;
+            transform: translateY(-1px);
+        }
+        .hero-coord {
+            text-align: right;
+            font-family: var(--mono);
+            font-size: 10.5px;
+            color: var(--muted);
+            letter-spacing: 0.16em;
+        }
+
+        .hero-name {
+            padding: 0 4rem;
+        }
+        .hero-name h1 {
+            font-family: var(--sans);
+            font-size: clamp(3.5rem, 13vw, 13rem);
+            font-weight: 200;
+            line-height: 0.92;
+            letter-spacing: -0.04em;
+            margin: 0;
+        }
+        .hero-name h1 .ital {
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .hero-bottom {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem 4rem 4rem 4rem;
+            align-items: end;
+            border-top: 1px solid var(--line-fade);
+            margin-top: 4rem;
+            padding-top: 2rem;
+        }
+        .hero-bio {
+            max-width: 36ch;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.55;
+        }
+        .hero-bio em {
+            font-style: italic;
+            color: var(--hilite);
+            font-weight: 400;
+        }
+        .hero-spec {
+            font-family: var(--mono);
+            font-size: 10.5px;
+            line-height: 1.9;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+        }
+        .hero-spec b {
+            color: var(--fg);
+            font-weight: 500;
+            margin-right: 0.4em;
+        }
+        .hero-actions {
+            display: flex; flex-direction: column;
+            gap: 0.8rem; align-items: flex-end;
+        }
+        .btn {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--fg);
+            text-decoration: none;
+            padding: 0.95rem 1.8rem;
+            border: 1px solid var(--fg);
+            transition: background var(--speed) var(--ease),
+                        color var(--speed) var(--ease),
+                        padding var(--speed) var(--ease);
+            display: inline-flex; align-items: center; gap: 0.6em;
+            white-space: nowrap;
+        }
+        .btn:hover { background: var(--fg); color: var(--bg); padding-right: 2.4rem; }
+        .btn .arr { transition: transform var(--speed) var(--ease); }
+        .btn:hover .arr { transform: translateX(4px); }
+        .btn.accent { border-color: var(--hilite); color: var(--hilite); }
+        .btn.accent:hover { background: var(--hilite); color: var(--bg); }
+
+        /* Scroll indicator */
+        .scroll-cue {
+            position: absolute;
+            bottom: 1.5rem; left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--muted);
+            display: flex; flex-direction: column;
+            align-items: center; gap: 0.6em;
+        }
+        .scroll-cue .line {
+            width: 1px; height: 32px;
+            background: var(--line-fade);
+            position: relative;
+            overflow: hidden;
+        }
+        .scroll-cue .line::after {
+            content: '';
+            position: absolute; top: -100%; left: 0;
+            width: 100%; height: 100%;
+            background: var(--fg);
+            animation: scrollLine 2s ease-in-out infinite;
+        }
+        @keyframes scrollLine {
+            0%   { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           FEATURED PROJECT — CONVERTIBLE CONVERGENCE
+           ───────────────────────────────────────────────────────────── */
+        .cc-wrap { display: grid; grid-template-columns: 1fr; gap: 4rem; }
+
+        .cc-hero {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #f1f1f1;
+            overflow: hidden;
+            border: 1px solid var(--line-fade);
+        }
+        .cc-hero img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.06);
+            transition: filter 0.8s var(--ease), transform 1.2s var(--ease);
+        }
+        .cc-hero:hover img { filter: grayscale(0%) contrast(1); transform: scale(1.025); }
+        .cc-hero .corner {
+            position: absolute;
+            width: 22px; height: 22px;
+            border: 1px solid var(--fg);
+            background: var(--bg);
+        }
+        .cc-hero .corner.tl { top: -1px; left: -1px;  border-right: none; border-bottom: none; }
+        .cc-hero .corner.tr { top: -1px; right: -1px; border-left:  none; border-bottom: none; }
+        .cc-hero .corner.bl { bottom: -1px; left: -1px;  border-right: none; border-top: none; }
+        .cc-hero .corner.br { bottom: -1px; right: -1px; border-left:  none; border-top: none; }
+
+        .cc-hero .caption {
+            position: absolute;
+            bottom: 1.4rem; left: 1.6rem;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--bg);
+            mix-blend-mode: difference;
+        }
+
+        .cc-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2rem;
+            font-family: var(--mono);
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            padding: 1.6rem 0;
+            border-top: 1px solid var(--line-fade);
+            border-bottom: 1px solid var(--line-fade);
+        }
+        .cc-meta-grid b {
+            display: block;
+            color: var(--fg);
+            font-size: 9.5px;
+            margin-bottom: 0.4em;
+            letter-spacing: 0.18em;
+        }
+
+        .cc-concept {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: start;
+        }
+        .cc-concept h3 {
+            font-family: var(--sans);
+            font-weight: 200;
+            font-size: 1.8rem;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+        .cc-concept p {
+            font-size: 15.5px;
+            line-height: 1.65;
+            font-weight: 300;
+            margin-bottom: 1.2em;
+            max-width: 60ch;
+        }
+        .cc-concept .lead::first-letter {
+            font-size: 3.6em;
+            float: left;
+            line-height: 0.85;
+            margin: 0.05em 0.18em 0 0;
+            font-weight: 200;
+        }
+
+        /* Drawings showcase */
+        .cc-drawings {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.2rem;
+        }
+        .cc-drawings figure {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--line-fade);
+            background: #f6f6f6;
+            transition: border-color var(--speed) var(--ease);
+        }
+        .cc-drawings figure:hover { border-color: var(--fg); }
+        .cc-drawings img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: filter 0.6s var(--ease), transform 0.6s var(--ease);
+            display: block;
+        }
+        .cc-drawings figure:hover img { filter: none; transform: scale(1.03); }
+        .cc-drawings figcaption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--fg);
+            padding: 0.7rem 0.9rem;
+            background: rgba(255,255,255,0.92);
+            border-top: 1px solid var(--line-fade);
+            transform: translateY(100%);
+            transition: transform var(--speed) var(--ease);
+        }
+        .cc-drawings figure:hover figcaption { transform: translateY(0); }
+
+        .cc-drawings .span-6  { grid-column: span 6;  aspect-ratio: 4/3; }
+        .cc-drawings .span-4  { grid-column: span 4;  aspect-ratio: 1/1; }
+        .cc-drawings .span-3  { grid-column: span 3;  aspect-ratio: 3/4; }
+        .cc-drawings .span-8  { grid-column: span 8;  aspect-ratio: 16/9; }
+
+        .cc-explore {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--line-fade);
+        }
+        .cc-explore .note {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           3D INTERACTIVE VIEWER — Convertible Bookcase on Rail
+           ───────────────────────────────────────────────────────────── */
+        .cc-viewer-wrap {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 0;
+            border: 1px solid var(--line-fade);
+            background: #fafafa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cc-viewer {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            background:
+                linear-gradient(135deg, #fafafa 0%, #ececec 100%);
+            overflow: hidden;
+        }
+        .cc-viewer, .cc-viewer * { cursor: none !important; }
+        .cc-viewer canvas { display: block; width: 100% !important; height: 100% !important; }
+
+        /* Corner marks on viewer frame */
+        .cc-viewer .v-corner {
+            position: absolute;
+            width: 14px; height: 14px;
+            border: 1px solid var(--fg);
+            pointer-events: none;
+            z-index: 4;
+        }
+        .cc-viewer .v-corner.tl { top: 10px; left: 10px;  border-right: none; border-bottom: none; }
+        .cc-viewer .v-corner.tr { top: 10px; right: 10px; border-left:  none; border-bottom: none; }
+        .cc-viewer .v-corner.bl { bottom: 10px; left: 10px;  border-right: none; border-top: none; }
+        .cc-viewer .v-corner.br { bottom: 10px; right: 10px; border-left:  none; border-top: none; }
+
+        .cc-viewer .v-label {
+            position: absolute;
+            top: 1.2rem; left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.22em;
+            color: var(--muted);
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .cc-viewer .v-loader {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            color: var(--muted);
+            text-transform: uppercase;
+            background: rgba(250, 250, 250, 0.95);
+            z-index: 5;
+            transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
+        }
+        .cc-viewer .v-loader.done { opacity: 0; visibility: hidden; }
+        .cc-viewer .v-loader .pulse {
+            display: inline-block;
+            width: 8px; height: 8px;
+            background: var(--fg);
+            margin-left: 0.8em;
+            animation: pulseDot 1s ease-in-out infinite;
+        }
+        @keyframes pulseDot {
+            0%, 100% { opacity: 0.2; }
+            50%      { opacity: 1; }
+        }
+
+        .cc-viewer .v-pos {
+            position: absolute;
+            bottom: 1.2rem; left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+            background: rgba(250,250,250,0.7);
+            padding: 0.4rem 0.8rem;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .cc-viewer .v-pos b { color: var(--fg); font-weight: 500; }
+
+        .cc-controls {
+            padding: 1.6rem;
+            border-left: 1px solid var(--line-fade);
+            display: flex; flex-direction: column;
+            gap: 1rem;
+            background: var(--bg);
+        }
+        .cc-controls h4 {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.4em;
+            padding-bottom: 0.6em;
+            border-bottom: 1px solid var(--line-fade);
+        }
+        .cc-controls .info {
+            font-size: 13.5px;
+            line-height: 1.5;
+            font-weight: 300;
+            color: var(--fg);
+        }
+        .cc-controls .info b { font-weight: 500; }
+        .cc-controls .info em { color: var(--hilite); font-style: italic; font-weight: 400; }
+        .cc-controls .hint {
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            line-height: 1.7;
+            padding: 0.7rem;
+            border: 1px dashed var(--line-fade);
+            background: #fafafa;
+        }
+        .cc-controls .hint kbd {
+            display: inline-block;
+            font-family: var(--mono);
+            background: var(--fg);
+            color: var(--bg);
+            padding: 0.1em 0.45em;
+            font-size: 0.85em;
+            margin: 0 0.15em;
+        }
+
+        .cc-modes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--fg);
+        }
+        .cc-modes button {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 0.8rem 0.4rem;
+            background: var(--bg);
+            color: var(--fg);
+            border: none;
+            cursor: none;
+            transition: background var(--speed) var(--ease), color var(--speed) var(--ease);
+        }
+        .cc-modes button + button { border-left: 1px solid var(--fg); }
+        .cc-modes button.active { background: var(--fg); color: var(--bg); }
+        .cc-modes button:hover:not(.active) { background: #f0f0f0; }
+
+        .cc-reset {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 0.8rem;
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--line-fade);
+            cursor: none;
+            transition: all var(--speed) var(--ease);
+        }
+        .cc-reset:hover { color: var(--fg); border-color: var(--fg); }
+
+        @media (max-width: 900px) {
+            .cc-viewer-wrap { grid-template-columns: 1fr; }
+            .cc-controls { border-left: none; border-top: 1px solid var(--line-fade); }
+        }
+
+        /* ─────────────────────────────────────────────────────────────
+           INVENTORY — other projects (logos)
+           ───────────────────────────────────────────────────────────── */
+        .inventory {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border-top: 1px solid var(--line-fade);
+            border-left: 1px solid var(--line-fade);
+        }
+        .inv-item {
+            position: relative;
+            aspect-ratio: 1/1;
+            border-right: 1px solid var(--line-fade);
+            border-bottom: 1px solid var(--line-fade);
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding: 1.4rem;
+            text-decoration: none;
+            color: var(--fg);
+            background: var(--bg);
+            transition: background var(--speed) var(--ease);
+            overflow: hidden;
+        }
+        .inv-item:hover { background: #f6f6f6; }
+        .inv-num {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        .inv-logo {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .inv-logo img {
+            width: 52%;
+            height: 52%;
+            object-fit: contain;
+            filter: grayscale(100%) brightness(0.05);
+            transition: filter 0.6s var(--ease), transform 0.6s var(--ease);
+        }
+        .inv-item:hover .inv-logo img { filter: grayscale(0%); transform: scale(1.08); }
+        .inv-foot {
+            display: flex; justify-content: space-between;
+            align-items: flex-end;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            color: var(--muted);
+            text-transform: uppercase;
+            z-index: 2;
+        }
+        .inv-foot .name {
+            font-family: var(--sans);
+            font-size: 15.5px;
+            font-weight: 300;
+            letter-spacing: -0.005em;
+            color: var(--fg);
+            text-transform: none;
+            max-width: 70%;
+            line-height: 1.15;
+        }
+        .inv-item .arr {
+            position: absolute;
+            top: 1.2rem; right: 1.4rem;
+            font-family: var(--mono);
+            color: var(--muted);
+            opacity: 0;
+            transform: translate(-4px, 4px);
+            transition: opacity var(--speed) var(--ease), transform var(--speed) var(--ease);
+        }
+        .inv-item:hover .arr { opacity: 1; transform: translate(0, 0); color: var(--fg); }
+
+        .inv-item.placeholder {
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                -45deg, transparent 0 8px, var(--line-fade) 8px 9px
+            );
+        }
+        .inv-item.placeholder .inv-foot .name { color: var(--muted); }
+
+        /* ─────────────────────────────────────────────────────────────
+           ABOUT
+           ───────────────────────────────────────────────────────────── */
+        .about {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+        .about-portrait {
+            position: relative;
+            aspect-ratio: 4/5;
+            background: #eee;
+            overflow: hidden;
+            border: 1px solid var(--line-fade);
+        }
+        .about-portrait img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.05);
+            transition: filter 0.6s var(--ease);
+        }
+        .about-portrait:hover img { filter: grayscale(0%); }
+        .about-portrait .tag {
+            position: absolute;
+            top: 1rem; left: 1rem;
+            font-family: var(--mono);
+            font-size: 9.5px;
+            background: var(--bg);
+            padding: 0.4rem 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .about-text p {
+            font-size: 16px;
+            line-height: 1.65;
+            font-weight: 300;
+            margin-bottom: 1.1em;
+            max-width: 50ch;
+        }
+        .about-text p.lead { font-size: 18px; line-height: 1.55; }
+        .about-text em { color: var(--hilite); font-style: italic; font-weight: 400; }
+
+        .about-cv {
+            font-family: var(--mono);
+            font-size: 11px;
+            line-height: 1.9;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .about-cv h4 {
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 9.5px;
+            letter-spacing: 0.25em;
+            color: var(--fg);
+            text-transform: uppercase;
+            margin: 1.4rem 0 0.6rem 0;
+            padding-bottom: 0.35rem;
+            border-bottom: 1px solid var(--line-fade);
+        }
+        .about-cv ul { list-style: none; }
+        .about-cv li {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.25rem 0;
+        }
+        .about-cv li b { color: var(--fg); font-weight: 500; }
+        .about-cv li span:last-child { color: var(--muted); }
+
+        /* Skills tag-cloud */
+        .skills {
+            display: flex; flex-wrap: wrap; gap: 0.4rem;
+            margin-top: 0.8rem;
+        }
+        .skill {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.65rem;
+            border: 1px solid var(--line-fade);
+            color: var(--muted);
+            transition: all var(--speed) var(--ease);
+        }
+        .skill:hover { border-color: var(--fg); color: var(--fg); background: #f6f6f6; }
+        .skill.primary { border-color: var(--fg); color: var(--fg); }
+
+        /* ─────────────────────────────────────────────────────────────
+           CONTACT
+           ───────────────────────────────────────────────────────────── */
+        #contact {
+            padding-bottom: 4rem;
+        }
+        .contact-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: end;
+        }
+        .contact-call {
+            font-family: var(--sans);
+            font-size: clamp(2rem, 5vw, 4.4rem);
+            font-weight: 200;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            max-width: 14ch;
+        }
+        .contact-call a {
+            color: var(--fg);
+            text-decoration: none;
+            border-bottom: 1px solid var(--line-fade);
+            transition: border-color var(--speed) var(--ease), color var(--speed) var(--ease);
+        }
+        .contact-call a:hover { color: var(--hilite); border-color: var(--hilite); }
+        .contact-list {
+            display: grid; grid-template-columns: 1fr; gap: 0;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+        .contact-list a {
+            display: flex; justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            color: var(--fg);
+            text-decoration: none;
+            border-bottom: 1px solid var(--line-fade);
+            transition: padding var(--speed) var(--ease), color var(--speed) var(--ease);
+        }
+        .contact-list a:first-child { border-top: 1px solid var(--line-fade); }
+        .contact-list a:hover { padding-left: 1.2rem; color: var(--hilite); }
+        .contact-list a .label { color: var(--muted); }
+        .contact-list a:hover .label { color: var(--hilite); }
+
+        /* ─────────────────────────────────────────────────────────────
+           FOOTER
+           ───────────────────────────────────────────────────────────── */
+        footer {
+            margin: 0 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem 4rem;
+            border-top: 1px solid var(--line-fade);
+            font-family: var(--mono);
+            font-size: 9.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        footer .mid { text-align: center; }
+        footer .end { text-align: right; }
+        footer a { color: var(--muted); text-decoration: none; }
+        footer a:hover { color: var(--fg); }
+
+        /* ─────────────────────────────────────────────────────────────
+           MOBILE
+           ───────────────────────────────────────────────────────────── */
+        @media (max-width: 900px) {
+            html { cursor: auto; }
+            body { cursor: auto; }
+            #cur-dot, #cur-ring { display: none; }
+
+            nav { padding: 1rem 1.2rem; font-size: 9.5px; }
+            .nav-links { gap: 1.2rem; }
+            .nav-meta { display: none; }
+            .edge-ruler { display: none; }
+            main { margin: 0; }
+            footer { margin: 0; grid-template-columns: 1fr; padding: 2rem 1.2rem; gap: 0.5rem; }
+            footer .mid, footer .end { text-align: left; }
+
+            section { padding: 4rem 1.2rem; }
+            .sec-header { grid-template-columns: 1fr; gap: 0.6rem; margin-bottom: 2.5rem; }
+            .sec-meta { text-align: left; }
+
+            .hero-top, .hero-name, .hero-bottom { padding: 2rem 1.2rem; }
+            .hero-bottom { grid-template-columns: 1fr; gap: 2.4rem; }
+            .hero-actions { align-items: flex-start; }
+
+            .cc-concept { grid-template-columns: 1fr; gap: 2rem; }
+            .cc-meta-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .cc-drawings { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+            .cc-drawings .span-6, .cc-drawings .span-4, .cc-drawings .span-3, .cc-drawings .span-8 {
+                grid-column: span 2; aspect-ratio: 4/3;
+            }
+
+            .inventory { grid-template-columns: 1fr 1fr; }
+
+            .about { grid-template-columns: 1fr; gap: 2.4rem; }
+            .contact-wrap { grid-template-columns: 1fr; gap: 2rem; }
+            .pre-stage { width: 80vw; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom cursor -->
+    <div id="cur-ring"></div>
+    <div id="cur-dot"></div>
+
+    <!-- Background grid -->
+    <div class="grid-bg"></div>
+
+    <!-- Edge rulers -->
+    <div class="edge-ruler left">DOUWE / ARCHITECTURE / 2026</div>
+    <div class="edge-ruler right">PORTFOLIO — 001 / SELECTED WORK</div>
+
+    <!-- ───────────────────────────────────────────────
+         PRELOADER — interactive line-drawing animation
+         ─────────────────────────────────────────────── -->
+    <div id="preloader">
+        <div class="pre-meta top">
+            <span>FILE — 001 / AXONOMETRIC</span>
+            <span>DRAWING IN PROGRESS</span>
+            <span>SCALE — N.T.S.</span>
+        </div>
+
+        <div class="pre-stage">
+            <svg class="pre-svg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+                <!-- Ground plane / base -->
+                <polygon class="L1" points="60,300 200,360 340,300 200,240" />
+                <!-- Verticals up from corners -->
+                <line class="L2" x1="60"  y1="300" x2="60"  y2="200" />
+                <line class="L2" x1="200" y1="360" x2="200" y2="260" />
+                <line class="L2" x1="340" y1="300" x2="340" y2="200" />
+                <line class="L2" x1="200" y1="240" x2="200" y2="140" />
+                <!-- Roof outline -->
+                <polygon class="L3" points="60,200 200,260 340,200 200,140" />
+                <!-- Internal cross-walls (showing program) -->
+                <line class="L4" x1="130" y1="270" x2="270" y2="270" />
+                <line class="L4" x1="130" y1="170" x2="270" y2="170" />
+                <line class="L4" x1="130" y1="170" x2="130" y2="270" />
+                <line class="L4" x1="270" y1="170" x2="270" y2="270" />
+                <line class="L4" x1="130" y1="170" x2="130" y2="270" />
+                <!-- Pitched roof crest -->
+                <polyline class="L5 accent-line" points="100,180 200,80 300,180" />
+                <line class="L5 accent-line" x1="200" y1="80" x2="200" y2="180" />
+                <!-- Window cuts -->
+                <line class="L6" x1="90"  y1="245" x2="170" y2="280" />
+                <line class="L6" x1="230" y1="280" x2="310" y2="245" />
+                <line class="L6" x1="90"  y1="225" x2="170" y2="260" />
+                <line class="L6" x1="230" y1="260" x2="310" y2="225" />
+                <!-- Diagonal connector lines (showing convergence) -->
+                <line class="L7 accent-line" x1="60"  y1="200" x2="200" y2="80" />
+                <line class="L7 accent-line" x1="340" y1="200" x2="200" y2="80" />
+                <!-- Ground extension lines -->
+                <line class="L8 dim" x1="40"  y1="300" x2="60"  y2="300" />
+                <line class="L8 dim" x1="340" y1="300" x2="360" y2="300" />
+                <line class="L8 dim" x1="60"  y1="320" x2="340" y2="320" />
+                <!-- North arrow + grid ticks -->
+                <line class="L9" x1="30" y1="50" x2="30" y2="80" />
+                <polygon class="L9" points="30,40 26,52 34,52" />
+                <text x="22" y="100">N</text>
+                <!-- Dimensions -->
+                <text x="160" y="335">14.00 M</text>
+                <text x="350" y="255" transform="rotate(90 350 255)">8.40 M</text>
+            </svg>
+        </div>
+
+        <div class="pre-meta bot">
+            <span>DOUWEDOESDESIGN</span>
+            <span>PORTFOLIO LOAD — 001</span>
+            <span id="pre-progress">0%</span>
+        </div>
+
+        <div class="pre-name">
+            <h1>Douwe</h1>
+            <div class="role">Architectural Designer — TU Delft</div>
+        </div>
+    </div>
+
+    <!-- ───────────────────────────────────────────────
+         NAV
+         ─────────────────────────────────────────────── -->
+    <nav>
+        <a href="#hero" class="nav-mark">
+            <span class="logo-sq"></span>
+            <span>Douwe / DDD</span>
+        </a>
+        <div class="nav-links">
+            <a href="#hero"     data-num="00">Index</a>
+            <a href="#work"     data-num="01">Work</a>
+            <a href="#archive"  data-num="02">Archive</a>
+            <a href="#about"    data-num="03">About</a>
+            <a href="#contact"  data-num="04">Contact</a>
+        </div>
+        <div class="nav-meta">
+            <span class="live-dot"></span>
+            <span>Available — Spring '26</span>
+        </div>
+    </nav>
+
+    <!-- ───────────────────────────────────────────────
+         HERO
+         ─────────────────────────────────────────────── -->
+    <main>
+
+    <section id="hero">
+        <div>
+            <div class="hero-top">
+                <div class="hero-tag">
+                    <span class="bullet"></span>FOLIO — 001 / SELECTED WORK 2024–2026
+                </div>
+                <div class="hero-coord">52°00'N · 4°22'E — DELFT, NL</div>
+            </div>
+            <div class="hero-name">
+                <h1>Douwe<br><span class="ital">Does</span> Design.</h1>
+            </div>
+        </div>
+
+        <div class="hero-bottom">
+            <p class="hero-bio">
+                Architecture student at <em>TU Delft</em> &amp; <em>NUS Singapore</em> — building work
+                where the static, the temporal and the computational converge.
+            </p>
+            <div class="hero-spec">
+                <div><b>FOCUS</b> Adaptive Urbanism</div>
+                <div><b>METHOD</b> Drawing · Code · Material</div>
+                <div><b>STATUS</b> Open to internships</div>
+            </div>
+            <div class="hero-actions">
+                <a href="#work" class="btn">View Work <span class="arr">→</span></a>
+                <a href="#contact" class="btn accent">Get in Touch <span class="arr">→</span></a>
+            </div>
+        </div>
+
+        <div class="scroll-cue">
+            <span>Scroll</span>
+            <span class="line"></span>
+        </div>
+    </section>
+
+    <!-- ───────────────────────────────────────────────
+         01 — FEATURED WORK
+         ─────────────────────────────────────────────── -->
+    <section id="work">
+        <div class="sec-header reveal">
+            <div class="sec-num">01 / Featured</div>
+            <h2 class="sec-title">Convertible Convergence</h2>
+            <div class="sec-meta">NUS Singapore · Design 5 · 2025</div>
+        </div>
+
+        <div class="cc-wrap">
+
+            <a href="../pages/projects/CC/convertible-convergence.html" class="cc-hero reveal">
+                <div class="corner tl"></div><div class="corner tr"></div>
+                <div class="corner bl"></div><div class="corner br"></div>
+                <img src="../pages/projects/CC/Recourses/Render1.jpg" alt="Convertible Convergence — interior render">
+                <div class="caption">FIG. 01 — INTERIOR PERSPECTIVE / N–E</div>
+            </a>
+
+            <div class="cc-meta-grid reveal">
+                <div><b>Site</b> Singapore</div>
+                <div><b>Studio</b> NUS DES5</div>
+                <div><b>Year</b> 2025</div>
+                <div><b>Programme</b> Adaptive Civic</div>
+                <div><b>Software</b> Rhino · GH · Enscape</div>
+                <div><b>Output</b> Plans · Renders · Poster</div>
+            </div>
+
+            <div class="cc-concept reveal">
+                <h3>An architectural answer to urban edges that refuse to settle.</h3>
+                <div>
+                    <p class="lead">
+                        Convertible Convergence proposes a building whose interior is not designed once, but
+                        reconfigured continuously. Floors host sliding bookcases, foldable tables and bendable
+                        furniture systems — each calibrated to a different rhythm of use throughout the day.
+                    </p>
+                    <p>
+                        The building sits where conflicting urban plans collide. Rather than picking a side, the
+                        project metabolises both: a dynamic façade tunes its envelope to context, while the structural
+                        grid lets the floor plate read as workshop, library, gathering space or theatre depending on
+                        the hour. A single building, many programmes.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ─── Interactive 3D viewer ─── -->
+            <div class="cc-viewer-wrap reveal">
+                <div class="cc-viewer" id="ccViewer">
+                    <div class="v-corner tl"></div><div class="v-corner tr"></div>
+                    <div class="v-corner bl"></div><div class="v-corner br"></div>
+                    <div class="v-label">FIG. INT — CONVERTIBLE BOOKCASE / 1:1 INTERACTIVE</div>
+                    <div class="v-loader" id="ccLoader">
+                        Loading model<span class="pulse"></span>
+                    </div>
+                    <div class="v-pos" id="ccPos"><b>POSITION</b> &nbsp;—</div>
+                </div>
+                <div class="cc-controls">
+                    <div>
+                        <h4>The interaction</h4>
+                        <p class="info">
+                            This is the actual <b>sliding bookcase</b> from the project, rigged to its <b>rail</b>.
+                            Grab it and <em>drag along the rail</em> to reconfigure the space — exactly how
+                            the building lets one floor become library, workshop or theatre.
+                        </p>
+                    </div>
+                    <div>
+                        <h4>Mode</h4>
+                        <div class="cc-modes">
+                            <button id="modeIso" class="active">Drag · Rail</button>
+                            <button id="modeOrb">Orbit · Free</button>
+                        </div>
+                    </div>
+                    <div class="hint" id="ccHint">
+                        <kbd>Click</kbd> &amp; <kbd>drag</kbd> the bookcase to slide it along the rail.
+                    </div>
+                    <button class="cc-reset" id="ccReset">↺ Reset position</button>
+                </div>
+            </div>
+
+            <div class="cc-drawings reveal">
+                <figure class="span-6">
+                    <img src="../pages/projects/CC/Recourses/Render2.jpg" alt="CC — Courtyard view">
+                    <figcaption>FIG. 02 — Courtyard view, looking south</figcaption>
+                </figure>
+                <figure class="span-3">
+                    <img src="../pages/projects/CC/Recourses/Level0.jpg" alt="CC — Level 0 plan">
+                    <figcaption>FIG. 03 — Level 0 plan</figcaption>
+                </figure>
+                <figure class="span-3">
+                    <img src="../pages/projects/CC/Recourses/Level1.jpg" alt="CC — Level 1 plan">
+                    <figcaption>FIG. 04 — Level 1 plan</figcaption>
+                </figure>
+                <figure class="span-4">
+                    <img src="../pages/projects/CC/Recourses/DetailFacade.jpg" alt="CC — Dynamic façade detail">
+                    <figcaption>FIG. 05 — Dynamic façade, 1:20</figcaption>
+                </figure>
+                <figure class="span-4">
+                    <img src="../pages/projects/CC/Recourses/DetailBig.jpg" alt="CC — Structural detail 1:5">
+                    <figcaption>FIG. 06 — Structural detail, 1:5</figcaption>
+                </figure>
+                <figure class="span-4">
+                    <img src="../pages/projects/CC/Recourses/SlidingBookcase.jpg" alt="CC — Sliding bookcase">
+                    <figcaption>FIG. 07 — Convertible furniture system</figcaption>
+                </figure>
+            </div>
+
+            <div class="cc-explore reveal">
+                <div class="note">All drawings, renders, the full poster and a walkthrough of the workflow live in the deep page.</div>
+                <a href="../pages/projects/CC/convertible-convergence.html" class="btn">Explore Project <span class="arr">→</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ───────────────────────────────────────────────
+         02 — ARCHIVE / INVENTORY OF OTHER WORK
+         ─────────────────────────────────────────────── -->
+    <section id="archive">
+        <div class="sec-header reveal">
+            <div class="sec-num">02 / Inventory</div>
+            <h2 class="sec-title">Other Work</h2>
+            <div class="sec-meta">4 entries · 2024–2025</div>
+        </div>
+
+        <div class="inventory reveal">
+            <a href="../pages/projects/EscherGarden/escher-garden.html" class="inv-item">
+                <div class="inv-num">A.01</div>
+                <span class="arr">↗</span>
+                <div class="inv-logo">
+                    <img src="../Recourses/Logos/EGLogo.jpg" alt="Escher's Garden logo">
+                </div>
+                <div class="inv-foot">
+                    <span class="name">Escher's Garden</span>
+                    <span>WV3 · 2024</span>
+                </div>
+            </a>
+
+            <a href="../pages/projects/Ellypse/home-of-shadows.html" class="inv-item">
+                <div class="inv-num">A.02</div>
+                <span class="arr">↗</span>
+                <div class="inv-logo">
+                    <img src="../Recourses/Logos/HOSLogo.jpg" alt="Home of Shadows logo">
+                </div>
+                <div class="inv-foot">
+                    <span class="name">Home of Shadows</span>
+                    <span>D2 · 2025</span>
+                </div>
+            </a>
+
+            <a href="#" class="inv-item placeholder" onclick="event.preventDefault();">
+                <div class="inv-num">A.03</div>
+                <div class="inv-foot">
+                    <span class="name">Berlin — Urban Analysis</span>
+                    <span>Hand-drawn</span>
+                </div>
+            </a>
+
+            <a href="#" class="inv-item placeholder" onclick="event.preventDefault();">
+                <div class="inv-num">A.04</div>
+                <div class="inv-foot">
+                    <span class="name">In progress</span>
+                    <span>2026 →</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ───────────────────────────────────────────────
+         03 — ABOUT
+         ─────────────────────────────────────────────── -->
+    <section id="about">
+        <div class="sec-header reveal">
+            <div class="sec-num">03 / About</div>
+            <h2 class="sec-title">About — Douwe</h2>
+            <div class="sec-meta">CV · skills · contact</div>
+        </div>
+
+        <div class="about">
+            <div class="about-portrait reveal">
+                <span class="tag">PORTRAIT</span>
+                <img src="../Recourses/Images/profielfoto.jpeg" alt="Douwe — portrait">
+            </div>
+
+            <div class="about-text reveal">
+                <p class="lead">
+                    I'm an architecture student investigating how <em>computation</em> and the
+                    <em>built environment</em> can sharpen each other.
+                </p>
+                <p>
+                    My background spans Delft and Singapore — two cities that teach radically different
+                    lessons about density, climate and civic life. I bring those lessons into projects
+                    that take both drawing and code seriously: a building is a system before it is a form.
+                </p>
+                <p>
+                    I'm currently open to internships at firms working on adaptive architecture, civic
+                    typologies, or computational design.
+                </p>
+            </div>
+
+            <div class="about-cv reveal">
+                <h4>Education</h4>
+                <ul>
+                    <li><b>TU Delft</b><span>2024 –</span></li>
+                    <li><b>NUS Singapore</b><span>2025</span></li>
+                </ul>
+
+                <h4>Software</h4>
+                <div class="skills">
+                    <span class="skill primary">Rhino</span>
+                    <span class="skill primary">Grasshopper</span>
+                    <span class="skill primary">AutoCAD</span>
+                    <span class="skill">Revit</span>
+                    <span class="skill">Enscape</span>
+                    <span class="skill">V-Ray</span>
+                    <span class="skill">Adobe Suite</span>
+                    <span class="skill">Blender</span>
+                    <span class="skill">Twinmotion</span>
+                </div>
+
+                <h4>Methods</h4>
+                <div class="skills">
+                    <span class="skill">Parametric</span>
+                    <span class="skill">Hand-drawing</span>
+                    <span class="skill">Model-making</span>
+                    <span class="skill">Site survey</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ───────────────────────────────────────────────
+         04 — CONTACT
+         ─────────────────────────────────────────────── -->
+    <section id="contact">
+        <div class="sec-header reveal">
+            <div class="sec-num">04 / Contact</div>
+            <h2 class="sec-title">Get in Touch</h2>
+            <div class="sec-meta">Spring 2026 · open to internships</div>
+        </div>
+
+        <div class="contact-wrap">
+            <div class="contact-call reveal">
+                Have a project, a studio, or a question?
+                <a href="mailto:douwedoesdesign@gmail.com">Write to me.</a>
+            </div>
+
+            <div class="contact-list reveal">
+                <a href="mailto:douwedoesdesign@gmail.com">
+                    <span class="label">Email</span>
+                    <span>douwedoesdesign@gmail.com →</span>
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener">
+                    <span class="label">LinkedIn</span>
+                    <span>/in/douwe →</span>
+                </a>
+                <a href="https://instagram.com" target="_blank" rel="noopener">
+                    <span class="label">Instagram</span>
+                    <span>@douwedoesdesign →</span>
+                </a>
+                <a href="../index.html">
+                    <span class="label">Hub</span>
+                    <span>DouweDoesDesign.com →</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <footer>
+        <div class="start">© 2026 — Douwe / DouweDoesDesign</div>
+        <div class="mid">Set in Helvetica Neue &amp; JetBrains Mono</div>
+        <div class="end">Made in Delft, NL</div>
+    </footer>
+
+    <!-- ───────────────────────────────────────────────
+         SCRIPTS
+         ─────────────────────────────────────────────── -->
+
+    <!-- Three.js importmap -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three":       "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+      }
+    }
+    </script>
+
+    <!-- 3D BOOKCASE VIEWER -->
+    <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const container = document.getElementById('ccViewer');
+    const loader    = document.getElementById('ccLoader');
+    const posEl     = document.getElementById('ccPos');
+    const hintEl    = document.getElementById('ccHint');
+    const btnIso    = document.getElementById('modeIso');
+    const btnOrb    = document.getElementById('modeOrb');
+    const btnReset  = document.getElementById('ccReset');
+
+    if (container) {
+
+        // ── Scene ────────────────────────────────────────
+        const scene = new THREE.Scene();
+        scene.background = null;
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Lighting — soft architectural model lighting
+        scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+
+        const key = new THREE.DirectionalLight(0xffffff, 1.0);
+        key.position.set(5, 8, 4);
+        key.castShadow = true;
+        key.shadow.mapSize.set(1024, 1024);
+        key.shadow.camera.left   = -5;
+        key.shadow.camera.right  =  5;
+        key.shadow.camera.top    =  5;
+        key.shadow.camera.bottom = -5;
+        key.shadow.camera.near = 0.5;
+        key.shadow.camera.far  = 30;
+        scene.add(key);
+
+        const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+        fill.position.set(-5, 4, -3);
+        scene.add(fill);
+
+        // Subtle ground shadow plane
+        const groundMat = new THREE.ShadowMaterial({ opacity: 0.12 });
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // ── Cameras (orthographic = iso; perspective = orbit) ──
+        let viewW = container.clientWidth, viewH = container.clientHeight;
+
+        // Orthographic (isometric) — size adjusted after model load
+        let orthoSize = 2.2;
+        const orthoCam = new THREE.OrthographicCamera(
+            -orthoSize, orthoSize, orthoSize, -orthoSize, 0.1, 100
+        );
+        // Classic isometric angle
+        orthoCam.position.set(8, 8, 8);
+        orthoCam.lookAt(0, 0, 0);
+
+        // Perspective (orbit mode)
+        const perspCam = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+        perspCam.position.set(6, 5, 6);
+        perspCam.lookAt(0, 0, 0);
+
+        let camera = orthoCam;
+        let mode = 'iso';
+
+        // Orbit controls — only used in orbit mode
+        const controls = new OrbitControls(perspCam, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.enableZoom = true;
+        controls.enablePan = false;
+        controls.minDistance = 2;
+        controls.maxDistance = 18;
+        controls.enabled = false;
+
+        renderer.domElement.style.cursor = 'inherit';
+
+        // ── State ─────────────────────────────────────────
+        let bookcaseRoot = null;     // pivot group for the bookcase
+        let railRoot     = null;
+        let slideAxis    = new THREE.Vector3(1, 0, 0);  // world-space axis along which the bookcase slides
+        let slideMin     = -1;
+        let slideMax     =  1;
+        let slidePos     =  0;       // current slide offset (along slideAxis)
+        let initialBookCenter = new THREE.Vector3();
+
+        let dragging = false;
+        let dragStartMouseX = 0, dragStartMouseY = 0;
+        let dragStartSlidePos = 0;
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function setSize() {
+            viewW = container.clientWidth;
+            viewH = container.clientHeight;
+            renderer.setSize(viewW, viewH, false);
+
+            // Orthographic aspect handling
+            const aspect = viewW / viewH;
+            orthoCam.left   = -orthoSize * aspect;
+            orthoCam.right  =  orthoSize * aspect;
+            orthoCam.top    =  orthoSize;
+            orthoCam.bottom = -orthoSize;
+            orthoCam.updateProjectionMatrix();
+
+            perspCam.aspect = aspect;
+            perspCam.updateProjectionMatrix();
+        }
+        setSize();
+        window.addEventListener('resize', setSize);
+
+        // ── Loader ────────────────────────────────────────
+        const gltf = new GLTFLoader();
+
+        function processModel(obj, role) {
+            const bb = new THREE.Box3().setFromObject(obj);
+            const center = bb.getCenter(new THREE.Vector3());
+            const size = bb.getSize(new THREE.Vector3());
+
+            obj.traverse(n => {
+                if (n.isMesh) {
+                    n.castShadow = true;
+                    n.receiveShadow = true;
+                }
+            });
+
+            return { bb, center, size };
+        }
+
+        // We compute a unified bounding box once both loaded; then position the scene
+        let loaded = 0;
+        const ROOT_GROUP = new THREE.Group();
+        scene.add(ROOT_GROUP);
+
+        let rawBookcase = null, rawRail = null;
+
+        function onBothLoaded() {
+            // Combined bounding box (rail + bookcase at initial positions)
+            const combined = new THREE.Box3();
+            combined.expandByObject(rawRail);
+            combined.expandByObject(rawBookcase);
+            const combCenter = combined.getCenter(new THREE.Vector3());
+            const combSize   = combined.getSize(new THREE.Vector3());
+
+            // Move both so the combined center is at world origin (XZ), bottom on ground
+            const offset = combCenter.clone();
+            offset.y = combined.min.y; // bottom of combined should sit on y=0
+            rawRail.position.sub(offset);
+            rawBookcase.position.sub(offset);
+
+            // Now wrap them
+            railRoot = new THREE.Group();
+            railRoot.add(rawRail);
+            ROOT_GROUP.add(railRoot);
+
+            // For the bookcase, we want a pivot group at its own current center,
+            // so translation along an axis is intuitive.
+            const bookBB = new THREE.Box3().setFromObject(rawBookcase);
+            initialBookCenter = bookBB.getCenter(new THREE.Vector3());
+
+            bookcaseRoot = new THREE.Group();
+            // Move the mesh so its origin = the world position we want it at
+            rawBookcase.position.sub(initialBookCenter); // mesh local -> centered on origin
+            bookcaseRoot.position.copy(initialBookCenter); // pivot at world position
+            bookcaseRoot.add(rawBookcase);
+            ROOT_GROUP.add(bookcaseRoot);
+
+            // Determine the slide axis from rail's bounding box: longest horizontal axis
+            const railBB = new THREE.Box3().setFromObject(railRoot);
+            const railSize = railBB.getSize(new THREE.Vector3());
+            if (railSize.x >= railSize.z) {
+                slideAxis.set(1, 0, 0);
+                slideMin = railBB.min.x + railSize.x * 0.10 - initialBookCenter.x;
+                slideMax = railBB.max.x - railSize.x * 0.10 - initialBookCenter.x;
+            } else {
+                slideAxis.set(0, 0, 1);
+                slideMin = railBB.min.z + railSize.z * 0.10 - initialBookCenter.z;
+                slideMax = railBB.max.z - railSize.z * 0.10 - initialBookCenter.z;
+            }
+            // Make slideMin/Max relative to initial pos (== 0 == initial pivot world)
+            // slidePos varies in [slideMin, slideMax]; clamp to 0 initially
+            slidePos = 0;
+
+            // Frame combined object in camera
+            const fit = Math.max(combSize.x, combSize.y, combSize.z) || 1;
+            // Adjust ortho size to fit
+            orthoSize = fit * 0.85;
+            setSize(); // recompute ortho left/right/top/bottom with new orthoSize
+
+            perspCam.position.set(fit * 1.8, fit * 1.4, fit * 1.8);
+            perspCam.lookAt(0, fit * 0.3, 0);
+            controls.target.set(0, fit * 0.3, 0);
+
+            // Hide loader
+            loader.classList.add('done');
+            updatePosLabel();
+        }
+
+        gltf.load('assets/Rail.glb', (g) => {
+            rawRail = g.scene;
+            processModel(rawRail, 'rail');
+            if (++loaded === 2) onBothLoaded();
+        }, undefined, (err) => {
+            console.error('Rail load error', err);
+            loader.textContent = 'Failed to load Rail.glb';
+        });
+
+        gltf.load('assets/Bookcase.glb', (g) => {
+            rawBookcase = g.scene;
+            processModel(rawBookcase, 'bookcase');
+            if (++loaded === 2) onBothLoaded();
+        }, undefined, (err) => {
+            console.error('Bookcase load error', err);
+            loader.textContent = 'Failed to load Bookcase.glb';
+        });
+
+        // ── Drag interaction (iso mode) ───────────────────
+        function getMouseNDC(ev) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((ev.clientX - rect.left) / rect.width)  * 2 - 1;
+            mouse.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+        }
+
+        // For ortho dragging, we project mouse motion onto the slide axis in world space.
+        // Method: take the slide axis, project it into screen space, then dot the mouse delta against that direction.
+        function worldAxisToScreenVector(axisWorld) {
+            // Take two points: origin + axis (in current bookcaseRoot world position)
+            const p0 = bookcaseRoot.position.clone();
+            const p1 = p0.clone().add(axisWorld);
+            const v0 = p0.clone().project(camera);
+            const v1 = p1.clone().project(camera);
+            // In NDC. Convert to pixel direction:
+            const dx = (v1.x - v0.x) * 0.5 * viewW;
+            const dy = -(v1.y - v0.y) * 0.5 * viewH;
+            return { dx, dy, lengthPx: Math.hypot(dx, dy) };
+        }
+
+        function onPointerDown(ev) {
+            if (mode !== 'iso' || !bookcaseRoot) return;
+            getMouseNDC(ev);
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObject(bookcaseRoot, true);
+            if (hits.length > 0) {
+                dragging = true;
+                dragStartMouseX = ev.clientX;
+                dragStartMouseY = ev.clientY;
+                dragStartSlidePos = slidePos;
+                container.classList.add('dragging');
+            }
+        }
+        function onPointerMove(ev) {
+            if (!dragging || mode !== 'iso') return;
+            const screen = worldAxisToScreenVector(slideAxis);
+            if (screen.lengthPx < 0.0001) return;
+            const mdx = ev.clientX - dragStartMouseX;
+            const mdy = ev.clientY - dragStartMouseY;
+            // Project mouse delta onto axis screen direction
+            const projPx = (mdx * screen.dx + mdy * screen.dy) / screen.lengthPx;
+            // Convert pixels back to world units along axis
+            const worldPerPx = 1 / screen.lengthPx; // since axis was 1 world unit
+            const worldDelta = projPx * worldPerPx;
+            slidePos = Math.max(slideMin, Math.min(slideMax, dragStartSlidePos + worldDelta));
+            bookcaseRoot.position.copy(initialBookCenter).add(slideAxis.clone().multiplyScalar(slidePos));
+            updatePosLabel();
+        }
+        function onPointerUp() {
+            if (dragging) {
+                dragging = false;
+                container.classList.remove('dragging');
+            }
+        }
+
+        renderer.domElement.addEventListener('pointerdown', onPointerDown);
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
+
+        function updatePosLabel() {
+            const range = slideMax - slideMin;
+            if (range <= 0) return;
+            const pct = ((slidePos - slideMin) / range) * 100;
+            posEl.innerHTML = `<b>POSITION</b> &nbsp;${pct.toFixed(0)}% along rail`;
+        }
+
+        // ── Mode switching ────────────────────────────────
+        function setMode(next) {
+            mode = next;
+            if (next === 'iso') {
+                camera = orthoCam;
+                controls.enabled = false;
+                btnIso.classList.add('active');
+                btnOrb.classList.remove('active');
+                hintEl.innerHTML = '<kbd>Click</kbd> &amp; <kbd>drag</kbd> the bookcase to slide it along the rail.';
+            } else {
+                camera = perspCam;
+                controls.enabled = true;
+                btnOrb.classList.add('active');
+                btnIso.classList.remove('active');
+                hintEl.innerHTML = '<kbd>Drag</kbd> to orbit · <kbd>Scroll</kbd> to zoom.';
+            }
+        }
+        btnIso.addEventListener('click', () => setMode('iso'));
+        btnOrb.addEventListener('click', () => setMode('orb'));
+
+        btnReset.addEventListener('click', () => {
+            if (!bookcaseRoot) return;
+            slidePos = 0;
+            bookcaseRoot.position.copy(initialBookCenter);
+            updatePosLabel();
+            if (mode === 'orb') {
+                controls.reset();
+            }
+        });
+
+        // ── Render loop ───────────────────────────────────
+        (function animate() {
+            requestAnimationFrame(animate);
+            if (mode === 'orb') controls.update();
+            renderer.render(scene, camera);
+        })();
+    }
+    </script>
+
+    <script>
+    (function(){
+        // ── PRELOADER ─────────────────────────────
+        const pre = document.getElementById('preloader');
+        const progress = document.getElementById('pre-progress');
+        let p = 0;
+        const tick = setInterval(() => {
+            p = Math.min(100, p + 4);
+            progress.textContent = p + '%';
+            if (p === 100) clearInterval(tick);
+        }, 95);
+
+        // After the drawing finishes + name appears, fade out preloader
+        setTimeout(() => pre.classList.add('reveal'), 2500);
+        setTimeout(() => {
+            pre.classList.add('done');
+            document.body.classList.add('loaded');
+        }, 4400);
+
+        // Allow click-to-skip the preloader
+        pre.addEventListener('click', () => {
+            pre.classList.add('done');
+            document.body.classList.add('loaded');
+        });
+
+        // ── CUSTOM CURSOR ─────────────────────────
+        const dot = document.getElementById('cur-dot');
+        const ring = document.getElementById('cur-ring');
+        let mx = window.innerWidth/2, my = window.innerHeight/2;
+        let rx = mx, ry = my;
+
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX; my = e.clientY;
+            dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+        });
+        (function loop(){
+            rx += (mx - rx) * 0.14;
+            ry += (my - ry) * 0.14;
+            ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+            requestAnimationFrame(loop);
+        })();
+
+        // Hover behaviour
+        function bindHover() {
+            document.querySelectorAll('a, button, .inv-item, .cc-drawings figure, .cc-hero, .about-portrait, .skill, .cc-viewer, .cc-modes button, .cc-reset')
+                .forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        ring.classList.add('hover');
+                        if (el.classList.contains('btn') && el.classList.contains('accent')) {
+                            ring.classList.add('accent');
+                        }
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        ring.classList.remove('hover');
+                        ring.classList.remove('accent');
+                    });
+                });
+        }
+        bindHover();
+
+        // ── SCROLL REVEAL ─────────────────────────
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('in');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+        // ── KEYBOARD: skip preloader with any key ──
+        document.addEventListener('keydown', () => {
+            if (!pre.classList.contains('done')) {
+                pre.classList.add('done');
+                document.body.classList.add('loaded');
+            }
+        });
+
+        // Hide cursor on touch devices
+        if ('ontouchstart' in window) {
+            dot.style.display = 'none';
+            ring.style.display = 'none';
+            document.body.style.cursor = 'auto';
+        }
+
+    })();
+    </script>
+</body>
+</html>

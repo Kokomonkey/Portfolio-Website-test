@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3d2f25">
+<meta name="robots" content="noindex, nofollow">
+<title>Kloef</title>
+<style>
+:root {
+    --bg: #faf4ec;
+    --bg-alt: #f3e9d8;
+    --sidebar-bg: #3d2f25;
+    --sidebar-text: #c9b8a4;
+    --sidebar-hover: #4d3c30;
+    --sidebar-active-bg: #d4a373;
+    --card-bg: #fffaf2;
+    --card-warm: #fbf1e1;
+    --text: #3d2f25;
+    --text-muted: #8a7a68;
+    --border: #e8dcc9;
+    --border-strong: #d6c4a8;
+    --blue: #6b8e9e;
+    --red: #c1432e;
+    --green: #7a9b76;
+    --orange: #e08e3c;
+    --yellow: #e6b85a;
+    --primary: #d4a373;
+    --primary-dark: #9c6644;
+    --shadow-sm: 0 1px 3px rgba(61, 47, 37, 0.08);
+    --shadow-md: 0 4px 14px rgba(61, 47, 37, 0.1);
+    --shadow-lg: 0 10px 28px rgba(61, 47, 37, 0.14);
+    /* Person colors */
+    --douwe-color: #4a90c2;       /* blue */
+    --douwe-bg:    #e6f0f8;
+    --girlfriend-color: #d96a9a;  /* pink */
+    --girlfriend-bg:    #fbe6ee;
+    --ilian-color: #8857c4;       /* purple */
+    --ilian-bg:    #efe6f8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    background:
+        radial-gradient(circle at 10% 0%, #fdf2dd 0%, transparent 50%),
+        radial-gradient(circle at 90% 100%, #f3e3c8 0%, transparent 55%),
+        var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 210px;
+    background: var(--sidebar-bg);
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+}
+.sidebar-logo {
+    color: #ffffff;
+    font-size: 0.95em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 10px 16px;
+    border-bottom: 1px solid #2a1f18;
+    margin-bottom: 6px;
+}
+.sidebar-logo span {
+    display: block;
+    font-size: 0.65em;
+    color: var(--sidebar-text);
+    font-weight: 400;
+    margin-top: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.nav-section {
+    font-size: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #8a7560;
+    padding: 14px 10px 4px;
+    font-weight: 700;
+}
+.nav-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--sidebar-text);
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+}
+.nav-item:hover { background: var(--sidebar-hover); color: #f5e6d0; }
+.nav-item.active { background: var(--sidebar-active-bg); color: #3d2f25; font-weight: 600; }
+
+/* Person picker in sidebar */
+.person-picker {
+    margin-top: auto;
+    padding: 16px 8px 4px;
+    border-top: 1px solid #2a1f18;
+}
+.person-picker .label {
+    font-size: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #8a7560;
+    padding: 0 4px 8px;
+    font-weight: 700;
+}
+.person-options { display: flex; gap: 6px; }
+.person-opt {
+    flex: 1;
+    padding: 8px 6px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background: rgba(255,255,255,0.05);
+    color: #c9b8a4;
+    font-size: 0.78em;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+.person-opt.selected.douwe { background: var(--douwe-color); color: white; border-color: var(--douwe-color); }
+.person-opt.selected.girlfriend { background: var(--girlfriend-color); color: white; border-color: var(--girlfriend-color); }
+.person-opt.selected.ilian { background: var(--ilian-color); color: white; border-color: var(--ilian-color); }
+
+/* Main */
+.main-content {
+    flex: 1;
+    padding: 28px 32px;
+    min-width: 0;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+.page-header h1 { font-size: 1.5em; font-weight: 700; }
+.page-header p { color: var(--text-muted); font-size: 0.9em; margin-top: 2px; }
+
+/* Buttons */
+.btn {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-primary { background: var(--primary); color: #3d2f25; }
+.btn-primary:hover { background: var(--primary-dark); color: #fff; }
+.btn-dark { background: var(--text); color: #faf4ec; }
+.btn-ghost { background: transparent; border: 1px solid var(--border-strong); color: var(--text); }
+.btn-ghost:hover { background: var(--bg-alt); }
+.btn-danger { background: var(--red); color: white; }
+.btn-sm { padding: 5px 12px; font-size: 0.78em; }
+.btn-link { background: transparent; color: var(--text-muted); padding: 4px 8px; }
+.btn-link:hover { color: var(--primary-dark); transform: none; box-shadow: none; }
+
+.card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+/* Person tag */
+.ptag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68em;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+.ptag.douwe { background: var(--douwe-bg); color: var(--douwe-color); border: 1px solid var(--douwe-color); }
+.ptag.girlfriend { background: var(--girlfriend-bg); color: var(--girlfriend-color); border: 1px solid var(--girlfriend-color); }
+.ptag.ilian { background: var(--ilian-bg); color: var(--ilian-color); border: 1px solid var(--ilian-color); }
+.ptag .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.ptag.douwe .dot { background: var(--douwe-color); }
+.ptag.girlfriend .dot { background: var(--girlfriend-color); }
+.ptag.ilian .dot { background: var(--ilian-color); }
+
+/* Page sections */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── CALENDAR ─────────────────────────────────── */
+.cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.week-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+.day-col {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 3px solid var(--border);
+    min-height: 140px;
+}
+.day-col.today { border-top-color: var(--blue); }
+.day-header {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+.day-header .day-num {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    border-radius: 50%;
+    font-size: 0.95em;
+    margin-top: 4px;
+}
+.day-col.today .day-header .day-num {
+    background: var(--blue);
+    color: white;
+}
+.task-card {
+    padding: 8px 10px;
+    border-radius: 7px;
+    font-size: 0.82em;
+    background: #f8f9fa;
+    border-left: 3px solid var(--blue);
+    transition: opacity 0.2s;
+}
+.task-card.douwe { border-left-color: var(--douwe-color); }
+.task-card.girlfriend { border-left-color: var(--girlfriend-color); }
+.task-card.ilian { border-left-color: var(--ilian-color); }
+.task-card.completed { opacity: 0.45; text-decoration: line-through; background: #f1f3f4; }
+.task-top { display: flex; align-items: flex-start; gap: 7px; }
+.task-checkbox { cursor: pointer; transform: scale(1.2); margin-top: 2px; flex-shrink: 0; accent-color: var(--blue); }
+.task-title { font-weight: 600; line-height: 1.3; }
+.task-actions { margin-top: 5px; margin-left: 20px; font-size: 0.72em; display: flex; gap: 8px; }
+.task-actions a { color: var(--text-muted); text-decoration: none; cursor: pointer; }
+.task-actions a:hover { text-decoration: underline; }
+.task-actions .del { color: var(--red); }
+
+/* ── LIBRARY ──────────────────────────────────── */
+.lib-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 22px;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+}
+.lib-tab {
+    padding: 10px 18px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.92em;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    cursor: pointer;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.lib-tab:hover { color: var(--primary-dark); }
+.lib-tab.active {
+    color: var(--primary-dark);
+    border-bottom-color: var(--primary);
+}
+
+.lib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+}
+.lib-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+    position: relative;
+}
+.lib-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.lib-card img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: var(--bg-alt);
+}
+.lib-card .lib-placeholder {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: linear-gradient(135deg, #f3e3c8, #e8dcc9);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em;
+    margin-bottom: 8px;
+}
+.lib-card .nm { font-weight: 600; font-size: 0.88em; line-height: 1.3; margin-bottom: 4px; }
+.lib-card .meta { font-size: 0.75em; color: var(--text-muted); margin-bottom: 6px; }
+.lib-card progress { width: 100%; height: 5px; }
+.lib-card .tag-row { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.lib-card .actions { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+
+.add-form {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+.add-form-row {
+    display: grid;
+    grid-template-columns: 1fr 100px 100px 100px auto;
+    gap: 8px;
+    align-items: end;
+}
+.add-form input, .add-form select, .add-form textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 0.88em;
+    background: var(--bg);
+    font-family: inherit;
+}
+.add-form label {
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.section-divider {
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin: 24px 0 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: 3em; margin-bottom: 12px; }
+
+/* Modal */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(35, 22, 14, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+    background: var(--card-bg);
+    border-radius: 16px;
+    max-width: 480px;
+    width: 100%;
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal h3 { margin-bottom: 14px; color: var(--primary-dark); }
+.modal .close-x {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 1.6em;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+}
+.field-group { margin-bottom: 14px; }
+.field-label {
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 600;
+}
+.field-group input, .field-group select, .field-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.92em;
+    font-family: inherit;
+    background: var(--bg);
+}
+
+/* Welcome intro overlay */
+.welcome-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    animation: welcomeFade 2.4s ease forwards;
+}
+.welcome-overlay.douwe       { background: rgba(74, 144, 194, 0.5); }
+.welcome-overlay.girlfriend  { background: rgba(217, 106, 154, 0.5); }
+.welcome-overlay.ilian       { background: rgba(136, 87, 196, 0.5); }
+.welcome-overlay .welcome-text {
+    font-size: clamp(2em, 7vw, 4em);
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    letter-spacing: 0.02em;
+    transform: translateY(10px);
+    animation: welcomeSlide 2.4s ease forwards;
+}
+@keyframes welcomeFade {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+@keyframes welcomeSlide {
+    0%   { transform: translateY(20px); }
+    15%  { transform: translateY(0); }
+    75%  { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+
+/* Mobile */
+.mobile-header { display: none; }
+#sidebar-overlay { display: none; }
+
+@media (max-width: 768px) {
+    body { flex-direction: column; }
+    .mobile-header {
+        display: flex;
+        position: sticky;
+        top: 0;
+        height: 54px;
+        background: var(--sidebar-bg);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        z-index: 500;
+    }
+    .mobile-logo { color: white; font-weight: 700; font-size: 1em; }
+    .hamburger-btn {
+        background: none; border: none; color: white;
+        font-size: 1.5em; cursor: pointer; padding: 8px 10px;
+    }
+    .sidebar {
+        position: fixed;
+        left: -220px;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        transition: left 0.25s ease;
+        overflow-y: auto;
+    }
+    .sidebar.open { left: 0; }
+    #sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+    }
+    #sidebar-overlay.visible {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .main-content { padding: 18px 14px 32px; }
+    .cal-grid { grid-template-columns: repeat(2, 1fr); }
+    .add-form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="mobile-header">
+    <span class="mobile-logo">✨ Kloef</span>
+    <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+</div>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        Kloef
+        <span>Our shared space</span>
+    </div>
+
+    <div class="nav-section">Plan</div>
+    <button class="nav-item" data-page="calendar">📅 Calendar</button>
+
+    <div class="nav-section">Enjoy</div>
+    <button class="nav-item" data-page="books">📚 Books</button>
+    <button class="nav-item" data-page="movies">🎬 Movies</button>
+    <button class="nav-item" data-page="series">📺 Series</button>
+    <button class="nav-item" data-page="anime">🍙 Anime</button>
+
+    <div class="person-picker">
+        <div class="label">Acting as</div>
+        <div class="person-options">
+            <button class="person-opt douwe" data-person="douwe">Douwe</button>
+            <button class="person-opt girlfriend" data-person="girlfriend">Her</button>
+            <button class="person-opt ilian" data-person="ilian">Ilian</button>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <!-- CALENDAR PAGE -->
+    <section id="page-calendar" class="page active">
+        <div class="cal-header">
+            <div>
+                <h1 style="font-size:1.4em;">📅 Weekly Overview</h1>
+                <p style="color:var(--text-muted);font-size:0.85em;margin-top:2px;" id="week-month"></p>
+            </div>
+            <div class="week-controls">
+                <button class="btn btn-ghost btn-sm" onclick="changeWeek(-1)">← Prev</button>
+                <button class="btn btn-ghost btn-sm" onclick="changeWeek(0)">Today</button>
+                <button class="btn btn-ghost btn-sm" onclick="changeWeek(1)">Next →</button>
+                <button class="btn btn-dark btn-sm" onclick="openTaskModal()">+ Add Task</button>
+            </div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+    </section>
+
+    <!-- BOOKS PAGE -->
+    <section id="page-books" class="page">
+        <div class="page-header">
+            <div>
+                <h1>📚 Books</h1>
+                <p>Track what you're reading together.</p>
+            </div>
+        </div>
+        <div class="add-form">
+            <form onsubmit="addBook(event)">
+                <div class="add-form-row" style="grid-template-columns: 2fr 1fr 100px 1fr auto;">
+                    <div><label>Title</label><input type="text" name="title" required></div>
+                    <div><label>Author</label><input type="text" name="author"></div>
+                    <div><label>Pages</label><input type="number" name="total_pages" value="300"></div>
+                    <div><label>Cover URL</label><input type="text" name="cover_url" placeholder="optional"></div>
+                    <div><button class="btn btn-primary" type="submit">+ Add</button></div>
+                </div>
+            </form>
+        </div>
+        <div class="section-divider">Collection</div>
+        <div class="lib-grid" id="books-grid"></div>
+    </section>
+
+    <!-- MOVIES PAGE -->
+    <section id="page-movies" class="page">
+        <div class="page-header">
+            <div>
+                <h1>🎬 Movies</h1>
+                <p>Watchlist & watched.</p>
+            </div>
+        </div>
+        <div class="add-form">
+            <form onsubmit="addMovie(event)">
+                <div class="add-form-row">
+                    <div><label>Title</label><input type="text" name="title" required></div>
+                    <div><label>Year</label><input type="number" name="year" min="1900" max="2099"></div>
+                    <div><label>Runtime (min)</label><input type="number" name="runtime" value="120"></div>
+                    <div><label>Cover URL</label><input type="text" name="cover_url" placeholder="optional"></div>
+                    <div><button class="btn btn-primary" type="submit">+ Add</button></div>
+                </div>
+            </form>
+        </div>
+        <div class="section-divider">🎬 Watchlist</div>
+        <div class="lib-grid" id="movies-watchlist"></div>
+        <div class="section-divider">✓ Watched</div>
+        <div class="lib-grid" id="movies-watched"></div>
+    </section>
+
+    <!-- SERIES PAGE -->
+    <section id="page-series" class="page">
+        <div class="page-header">
+            <div>
+                <h1>📺 Series</h1>
+                <p>Track your shows together.</p>
+            </div>
+        </div>
+        <div class="add-form">
+            <form onsubmit="addSeries(event)">
+                <div class="add-form-row">
+                    <div><label>Title</label><input type="text" name="title" required></div>
+                    <div><label>Seasons</label><input type="number" name="total_seasons" value="1"></div>
+                    <div><label>Episodes</label><input type="number" name="total_episodes" value="10"></div>
+                    <div><label>Cover URL</label><input type="text" name="cover_url" placeholder="optional"></div>
+                    <div><button class="btn btn-primary" type="submit">+ Add</button></div>
+                </div>
+            </form>
+        </div>
+        <div class="section-divider">Series</div>
+        <div class="lib-grid" id="series-grid"></div>
+    </section>
+
+    <!-- ANIME PAGE -->
+    <section id="page-anime" class="page">
+        <div class="page-header">
+            <div>
+                <h1>🍙 Anime</h1>
+                <p>Your shared anime queue.</p>
+            </div>
+        </div>
+        <div class="add-form">
+            <form onsubmit="addAnime(event)">
+                <div class="add-form-row">
+                    <div><label>Title</label><input type="text" name="title" required></div>
+                    <div><label>Episodes</label><input type="number" name="total_episodes" value="12"></div>
+                    <div></div>
+                    <div><label>Cover URL</label><input type="text" name="cover_url" placeholder="optional"></div>
+                    <div><button class="btn btn-primary" type="submit">+ Add</button></div>
+                </div>
+            </form>
+        </div>
+        <div class="section-divider">Anime</div>
+        <div class="lib-grid" id="anime-grid"></div>
+    </section>
+
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-backdrop" id="taskModal" onclick="if(event.target===this) closeTaskModal()">
+    <div class="modal">
+        <button class="close-x" onclick="closeTaskModal()">×</button>
+        <h3>+ Add Task</h3>
+        <form onsubmit="addTask(event)">
+            <div class="field-group">
+                <label class="field-label">Title</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Date</label>
+                <input type="date" name="date" required id="task-date-input">
+            </div>
+            <div class="field-group">
+                <label class="field-label">Time (optional)</label>
+                <input type="time" name="time">
+            </div>
+            <div class="field-group">
+                <label class="field-label">Type</label>
+                <select name="task_type">
+                    <option value="task">Task</option>
+                    <option value="event">Event</option>
+                    <option value="deadline">Deadline</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit">Add</button>
+            <button class="btn btn-ghost" type="button" onclick="closeTaskModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+/* ── STATE ───────────────────────────────────────────────────────────── */
+const STORE_KEY = 'kloef_state_v1';
+const PERSON_KEY = 'kloef_person';
+
+const defaultState = {
+    tasks: [],   // {id, title, date, time, task_type, is_completed, person}
+    books: [],   // {id, title, author, total_pages, pages_read, cover_url, is_reading, is_finished, person}
+    movies: [],  // {id, title, year, runtime, cover_url, watched, person}
+    series: [],  // {id, title, total_seasons, total_episodes, episodes_watched, cover_url, person}
+    anime: [],   // {id, title, total_episodes, episodes_watched, cover_url, person}
+};
+
+let state = loadState();
+const VALID_PERSONS = ['douwe', 'girlfriend', 'ilian'];
+const urlPerson = new URLSearchParams(window.location.search).get('as');
+let currentPerson = VALID_PERSONS.includes(urlPerson)
+    ? urlPerson
+    : (localStorage.getItem(PERSON_KEY) || 'douwe');
+if (VALID_PERSONS.includes(urlPerson)) localStorage.setItem(PERSON_KEY, urlPerson);
+let currentWeekOffset = 0;
+
+function loadState() {
+    try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(defaultState));
+        const parsed = JSON.parse(raw);
+        return Object.assign({}, defaultState, parsed);
+    } catch (e) {
+        return JSON.parse(JSON.stringify(defaultState));
+    }
+}
+function saveState() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+/* ── PERSON PICKER ──────────────────────────────────────────────────── */
+function setPerson(p) {
+    currentPerson = p;
+    localStorage.setItem(PERSON_KEY, p);
+    renderPersonPicker();
+}
+function renderPersonPicker() {
+    document.querySelectorAll('.person-opt').forEach(b => {
+        b.classList.toggle('selected', b.dataset.person === currentPerson);
+    });
+}
+document.querySelectorAll('.person-opt').forEach(b => {
+    b.addEventListener('click', () => setPerson(b.dataset.person));
+});
+
+function personTag(person) {
+    const labels = { douwe: 'Douwe', girlfriend: 'Her', ilian: 'Ilian' };
+    if (!labels[person]) return '';
+    return `<span class="ptag ${person}"><span class="dot"></span>${labels[person]}</span>`;
+}
+
+/* ── NAVIGATION ─────────────────────────────────────────────────────── */
+function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById('page-' + name);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(b => {
+        b.classList.toggle('active', b.dataset.page === name);
+    });
+    closeSidebar();
+    if (name === 'calendar') renderCalendar();
+    if (name === 'books') renderBooks();
+    if (name === 'movies') renderMovies();
+    if (name === 'series') renderSeries();
+    if (name === 'anime') renderAnime();
+}
+document.querySelectorAll('.nav-item').forEach(b => {
+    b.addEventListener('click', () => showPage(b.dataset.page));
+});
+
+/* ── CALENDAR ───────────────────────────────────────────────────────── */
+function startOfWeek(d) {
+    const date = new Date(d);
+    const day = date.getDay(); // 0 Sun .. 6 Sat
+    const diff = (day === 0 ? -6 : 1 - day); // Monday start
+    date.setDate(date.getDate() + diff);
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+function fmtISODate(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+function changeWeek(delta) {
+    if (delta === 0) currentWeekOffset = 0;
+    else currentWeekOffset += delta;
+    renderCalendar();
+}
+function renderCalendar() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayISO = fmtISODate(today);
+    const weekStart = startOfWeek(today);
+    weekStart.setDate(weekStart.getDate() + currentWeekOffset * 7);
+
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + i);
+        days.push(d);
+    }
+    document.getElementById('week-month').textContent =
+        days[0].toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = days.map(d => {
+        const iso = fmtISODate(d);
+        const isToday = iso === todayISO;
+        const tasks = state.tasks.filter(t => t.date === iso)
+                                 .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+        return `
+            <div class="day-col ${isToday ? 'today' : ''}">
+                <div class="day-header">
+                    ${d.toLocaleDateString('en-US', { weekday: 'short' })}
+                    <div class="day-num">${d.getDate()}</div>
+                </div>
+                ${tasks.map(t => `
+                    <div class="task-card ${t.person || ''} ${t.is_completed ? 'completed' : ''}">
+                        <div class="task-top">
+                            <input type="checkbox" class="task-checkbox" ${t.is_completed ? 'checked' : ''}
+                                   onchange="toggleTask('${t.id}')">
+                            <div style="flex:1;min-width:0;">
+                                ${t.time ? `<span style="font-size:0.75em;color:var(--text-muted);display:block;">${t.time}</span>` : ''}
+                                <span class="task-title">${escapeHtml(t.title)}</span>
+                                <div style="margin-top:4px;">${personTag(t.person)}</div>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <a class="del" onclick="deleteTask('${t.id}')">Delete</a>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }).join('');
+}
+
+function openTaskModal() {
+    document.getElementById('task-date-input').value = fmtISODate(new Date());
+    document.getElementById('taskModal').classList.add('open');
+}
+function closeTaskModal() {
+    document.getElementById('taskModal').classList.remove('open');
+}
+function addTask(e) {
+    e.preventDefault();
+    const f = e.target;
+    state.tasks.push({
+        id: uid(),
+        title: f.title.value.trim(),
+        date: f.date.value,
+        time: f.time.value || '',
+        task_type: f.task_type.value,
+        is_completed: false,
+        person: currentPerson,
+    });
+    saveState();
+    f.reset();
+    closeTaskModal();
+    renderCalendar();
+}
+function toggleTask(id) {
+    const t = state.tasks.find(t => t.id === id);
+    if (!t) return;
+    t.is_completed = !t.is_completed;
+    saveState();
+    renderCalendar();
+}
+function deleteTask(id) {
+    if (!confirm('Delete this task?')) return;
+    state.tasks = state.tasks.filter(t => t.id !== id);
+    saveState();
+    renderCalendar();
+}
+
+/* ── BOOKS ──────────────────────────────────────────────────────────── */
+function addBook(e) {
+    e.preventDefault();
+    const f = e.target;
+    state.books.push({
+        id: uid(),
+        title: f.title.value.trim(),
+        author: f.author.value.trim(),
+        total_pages: parseInt(f.total_pages.value) || 300,
+        pages_read: 0,
+        cover_url: f.cover_url.value.trim(),
+        is_reading: false,
+        is_finished: false,
+        person: currentPerson,
+    });
+    saveState();
+    f.reset();
+    renderBooks();
+}
+function renderBooks() {
+    const grid = document.getElementById('books-grid');
+    if (!state.books.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+            <div class="empty-icon">📖</div>Add your first book above.</div>`;
+        return;
+    }
+    grid.innerHTML = state.books.map(b => `
+        <div class="lib-card">
+            ${b.cover_url
+                ? `<img src="${escapeAttr(b.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>📖</div>'">`
+                : `<div class="lib-placeholder">📖</div>`}
+            <div class="nm">${escapeHtml(b.title)}</div>
+            <div class="meta">${escapeHtml(b.author || '—')}</div>
+            <progress value="${b.pages_read}" max="${b.total_pages}"></progress>
+            <div class="meta">${b.pages_read}/${b.total_pages} pages</div>
+            <div class="tag-row">${personTag(b.person)}</div>
+            <div class="actions">
+                <button class="btn btn-ghost btn-sm" onclick="updateBookProgress('${b.id}')">Update</button>
+                <button class="btn btn-link btn-sm" onclick="deleteItem('books','${b.id}')">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+function updateBookProgress(id) {
+    const b = state.books.find(x => x.id === id);
+    if (!b) return;
+    const v = prompt(`Pages read (0–${b.total_pages}):`, b.pages_read);
+    if (v === null) return;
+    const n = Math.max(0, Math.min(b.total_pages, parseInt(v) || 0));
+    b.pages_read = n;
+    b.is_finished = n >= b.total_pages;
+    saveState();
+    renderBooks();
+}
+
+/* ── MOVIES ─────────────────────────────────────────────────────────── */
+function addMovie(e) {
+    e.preventDefault();
+    const f = e.target;
+    state.movies.push({
+        id: uid(),
+        title: f.title.value.trim(),
+        year: parseInt(f.year.value) || null,
+        runtime: parseInt(f.runtime.value) || 120,
+        cover_url: f.cover_url.value.trim(),
+        watched: false,
+        person: currentPerson,
+    });
+    saveState();
+    f.reset();
+    renderMovies();
+}
+function renderMovies() {
+    const wl = document.getElementById('movies-watchlist');
+    const wd = document.getElementById('movies-watched');
+    const watchlist = state.movies.filter(m => !m.watched);
+    const watched = state.movies.filter(m => m.watched);
+    wl.innerHTML = watchlist.length ? watchlist.map(movieCard).join('') :
+        `<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">🎬</div>Nothing on the watchlist yet.</div>`;
+    wd.innerHTML = watched.length ? watched.map(movieCard).join('') :
+        `<div class="empty-state" style="grid-column: 1/-1;">Nothing watched yet.</div>`;
+}
+function movieCard(m) {
+    return `
+        <div class="lib-card" style="${m.watched ? 'opacity:0.85;' : ''}">
+            ${m.cover_url
+                ? `<img src="${escapeAttr(m.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>🎬</div>'">`
+                : `<div class="lib-placeholder">🎬</div>`}
+            <div class="nm">${escapeHtml(m.title)}</div>
+            <div class="meta">${m.year || '—'} · ${m.runtime} min</div>
+            <div class="tag-row">${personTag(m.person)}</div>
+            <div class="actions">
+                ${!m.watched ? `<button class="btn btn-primary btn-sm" onclick="markMovieWatched('${m.id}')">✓ Watched</button>` : ''}
+                <button class="btn btn-link btn-sm" onclick="deleteItem('movies','${m.id}')">×</button>
+            </div>
+        </div>
+    `;
+}
+function markMovieWatched(id) {
+    const m = state.movies.find(x => x.id === id);
+    if (!m) return;
+    m.watched = true;
+    saveState();
+    renderMovies();
+}
+
+/* ── SERIES ─────────────────────────────────────────────────────────── */
+function addSeries(e) {
+    e.preventDefault();
+    const f = e.target;
+    state.series.push({
+        id: uid(),
+        title: f.title.value.trim(),
+        total_seasons: parseInt(f.total_seasons.value) || 1,
+        total_episodes: parseInt(f.total_episodes.value) || 10,
+        episodes_watched: 0,
+        cover_url: f.cover_url.value.trim(),
+        person: currentPerson,
+    });
+    saveState();
+    f.reset();
+    renderSeries();
+}
+function renderSeries() {
+    const grid = document.getElementById('series-grid');
+    if (!state.series.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+            <div class="empty-icon">📺</div>Add a series above.</div>`;
+        return;
+    }
+    grid.innerHTML = state.series.map(s => `
+        <div class="lib-card">
+            ${s.cover_url
+                ? `<img src="${escapeAttr(s.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>📺</div>'">`
+                : `<div class="lib-placeholder">📺</div>`}
+            <div class="nm">${escapeHtml(s.title)}</div>
+            <div class="meta">${s.total_seasons} seasons · ${s.episodes_watched}/${s.total_episodes} ep</div>
+            <progress value="${s.episodes_watched}" max="${s.total_episodes}"></progress>
+            <div class="tag-row">${personTag(s.person)}</div>
+            <div class="actions">
+                <button class="btn btn-ghost btn-sm" onclick="updateSeriesProgress('${s.id}')">Update</button>
+                <button class="btn btn-link btn-sm" onclick="deleteItem('series','${s.id}')">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+function updateSeriesProgress(id) {
+    const s = state.series.find(x => x.id === id);
+    if (!s) return;
+    const v = prompt(`Episodes watched (0–${s.total_episodes}):`, s.episodes_watched);
+    if (v === null) return;
+    s.episodes_watched = Math.max(0, Math.min(s.total_episodes, parseInt(v) || 0));
+    saveState();
+    renderSeries();
+}
+
+/* ── ANIME ──────────────────────────────────────────────────────────── */
+function addAnime(e) {
+    e.preventDefault();
+    const f = e.target;
+    state.anime.push({
+        id: uid(),
+        title: f.title.value.trim(),
+        total_episodes: parseInt(f.total_episodes.value) || 12,
+        episodes_watched: 0,
+        cover_url: f.cover_url.value.trim(),
+        person: currentPerson,
+    });
+    saveState();
+    f.reset();
+    renderAnime();
+}
+function renderAnime() {
+    const grid = document.getElementById('anime-grid');
+    if (!state.anime.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
+            <div class="empty-icon">🍙</div>Add an anime above.</div>`;
+        return;
+    }
+    grid.innerHTML = state.anime.map(a => `
+        <div class="lib-card">
+            ${a.cover_url
+                ? `<img src="${escapeAttr(a.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>🍙</div>'">`
+                : `<div class="lib-placeholder">🍙</div>`}
+            <div class="nm">${escapeHtml(a.title)}</div>
+            <div class="meta">${a.episodes_watched}/${a.total_episodes} ep</div>
+            <progress value="${a.episodes_watched}" max="${a.total_episodes}"></progress>
+            <div class="tag-row">${personTag(a.person)}</div>
+            <div class="actions">
+                <button class="btn btn-ghost btn-sm" onclick="updateAnimeProgress('${a.id}')">Update</button>
+                <button class="btn btn-link btn-sm" onclick="deleteItem('anime','${a.id}')">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+function updateAnimeProgress(id) {
+    const a = state.anime.find(x => x.id === id);
+    if (!a) return;
+    const v = prompt(`Episodes watched (0–${a.total_episodes}):`, a.episodes_watched);
+    if (v === null) return;
+    a.episodes_watched = Math.max(0, Math.min(a.total_episodes, parseInt(v) || 0));
+    saveState();
+    renderAnime();
+}
+
+/* ── COMMON ─────────────────────────────────────────────────────────── */
+function deleteItem(kind, id) {
+    if (!confirm('Remove this item?')) return;
+    state[kind] = state[kind].filter(x => x.id !== id);
+    saveState();
+    if (kind === 'books') renderBooks();
+    if (kind === 'movies') renderMovies();
+    if (kind === 'series') renderSeries();
+    if (kind === 'anime') renderAnime();
+}
+function escapeHtml(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+/* ── MOBILE SIDEBAR ─────────────────────────────────────────────────── */
+function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('visible');
+}
+function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('visible');
+}
+
+/* ── WELCOME INTRO ──────────────────────────────────────────────────── */
+function showWelcome(person) {
+    const labels = { douwe: 'Douwe', girlfriend: 'Her', ilian: 'Ilian' };
+    if (!labels[person]) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'welcome-overlay ' + person;
+    overlay.innerHTML = `<div class="welcome-text">Welcome ${labels[person]}</div>`;
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.remove(), 2500);
+}
+
+/* ── INIT ───────────────────────────────────────────────────────────── */
+renderPersonPicker();
+showPage('calendar');
+if (VALID_PERSONS.includes(urlPerson)) {
+    showWelcome(urlPerson);
+    // Clean URL so a refresh doesn't replay the intro
+    history.replaceState({}, '', window.location.pathname);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeTaskModal();
+});
+</script>
+
+</body>
+</html>

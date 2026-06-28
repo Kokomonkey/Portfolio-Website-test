@@ -6,345 +6,206 @@
     <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
     <title>Projects | DouweDoesDesign</title>
     <style>
-        /* --- CSS VARIABLES & RESET --- */
+        /* BLUEPRINT THEME */
         :root {
-            --bg-color: #000000;
-            --accent-color: #ffffff;
-            --transition-speed: 0.7s; 
-            
-            /* VERTICAL DIMENSIONS */
-            --header-height: 15vh;     
-            --square-size: 20vh;       
-            --gap-size: 2vh;           
+            --bg: #0a1628;
+            --fg: #ffffff;
+            --cyan: #00c8ff;
+            --cyan-dim: rgba(0,200,255,0.18);
+            --grid-major: rgba(0,200,255,0.07);
+            --grid-minor: rgba(0,200,255,0.025);
+            --speed: 0.5s;
+            --sq: 20vh;
+            --gap: 2vh;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        html { cursor: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            font-family: 'Courier New', Courier, monospace; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh; 
-            overflow: hidden; 
-            justify-content: center;
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(var(--grid-major) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            color: var(--fg);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex; flex-direction: column;
+            align-items: center; height: 100vh;
+            overflow: hidden; justify-content: center;
         }
 
-        /* --- POPUP STYLES --- */
+        /* CURSOR */
+        #cur-main {
+            position: fixed; pointer-events: none; z-index: 10001;
+            top: 0; left: 0; width: 1px; height: 20px;
+            background: rgba(255,255,255,0.92); will-change: transform;
+        }
+        #cur-main::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 20px; height: 1px; background: rgba(255,255,255,0.92);
+            transform: translate(-50%,-50%);
+        }
+        #cur-main::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 4px; height: 4px; background: #fff; border-radius: 50%;
+            transform: translate(-50%,-50%);
+        }
+        #cur-follow {
+            position: fixed; pointer-events: none; z-index: 10000;
+            top: 0; left: 0; width: 36px; height: 36px;
+            border: 1px solid var(--cyan); opacity: 0.75;
+            will-change: transform, width, height;
+            transition: width 0.15s ease, height 0.15s ease;
+        }
+
+        /* POPUP */
         .popup-overlay {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
-            z-index: 2000; /* Above everything */
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            backdrop-filter: blur(5px);
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.88);
+            z-index: 2000; justify-content: center; align-items: center;
+            padding: 20px; backdrop-filter: blur(5px);
         }
-
         .popup-box {
-            background-color: var(--bg-color);
-            border: 2px solid var(--accent-color);
-            padding: 30px;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            background-color: var(--bg); border: 1px solid var(--cyan);
+            box-shadow: 0 0 30px var(--cyan-dim);
+            padding: 30px; max-width: 400px; text-align: center;
             animation: fadeIn 0.3s ease;
         }
-
-        .popup-box p {
-            font-size: 1rem;
-            margin-bottom: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            line-height: 1.5;
-        }
-
+        .popup-box p { font-size: 1rem; margin-bottom: 20px; font-family: 'Courier New', monospace; line-height: 1.5; }
         .close-btn {
-            background: var(--accent-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 10px 20px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.3s;
+            background: transparent; color: var(--cyan);
+            border: 1px solid var(--cyan); padding: 10px 20px;
+            font-family: 'Courier New', monospace; font-weight: bold;
+            text-transform: uppercase; transition: 0.3s;
         }
-        .close-btn:hover {
-            background: #333;
-            color: #fff;
-        }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .close-btn:hover { background: var(--cyan); color: var(--bg); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- BACK BUTTON --- */
+        /* BACK BUTTON */
         .back-btn {
-            position: fixed;
-            top: 2vh;
-            left: 2vh; 
-            text-decoration: none;
-            z-index: 200; 
-            border: 2px solid var(--accent-color);
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            padding: 1vh 2vh; 
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 2vh; 
-            transition: all 0.3s ease;
+            position: fixed; top: 2vh; left: 2vh;
+            text-decoration: none; z-index: 200;
+            border: 1px solid var(--cyan); background-color: transparent;
+            color: var(--cyan); padding: 1vh 2vh;
+            font-family: 'Courier New', monospace;
+            font-weight: bold; text-transform: uppercase;
+            font-size: 1.5vh; letter-spacing: 0.1vh; transition: all var(--speed) ease;
         }
+        .back-btn:hover { background-color: var(--cyan); color: var(--bg); }
 
-        .back-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-        }
-
-        /* --- HEADER --- */
+        /* HEADER */
         header {
-            height: var(--header-height);
-            display: flex;
-            flex-direction: row; 
-            align-items: center;
-            justify-content: center;
-            gap: 2vh;
-            margin-bottom: 4vh; 
-            flex-shrink: 0;
+            height: 15vh; display: flex; flex-direction: row;
+            align-items: center; justify-content: center;
+            gap: 2vh; margin-bottom: 4vh; flex-shrink: 0;
         }
-
         .logo-placeholder {
-            height: 10vh; 
-            width: 10vh; 
-            background-color: var(--accent-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            filter: invert(1);
+            height: 8vh; width: 8vh;
+            display: flex; justify-content: center; align-items: center;
         }
-        
         .logo-placeholder img {
-            max-height: 100%;
-            width: auto;
+            max-height: 100%; width: auto;
+            filter: invert(1); mix-blend-mode: screen; opacity: 0.35;
         }
+        h1 { font-size: 4vh; letter-spacing: 0.5vh; text-transform: uppercase; font-weight: 700; line-height: 1; }
 
-        h1 {
-            font-size: 4vh; 
-            letter-spacing: 0.5vh;
-            text-transform: uppercase;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        /* --- GRID CONTAINER --- */
-        main {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
-            width: 100%;
-            overflow-y: auto; /* Allow scroll if screen is too small */
-        }
-
+        /* GRID */
+        main { display: flex; justify-content: center; align-items: center; flex-grow: 1; width: 100%; overflow-y: auto; }
         .grid-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); 
-            gap: var(--gap-size); 
-            width: fit-content;
-            padding-bottom: 20px;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap); width: fit-content; padding-bottom: 20px;
         }
 
-        /* --- INTERACTIVE GRID ITEMS --- */
+        /* GRID ITEMS — blueprint survey: diagonal wave */
         .grid-item {
-            display: block; 
-            text-decoration: none;
-            position: relative; 
-            width: var(--square-size);
-            height: var(--square-size);
-            cursor: pointer;
-            
-            /* Animation Setup */
-            opacity: 0; 
-            animation-duration: 3s; 
-            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); 
-            animation-fill-mode: forwards;
-        }
-
-        .grid-item:hover {
-            z-index: 100;
-        }
-
-        /* --- THE SQUARE (LEFT SIDE) --- */
-        .square {
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color); 
-            border: 2px solid var(--accent-color); 
-            display: flex;
-            justify-content: center;
-            align-items: center; 
-            transition: all var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1);
-            position: absolute; 
-            top: 0;
-            left: 0;
-            z-index: 2; 
-        }
-
-        .square-icon {
-            width: 50%;
-            height: 50%;
-            background-color: var(--accent-color); 
-            transition: all var(--transition-speed) ease;
-        }
-
-        .square-text {
-            position: absolute;
-            bottom: 8%; 
-            width: 100%;
-            text-align: center;
-            color: var(--bg-color); 
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: calc(var(--square-size) / 9);
+            display: block; text-decoration: none;
+            position: relative; width: var(--sq); height: var(--sq);
             opacity: 0;
-            transform: translateY(10px); 
-            transition: all var(--transition-speed) ease;
+            animation: blueprintPlot 0.55s cubic-bezier(0.16, 1, 0.5, 1) forwards;
+        }
+        .grid-item:hover { z-index: 100; }
+        .grid-item:nth-child(1) { animation-delay: 0.00s; }
+        .grid-item:nth-child(2) { animation-delay: 0.07s; }
+        .grid-item:nth-child(3) { animation-delay: 0.14s; }
+        .grid-item:nth-child(4) { animation-delay: 0.07s; }
+        .grid-item:nth-child(5) { animation-delay: 0.14s; }
+        .grid-item:nth-child(6) { animation-delay: 0.21s; }
+        .grid-item:nth-child(7) { animation-delay: 0.14s; }
+        .grid-item:nth-child(8) { animation-delay: 0.21s; }
+        .grid-item:nth-child(9) { animation-delay: 0.28s; }
+
+        @keyframes blueprintPlot {
+            0%   { opacity: 0; transform: scale(0.9); }
+            40%  { box-shadow: 0 0 22px rgba(0,200,255,0.4); }
+            100% { opacity: 1; transform: scale(1); box-shadow: none; }
         }
 
-        /* --- THE DESCRIPTION BOX (RIGHT SIDE) --- */
+        /* THE SQUARE */
+        .square {
+            width: 100%; height: 100%;
+            background-color: rgba(10,22,40,0.9);
+            border: 1px solid rgba(255,255,255,0.22);
+            display: flex; justify-content: center; align-items: center;
+            transition: all var(--speed) cubic-bezier(0.25, 1, 0.5, 1);
+            position: absolute; top: 0; left: 0; z-index: 2;
+        }
+        .square-icon { width: 50%; height: 50%; background-color: var(--fg); transition: all var(--speed) ease; }
+        .square-text {
+            position: absolute; bottom: 8%; width: 100%;
+            text-align: center; color: var(--bg); font-weight: bold;
+            text-transform: uppercase; font-size: calc(var(--sq) / 9);
+            opacity: 0; transform: translateY(10px); transition: all var(--speed) ease;
+        }
+
+        /* DESCRIPTION BOX */
         .project-info {
-            width: 100%; 
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0; 
-            
-            background-color: var(--accent-color); 
-            color: var(--bg-color); 
-            border: 2px solid var(--accent-color);
-            
-            display: flex;
-            align-items: center;
-            padding: 1.5vh;
-            
-            opacity: 0; 
-            z-index: 1; 
-            pointer-events: none; 
-            
-            transition: all var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1);
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+            background-color: var(--cyan); color: var(--bg);
+            border: 1px solid var(--cyan);
+            display: flex; align-items: center; padding: 1.5vh;
+            opacity: 0; z-index: 1; pointer-events: none;
+            transition: all var(--speed) cubic-bezier(0.25, 1, 0.5, 1);
         }
+        .project-info p { font-size: 1.3vh; line-height: 1.4; text-align: left; overflow: hidden; color: var(--bg); font-weight: 600; }
 
-        .project-info p {
-            font-size: 1.3vh; 
-            line-height: 1.4;
-            text-align: left;
-            overflow: hidden;
-        }
-
-        /* CLASS FOR PHOTOS / RENDERS */
+        /* IMAGES */
         .square-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-            object-position: center; 
-            display: block;
-            filter: grayscale(100%) contrast(1.2); 
-            transition: all 0.3s ease;
-            filter: invert(1);
+            width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;
+            filter: invert(1); transition: all var(--speed) ease;
         }
+        .grid-item:hover .square-img { filter: none; transform: scale(1.08); }
 
-        /* HOVER EFFECT FOR IMAGES */
-        .grid-item:hover .square-img {
-            filter: grayscale(0%) contrast(1);
-            transform: scale(1.1); 
-        }
+        /* HOVER */
+        .grid-item:hover .square { transform: translateX(-55%); background-color: var(--fg); border-color: var(--cyan); }
+        .grid-item:hover .project-info { transform: translateX(55%); opacity: 1; pointer-events: auto; }
+        .grid-item:hover .square-icon { background-color: var(--bg); transform: translateY(-15%); }
+        .grid-item:hover .square-text { opacity: 1; transform: translateY(0); }
 
-        /* --- HOVER ANIMATION LOGIC --- */
-        /* 1. Square slides Left */
-        .grid-item:hover .square {
-            transform: translateX(-55%); 
-            background-color: var(--accent-color); 
-        }
-
-        /* 2. Description slides Right & Appears */
-        .grid-item:hover .project-info {
-            transform: translateX(55%); 
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* 3. Icon Color Inversion */
-        .grid-item:hover .square-icon {
-            background-color: var(--bg-color); 
-            transform: translateY(-15%); 
-        }
-
-        .grid-item:hover .square-text {
-            opacity: 1; 
-            transform: translateY(0);
-        }
-
-        /* --- ENTRANCE ANIMATIONS --- */
-        @keyframes slideFromTop { 0% { transform: translateY(-100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes slideFromBottom { 0% { transform: translateY(100vh); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes slideFromLeft { 0% { transform: translateX(-100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes slideFromRight { 0% { transform: translateX(100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-
-        /* --- MOBILE ADAPTATION --- */
+        /* MOBILE */
         @media (max-width: 768px) {
-            body {
-                height: auto;
-                min-height: 100vh;
-                padding-bottom: 50px;
-                overflow-y: scroll;
-            }
-
-            header {
-                flex-direction: column;
-                height: auto;
-                margin-top: 80px;
-                gap: 10px;
-            }
-
+            html { cursor: auto; }
+            * { cursor: auto !important; }
+            #cur-main, #cur-follow { display: none; }
+            body { height: auto; min-height: 100vh; padding-bottom: 50px; overflow-y: scroll; }
+            header { flex-direction: column; height: auto; margin-top: 80px; gap: 10px; }
             .logo-placeholder { height: 60px; width: 60px; }
             h1 { font-size: 1.8rem; letter-spacing: 2px; }
-
-            .grid-container {
-                /* Switch to single column for mobile */
-                grid-template-columns: 1fr;
-                gap: 40px; /* More space between items */
-            }
-
-            .grid-item {
-                /* Make squares larger on mobile */
-                width: 60vw;
-                height: 60vw;
-            }
-
-            /* Adjust Hover Animation for Mobile Screens (so it doesn't go off screen) */
+            .grid-container { grid-template-columns: 1fr; gap: 40px; }
+            .grid-item { width: 60vw; height: 60vw; opacity: 1; animation: none; }
             .grid-item:hover .square { transform: translateX(-15%); }
             .grid-item:hover .project-info { transform: translateX(15%); }
-
-            .square-text {
-                font-size: 1rem;
-            }
-            
-            .project-info p {
-                font-size: 0.8rem;
-            }
+            .square-text { font-size: 1rem; }
+            .project-info p { font-size: 0.8rem; }
         }
-
     </style>
 </head>
 <body>
+    <div id="cur-follow"></div>
+    <div id="cur-main"></div>
 
     <a href="index.html" class="back-btn">← Back</a>
 
@@ -459,16 +320,28 @@
     </div>
 
     <script>
-        // GRID ANIMATIONS
-        document.addEventListener("DOMContentLoaded", function() {
-            const squares = document.querySelectorAll('.grid-item');
-            const animations = ['slideFromTop', 'slideFromBottom', 'slideFromLeft', 'slideFromRight'];
-
-            squares.forEach((square) => {
-                const randomIndex = Math.floor(Math.random() * animations.length);
-                square.style.animationName = animations[randomIndex];
+        // CURSOR
+        (function() {
+            const c1 = document.getElementById('cur-main');
+            const c2 = document.getElementById('cur-follow');
+            if (!c1 || !c2) return;
+            let mx = innerWidth/2, my = innerHeight/2, fx = mx, fy = my, hov = false;
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX; my = e.clientY;
+                c1.style.transform = `translate(${mx-.5}px,${my-10}px)`;
             });
-        });
+            (function loop() {
+                fx += (mx-fx)*.09; fy += (my-fy)*.09;
+                const s = hov ? 52 : 36;
+                c2.style.width = s+'px'; c2.style.height = s+'px';
+                c2.style.transform = `translate(${fx-s/2}px,${fy-s/2}px)`;
+                requestAnimationFrame(loop);
+            })();
+            document.querySelectorAll('a,button').forEach(el => {
+                el.addEventListener('mouseenter', () => hov = true);
+                el.addEventListener('mouseleave', () => hov = false);
+            });
+        })();
 
         // POPUP LOGIC
         function openPopup(event) {

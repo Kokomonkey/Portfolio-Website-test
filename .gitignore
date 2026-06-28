@@ -7,3 +7,4 @@ MaterialData/*
 !MaterialData/public_material_portal.html
 !MaterialData/local_brain.py
 !MaterialData/materials.db
+node_modules

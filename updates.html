@@ -6,248 +6,138 @@
     <link rel="icon" type="image/png" href="Recourses/Logos/DDD.jpg">
     <title>System Logs | DouweDoesDesign</title>
     <style>
-        /* --- CSS VARIABLES & RESET --- */
+        /* BLUEPRINT THEME */
         :root {
-            --bg-color: #000000;
-            --accent-color: #ffffff;
+            --bg: #0a1628;
+            --fg: #ffffff;
+            --cyan: #00c8ff;
+            --cyan-dim: rgba(0,200,255,0.18);
+            --grid-major: rgba(0,200,255,0.07);
+            --grid-minor: rgba(0,200,255,0.025);
+            --speed: 0.3s;
             --code-font: 'Courier New', Courier, monospace;
-            --body-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            --header-height: 20vh;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { cursor: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            font-family: var(--body-font);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-            overflow-y: scroll; /* Force scrollbar */
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(var(--grid-major) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            color: var(--fg); font-family: var(--code-font);
+            min-height: 100vh; display: flex; flex-direction: column;
+            align-items: center; overflow-x: hidden; overflow-y: scroll;
         }
 
-        /* Scrollbar Styling (Webkit) */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #333; border: 1px solid #000; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: rgba(0,200,255,0.3); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
 
-        /* --- HEADER & NAV --- */
+        /* CURSOR */
+        #cur-main {
+            position: fixed; pointer-events: none; z-index: 10001;
+            top: 0; left: 0; width: 1px; height: 20px;
+            background: rgba(255,255,255,0.92); will-change: transform;
+        }
+        #cur-main::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 20px; height: 1px; background: rgba(255,255,255,0.92);
+            transform: translate(-50%,-50%);
+        }
+        #cur-main::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 4px; height: 4px; background: #fff; border-radius: 50%;
+            transform: translate(-50%,-50%);
+        }
+        #cur-follow {
+            position: fixed; pointer-events: none; z-index: 10000;
+            top: 0; left: 0; width: 36px; height: 36px;
+            border: 1px solid var(--cyan); opacity: 0.75;
+            will-change: transform, width, height;
+            transition: width 0.15s ease, height 0.15s ease;
+        }
+
+        /* BACK BUTTON */
         .back-btn {
-            position: fixed;
-            top: 4vh; left: 4vh;
-            text-decoration: none;
-            z-index: 1000;
-            border: 1px solid var(--accent-color);
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            padding: 10px 20px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
+            position: fixed; top: 4vh; left: 4vh; text-decoration: none; z-index: 1000;
+            border: 1px solid var(--cyan); background-color: transparent; color: var(--cyan);
+            padding: 10px 20px; text-transform: uppercase; font-size: 0.8rem;
+            letter-spacing: 1px; transition: all var(--speed) ease;
         }
-        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+        .back-btn:hover { background-color: var(--cyan); color: var(--bg); }
 
+        /* HEADER */
         header {
-            min-height: var(--header-height);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding-top: 50px;
-            margin-bottom: 50px;
-            width: 100%;
-            text-align: center;
+            min-height: 20vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding-top: 50px; margin-bottom: 50px; width: 100%; text-align: center;
         }
+        .site-logo { height: 60px; width: auto; margin-bottom: 20px; filter: invert(1); mix-blend-mode: screen; opacity: 0.35; }
+        h1 { font-size: 2rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 300; border-bottom: 1px solid var(--cyan); padding-bottom: 10px; }
 
-        .site-logo {
-            height: 60px; width: auto; margin-bottom: 20px;
-            border: 1px solid var(--accent-color);
-            filter: invert(100%);
-        }
+        /* TIMELINE */
+        main { width: 100%; max-width: 800px; padding: 0 20px 100px 20px; display: flex; flex-direction: column; gap: 20px; }
 
-        h1 {
-            font-size: 2rem; letter-spacing: -1px; text-transform: uppercase;
-            font-weight: 300; border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 10px;
-        }
-
-        /* --- VERSION TIMELINE --- */
-        main {
-            width: 100%;
-            max-width: 800px;
-            padding: 0 20px 100px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* The Status Bar (Simulating a terminal prompt) */
         .status-bar {
-            font-family: var(--code-font);
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 20px;
-            border-bottom: 1px dashed #333;
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            /* Added wrap for small screens */
-            flex-wrap: wrap; 
-            gap: 10px;
+            font-family: var(--code-font); font-size: 0.8rem; color: var(--cyan);
+            margin-bottom: 20px; border-bottom: 1px dashed rgba(0,200,255,0.3);
+            padding-bottom: 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
         }
-        .status-dot {
-            display: inline-block; width: 10px; height: 10px; 
-            background: limegreen; border-radius: 50%; margin-right: 10px;
-            animation: pulse 2s infinite;
-        }
+        .status-dot { display: inline-block; width: 10px; height: 10px; background: var(--cyan); border-radius: 50%; margin-right: 10px; animation: pulse 2s infinite; }
 
-        /* The Commit Card */
+        /* Commit card — data stream from right */
         .commit-entry {
-            border: 1px solid #333;
-            padding: 25px;
-            background: #050505;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            position: relative;
-            overflow: hidden;
-            
-            /* Initial State for Animation */
-            opacity: 0;
-            transform: translateX(-20px);
-            animation: streamIn 0.5s ease forwards;
+            border: 1px solid rgba(0,200,255,0.18); padding: 25px;
+            background: rgba(10,22,40,0.7);
+            transition: all var(--speed) cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative; overflow: hidden;
+            opacity: 0; animation: dataStream 0.5s ease forwards;
         }
+        .commit-entry:hover { border-color: var(--cyan); background: rgba(0,200,255,0.04); box-shadow: 0 0 20px var(--cyan-dim); transform: scale(1.01); }
 
-        /* Hover Interaction */
-        .commit-entry:hover {
-            border-color: var(--accent-color);
-            background: var(--bg-color);
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
-        }
-
-        .commit-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-family: var(--code-font);
-            font-size: 0.75rem;
-            color: #888;
-        }
-
+        .commit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-family: var(--code-font); font-size: 0.75rem; color: var(--cyan); }
         .commit-date { text-transform: uppercase; letter-spacing: 1px; }
+        .commit-msg { font-size: 1.1rem; font-weight: 400; line-height: 1.4; color: var(--fg); word-wrap: break-word; }
+        .commit-sha { position: absolute; top: 25px; right: -100px; font-family: var(--code-font); color: var(--bg); background: var(--cyan); padding: 2px 8px; font-size: 0.8rem; transition: right var(--speed) ease; }
+        @media (hover: hover) { .commit-entry:hover .commit-sha { right: 0; } }
 
-        .commit-msg {
-            font-size: 1.2rem;
-            font-weight: 400;
-            line-height: 1.4;
-            color: var(--accent-color);
-            /* Prevent long words breaking layout on mobile */
-            word-wrap: break-word; 
+        @keyframes dataStream {
+            0%   { opacity: 0; transform: translateX(35px); border-left-width: 2px; border-left-color: var(--cyan); }
+            60%  { border-left-width: 2px; }
+            100% { opacity: 1; transform: translateX(0); border-left-width: 1px; }
         }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        /* The SHA Hash (Hidden until hover) */
-        .commit-sha {
-            position: absolute;
-            top: 25px; right: -100px; /* Start off screen */
-            font-family: var(--code-font);
-            color: var(--bg-color);
-            background: var(--accent-color);
-            padding: 2px 8px;
-            font-size: 0.8rem;
-            transition: right 0.3s ease;
-            cursor: pointer;
-        }
-
-        /* Only apply hover effect on non-touch devices */
-        @media (hover: hover) {
-            .commit-entry:hover .commit-sha {
-                right: 0; /* Slide in on hover */
-            }
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes streamIn {
-            0% { opacity: 0; transform: translateX(-20px); }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; }
-        }
-
-        /* Loading Spinner */
-        #loading-msg {
-            text-align: center;
-            font-family: var(--code-font);
-            font-size: 0.9rem;
-            animation: blink 0.5s infinite;
-        }
+        #loading-msg { text-align: center; font-family: var(--code-font); font-size: 0.9rem; color: var(--cyan); animation: blink 0.5s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- MOBILE OPTIMIZATION --- */
+        /* MOBILE */
         @media (max-width: 768px) {
-            /* Adjust Back Button position for mobile headers */
-            .back-btn {
-                top: 20px;
-                left: 20px;
-                padding: 8px 15px;
-                font-size: 0.7rem;
-            }
-
-            /* Push header down so logo doesn't overlap back button */
-            header {
-                padding-top: 80px; 
-                margin-bottom: 30px;
-            }
-
-            .site-logo {
-                height: 50px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-                border-bottom-width: 1px;
-            }
-
-            /* Adjust container padding */
-            main {
-                padding: 0 15px 80px 15px;
-            }
-
-            /* Adjust card padding to save screen space */
-            .commit-entry {
-                padding: 15px;
-            }
-
-            .commit-msg {
-                font-size: 1rem;
-            }
-
-            /* Make the SHA button always visible on mobile (since there is no hover) */
-            .commit-sha {
-                position: relative;
-                top: auto;
-                right: auto;
-                display: inline-block;
-                margin-top: 15px;
-                font-size: 0.7rem;
-            }
-            
-            /* Disable the scale effect on mobile to prevent accidental zooming/shifting */
-            .commit-entry:hover {
-                transform: none;
-                box-shadow: none;
-            }
+            html { cursor: auto; }
+            * { cursor: auto !important; }
+            #cur-main, #cur-follow { display: none; }
+            .back-btn { top: 20px; left: 20px; padding: 8px 15px; font-size: 0.7rem; }
+            header { padding-top: 80px; margin-bottom: 30px; }
+            .site-logo { height: 50px; }
+            h1 { font-size: 1.5rem; }
+            main { padding: 0 15px 80px 15px; }
+            .commit-entry { padding: 15px; }
+            .commit-msg { font-size: 1rem; }
+            .commit-sha { position: relative; top: auto; right: auto; display: inline-block; margin-top: 15px; font-size: 0.7rem; }
+            .commit-entry:hover { transform: none; box-shadow: none; }
         }
-
     </style>
 </head>
 <body>
+    <div id="cur-follow"></div>
+    <div id="cur-main"></div>
 
     <a href="index.html" class="back-btn">← Back</a>
 
@@ -267,6 +157,29 @@
         </main>
 
     <script>
+        // CURSOR
+        (function() {
+            const c1 = document.getElementById('cur-main');
+            const c2 = document.getElementById('cur-follow');
+            if (!c1 || !c2) return;
+            let mx = innerWidth/2, my = innerHeight/2, fx = mx, fy = my, hov = false;
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX; my = e.clientY;
+                c1.style.transform = `translate(${mx-.5}px,${my-10}px)`;
+            });
+            (function loop() {
+                fx += (mx-fx)*.09; fy += (my-fy)*.09;
+                const s = hov ? 52 : 36;
+                c2.style.width = s+'px'; c2.style.height = s+'px';
+                c2.style.transform = `translate(${fx-s/2}px,${fy-s/2}px)`;
+                requestAnimationFrame(loop);
+            })();
+            document.querySelectorAll('a,button').forEach(el => {
+                el.addEventListener('mouseenter', () => hov = true);
+                el.addEventListener('mouseleave', () => hov = false);
+            });
+        })();
+
         // CONFIGURATION
         const GITHUB_USERNAME = 'Kokomonkey';
         const GITHUB_REPO = 'Portfolio-Website-test';

@@ -1,0 +1,3 @@
+module.exports=[90048,a=>{"use strict";var b=a.i(80758);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"en",children:(0,b.jsx)("body",{children:a})})},"metadata",0,{title:"Competition Aggregator | Architecture & Design",description:"Find architecture and industrial design competitions worldwide"}])},29075,a=>{a.n(a.i(90048))}];
+
+//# sourceMappingURL=Competition%20Site_src_app_layout_tsx_0jmf_oh._.js.map

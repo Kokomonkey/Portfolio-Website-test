@@ -7,251 +7,149 @@
     <link rel="apple-touch-icon" href="Recourses/Logos/DDD.jpg">
     <title>Project Archives | DouweDoesDesign</title>
     <style>
-        /* --- CSS VARIABLES & RESET --- */
+        /* BLUEPRINT THEME */
         :root {
-            --bg-color: #000000;
-            --accent-color: #ffffff;
-            --transition-speed: 0.4s;
-            --header-height: auto; /* Changed from fixed 25vh to auto to accommodate text */
+            --bg: #0a1628;
+            --fg: #ffffff;
+            --cyan: #00c8ff;
+            --cyan-dim: rgba(0,200,255,0.18);
+            --grid-major: rgba(0,200,255,0.07);
+            --grid-minor: rgba(0,200,255,0.025);
+            --speed: 0.4s;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        html { cursor: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh; 
-            overflow-y: auto; 
-            overflow-x: hidden;
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(var(--grid-major) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            color: var(--fg); font-family: 'Courier New', Courier, monospace;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; overflow-y: auto; overflow-x: hidden;
         }
 
-        /* --- BACK BUTTON (Preserved) --- */
+        /* CURSOR */
+        #cur-main {
+            position: fixed; pointer-events: none; z-index: 10001;
+            top: 0; left: 0; width: 1px; height: 20px;
+            background: rgba(255,255,255,0.92); will-change: transform;
+        }
+        #cur-main::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 20px; height: 1px; background: rgba(255,255,255,0.92);
+            transform: translate(-50%,-50%);
+        }
+        #cur-main::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 4px; height: 4px; background: #fff; border-radius: 50%;
+            transform: translate(-50%,-50%);
+        }
+        #cur-follow {
+            position: fixed; pointer-events: none; z-index: 10000;
+            top: 0; left: 0; width: 36px; height: 36px;
+            border: 1px solid var(--cyan); opacity: 0.75;
+            will-change: transform, width, height;
+            transition: width 0.15s ease, height 0.15s ease;
+        }
+
+        /* BACK BUTTON */
         .back-btn {
-            position: fixed;
-            top: 2vh;
-            left: 2vh;
-            text-decoration: none;
-            z-index: 100;
-            border: 1px solid var(--accent-color);
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            padding: 10px 20px;
-            font-weight: 400;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
+            position: fixed; top: 2vh; left: 2vh; text-decoration: none; z-index: 100;
+            border: 1px solid var(--cyan); background-color: transparent; color: var(--cyan);
+            padding: 10px 20px; font-family: 'Courier New', monospace;
+            font-weight: 400; text-transform: uppercase; font-size: 0.8rem;
+            letter-spacing: 1px; transition: all var(--speed) ease;
         }
+        .back-btn:hover { background-color: var(--cyan); color: var(--bg); }
 
-        .back-btn:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-        }
-
-        /* --- HEADER --- */
+        /* HEADER */
         header {
-            min-height: var(--header-height);
-            display: flex;
-            flex-direction: column; /* Stack Logo and Text */
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1vh;
-            padding-top: 10vh; /* Increased top padding to clear back button */
-            padding-bottom: 2vh;
-            flex-shrink: 0;
-            width: 100%;
-            max-width: 800px;
-            padding-left: 20px;
-            padding-right: 20px;
-            text-align: center;
+            min-height: auto; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            margin-bottom: 1vh; padding: 10vh 20px 2vh; flex-shrink: 0;
+            width: 100%; max-width: 800px; text-align: center;
         }
-
-        /* Logo Styling */
-        .site-logo {
-            height: 80px; /* Adjust size as needed */
-            width: auto;
-            margin-bottom: 20px;
-            border: 1px solid var(--accent-color);
-            filter: invert(1);
-        }
-
+        .site-logo { height: 80px; width: auto; margin-bottom: 20px; filter: invert(1); mix-blend-mode: screen; opacity: 0.35; }
         h1 {
-            font-size: 2.5rem; 
-            letter-spacing: -1px;
-            text-transform: uppercase;
-            font-weight: 300;
-            border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 10px;
-            animation: fadeIn 1.5s ease-out;
-            margin-bottom: 25px;
+            font-size: 2.5rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 300;
+            border-bottom: 1px solid var(--cyan); padding-bottom: 10px; margin-bottom: 25px;
+            animation: fadeIn 0.8s ease-out;
         }
-
-        /* NEW: Intro Text Styling */
-        .intro-text {
-            margin-top: 20px;
-            font-size: 1rem;
-            font-weight: 300;
-            line-height: 1.5;
-            color: #ccc; /* Slightly dimmed for hierarchy */
-            margin-bottom: 20px;
-            animation: fadeIn 2s ease-out;
-        }
-
-        /* NEW: Disclaimer Box */
+        .intro-text { margin-top: 20px; font-size: 1rem; font-weight: 300; line-height: 1.5; color: rgba(255,255,255,0.65); margin-bottom: 20px; animation: fadeIn 1s ease-out; }
         .disclaimer-box {
-            font-size: 0.85rem;
-            border: 1px solid #555;
-            padding: 10px 15px;
-            background: #111;
-            display: inline-block;
-            margin-top: 10px;
-            color: #ddd;
-            animation: fadeIn 2.2s ease-out;
-            max-width: 75%;
-            line-height: 1.4;
+            font-size: 0.85rem; border: 1px solid rgba(0,200,255,0.35);
+            padding: 10px 15px; background: rgba(0,200,255,0.04);
+            display: inline-block; margin-top: 10px; color: var(--fg);
+            animation: fadeIn 1.2s ease-out; max-width: 75%; line-height: 1.4;
         }
 
-        /* --- MAIN LAYOUT --- */
-        main {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            padding: 0 20px 50px 20px; /* Bottom padding for scroll space */
-            gap: 20px;
-        }
+        /* MAIN */
+        main { width: 100%; max-width: 800px; display: flex; flex-direction: column; padding: 0 20px 50px 20px; gap: 20px; }
 
-        /* THE COMPONENT: Horizontal Bar */
+        /* Blueprint unfurl: bars unroll from top */
         .project-bar {
-            width: 100%;
-            border: 1px solid var(--accent-color);
-            background: var(--bg-color);
-            /* ANIMATION SETUP */
-            opacity: 0;
-            transform: translateX(-50px); 
-            animation: slideInProject 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            width: 100%; border: 1px solid rgba(0,200,255,0.28);
+            background: rgba(10,22,40,0.8);
+            opacity: 0; transform-origin: top;
+            animation: unfurl 0.5s cubic-bezier(0.16, 1, 0.5, 1) forwards;
         }
+        .project-bar:nth-child(1) { animation-delay: 0.05s; }
+        .project-bar:nth-child(2) { animation-delay: 0.15s; }
+        .project-bar:nth-child(3) { animation-delay: 0.25s; }
+        .project-bar:nth-child(4) { animation-delay: 0.35s; }
+        .project-bar:nth-child(5) { animation-delay: 0.45s; }
+        .project-bar:nth-child(6) { animation-delay: 0.55s; }
 
-        /* Staggered Entrance */
-        .project-bar:nth-child(even) { transform: translateX(50px); }
-        .project-bar:nth-child(1) { animation-delay: 0.2s; }
-        .project-bar:nth-child(2) { animation-delay: 0.4s; }
-        .project-bar:nth-child(3) { animation-delay: 0.6s; }
+        @keyframes unfurl { 0% { opacity: 0; transform: scaleY(0.35) translateY(-12px); } 100% { opacity: 1; transform: scaleY(1) translateY(0); } }
 
-        /* The Clickable Header */
         .bar-header {
-            width: 100%;
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            color: var(--accent-color);
-            font-family: inherit;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-            transition: background 0.3s ease;
+            width: 100%; padding: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: transparent; border: none; color: var(--fg);
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem; text-transform: uppercase; font-weight: 700;
+            letter-spacing: 1px; transition: background var(--speed) ease;
         }
+        .bar-header:hover { background: rgba(0,200,255,0.08); }
+        .toggle-icon { font-size: 1.5rem; font-weight: 300; transition: transform var(--speed) ease; color: var(--cyan); }
 
-        .bar-header:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .toggle-icon {
-            font-size: 1.5rem;
-            font-weight: 300;
-            transition: transform 0.3s ease;
-        }
-
-        /* The Dropdown Content */
-        .bar-content {
-            max-height: 0; /* Closed by default */
-            overflow: hidden;
-            transition: max-height 0.4s ease-out; /* Smooth slide */
-            background-color: #111; /* Slightly lighter black for contrast */
-        }
-
-        .version-list {
-            list-style: none;
-            padding: 20px 25px;
-            border-top: 1px solid #333;
-        }
-
+        .bar-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background-color: rgba(0,200,255,0.03); }
+        .version-list { list-style: none; padding: 20px 25px; border-top: 1px solid rgba(0,200,255,0.2); }
         .version-item { margin-bottom: 15px; }
         .version-item:last-child { margin-bottom: 0; }
-
         .version-link {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-size: 1rem;
-            opacity: 0.7;
-            display: block;
-            border-left: 1px solid transparent;
-            padding-left: 10px;
-            transition: all 0.2s;
+            color: var(--fg); text-decoration: none; font-size: 1rem; opacity: 0.65; display: block;
+            border-left: 1px solid transparent; padding-left: 10px; transition: all 0.2s;
         }
+        .version-link:hover { opacity: 1; border-left: 2px solid var(--cyan); padding-left: 15px; color: var(--cyan); }
 
-        .version-link:hover {
-            opacity: 1;
-            border-left: 3px solid var(--accent-color);
-            padding-left: 15px;
-        }
+        .project-bar.active .bar-header { background: var(--cyan); color: var(--bg); }
+        .project-bar.active .bar-header .toggle-icon { color: var(--bg); transform: rotate(45deg); }
 
-        /* Active State Styling */
-        .project-bar.active .bar-header {
-            background: var(--accent-color);
-            color: var(--bg-color);
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .project-bar.active .toggle-icon {
-            transform: rotate(45deg);
-        }
-
-        @keyframes slideInProject {
-            0% { opacity: 0; }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- MOBILE COMPATIBILITY --- */
+        /* MOBILE */
         @media (max-width: 600px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-            .site-logo {
-                height: 60px;
-            }
-            .bar-header {
-                padding: 20px;
-                font-size: 1.1rem;
-            }
-            .intro-text {
-                font-size: 0.9rem;
-            }
-            .back-btn {
-                padding: 8px 15px;
-                font-size: 0.7rem;
-            }
+            html { cursor: auto; }
+            * { cursor: auto !important; }
+            #cur-main, #cur-follow { display: none; }
+            h1 { font-size: 1.8rem; }
+            .site-logo { height: 60px; }
+            .bar-header { padding: 20px; font-size: 1.1rem; }
+            .intro-text { font-size: 0.9rem; }
+            .back-btn { padding: 8px 15px; font-size: 0.7rem; }
         }
     </style>
 </head>
 <body>
+    <div id="cur-follow"></div>
+    <div id="cur-main"></div>
 
     <a href="index.html" class="back-btn">← Back</a>
 
@@ -359,6 +257,29 @@
     </main>
 
     <script>
+        // CURSOR
+        (function() {
+            const c1 = document.getElementById('cur-main');
+            const c2 = document.getElementById('cur-follow');
+            if (!c1 || !c2) return;
+            let mx = innerWidth/2, my = innerHeight/2, fx = mx, fy = my, hov = false;
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX; my = e.clientY;
+                c1.style.transform = `translate(${mx-.5}px,${my-10}px)`;
+            });
+            (function loop() {
+                fx += (mx-fx)*.09; fy += (my-fy)*.09;
+                const s = hov ? 52 : 36;
+                c2.style.width = s+'px'; c2.style.height = s+'px';
+                c2.style.transform = `translate(${fx-s/2}px,${fy-s/2}px)`;
+                requestAnimationFrame(loop);
+            })();
+            document.querySelectorAll('a,button').forEach(el => {
+                el.addEventListener('mouseenter', () => hov = true);
+                el.addEventListener('mouseleave', () => hov = false);
+            });
+        })();
+
         function toggleBar(button) {
             // Get the container (article)
             const container = button.parentElement;
