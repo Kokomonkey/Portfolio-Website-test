@@ -30,12 +30,11 @@
     --shadow-sm: 0 1px 3px rgba(61, 47, 37, 0.08);
     --shadow-md: 0 4px 14px rgba(61, 47, 37, 0.1);
     --shadow-lg: 0 10px 28px rgba(61, 47, 37, 0.14);
-    /* Person colors */
-    --douwe-color: #4a90c2;       /* blue */
+    --douwe-color: #4a90c2;
     --douwe-bg:    #e6f0f8;
-    --girlfriend-color: #d96a9a;  /* pink */
+    --girlfriend-color: #d96a9a;
     --girlfriend-bg:    #fbe6ee;
-    --ilian-color: #8857c4;       /* purple */
+    --ilian-color: #8857c4;
     --ilian-bg:    #efe6f8;
 }
 
@@ -52,7 +51,6 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar */
 .sidebar {
     width: 210px;
     background: var(--sidebar-bg);
@@ -108,7 +106,6 @@ body {
 .nav-item:hover { background: var(--sidebar-hover); color: #f5e6d0; }
 .nav-item.active { background: var(--sidebar-active-bg); color: #3d2f25; font-weight: 600; }
 
-/* Person picker in sidebar */
 .person-picker {
     margin-top: auto;
     padding: 16px 8px 4px;
@@ -141,7 +138,6 @@ body {
 .person-opt.selected.girlfriend { background: var(--girlfriend-color); color: white; border-color: var(--girlfriend-color); }
 .person-opt.selected.ilian { background: var(--ilian-color); color: white; border-color: var(--ilian-color); }
 
-/* Main */
 .main-content {
     flex: 1;
     padding: 28px 32px;
@@ -159,7 +155,6 @@ body {
 .page-header h1 { font-size: 1.5em; font-weight: 700; }
 .page-header p { color: var(--text-muted); font-size: 0.9em; margin-top: 2px; }
 
-/* Buttons */
 .btn {
     padding: 9px 18px;
     border: none;
@@ -193,7 +188,6 @@ body {
     border: 1px solid var(--border);
 }
 
-/* Person tag */
 .ptag {
     display: inline-flex;
     align-items: center;
@@ -214,11 +208,9 @@ body {
 .ptag.girlfriend .dot { background: var(--girlfriend-color); }
 .ptag.ilian .dot { background: var(--ilian-color); }
 
-/* Page sections */
 .page { display: none; }
 .page.active { display: block; }
 
-/* ── CALENDAR ─────────────────────────────────── */
 .cal-header {
     display: flex;
     justify-content: space-between;
@@ -287,7 +279,6 @@ body {
 .task-actions a:hover { text-decoration: underline; }
 .task-actions .del { color: var(--red); }
 
-/* ── LIBRARY ──────────────────────────────────── */
 .lib-tabs {
     display: flex;
     gap: 4px;
@@ -406,7 +397,6 @@ body {
 }
 .empty-state .empty-icon { font-size: 3em; margin-bottom: 12px; }
 
-/* Modal */
 .modal-backdrop {
     position: fixed;
     inset: 0;
@@ -459,7 +449,6 @@ body {
     background: var(--bg);
 }
 
-/* Sync status indicator */
 .sync-status {
     margin: 10px 8px 4px;
     padding: 8px 10px;
@@ -481,7 +470,6 @@ body {
 .sync-status.syncing   { background: rgba(107,142,158,0.18); color: #9ec1d0; border-color: rgba(107,142,158,0.3); }
 .sync-status.error     { background: rgba(193,67,46,0.18); color: #e89a8c; border-color: rgba(193,67,46,0.4); }
 
-/* Welcome intro overlay */
 .welcome-overlay {
     position: fixed;
     inset: 0;
@@ -518,7 +506,6 @@ body {
     100% { transform: translateY(-8px); }
 }
 
-/* Mobile */
 .mobile-header { display: none; }
 #sidebar-overlay { display: none; }
 
@@ -573,8 +560,8 @@ body {
 <body>
 
 <div class="mobile-header">
-    <span class="mobile-logo">✨ Kloef</span>
-    <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+    <span class="mobile-logo">Kloef</span>
+    <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Open menu">&#9776;</button>
 </div>
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
@@ -585,13 +572,13 @@ body {
     </div>
 
     <div class="nav-section">Plan</div>
-    <button class="nav-item" data-page="calendar">📅 Calendar</button>
+    <button class="nav-item" data-page="calendar">&#128197; Calendar</button>
 
     <div class="nav-section">Enjoy</div>
-    <button class="nav-item" data-page="books">📚 Books</button>
-    <button class="nav-item" data-page="movies">🎬 Movies</button>
-    <button class="nav-item" data-page="series">📺 Series</button>
-    <button class="nav-item" data-page="anime">🍙 Anime</button>
+    <button class="nav-item" data-page="books">&#128218; Books</button>
+    <button class="nav-item" data-page="movies">&#127916; Movies</button>
+    <button class="nav-item" data-page="series">&#128250; Series</button>
+    <button class="nav-item" data-page="anime">&#127833; Anime</button>
 
     <div class="person-picker">
         <div class="label">Acting as</div>
@@ -600,27 +587,30 @@ body {
             <button class="person-opt girlfriend" data-person="girlfriend">Her</button>
             <button class="person-opt ilian" data-person="ilian">Ilian</button>
         </div>
-        <button class="sync-status not-setup" id="sync-status" onclick="openSyncSetup()">⚙️ Setup sync</button>
+        <button class="sync-status not-setup" id="sync-status" onclick="openSyncSetup()">&#9881;&#65039; Setup sync</button>
     </div>
 </div>
 
-<!-- SYNC SETUP MODAL -->
 <div class="modal-backdrop" id="syncModal" onclick="if(event.target===this) closeSyncSetup()">
     <div class="modal">
-        <button class="close-x" onclick="closeSyncSetup()">×</button>
-        <h3>☁️ Sync setup</h3>
+        <button class="close-x" onclick="closeSyncSetup()">&times;</button>
+        <h3>&#9729;&#65039; Sync setup</h3>
         <p style="color:var(--text-muted);font-size:0.9em;margin-bottom:14px;">
-            Paste the Google Apps Script Web app URL here. Both devices that share data
-            need to use the same URL.
+            Paste your JSONBin credentials. Both devices that share data need the
+            same Bin ID and Master Key.
         </p>
         <div class="field-group">
-            <label class="field-label">Web app URL</label>
-            <input type="text" id="sync-url-input" placeholder="https://script.google.com/macros/s/.../exec">
+            <label class="field-label">Bin ID</label>
+            <input type="text" id="sync-bin-input" placeholder="e.g. 65f1a2b3c4d5e6f7g8h9i0j1">
+        </div>
+        <div class="field-group">
+            <label class="field-label">Master Key</label>
+            <input type="text" id="sync-key-input" placeholder="$2a$10$...">
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="saveSyncUrl()">Save & sync</button>
+            <button class="btn btn-primary" onclick="saveSyncConfig()">Save &amp; sync</button>
             <button class="btn btn-ghost" onclick="closeSyncSetup()">Cancel</button>
-            <button class="btn btn-link" onclick="clearSyncUrl()" style="margin-left:auto;">Disconnect</button>
+            <button class="btn btn-link" onclick="clearSyncConfig()" style="margin-left:auto;">Disconnect</button>
         </div>
         <p style="color:var(--text-muted);font-size:0.78em;margin-top:14px;line-height:1.5;">
             Need help? Open <code>KLOEF-SYNC-SETUP.md</code> in the repo for step-by-step instructions.
@@ -630,28 +620,26 @@ body {
 
 <div class="main-content">
 
-    <!-- CALENDAR PAGE -->
     <section id="page-calendar" class="page active">
         <div class="cal-header">
             <div>
-                <h1 style="font-size:1.4em;">📅 Weekly Overview</h1>
+                <h1 style="font-size:1.4em;">&#128197; Weekly Overview</h1>
                 <p style="color:var(--text-muted);font-size:0.85em;margin-top:2px;" id="week-month"></p>
             </div>
             <div class="week-controls">
-                <button class="btn btn-ghost btn-sm" onclick="changeWeek(-1)">← Prev</button>
+                <button class="btn btn-ghost btn-sm" onclick="changeWeek(-1)">&larr; Prev</button>
                 <button class="btn btn-ghost btn-sm" onclick="changeWeek(0)">Today</button>
-                <button class="btn btn-ghost btn-sm" onclick="changeWeek(1)">Next →</button>
+                <button class="btn btn-ghost btn-sm" onclick="changeWeek(1)">Next &rarr;</button>
                 <button class="btn btn-dark btn-sm" onclick="openTaskModal()">+ Add Task</button>
             </div>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
     </section>
 
-    <!-- BOOKS PAGE -->
     <section id="page-books" class="page">
         <div class="page-header">
             <div>
-                <h1>📚 Books</h1>
+                <h1>&#128218; Books</h1>
                 <p>Track what you're reading together.</p>
             </div>
         </div>
@@ -670,12 +658,11 @@ body {
         <div class="lib-grid" id="books-grid"></div>
     </section>
 
-    <!-- MOVIES PAGE -->
     <section id="page-movies" class="page">
         <div class="page-header">
             <div>
-                <h1>🎬 Movies</h1>
-                <p>Watchlist & watched.</p>
+                <h1>&#127916; Movies</h1>
+                <p>Watchlist &amp; watched.</p>
             </div>
         </div>
         <div class="add-form">
@@ -689,17 +676,16 @@ body {
                 </div>
             </form>
         </div>
-        <div class="section-divider">🎬 Watchlist</div>
+        <div class="section-divider">&#127916; Watchlist</div>
         <div class="lib-grid" id="movies-watchlist"></div>
-        <div class="section-divider">✓ Watched</div>
+        <div class="section-divider">&#10003; Watched</div>
         <div class="lib-grid" id="movies-watched"></div>
     </section>
 
-    <!-- SERIES PAGE -->
     <section id="page-series" class="page">
         <div class="page-header">
             <div>
-                <h1>📺 Series</h1>
+                <h1>&#128250; Series</h1>
                 <p>Track your shows together.</p>
             </div>
         </div>
@@ -718,11 +704,10 @@ body {
         <div class="lib-grid" id="series-grid"></div>
     </section>
 
-    <!-- ANIME PAGE -->
     <section id="page-anime" class="page">
         <div class="page-header">
             <div>
-                <h1>🍙 Anime</h1>
+                <h1>&#127833; Anime</h1>
                 <p>Your shared anime queue.</p>
             </div>
         </div>
@@ -743,10 +728,9 @@ body {
 
 </div>
 
-<!-- TASK MODAL -->
 <div class="modal-backdrop" id="taskModal" onclick="if(event.target===this) closeTaskModal()">
     <div class="modal">
-        <button class="close-x" onclick="closeTaskModal()">×</button>
+        <button class="close-x" onclick="closeTaskModal()">&times;</button>
         <h3>+ Add Task</h3>
         <form onsubmit="addTask(event)">
             <div class="field-group">
@@ -776,17 +760,10 @@ body {
 </div>
 
 <script>
-/* ── STATE ───────────────────────────────────────────────────────────── */
 const STORE_KEY = 'kloef_state_v1';
 const PERSON_KEY = 'kloef_person';
 
-const defaultState = {
-    tasks: [],   // {id, title, date, time, task_type, is_completed, person}
-    books: [],   // {id, title, author, total_pages, pages_read, cover_url, is_reading, is_finished, person}
-    movies: [],  // {id, title, year, runtime, cover_url, watched, person}
-    series: [],  // {id, title, total_seasons, total_episodes, episodes_watched, cover_url, person}
-    anime: [],   // {id, title, total_episodes, episodes_watched, cover_url, person}
-};
+const defaultState = { tasks: [], books: [], movies: [], series: [], anime: [] };
 
 let state = loadState();
 const VALID_PERSONS = ['douwe', 'girlfriend', 'ilian'];
@@ -801,8 +778,7 @@ function loadState() {
     try {
         const raw = localStorage.getItem(STORE_KEY);
         if (!raw) return JSON.parse(JSON.stringify(defaultState));
-        const parsed = JSON.parse(raw);
-        return Object.assign({}, defaultState, parsed);
+        return Object.assign({}, defaultState, JSON.parse(raw));
     } catch (e) {
         return JSON.parse(JSON.stringify(defaultState));
     }
@@ -814,7 +790,6 @@ function saveState() {
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function nowTs() { return Date.now(); }
 
-/* ── PERSON PICKER ──────────────────────────────────────────────────── */
 function setPerson(p) {
     currentPerson = p;
     localStorage.setItem(PERSON_KEY, p);
@@ -832,10 +807,9 @@ document.querySelectorAll('.person-opt').forEach(b => {
 function personTag(person) {
     const labels = { douwe: 'Douwe', girlfriend: 'Her', ilian: 'Ilian' };
     if (!labels[person]) return '';
-    return `<span class="ptag ${person}"><span class="dot"></span>${labels[person]}</span>`;
+    return '<span class="ptag ' + person + '"><span class="dot"></span>' + labels[person] + '</span>';
 }
 
-/* ── NAVIGATION ─────────────────────────────────────────────────────── */
 function showPage(name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const el = document.getElementById('page-' + name);
@@ -844,21 +818,16 @@ function showPage(name) {
         b.classList.toggle('active', b.dataset.page === name);
     });
     closeSidebar();
-    if (name === 'calendar') renderCalendar();
-    if (name === 'books') renderBooks();
-    if (name === 'movies') renderMovies();
-    if (name === 'series') renderSeries();
-    if (name === 'anime') renderAnime();
+    rerenderActive();
 }
 document.querySelectorAll('.nav-item').forEach(b => {
     b.addEventListener('click', () => showPage(b.dataset.page));
 });
 
-/* ── CALENDAR ───────────────────────────────────────────────────────── */
 function startOfWeek(d) {
     const date = new Date(d);
-    const day = date.getDay(); // 0 Sun .. 6 Sat
-    const diff = (day === 0 ? -6 : 1 - day); // Monday start
+    const day = date.getDay();
+    const diff = (day === 0 ? -6 : 1 - day);
     date.setDate(date.getDate() + diff);
     date.setHours(0, 0, 0, 0);
     return date;
@@ -867,7 +836,7 @@ function fmtISODate(d) {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
+    return y + '-' + m + '-' + day;
 }
 function changeWeek(delta) {
     if (delta === 0) currentWeekOffset = 0;
@@ -891,36 +860,31 @@ function renderCalendar() {
         days[0].toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
     const grid = document.getElementById('cal-grid');
-    grid.innerHTML = days.map(d => {
+    let html = '';
+    for (const d of days) {
         const iso = fmtISODate(d);
         const isToday = iso === todayISO;
         const tasks = state.tasks.filter(t => !t.deleted && t.date === iso)
                                  .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-        return `
-            <div class="day-col ${isToday ? 'today' : ''}">
-                <div class="day-header">
-                    ${d.toLocaleDateString('en-US', { weekday: 'short' })}
-                    <div class="day-num">${d.getDate()}</div>
-                </div>
-                ${tasks.map(t => `
-                    <div class="task-card ${t.person || ''} ${t.is_completed ? 'completed' : ''}">
-                        <div class="task-top">
-                            <input type="checkbox" class="task-checkbox" ${t.is_completed ? 'checked' : ''}
-                                   onchange="toggleTask('${t.id}')">
-                            <div style="flex:1;min-width:0;">
-                                ${t.time ? `<span style="font-size:0.75em;color:var(--text-muted);display:block;">${t.time}</span>` : ''}
-                                <span class="task-title">${escapeHtml(t.title)}</span>
-                                <div style="margin-top:4px;">${personTag(t.person)}</div>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <a class="del" onclick="deleteTask('${t.id}')">Delete</a>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    }).join('');
+        html += '<div class="day-col ' + (isToday ? 'today' : '') + '">';
+        html += '<div class="day-header">' + d.toLocaleDateString('en-US', { weekday: 'short' });
+        html += '<div class="day-num">' + d.getDate() + '</div></div>';
+        for (const t of tasks) {
+            html += '<div class="task-card ' + (t.person || '') + ' ' + (t.is_completed ? 'completed' : '') + '">';
+            html += '<div class="task-top">';
+            html += '<input type="checkbox" class="task-checkbox" ' + (t.is_completed ? 'checked' : '');
+            html += ' onchange="toggleTask(\'' + t.id + '\')">';
+            html += '<div style="flex:1;min-width:0;">';
+            if (t.time) html += '<span style="font-size:0.75em;color:var(--text-muted);display:block;">' + t.time + '</span>';
+            html += '<span class="task-title">' + escapeHtml(t.title) + '</span>';
+            html += '<div style="margin-top:4px;">' + personTag(t.person) + '</div>';
+            html += '</div></div>';
+            html += '<div class="task-actions"><a class="del" onclick="deleteTask(\'' + t.id + '\')">Delete</a></div>';
+            html += '</div>';
+        }
+        html += '</div>';
+    }
+    grid.innerHTML = html;
 }
 
 function openTaskModal() {
@@ -966,7 +930,14 @@ function deleteTask(id) {
     renderCalendar();
 }
 
-/* ── BOOKS ──────────────────────────────────────────────────────────── */
+function placeholderImg(emoji) {
+    return '<div class="lib-placeholder">' + emoji + '</div>';
+}
+function coverHtml(url, emoji) {
+    if (!url) return placeholderImg(emoji);
+    return '<img src="' + escapeAttr(url) + '" alt="" onerror="this.outerHTML=\'<div class=&quot;lib-placeholder&quot;>' + emoji + '</div>\'">';
+}
+
 function addBook(e) {
     e.preventDefault();
     const f = e.target;
@@ -990,31 +961,29 @@ function renderBooks() {
     const grid = document.getElementById('books-grid');
     const items = state.books.filter(b => !b.deleted);
     if (!items.length) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
-            <div class="empty-icon">📖</div>Add your first book above.</div>`;
+        grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">&#128214;</div>Add your first book above.</div>';
         return;
     }
-    grid.innerHTML = items.map(b => `
-        <div class="lib-card">
-            ${b.cover_url
-                ? `<img src="${escapeAttr(b.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>📖</div>'">`
-                : `<div class="lib-placeholder">📖</div>`}
-            <div class="nm">${escapeHtml(b.title)}</div>
-            <div class="meta">${escapeHtml(b.author || '—')}</div>
-            <progress value="${b.pages_read}" max="${b.total_pages}"></progress>
-            <div class="meta">${b.pages_read}/${b.total_pages} pages</div>
-            <div class="tag-row">${personTag(b.person)}</div>
-            <div class="actions">
-                <button class="btn btn-ghost btn-sm" onclick="updateBookProgress('${b.id}')">Update</button>
-                <button class="btn btn-link btn-sm" onclick="deleteItem('books','${b.id}')">×</button>
-            </div>
-        </div>
-    `).join('');
+    let html = '';
+    for (const b of items) {
+        html += '<div class="lib-card">';
+        html += coverHtml(b.cover_url, '&#128214;');
+        html += '<div class="nm">' + escapeHtml(b.title) + '</div>';
+        html += '<div class="meta">' + escapeHtml(b.author || '-') + '</div>';
+        html += '<progress value="' + b.pages_read + '" max="' + b.total_pages + '"></progress>';
+        html += '<div class="meta">' + b.pages_read + '/' + b.total_pages + ' pages</div>';
+        html += '<div class="tag-row">' + personTag(b.person) + '</div>';
+        html += '<div class="actions">';
+        html += '<button class="btn btn-ghost btn-sm" onclick="updateBookProgress(\'' + b.id + '\')">Update</button>';
+        html += '<button class="btn btn-link btn-sm" onclick="deleteItem(\'books\',\'' + b.id + '\')">&times;</button>';
+        html += '</div></div>';
+    }
+    grid.innerHTML = html;
 }
 function updateBookProgress(id) {
     const b = state.books.find(x => x.id === id);
     if (!b) return;
-    const v = prompt(`Pages read (0–${b.total_pages}):`, b.pages_read);
+    const v = prompt('Pages read (0-' + b.total_pages + '):', b.pages_read);
     if (v === null) return;
     const n = Math.max(0, Math.min(b.total_pages, parseInt(v) || 0));
     b.pages_read = n;
@@ -1024,7 +993,6 @@ function updateBookProgress(id) {
     renderBooks();
 }
 
-/* ── MOVIES ─────────────────────────────────────────────────────────── */
 function addMovie(e) {
     e.preventDefault();
     const f = e.target;
@@ -1042,31 +1010,29 @@ function addMovie(e) {
     f.reset();
     renderMovies();
 }
+function movieCard(m) {
+    let html = '<div class="lib-card" style="' + (m.watched ? 'opacity:0.85;' : '') + '">';
+    html += coverHtml(m.cover_url, '&#127916;');
+    html += '<div class="nm">' + escapeHtml(m.title) + '</div>';
+    html += '<div class="meta">' + (m.year || '-') + ' &middot; ' + m.runtime + ' min</div>';
+    html += '<div class="tag-row">' + personTag(m.person) + '</div>';
+    html += '<div class="actions">';
+    if (!m.watched) html += '<button class="btn btn-primary btn-sm" onclick="markMovieWatched(\'' + m.id + '\')">&#10003; Watched</button>';
+    html += '<button class="btn btn-link btn-sm" onclick="deleteItem(\'movies\',\'' + m.id + '\')">&times;</button>';
+    html += '</div></div>';
+    return html;
+}
 function renderMovies() {
     const wl = document.getElementById('movies-watchlist');
     const wd = document.getElementById('movies-watched');
     const watchlist = state.movies.filter(m => !m.deleted && !m.watched);
     const watched = state.movies.filter(m => !m.deleted && m.watched);
-    wl.innerHTML = watchlist.length ? watchlist.map(movieCard).join('') :
-        `<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">🎬</div>Nothing on the watchlist yet.</div>`;
-    wd.innerHTML = watched.length ? watched.map(movieCard).join('') :
-        `<div class="empty-state" style="grid-column: 1/-1;">Nothing watched yet.</div>`;
-}
-function movieCard(m) {
-    return `
-        <div class="lib-card" style="${m.watched ? 'opacity:0.85;' : ''}">
-            ${m.cover_url
-                ? `<img src="${escapeAttr(m.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>🎬</div>'">`
-                : `<div class="lib-placeholder">🎬</div>`}
-            <div class="nm">${escapeHtml(m.title)}</div>
-            <div class="meta">${m.year || '—'} · ${m.runtime} min</div>
-            <div class="tag-row">${personTag(m.person)}</div>
-            <div class="actions">
-                ${!m.watched ? `<button class="btn btn-primary btn-sm" onclick="markMovieWatched('${m.id}')">✓ Watched</button>` : ''}
-                <button class="btn btn-link btn-sm" onclick="deleteItem('movies','${m.id}')">×</button>
-            </div>
-        </div>
-    `;
+    wl.innerHTML = watchlist.length
+        ? watchlist.map(movieCard).join('')
+        : '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">&#127916;</div>Nothing on the watchlist yet.</div>';
+    wd.innerHTML = watched.length
+        ? watched.map(movieCard).join('')
+        : '<div class="empty-state" style="grid-column: 1/-1;">Nothing watched yet.</div>';
 }
 function markMovieWatched(id) {
     const m = state.movies.find(x => x.id === id);
@@ -1077,7 +1043,6 @@ function markMovieWatched(id) {
     renderMovies();
 }
 
-/* ── SERIES ─────────────────────────────────────────────────────────── */
 function addSeries(e) {
     e.preventDefault();
     const f = e.target;
@@ -1099,30 +1064,28 @@ function renderSeries() {
     const grid = document.getElementById('series-grid');
     const items = state.series.filter(s => !s.deleted);
     if (!items.length) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
-            <div class="empty-icon">📺</div>Add a series above.</div>`;
+        grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">&#128250;</div>Add a series above.</div>';
         return;
     }
-    grid.innerHTML = items.map(s => `
-        <div class="lib-card">
-            ${s.cover_url
-                ? `<img src="${escapeAttr(s.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>📺</div>'">`
-                : `<div class="lib-placeholder">📺</div>`}
-            <div class="nm">${escapeHtml(s.title)}</div>
-            <div class="meta">${s.total_seasons} seasons · ${s.episodes_watched}/${s.total_episodes} ep</div>
-            <progress value="${s.episodes_watched}" max="${s.total_episodes}"></progress>
-            <div class="tag-row">${personTag(s.person)}</div>
-            <div class="actions">
-                <button class="btn btn-ghost btn-sm" onclick="updateSeriesProgress('${s.id}')">Update</button>
-                <button class="btn btn-link btn-sm" onclick="deleteItem('series','${s.id}')">×</button>
-            </div>
-        </div>
-    `).join('');
+    let html = '';
+    for (const s of items) {
+        html += '<div class="lib-card">';
+        html += coverHtml(s.cover_url, '&#128250;');
+        html += '<div class="nm">' + escapeHtml(s.title) + '</div>';
+        html += '<div class="meta">' + s.total_seasons + ' seasons &middot; ' + s.episodes_watched + '/' + s.total_episodes + ' ep</div>';
+        html += '<progress value="' + s.episodes_watched + '" max="' + s.total_episodes + '"></progress>';
+        html += '<div class="tag-row">' + personTag(s.person) + '</div>';
+        html += '<div class="actions">';
+        html += '<button class="btn btn-ghost btn-sm" onclick="updateSeriesProgress(\'' + s.id + '\')">Update</button>';
+        html += '<button class="btn btn-link btn-sm" onclick="deleteItem(\'series\',\'' + s.id + '\')">&times;</button>';
+        html += '</div></div>';
+    }
+    grid.innerHTML = html;
 }
 function updateSeriesProgress(id) {
     const s = state.series.find(x => x.id === id);
     if (!s) return;
-    const v = prompt(`Episodes watched (0–${s.total_episodes}):`, s.episodes_watched);
+    const v = prompt('Episodes watched (0-' + s.total_episodes + '):', s.episodes_watched);
     if (v === null) return;
     s.episodes_watched = Math.max(0, Math.min(s.total_episodes, parseInt(v) || 0));
     s.updated_at = nowTs();
@@ -1130,7 +1093,6 @@ function updateSeriesProgress(id) {
     renderSeries();
 }
 
-/* ── ANIME ──────────────────────────────────────────────────────────── */
 function addAnime(e) {
     e.preventDefault();
     const f = e.target;
@@ -1151,30 +1113,28 @@ function renderAnime() {
     const grid = document.getElementById('anime-grid');
     const items = state.anime.filter(a => !a.deleted);
     if (!items.length) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;">
-            <div class="empty-icon">🍙</div>Add an anime above.</div>`;
+        grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">&#127833;</div>Add an anime above.</div>';
         return;
     }
-    grid.innerHTML = items.map(a => `
-        <div class="lib-card">
-            ${a.cover_url
-                ? `<img src="${escapeAttr(a.cover_url)}" alt="" onerror="this.outerHTML='<div class=\\'lib-placeholder\\'>🍙</div>'">`
-                : `<div class="lib-placeholder">🍙</div>`}
-            <div class="nm">${escapeHtml(a.title)}</div>
-            <div class="meta">${a.episodes_watched}/${a.total_episodes} ep</div>
-            <progress value="${a.episodes_watched}" max="${a.total_episodes}"></progress>
-            <div class="tag-row">${personTag(a.person)}</div>
-            <div class="actions">
-                <button class="btn btn-ghost btn-sm" onclick="updateAnimeProgress('${a.id}')">Update</button>
-                <button class="btn btn-link btn-sm" onclick="deleteItem('anime','${a.id}')">×</button>
-            </div>
-        </div>
-    `).join('');
+    let html = '';
+    for (const a of items) {
+        html += '<div class="lib-card">';
+        html += coverHtml(a.cover_url, '&#127833;');
+        html += '<div class="nm">' + escapeHtml(a.title) + '</div>';
+        html += '<div class="meta">' + a.episodes_watched + '/' + a.total_episodes + ' ep</div>';
+        html += '<progress value="' + a.episodes_watched + '" max="' + a.total_episodes + '"></progress>';
+        html += '<div class="tag-row">' + personTag(a.person) + '</div>';
+        html += '<div class="actions">';
+        html += '<button class="btn btn-ghost btn-sm" onclick="updateAnimeProgress(\'' + a.id + '\')">Update</button>';
+        html += '<button class="btn btn-link btn-sm" onclick="deleteItem(\'anime\',\'' + a.id + '\')">&times;</button>';
+        html += '</div></div>';
+    }
+    grid.innerHTML = html;
 }
 function updateAnimeProgress(id) {
     const a = state.anime.find(x => x.id === id);
     if (!a) return;
-    const v = prompt(`Episodes watched (0–${a.total_episodes}):`, a.episodes_watched);
+    const v = prompt('Episodes watched (0-' + a.total_episodes + '):', a.episodes_watched);
     if (v === null) return;
     a.episodes_watched = Math.max(0, Math.min(a.total_episodes, parseInt(v) || 0));
     a.updated_at = nowTs();
@@ -1182,7 +1142,6 @@ function updateAnimeProgress(id) {
     renderAnime();
 }
 
-/* ── COMMON ─────────────────────────────────────────────────────────── */
 function deleteItem(kind, id) {
     if (!confirm('Remove this item?')) return;
     const it = state[kind].find(x => x.id === id);
@@ -1190,10 +1149,7 @@ function deleteItem(kind, id) {
     it.deleted = true;
     it.updated_at = nowTs();
     saveState();
-    if (kind === 'books') renderBooks();
-    if (kind === 'movies') renderMovies();
-    if (kind === 'series') renderSeries();
-    if (kind === 'anime') renderAnime();
+    rerenderActive();
 }
 function escapeHtml(s) {
     return String(s == null ? '' : s)
@@ -1205,7 +1161,6 @@ function escapeHtml(s) {
 }
 function escapeAttr(s) { return escapeHtml(s); }
 
-/* ── MOBILE SIDEBAR ─────────────────────────────────────────────────── */
 function toggleSidebar() {
     document.querySelector('.sidebar').classList.toggle('open');
     document.getElementById('sidebar-overlay').classList.toggle('visible');
@@ -1215,17 +1170,24 @@ function closeSidebar() {
     document.getElementById('sidebar-overlay').classList.remove('visible');
 }
 
-/* ── SYNC (Google Sheets via Apps Script) ───────────────────────────── */
-const SYNC_URL_KEY = 'kloef_sync_url';
-let syncUrl = localStorage.getItem(SYNC_URL_KEY) || '';
+// SYNC (JSONBin.io)
+const SYNC_BIN_STORAGE = 'kloef_jsonbin_id';
+const SYNC_KEY_STORAGE = 'kloef_jsonbin_key';
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3/b';
+
+let syncBin = localStorage.getItem(SYNC_BIN_STORAGE) || '';
+let syncKey = localStorage.getItem(SYNC_KEY_STORAGE) || '';
 let syncStatus = 'idle';
 let pushTimer = null;
 let pullTimer = null;
+let pushInFlight = false;
+
+function syncConfigured() { return !!(syncBin && syncKey); }
 
 function updateSyncStatusUI() {
     const el = document.getElementById('sync-status');
     if (!el) return;
-    if (!syncUrl) {
+    if (!syncConfigured()) {
         el.textContent = '⚙️ Setup sync';
         el.className = 'sync-status not-setup';
         return;
@@ -1275,15 +1237,21 @@ function rerenderActive() {
     if (name === 'anime') renderAnime();
 }
 
+async function fetchRemote() {
+    const r = await fetch(JSONBIN_BASE + '/' + syncBin + '/latest', {
+        headers: { 'X-Master-Key': syncKey, 'X-Bin-Meta': 'false' },
+        cache: 'no-store',
+    });
+    if (!r.ok) throw new Error('GET HTTP ' + r.status);
+    const remote = await r.json();
+    return (remote && typeof remote === 'object') ? remote : {};
+}
+
 async function pullSync() {
-    if (!syncUrl) return;
+    if (!syncConfigured()) return;
     setSyncStatus('syncing');
     try {
-        const r = await fetch(syncUrl + '?t=' + Date.now(), { cache: 'no-store' });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const j = await r.json();
-        if (!j || !j.ok) throw new Error('Bad response');
-        const remote = j.state || {};
+        const remote = await fetchRemote();
         state = mergeStates(state, remote);
         localStorage.setItem(STORE_KEY, JSON.stringify(state));
         rerenderActive();
@@ -1295,100 +1263,102 @@ async function pullSync() {
 }
 
 function scheduleSyncPush() {
-    if (!syncUrl) return;
+    if (!syncConfigured()) return;
     if (pushTimer) clearTimeout(pushTimer);
     pushTimer = setTimeout(pushSync, 700);
 }
 
 async function pushSync() {
-    if (!syncUrl) return;
+    if (!syncConfigured() || pushInFlight) return;
+    pushInFlight = true;
     setSyncStatus('syncing');
     try {
-        const r = await fetch(syncUrl, {
-            method: 'POST',
-            body: JSON.stringify(state),
-            // Default text/plain content-type avoids CORS preflight on Apps Script
+        let remote = {};
+        try { remote = await fetchRemote(); } catch (_) {}
+        const merged = mergeStates(remote, state);
+        const r = await fetch(JSONBIN_BASE + '/' + syncBin, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': syncKey },
+            body: JSON.stringify(merged),
         });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const j = await r.json();
-        if (!j || !j.ok) throw new Error('Bad response');
-        // Server returns the merged state — adopt it locally
-        state = j.state || state;
+        if (!r.ok) throw new Error('PUT HTTP ' + r.status);
+        state = merged;
         localStorage.setItem(STORE_KEY, JSON.stringify(state));
         rerenderActive();
         setSyncStatus('idle');
     } catch (e) {
         console.warn('pushSync failed:', e);
         setSyncStatus('error');
+    } finally {
+        pushInFlight = false;
     }
 }
 
 function startPullPolling() {
     if (pullTimer) clearInterval(pullTimer);
-    if (!syncUrl) return;
+    if (!syncConfigured()) return;
     pullTimer = setInterval(() => {
         if (document.visibilityState === 'visible') pullSync();
     }, 15000);
 }
 
 function openSyncSetup() {
-    document.getElementById('sync-url-input').value = syncUrl;
+    document.getElementById('sync-bin-input').value = syncBin;
+    document.getElementById('sync-key-input').value = syncKey;
     document.getElementById('syncModal').classList.add('open');
 }
 function closeSyncSetup() {
     document.getElementById('syncModal').classList.remove('open');
 }
-function saveSyncUrl() {
-    const v = document.getElementById('sync-url-input').value.trim();
-    if (!v) { alert('Paste a URL first.'); return; }
-    if (!/^https:\/\/script\.google\.com\//.test(v)) {
-        if (!confirm('That doesn\'t look like a Google Apps Script URL. Save anyway?')) return;
-    }
-    syncUrl = v;
-    localStorage.setItem(SYNC_URL_KEY, syncUrl);
+function saveSyncConfig() {
+    const bin = document.getElementById('sync-bin-input').value.trim();
+    const key = document.getElementById('sync-key-input').value.trim();
+    if (!bin || !key) { alert('Both Bin ID and Master Key are required.'); return; }
+    syncBin = bin;
+    syncKey = key;
+    localStorage.setItem(SYNC_BIN_STORAGE, syncBin);
+    localStorage.setItem(SYNC_KEY_STORAGE, syncKey);
     closeSyncSetup();
     updateSyncStatusUI();
     startPullPolling();
-    // Push current local state first (so the other side picks it up), then pull merged result
     pushSync();
 }
-function clearSyncUrl() {
+function clearSyncConfig() {
     if (!confirm('Disconnect sync? Your local data stays on this device.')) return;
-    syncUrl = '';
-    localStorage.removeItem(SYNC_URL_KEY);
+    syncBin = '';
+    syncKey = '';
+    localStorage.removeItem(SYNC_BIN_STORAGE);
+    localStorage.removeItem(SYNC_KEY_STORAGE);
     if (pullTimer) clearInterval(pullTimer);
     setSyncStatus('idle');
     updateSyncStatusUI();
     closeSyncSetup();
 }
 
-// Refresh on tab focus so you see the other person's changes when you come back
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && syncUrl) pullSync();
+    if (document.visibilityState === 'visible' && syncConfigured()) pullSync();
 });
 
-/* ── WELCOME INTRO ──────────────────────────────────────────────────── */
 function showWelcome(person) {
     const labels = { douwe: 'Douwe', girlfriend: 'Her', ilian: 'Ilian' };
     if (!labels[person]) return;
     const overlay = document.createElement('div');
     overlay.className = 'welcome-overlay ' + person;
-    overlay.innerHTML = `<div class="welcome-text">Welcome ${labels[person]}</div>`;
+    overlay.innerHTML = '<div class="welcome-text">Welcome ' + labels[person] + '</div>';
     document.body.appendChild(overlay);
     setTimeout(() => overlay.remove(), 2500);
 }
 
-/* ── INIT ───────────────────────────────────────────────────────────── */
+// INIT
 renderPersonPicker();
 showPage('calendar');
 updateSyncStatusUI();
-if (syncUrl) {
+if (syncConfigured()) {
     pullSync();
     startPullPolling();
 }
 if (VALID_PERSONS.includes(urlPerson)) {
     showWelcome(urlPerson);
-    // Clean URL so a refresh doesn't replay the intro
     history.replaceState({}, '', window.location.pathname);
 }
 document.addEventListener('keydown', e => {
