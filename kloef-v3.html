@@ -1743,10 +1743,11 @@ async function pushSync() {
 }
 
 function startPullPolling() {
-    // Polling disabled — sync now only happens on page load, when you tab back
-    // to the page, and right after you make a change. Other people's changes
-    // appear next time you load or refocus the tab.
     if (pullTimer) clearInterval(pullTimer);
+    if (!syncConfigured()) return;
+    pullTimer = setInterval(() => {
+        if (document.visibilityState === 'visible') pullSync();
+    }, 15000);
 }
 
 function openSyncSetup() {
