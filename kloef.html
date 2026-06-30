@@ -449,6 +449,130 @@ body {
     background: var(--bg);
 }
 
+/* Song of the day */
+.song-today-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+.song-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    border-top: 5px solid var(--border-strong);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 240px;
+}
+.song-card.douwe { border-top-color: var(--douwe-color); }
+.song-card.ilian { border-top-color: var(--ilian-color); }
+.song-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.song-card-head .who {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.song-card-head .who .who-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+}
+.song-card.douwe .who-dot { background: var(--douwe-color); }
+.song-card.ilian .who-dot { background: var(--ilian-color); }
+.song-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    color: var(--text-muted);
+    text-align: center;
+}
+.song-empty .big-icon { font-size: 2.4em; margin-bottom: 10px; opacity: 0.55; }
+.song-input-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+.song-input-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.92em;
+    font-family: inherit;
+    background: var(--bg);
+}
+.song-embed iframe {
+    width: 100%;
+    border-radius: 12px;
+    border: none;
+    display: block;
+}
+.song-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78em;
+    color: var(--text-muted);
+}
+.song-history-day {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+}
+.song-history-day .day-label {
+    font-size: 0.85em;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+}
+.song-history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+}
+.song-history-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.song-history-item .who-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78em;
+    color: var(--text-muted);
+}
+.song-history-item .who-line .who-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+}
+.song-history-item.douwe .who-dot { background: var(--douwe-color); }
+.song-history-item.ilian .who-dot { background: var(--ilian-color); }
+.song-history-item .empty-pick {
+    font-size: 0.82em;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 14px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+}
+
 .sync-status {
     margin: 10px 8px 4px;
     padding: 8px 10px;
@@ -579,12 +703,12 @@ body {
     <button class="nav-item" data-page="movies">&#127916; Movies</button>
     <button class="nav-item" data-page="series">&#128250; Series</button>
     <button class="nav-item" data-page="anime">&#127833; Anime</button>
+    <button class="nav-item" data-page="songs">&#127925; Song of the day</button>
 
     <div class="person-picker">
         <div class="label">Acting as</div>
         <div class="person-options">
             <button class="person-opt douwe" data-person="douwe">Douwe</button>
-            <button class="person-opt girlfriend" data-person="girlfriend">Her</button>
             <button class="person-opt ilian" data-person="ilian">Ilian</button>
         </div>
         <button class="sync-status not-setup" id="sync-status" onclick="openSyncSetup()">&#9881;&#65039; Setup sync</button>
@@ -726,6 +850,19 @@ body {
         <div class="lib-grid" id="anime-grid"></div>
     </section>
 
+    <section id="page-songs" class="page">
+        <div class="page-header">
+            <div>
+                <h1>&#127925; Song of the day</h1>
+                <p>One pick per person, per day. Paste a Spotify link.</p>
+            </div>
+            <div id="song-today-label" style="color:var(--text-muted);font-size:0.9em;"></div>
+        </div>
+        <div class="song-today-grid" id="song-today-grid"></div>
+        <div class="section-divider">&#128250; History</div>
+        <div id="song-history"></div>
+    </section>
+
 </div>
 
 <div class="modal-backdrop" id="taskModal" onclick="if(event.target===this) closeTaskModal()">
@@ -763,10 +900,10 @@ body {
 const STORE_KEY = 'kloef_state_v1';
 const PERSON_KEY = 'kloef_person';
 
-const defaultState = { tasks: [], books: [], movies: [], series: [], anime: [] };
+const defaultState = { tasks: [], books: [], movies: [], series: [], anime: [], songs: [] };
 
 let state = loadState();
-const VALID_PERSONS = ['douwe', 'girlfriend', 'ilian'];
+const VALID_PERSONS = ['douwe', 'ilian'];
 const urlPerson = new URLSearchParams(window.location.search).get('as');
 let currentPerson = VALID_PERSONS.includes(urlPerson)
     ? urlPerson
@@ -805,7 +942,7 @@ document.querySelectorAll('.person-opt').forEach(b => {
 });
 
 function personTag(person) {
-    const labels = { douwe: 'Douwe', girlfriend: 'Her', ilian: 'Ilian' };
+    const labels = { douwe: 'Douwe', ilian: 'Ilian' };
     if (!labels[person]) return '';
     return '<span class="ptag ' + person + '"><span class="dot"></span>' + labels[person] + '</span>';
 }
@@ -1142,6 +1279,132 @@ function updateAnimeProgress(id) {
     renderAnime();
 }
 
+function parseSpotifyUrl(url) {
+    if (!url) return null;
+    const m = url.match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(track|album|playlist|episode|show)\/([a-zA-Z0-9]+)/);
+    if (!m) return null;
+    return { type: m[1], id: m[2], embedUrl: 'https://open.spotify.com/embed/' + m[1] + '/' + m[2] };
+}
+
+function songCard(person) {
+    const todayIso = fmtISODate(new Date());
+    const label = person === 'douwe' ? 'Douwe' : 'Ilian';
+    const song = state.songs.find(s => !s.deleted && s.date === todayIso && s.person === person);
+    let inner = '';
+    if (song) {
+        const parsed = parseSpotifyUrl(song.url);
+        if (parsed) {
+            inner = '<div class="song-embed"><iframe src="' + parsed.embedUrl
+                + '" height="' + (parsed.type === 'track' ? 152 : 352)
+                + '" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>'
+                + '<div class="song-meta"><a href="' + escapeAttr(song.url) + '" target="_blank" rel="noopener" style="color:var(--text-muted);">Open in Spotify &rarr;</a>'
+                + '<button class="btn btn-link btn-sm" onclick="removeSong(\'' + song.id + '\')">Change</button></div>';
+        } else {
+            inner = '<div class="song-empty"><div>Saved link doesn\'t look like a Spotify URL.</div>'
+                + '<a href="' + escapeAttr(song.url) + '" target="_blank" rel="noopener" style="margin-top:8px;">' + escapeHtml(song.url) + '</a>'
+                + '<button class="btn btn-link btn-sm" onclick="removeSong(\'' + song.id + '\')" style="margin-top:8px;">Remove</button></div>';
+        }
+    } else {
+        inner = '<div class="song-empty"><div class="big-icon">&#127925;</div>'
+            + '<div style="margin-bottom:12px;">No pick yet for ' + label + '.</div>'
+            + '<form class="song-input-row" onsubmit="addSong(event, \'' + person + '\')">'
+            + '<input type="text" name="url" required placeholder="https://open.spotify.com/track/...">'
+            + '<button class="btn btn-primary btn-sm" type="submit">Set</button>'
+            + '</form></div>';
+    }
+    return '<div class="song-card ' + person + '">'
+        + '<div class="song-card-head"><div class="who"><span class="who-dot"></span>' + label + '</div>'
+        + '<span class="ptag ' + person + '"><span class="dot"></span>' + label + '</span></div>'
+        + inner + '</div>';
+}
+
+function addSong(e, person) {
+    e.preventDefault();
+    const url = e.target.url.value.trim();
+    if (!url) return;
+    const parsed = parseSpotifyUrl(url);
+    if (!parsed) {
+        if (!confirm('That doesn\'t look like a Spotify URL. Save anyway?')) return;
+    }
+    const todayIso = fmtISODate(new Date());
+    // Remove any existing pick by this person for today (soft delete)
+    for (const s of state.songs) {
+        if (!s.deleted && s.date === todayIso && s.person === person) {
+            s.deleted = true;
+            s.updated_at = nowTs();
+        }
+    }
+    state.songs.push({
+        id: uid(),
+        date: todayIso,
+        person: person,
+        url: url,
+        updated_at: nowTs(),
+    });
+    saveState();
+    renderSongs();
+}
+
+function removeSong(id) {
+    const s = state.songs.find(x => x.id === id);
+    if (!s) return;
+    s.deleted = true;
+    s.updated_at = nowTs();
+    saveState();
+    renderSongs();
+}
+
+function renderSongs() {
+    const todayIso = fmtISODate(new Date());
+    document.getElementById('song-today-label').textContent =
+        new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+    const grid = document.getElementById('song-today-grid');
+    grid.innerHTML = songCard('douwe') + songCard('ilian');
+
+    // History: group non-today, non-deleted songs by date, descending
+    const hist = state.songs.filter(s => !s.deleted && s.date !== todayIso);
+    const byDate = {};
+    for (const s of hist) {
+        if (!byDate[s.date]) byDate[s.date] = {};
+        byDate[s.date][s.person] = s;
+    }
+    const dates = Object.keys(byDate).sort().reverse();
+    const histEl = document.getElementById('song-history');
+    if (!dates.length) {
+        histEl.innerHTML = '<div class="empty-state"><div class="empty-icon">&#127926;</div>No archived picks yet. Yesterday\'s songs will appear here.</div>';
+        return;
+    }
+    let html = '';
+    for (const d of dates) {
+        const dateObj = new Date(d + 'T00:00:00');
+        const label = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' });
+        html += '<div class="song-history-day"><div class="day-label">' + label + '</div>';
+        html += '<div class="song-history-grid">';
+        for (const person of ['douwe', 'ilian']) {
+            const personLabel = person === 'douwe' ? 'Douwe' : 'Ilian';
+            const song = byDate[d][person];
+            html += '<div class="song-history-item ' + person + '">';
+            html += '<div class="who-line"><span class="who-dot"></span>' + personLabel + '</div>';
+            if (song) {
+                const parsed = parseSpotifyUrl(song.url);
+                if (parsed) {
+                    html += '<div class="song-embed"><iframe src="' + parsed.embedUrl
+                        + '" height="' + (parsed.type === 'track' ? 80 : 152)
+                        + '" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>';
+                } else {
+                    html += '<a href="' + escapeAttr(song.url) + '" target="_blank" rel="noopener" style="font-size:0.85em;">' + escapeHtml(song.url) + '</a>';
+                }
+            } else {
+                html += '<div class="empty-pick">No pick</div>';
+            }
+            html += '</div>';
+        }
+        html += '</div></div>';
+    }
+    histEl.innerHTML = html;
+}
+
 function deleteItem(kind, id) {
     if (!confirm('Remove this item?')) return;
     const it = state[kind].find(x => x.id === id);
@@ -1207,7 +1470,7 @@ function setSyncStatus(s) {
 }
 
 function mergeStates(a, b) {
-    const lists = ['tasks', 'books', 'movies', 'series', 'anime'];
+    const lists = ['tasks', 'books', 'movies', 'series', 'anime', 'songs'];
     const out = {};
     for (const k of lists) {
         const map = new Map();
@@ -1235,6 +1498,7 @@ function rerenderActive() {
     if (name === 'movies') renderMovies();
     if (name === 'series') renderSeries();
     if (name === 'anime') renderAnime();
+    if (name === 'songs') renderSongs();
 }
 
 async function fetchRemote() {
@@ -1340,7 +1604,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 function showWelcome(person) {
-    const labels = { douwe: 'Douwe', girlfriend: 'Her', ilian: 'Ilian' };
+    const labels = { douwe: 'Douwe', ilian: 'Ilian' };
     if (!labels[person]) return;
     const overlay = document.createElement('div');
     overlay.className = 'welcome-overlay ' + person;
