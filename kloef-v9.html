@@ -2058,349 +2058,6 @@ body.theme-midnight .quotes-form input {
     font-size: 0.85em;
 }
 .undo-btn:hover { background: var(--primary-dark); color: #fff; }
-/* === NEW THEMES: Kilim / Noir / Foundation === */
-
-/* KILIM — deep red + cream, patterned background */
-body.theme-kurdish {
-    --bg: #1a0e0e;
-    --bg-alt: #2a1414;
-    --card-bg: #f7ecd4;
-    --card-warm: #ebd9b3;
-    --text: #2a1414;
-    --text-muted: #8b6a45;
-    --border: #a52a2a;
-    --border-strong: #7a1e1e;
-    --primary: #a52a2a;
-    --primary-dark: #7a1e1e;
-    --sidebar-bg: #0e0505;
-    --sidebar-text: #f7ecd4;
-    --sidebar-hover: #1e0e0e;
-    --sidebar-active-bg: #a52a2a;
-    background-color: #1a0e0e;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect x='0' y='0' width='3' height='3' fill='%23a52a2a'/><rect x='37' y='0' width='3' height='3' fill='%23a52a2a'/><rect x='0' y='37' width='3' height='3' fill='%23a52a2a'/><rect x='37' y='37' width='3' height='3' fill='%23a52a2a'/><rect x='19' y='16' width='2' height='8' fill='%23e6b85a' opacity='0.7'/><rect x='16' y='19' width='8' height='2' fill='%23e6b85a' opacity='0.7'/><path d='M 20 10 L 25 15 L 30 20 L 25 25 L 20 30 L 15 25 L 10 20 L 15 15 Z' stroke='%23a52a2a' stroke-width='1' fill='none' opacity='0.35'/></svg>");
-    color: var(--text);
-}
-body.theme-kurdish .sidebar {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect x='14' y='14' width='2' height='2' fill='%23a52a2a' opacity='0.4'/><rect x='0' y='0' width='2' height='2' fill='%23e6b85a' opacity='0.3'/><rect x='28' y='28' width='2' height='2' fill='%23e6b85a' opacity='0.3'/></svg>");
-    background-color: var(--sidebar-bg);
-}
-body.theme-kurdish .card,
-body.theme-kurdish .lib-card,
-body.theme-kurdish .today-card,
-body.theme-kurdish .weekly-hero,
-body.theme-kurdish .weekly-answer,
-body.theme-kurdish .weekly-archive,
-body.theme-kurdish .today-quote-card,
-body.theme-kurdish .day-col,
-body.theme-kurdish .add-form,
-body.theme-kurdish .stat-cell,
-body.theme-kurdish .ach-card,
-body.theme-kurdish .ach-summary {
-    background: var(--card-bg);
-    border: 1px solid var(--primary);
-    box-shadow: 0 3px 0 var(--primary-dark), var(--shadow-sm);
-    color: var(--text);
-}
-body.theme-kurdish .task-card,
-body.theme-kurdish .today-task,
-body.theme-kurdish .topic-item,
-body.theme-kurdish .today-fresh-topics .ft-item,
-body.theme-kurdish .today-mini-song,
-body.theme-kurdish .weekly-archive-answer {
-    background: var(--card-warm);
-    color: var(--text);
-    border-left: 3px solid var(--primary);
-}
-body.theme-kurdish .btn-primary { background: var(--primary); color: #f7ecd4; }
-body.theme-kurdish .btn-primary:hover { background: var(--primary-dark); color: #fff; }
-body.theme-kurdish .btn-ghost { border: 1px solid var(--primary); color: var(--text); }
-body.theme-kurdish .btn-dark { background: var(--primary-dark); color: #f7ecd4; }
-body.theme-kurdish .sidebar-logo { border-bottom: 2px solid var(--primary); }
-body.theme-kurdish .modal { background: var(--card-bg); border: 2px solid var(--primary); }
-body.theme-kurdish .field-group input,
-body.theme-kurdish .field-group textarea,
-body.theme-kurdish .field-group select,
-body.theme-kurdish .add-form input,
-body.theme-kurdish .add-form select,
-body.theme-kurdish .add-form textarea,
-body.theme-kurdish .search-form input,
-body.theme-kurdish .quotes-form input {
-    background: #fff;
-    color: var(--text);
-    border-color: var(--primary);
-}
-
-/* NOIR — pure black with white L-corner brackets on cards */
-body.theme-noir {
-    --bg: #0a0a0a;
-    --bg-alt: #1a1a1a;
-    --card-bg: #101010;
-    --card-warm: #181818;
-    --text: #ffffff;
-    --text-muted: #a0a0a0;
-    --border: #ffffff;
-    --border-strong: #ffffff;
-    --primary: #ffffff;
-    --primary-dark: #e0e0e0;
-    --sidebar-bg: #000000;
-    --sidebar-text: #ffffff;
-    --sidebar-hover: #1a1a1a;
-    --sidebar-active-bg: #ffffff;
-    background: #0a0a0a;
-    color: var(--text);
-}
-body.theme-noir .card,
-body.theme-noir .lib-card,
-body.theme-noir .today-card,
-body.theme-noir .weekly-hero,
-body.theme-noir .day-col,
-body.theme-noir .add-form,
-body.theme-noir .today-quote-card,
-body.theme-noir .stat-cell,
-body.theme-noir .ach-card,
-body.theme-noir .ach-summary,
-body.theme-noir .weekly-answer,
-body.theme-noir .weekly-archive,
-body.theme-noir .topics-pane {
-    background-color: var(--card-bg);
-    background-image:
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><path d='M 0 10 L 0 0 L 10 0' stroke='%23ffffff' stroke-width='1' fill='none'/></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><path d='M 14 10 L 14 0 L 4 0' stroke='%23ffffff' stroke-width='1' fill='none'/></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><path d='M 0 4 L 0 14 L 10 14' stroke='%23ffffff' stroke-width='1' fill='none'/></svg>"),
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><path d='M 14 4 L 14 14 L 4 14' stroke='%23ffffff' stroke-width='1' fill='none'/></svg>");
-    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-    background-position: top 4px left 4px, top 4px right 4px, bottom 4px left 4px, bottom 4px right 4px;
-    background-size: 14px 14px, 14px 14px, 14px 14px, 14px 14px;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    color: var(--text);
-}
-body.theme-noir .btn,
-body.theme-noir .btn-sm { border-radius: 0; letter-spacing: 0.5px; }
-body.theme-noir .btn-primary { background: #fff; color: #000; }
-body.theme-noir .btn-primary:hover { background: #d0d0d0; color: #000; }
-body.theme-noir .btn-ghost { border: 1px solid #fff; color: #fff; background: transparent; }
-body.theme-noir .btn-ghost:hover { background: rgba(255,255,255,0.1); }
-body.theme-noir .btn-dark { background: #fff; color: #000; }
-body.theme-noir .task-card {
-    background: var(--bg-alt);
-    color: #fff;
-    border-left: 1px solid #fff;
-}
-body.theme-noir .today-task,
-body.theme-noir .today-fresh-topics .ft-item,
-body.theme-noir .today-mini-song,
-body.theme-noir .topic-item,
-body.theme-noir .weekly-archive-answer {
-    background: var(--bg-alt);
-    color: #fff;
-    border-left: 1px solid #fff;
-}
-body.theme-noir .today-mini-song .backstory-mini { background: #000; color: #fff; }
-body.theme-noir .today-mini-song .empty { color: #a0a0a0; }
-body.theme-noir .modal { background: #0f0f0f; border: 1px solid #fff; border-radius: 0; color: #fff; }
-body.theme-noir .field-group input,
-body.theme-noir .field-group textarea,
-body.theme-noir .field-group select,
-body.theme-noir .add-form input,
-body.theme-noir .add-form select,
-body.theme-noir .add-form textarea,
-body.theme-noir .search-form input,
-body.theme-noir .quotes-form input,
-body.theme-noir .weekly-answer textarea,
-body.theme-noir .weekly-topic-editor input {
-    background: #000;
-    color: #fff;
-    border: 1px solid #666;
-    border-radius: 0;
-}
-body.theme-noir .page-header { border-bottom-color: #fff; }
-body.theme-noir .sidebar-logo { border-bottom: 1px solid #fff; }
-body.theme-noir .weekly-hero { background-color: #0f0f0f; }
-body.theme-noir .today-quote-card {
-    background-color: #0f0f0f;
-    border-left: 4px solid #fff;
-}
-body.theme-noir .countdown-widget { background: #0f0f0f; border: 1px solid #fff; border-radius: 0; }
-body.theme-noir .countdown-widget .countdown-days,
-body.theme-noir .countdown-widget div { color: #fff !important; }
-body.theme-noir .ach-card.unlocked { background: #1a1a1a; border-color: #fff; }
-body.theme-noir .stats-section h3 { color: #fff; }
-body.theme-noir .stat-cell .stat-value { color: #fff; }
-
-/* FOUNDATION — stark white, black borders, warning-tape accents */
-body.theme-foundation {
-    --bg: #ffffff;
-    --bg-alt: #f4f4f4;
-    --card-bg: #ffffff;
-    --card-warm: #fafafa;
-    --text: #000000;
-    --text-muted: #666666;
-    --border: #000000;
-    --border-strong: #000000;
-    --primary: #000000;
-    --primary-dark: #333333;
-    --sidebar-bg: #000000;
-    --sidebar-text: #ffffff;
-    --sidebar-hover: #1a1a1a;
-    --sidebar-active-bg: #fbbc04;
-    background: #ffffff;
-    color: #000;
-    font-family: 'Verdana', 'Geneva', 'Arial', sans-serif;
-}
-body.theme-foundation .card,
-body.theme-foundation .lib-card,
-body.theme-foundation .today-card,
-body.theme-foundation .weekly-hero,
-body.theme-foundation .day-col,
-body.theme-foundation .add-form,
-body.theme-foundation .today-quote-card,
-body.theme-foundation .stat-cell,
-body.theme-foundation .ach-card,
-body.theme-foundation .weekly-answer,
-body.theme-foundation .weekly-archive,
-body.theme-foundation .topics-pane {
-    background: #fff;
-    border: 2px solid #000;
-    border-radius: 0;
-    box-shadow: none;
-    color: #000;
-}
-body.theme-foundation .btn,
-body.theme-foundation .btn-sm { border-radius: 0; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.78em; }
-body.theme-foundation .btn-primary { background: #000; color: #fff; }
-body.theme-foundation .btn-primary:hover { background: #333; }
-body.theme-foundation .btn-ghost { border: 2px solid #000; color: #000; background: #fff; }
-body.theme-foundation .btn-ghost:hover { background: #000; color: #fff; }
-body.theme-foundation .btn-dark { background: #000; color: #fff; }
-body.theme-foundation .task-card {
-    background: #fff;
-    color: #000;
-    border-left: 3px solid #000;
-    border-radius: 0;
-    box-shadow: 1px 1px 0 #000;
-}
-body.theme-foundation .today-task,
-body.theme-foundation .today-fresh-topics .ft-item,
-body.theme-foundation .today-mini-song,
-body.theme-foundation .topic-item {
-    background: #f4f4f4;
-    color: #000;
-    border-left: 3px solid #000;
-    border-radius: 0;
-}
-body.theme-foundation .page-header {
-    border-bottom: 3px solid #000;
-    padding-bottom: 14px;
-}
-body.theme-foundation .page-header h1 {
-    font-family: 'Courier New', 'Consolas', monospace;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 1.4em;
-}
-body.theme-foundation .page-header h1::before {
-    content: 'ITEM #: SCP-';
-    display: block;
-    color: #999;
-    font-size: 0.6em;
-    letter-spacing: 3px;
-    font-weight: 400;
-    margin-bottom: 2px;
-}
-body.theme-foundation .page-header p {
-    font-family: 'Courier New', 'Consolas', monospace;
-    font-size: 0.78em;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-body.theme-foundation .ach-summary {
-    background: repeating-linear-gradient(-45deg, #fbbc04, #fbbc04 12px, #000 12px, #000 24px);
-    border: 3px solid #000;
-    border-radius: 0;
-    position: relative;
-    padding: 30px 18px;
-    color: transparent;
-}
-body.theme-foundation .ach-summary .count,
-body.theme-foundation .ach-summary .lbl {
-    color: #000;
-    background: #fff;
-    padding: 4px 12px;
-    display: inline-block;
-    font-family: 'Courier New', monospace;
-    font-weight: 700;
-    border: 2px solid #000;
-    letter-spacing: 1px;
-}
-body.theme-foundation .ach-summary .lbl { margin-top: 8px; font-size: 0.72em; }
-body.theme-foundation .sidebar-logo {
-    background: #000;
-    color: #fff;
-    font-family: 'Courier New', monospace;
-    text-transform: uppercase;
-    letter-spacing: 2.5px;
-    border-bottom: 4px solid #fbbc04;
-    padding: 8px 10px 12px;
-}
-body.theme-foundation .sync-status {
-    border-radius: 0;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.68em;
-}
-body.theme-foundation .ach-card.unlocked {
-    background: repeating-linear-gradient(-45deg, transparent, transparent 30px, rgba(251,188,4,0.15) 30px, rgba(251,188,4,0.15) 60px), #fff;
-    border-color: #fbbc04;
-}
-body.theme-foundation .modal { border-radius: 0; border: 3px solid #000; }
-body.theme-foundation .field-group input,
-body.theme-foundation .field-group textarea,
-body.theme-foundation .field-group select,
-body.theme-foundation .add-form input,
-body.theme-foundation .add-form select,
-body.theme-foundation .add-form textarea,
-body.theme-foundation .search-form input,
-body.theme-foundation .quotes-form input,
-body.theme-foundation .weekly-answer textarea,
-body.theme-foundation .weekly-topic-editor input {
-    background: #fff;
-    color: #000;
-    border: 2px solid #000;
-    border-radius: 0;
-    font-family: 'Courier New', monospace;
-}
-body.theme-foundation .countdown-widget {
-    background: #fff;
-    border: 2px solid #000;
-    border-radius: 0;
-}
-body.theme-foundation .today-quote-card {
-    background: #fff;
-    border-left: 4px solid #fbbc04;
-    border-radius: 0;
-}
-body.theme-foundation .stats-section h3,
-body.theme-foundation .stat-cell .stat-value,
-body.theme-foundation .stat-cell .stat-label {
-    font-family: 'Courier New', monospace;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-body.theme-foundation .section-divider {
-    border-top: 1px solid #000;
-    padding-top: 12px;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 2px;
-}
-body.theme-foundation .today-quote-card::before { color: rgba(251,188,4,0.4); }
-
-/* Swatch styles for new themes */
-.theme-opt[data-theme="kurdish"]    { background: linear-gradient(135deg, #a52a2a 0%, #a52a2a 50%, #e6b85a 50%, #e6b85a 100%); }
-.theme-opt[data-theme="noir"]       { background: linear-gradient(135deg, #ffffff 0%, #ffffff 20%, #0a0a0a 20%); }
-.theme-opt[data-theme="foundation"] { background: repeating-linear-gradient(-45deg, #fbbc04, #fbbc04 3px, #000 3px, #000 6px); }
 </style>
 </head>
 <body>
@@ -2442,9 +2099,9 @@ body.theme-foundation .today-quote-card::before { color: rgba(251,188,4,0.4); }
             <div class="label">Theme</div>
             <div class="theme-options">
                 <button class="theme-opt" data-theme="cozy" title="Cozy"></button>
-                <button class="theme-opt" data-theme="kurdish" title="Kilim"></button>
-                <button class="theme-opt" data-theme="noir" title="Noir"></button>
-                <button class="theme-opt" data-theme="foundation" title="Foundation"></button>
+                <button class="theme-opt" data-theme="forest" title="Forest"></button>
+                <button class="theme-opt" data-theme="ocean" title="Ocean"></button>
+                <button class="theme-opt" data-theme="midnight" title="Midnight"></button>
             </div>
         </div>
         <button class="sync-status not-setup" id="sync-status" onclick="openSyncSetup()">&#9881;&#65039; Setup sync</button>
@@ -4070,12 +3727,8 @@ const ACHIEVEMENTS = [
     { key:'well_read',            icon:'\u{1F393}', name:'Well Read',          desc:'Pin quotes from 3 different authors.',                check:s=>{const a=new Set();for(const q of (s.quotes||[]).filter(x=>!x.deleted))if(q.author&&q.author.trim())a.add(q.author.trim().toLowerCase());return a.size>=3;} },
     { key:'pinboard_partners',    icon:'\u{1F4CD}', name:'Pinboard Partners',  desc:'Both users have pinned a quote.',                     check:s=>{const p=new Set((s.quotes||[]).filter(x=>!x.deleted).map(x=>x.person));return p.has('douwe')&&p.has('ilian');} },
     { key:'interior_decorator',   icon:'\u{1F3A8}', name:'Interior Decorator', desc:'Switch themes at least once.',                        check:s=>(s.counters&&s.counters.theme_changes>=1) },
-    { key:'night_owl',            icon:'\u{1F989}', name:'Night Owl',          desc:'Use a dark theme (Noir or Kilim).',                   check:s=>(s.counters&&(s.counters.midnight_used||(s.counters.themes_used&&(s.counters.themes_used.noir||s.counters.themes_used.kurdish)))) },
+    { key:'night_owl',            icon:'\u{1F989}', name:'Night Owl',          desc:'Use the midnight theme.',                             check:s=>(s.counters&&s.counters.midnight_used) },
     { key:'whoops',               icon:'\u{21A9}\u{FE0F}',  name:'Whoops',             desc:'Use the undo bar to un-delete something.',            check:s=>(s.counters&&s.counters.undos>=1) },
-    { key:'kilim_weaver',         icon:'\u{1F9F5}', name:'Kilim Weaver',       desc:'Wear the Kilim (Kurdish) theme.',                     check:s=>(s.counters&&s.counters.themes_used&&s.counters.themes_used.kurdish) },
-    { key:'silhouette',           icon:'\u{1F576}\u{FE0F}', name:'Silhouette',         desc:'Switch to the Noir theme.',                           check:s=>(s.counters&&s.counters.themes_used&&s.counters.themes_used.noir) },
-    { key:'foundation_personnel', icon:'\u{2622}\u{FE0F}',  name:'Foundation Personnel',desc:'Access the Foundation theme.',                        check:s=>(s.counters&&s.counters.themes_used&&s.counters.themes_used.foundation) },
-    { key:'full_palette',         icon:'\u{1F3A8}', name:'Full Palette',       desc:'Try every theme at least once.',                      check:s=>{if(!s.counters||!s.counters.themes_used)return false;const t=s.counters.themes_used;return t.cozy&&t.kurdish&&t.noir&&t.foundation;} },
     { key:'september_dreams',     icon:'📅', name:'September Dreams',   desc:'Open the countdown to September 1st.',               check:s=>(s.counters&&s.counters.countdown_views>=1) },
 ];
 
@@ -4205,7 +3858,7 @@ function kurdishConfetti(opts) {
 
 // === TIME OF DAY ===
 function applyTimeOfDay() {
-    if (!document.body.classList.contains('theme-cozy')) {
+    if (document.body.classList.contains('theme-midnight')) {
         document.body.dataset.tod = '';
         return;
     }
@@ -4582,7 +4235,7 @@ function renderQuoteOfDay() {
 }
 
 // === THEMES ===
-const THEMES = ['cozy', 'kurdish', 'noir', 'foundation'];
+const THEMES = ['cozy', 'forest', 'ocean', 'midnight'];
 
 function setTheme(name) {
     if (!THEMES.includes(name)) name = 'cozy';
@@ -4595,8 +4248,6 @@ function setTheme(name) {
     if (!state.counters) state.counters = {};
     state.counters.theme_changes = (state.counters.theme_changes || 0) + 1;
     if (name === 'midnight') state.counters.midnight_used = true;
-    state.counters.themes_used = state.counters.themes_used || {};
-    state.counters.themes_used[name] = true;
     applyTimeOfDay();
     saveState();
 }

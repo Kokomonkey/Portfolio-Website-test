@@ -1,0 +1,260 @@
+===<CHUNK:css>===
+/* Themes */
+body.theme-forest {
+    --bg: #edf0e5;
+    --bg-alt: #d9e0cd;
+    --card-bg: #f7fbef;
+    --card-warm: #e6ecd8;
+    --text: #2d3a24;
+    --text-muted: #6a7a5a;
+    --border: #c5d0b0;
+    --border-strong: #a5b590;
+    --primary: #7a9b76;
+    --primary-dark: #4f6e4a;
+    --sidebar-bg: #2d3a24;
+    --sidebar-text: #c8d4b8;
+    --sidebar-hover: #3d4a34;
+    --sidebar-active-bg: #7a9b76;
+    background:
+        radial-gradient(circle at 10% 0%, #f4f7ec 0%, transparent 50%),
+        radial-gradient(circle at 90% 100%, #dbe4c7 0%, transparent 55%),
+        #edf0e5;
+}
+body.theme-ocean {
+    --bg: #eef4f8;
+    --bg-alt: #d8e5ec;
+    --card-bg: #ffffff;
+    --card-warm: #dceff6;
+    --text: #1a3448;
+    --text-muted: #5c7a90;
+    --border: #b8d0dc;
+    --border-strong: #8ab5c5;
+    --primary: #6b8e9e;
+    --primary-dark: #3d5f70;
+    --sidebar-bg: #1a3448;
+    --sidebar-text: #b8d0dc;
+    --sidebar-hover: #2a4458;
+    --sidebar-active-bg: #6b8e9e;
+    background:
+        radial-gradient(circle at 10% 0%, #f0f7fa 0%, transparent 50%),
+        radial-gradient(circle at 90% 100%, #cee0eb 0%, transparent 55%),
+        #eef4f8;
+}
+body.theme-midnight {
+    --bg: #14192a;
+    --bg-alt: #1e2438;
+    --card-bg: #1f2540;
+    --card-warm: #2a3050;
+    --text: #e8dcc9;
+    --text-muted: #a5b0c5;
+    --border: #2f3855;
+    --border-strong: #3f4a68;
+    --primary: #d4a373;
+    --primary-dark: #e6b485;
+    --sidebar-bg: #0a0e1a;
+    --sidebar-text: #c9b8a4;
+    --sidebar-hover: #171e30;
+    --sidebar-active-bg: #d4a373;
+    background:
+        radial-gradient(circle at 15% 5%, #1e2438 0%, transparent 50%),
+        radial-gradient(circle at 85% 95%, #171e30 0%, transparent 55%),
+        #14192a;
+    color: var(--text);
+}
+
+/* Midnight-specific overrides for elements with hard-coded light backgrounds */
+body.theme-midnight .task-card {
+    background: var(--bg-alt);
+    color: var(--text);
+}
+body.theme-midnight .task-card.completed {
+    background: rgba(255,255,255,0.04);
+}
+body.theme-midnight .task-card.event    { background: rgba(122,155,118,0.14); }
+body.theme-midnight .task-card.deadline { background: rgba(193,67,46,0.14); }
+body.theme-midnight .completion-stamp {
+    background: rgba(122,155,118,0.14);
+    color: #a8d0a3;
+}
+body.theme-midnight .lib-card,
+body.theme-midnight .media-card { background: var(--card-bg); }
+body.theme-midnight .modal { background: var(--card-warm); }
+body.theme-midnight .today-task { background: var(--bg-alt); }
+body.theme-midnight .today-mini-song { background: var(--bg-alt); }
+body.theme-midnight .today-mini-song .backstory-mini { background: var(--card-bg); color: var(--text); }
+body.theme-midnight .today-mini-song .empty { color: var(--text-muted); }
+body.theme-midnight .today-fresh-topics .ft-item { background: var(--bg-alt); }
+body.theme-midnight .topic-item { background: var(--bg-alt); }
+body.theme-midnight .stat-cell { background: var(--card-bg); }
+body.theme-midnight .weekly-answer textarea,
+body.theme-midnight .weekly-answer .empty-text { background: var(--bg-alt); color: var(--text); }
+body.theme-midnight .weekly-archive-answer { background: var(--bg-alt); }
+body.theme-midnight .weekly-topic-editor input,
+body.theme-midnight .field-group input,
+body.theme-midnight .field-group textarea,
+body.theme-midnight .field-group select,
+body.theme-midnight .add-form input,
+body.theme-midnight .add-form select,
+body.theme-midnight .add-form textarea,
+body.theme-midnight .search-form input,
+body.theme-midnight .quotes-form input {
+    background: var(--bg-alt);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+/* Sidebar dividers — theme-safe */
+.sidebar-logo { border-bottom: 1px solid rgba(0,0,0,0.32); }
+.person-picker { border-top: 1px solid rgba(0,0,0,0.32); }
+
+/* Theme picker */
+.theme-picker { margin-top: 14px; padding: 0 4px; }
+.theme-picker .label {
+    font-size: 0.6em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #8a7560;
+    padding: 0 0 6px;
+    font-weight: 700;
+}
+.theme-options { display: flex; gap: 8px; }
+.theme-opt {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+.theme-opt[data-theme="cozy"]     { background: linear-gradient(135deg, #d4a373, #c1432e); }
+.theme-opt[data-theme="forest"]   { background: linear-gradient(135deg, #7a9b76, #2d3a24); }
+.theme-opt[data-theme="ocean"]    { background: linear-gradient(135deg, #6b8e9e, #1a3448); }
+.theme-opt[data-theme="midnight"] { background: linear-gradient(135deg, #d4a373, #1a1f2e); }
+.theme-opt:hover { transform: scale(1.12); }
+.theme-opt.selected {
+    border-color: rgba(255,255,255,0.85);
+    transform: scale(1.15);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+}
+
+/* Undo bar */
+.undo-bar {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--sidebar-bg);
+    color: #faf4ec;
+    padding: 12px 18px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 2100;
+    animation: undoIn 0.32s cubic-bezier(.34,1.4,.64,1) forwards;
+    min-width: 260px;
+    max-width: 90vw;
+}
+.undo-bar.leaving { animation: undoOut 0.28s forwards; }
+@keyframes undoIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(24px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes undoOut {
+    to { opacity: 0; transform: translateX(-50%) translateY(24px); }
+}
+.undo-msg { flex: 1; font-size: 0.9em; }
+.undo-btn {
+    background: var(--primary);
+    color: #3d2f25;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85em;
+}
+.undo-btn:hover { background: var(--primary-dark); color: #fff; }
+
+===<CHUNK:theme_picker_html>===
+        <div class="theme-picker">
+            <div class="label">Theme</div>
+            <div class="theme-options">
+                <button class="theme-opt" data-theme="cozy" title="Cozy"></button>
+                <button class="theme-opt" data-theme="forest" title="Forest"></button>
+                <button class="theme-opt" data-theme="ocean" title="Ocean"></button>
+                <button class="theme-opt" data-theme="midnight" title="Midnight"></button>
+            </div>
+        </div>
+
+===<CHUNK:js>===
+// === THEMES ===
+const THEMES = ['cozy', 'forest', 'ocean', 'midnight'];
+
+function setTheme(name) {
+    if (!THEMES.includes(name)) name = 'cozy';
+    for (const t of THEMES) document.body.classList.remove('theme-' + t);
+    document.body.classList.add('theme-' + name);
+    localStorage.setItem('kloef_theme', name);
+    document.querySelectorAll('.theme-opt').forEach(b => {
+        b.classList.toggle('selected', b.dataset.theme === name);
+    });
+    if (!state.counters) state.counters = {};
+    state.counters.theme_changes = (state.counters.theme_changes || 0) + 1;
+    if (name === 'midnight') state.counters.midnight_used = true;
+    applyTimeOfDay();
+    saveState();
+}
+
+function initTheme() {
+    const saved = localStorage.getItem('kloef_theme') || 'cozy';
+    for (const t of THEMES) document.body.classList.remove('theme-' + t);
+    document.body.classList.add('theme-' + saved);
+    document.querySelectorAll('.theme-opt').forEach(b => {
+        b.classList.toggle('selected', b.dataset.theme === saved);
+        b.addEventListener('click', () => setTheme(b.dataset.theme));
+    });
+}
+
+// === UNDO BAR ===
+let undoTimer = null;
+
+function showUndoBar(kind, id, label) {
+    const existing = document.getElementById('undo-bar');
+    if (existing) existing.remove();
+    if (undoTimer) clearTimeout(undoTimer);
+    const bar = document.createElement('div');
+    bar.id = 'undo-bar';
+    bar.className = 'undo-bar';
+    bar.innerHTML = '<span class="undo-msg">' + escapeHtml(label) + '</span>'
+        + '<button class="undo-btn" onclick="undoDelete(\'' + kind + '\',\'' + id + '\')">Undo</button>';
+    document.body.appendChild(bar);
+    undoTimer = setTimeout(() => {
+        bar.classList.add('leaving');
+        setTimeout(() => bar.remove(), 300);
+    }, 5000);
+}
+
+function undoDelete(kind, id) {
+    const it = (state[kind] || []).find(x => x.id === id);
+    if (it) {
+        it.deleted = false;
+        it.updated_at = nowTs();
+        if (!state.counters) state.counters = {};
+        state.counters.undos = (state.counters.undos || 0) + 1;
+        saveState();
+        rerenderActive();
+    }
+    const bar = document.getElementById('undo-bar');
+    if (bar) bar.remove();
+    if (undoTimer) clearTimeout(undoTimer);
+}
+
+===<CHUNK:new_achievements>===
+    { key:'interior_decorator',   icon:'\u{1F3A8}', name:'Interior Decorator', desc:'Switch themes at least once.',                        check:s=>(s.counters&&s.counters.theme_changes>=1) },
+    { key:'night_owl',            icon:'\u{1F989}', name:'Night Owl',          desc:'Use the midnight theme.',                             check:s=>(s.counters&&s.counters.midnight_used) },
+    { key:'whoops',               icon:'\u{21A9}\u{FE0F}',  name:'Whoops',             desc:'Use the undo bar to un-delete something.',            check:s=>(s.counters&&s.counters.undos>=1) },
