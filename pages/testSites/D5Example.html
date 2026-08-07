@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../Recourses/Logos/DDD.jpg">
+    <title>D5 Example | DouweDoesDesign</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .page-header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 11vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2vh;
+            background: rgba(0,0,0,0.88);
+            border-bottom: 1px solid #333;
+            z-index: 100;
+        }
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 1.5vh;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+        .logo-placeholder {
+            height: 5.5vh; width: 5.5vh;
+            background-color: var(--accent-color);
+            display: flex; justify-content: center; align-items: center;
+            filter: invert(1);
+        }
+        .logo-placeholder img { max-height: 100%; width: auto; }
+        h1 {
+            font-size: 2.2vh;
+            letter-spacing: 0.5vh;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .nav-btn {
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.5);
+            background-color: transparent;
+            color: var(--accent-color);
+            padding: 0.8vh 1.6vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.3vh;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .nav-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        /* Stage */
+        .stage {
+            position: fixed;
+            top: 11vh; left: 0;
+            width: 100vw;
+            height: 89vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3vh;
+        }
+
+        /* Comparison widget */
+        .compare {
+            position: relative;
+            width: 100%;
+            max-width: calc(89vh * 2.246); /* image aspect ratio 3000/1336 */
+            max-height: 100%;
+            aspect-ratio: 3000 / 1336;
+            overflow: hidden;
+            user-select: none;
+            touch-action: none;
+            box-shadow: 0 0 60px rgba(255,255,255,0.06);
+            cursor: ew-resize;
+        }
+        .compare img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+        }
+        /* Bottom layer = bluer sky (revealed). Top layer = greyer sky, clipped from the right. */
+        .img-top {
+            z-index: 2;
+            clip-path: inset(0 0 0 0);
+        }
+
+        /* Divider line */
+        .divider {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            transform: translateX(-50%);
+            z-index: 3;
+            pointer-events: none;
+        }
+        /* Handle */
+        .handle {
+            position: absolute;
+            top: 50%;
+            width: 4.4vh;
+            height: 4.4vh;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.35);
+            border-radius: 50%;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6vh;
+            backdrop-filter: blur(2px);
+            pointer-events: none;
+        }
+        .handle::before, .handle::after {
+            content: '';
+            width: 0; height: 0;
+            border-top: 0.8vh solid transparent;
+            border-bottom: 0.8vh solid transparent;
+        }
+        .handle::before { border-right: 1vh solid rgba(255,255,255,0.9); }
+        .handle::after  { border-left: 1vh solid rgba(255,255,255,0.9); }
+
+        /* Corner labels */
+        .tag {
+            position: absolute;
+            bottom: 1.4vh;
+            font-size: 1.2vh;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.85);
+            background: rgba(0,0,0,0.4);
+            padding: 0.4vh 1vh;
+            z-index: 3;
+            pointer-events: none;
+        }
+        .tag.left  { left: 1.4vh; }
+        .tag.right { right: 1.4vh; }
+
+        /* Drag hint */
+        .hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, calc(-50% + 6vh));
+            font-size: 1.2vh;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.75);
+            z-index: 4;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            text-shadow: 0 0 6px rgba(0,0,0,0.8);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.5vh; letter-spacing: 0; }
+            .tag { font-size: 1vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <a href="../../testSites.html" class="nav-btn">&larr; Playground</a>
+        <div class="header-center">
+            <div class="logo-placeholder">
+                <img src="../../Recourses/Logos/DDD.jpg" />
+            </div>
+            <h1>D5 Example</h1>
+        </div>
+        <a href="../../testSites.html" class="nav-btn">Playground &rarr;</a>
+    </div>
+
+    <div class="stage">
+        <div class="compare" id="compare">
+            <!-- Bottom: bluer sky (revealed when dragging left) -->
+            <img class="img-bottom" src="images/D5_blue.jpg" alt="Post-render (blue sky)">
+            <!-- Top: greyer sky (clipped from the right as the divider moves left) -->
+            <img class="img-top" id="imgTop" src="images/D5_grey.jpg" alt="Pre-render (grey sky)">
+
+            <span class="tag left">Pre-render</span>
+            <span class="tag right">Post-render</span>
+
+            <div class="divider" id="divider"></div>
+            <div class="handle" id="handle"></div>
+            <div class="hint" id="hint">&larr; drag</div>
+        </div>
+    </div>
+
+    <script>
+        const compare = document.getElementById('compare');
+        const imgTop  = document.getElementById('imgTop');
+        const divider = document.getElementById('divider');
+        const handle  = document.getElementById('handle');
+        const hint    = document.getElementById('hint');
+
+        let pos = 92;          // start on the right (percent)
+        let dragging = false;
+
+        function setPos(p) {
+            pos = Math.max(0, Math.min(100, p));
+            // Clip the top (grey) image from the right so blue shows to the right of the divider
+            imgTop.style.clipPath = `inset(0 ${100 - pos}% 0 0)`;
+            divider.style.left = pos + '%';
+            handle.style.left  = pos + '%';
+        }
+
+        function posFromEvent(e) {
+            const rect = compare.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            return (x / rect.width) * 100;
+        }
+
+        function startDrag(e) {
+            dragging = true;
+            hint.style.opacity = '0';
+            setPos(posFromEvent(e));
+            e.preventDefault();
+        }
+        function moveDrag(e) {
+            if (!dragging) return;
+            setPos(posFromEvent(e));
+            e.preventDefault();
+        }
+        function endDrag() { dragging = false; }
+
+        compare.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', moveDrag);
+        window.addEventListener('mouseup', endDrag);
+
+        compare.addEventListener('touchstart', startDrag, { passive: false });
+        window.addEventListener('touchmove', moveDrag, { passive: false });
+        window.addEventListener('touchend', endDrag);
+
+        // Init
+        setPos(pos);
+    </script>
+</body>
+</html>

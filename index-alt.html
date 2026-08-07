@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="Recourses/Logos/DDD.jpg">
+<title>DouweDoesDesign — Architecture</title>
+<meta name="description" content="Architecture work by Douwe — TU Delft and NUS Singapore. Projects, drawings and an ongoing investigation into AI in the architectural process.">
+<meta property="og:title" content="DouweDoesDesign | Architecture">
+<meta property="og:description" content="Selected architectural work, drawings and research.">
+<meta property="og:image" content="pages/projects/CC/Recourses/Render1.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ─────────────────────────────────────────────────────────────
+   NEUTRAL GALLERY — prototype
+   Off-white ground. Images carry all colour. No inversion.
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --paper:      #f6f5f3;
+  --paper-2:    #eeece8;
+  --ink:        #14140f;
+  --ink-60:     rgba(20,20,15,.60);
+  --ink-40:     rgba(20,20,15,.40);
+  --rule:       rgba(20,20,15,.14);
+  --rule-soft:  rgba(20,20,15,.07);
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --pad:  clamp(1.25rem, 4vw, 4.5rem);
+  --max:  1560px;
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-weight:300;
+  line-height:1.55;
+  font-size:16px;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--pad)}
+
+/* ── type primitives ────────────────────────────────────── */
+.label{
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--ink-40);
+  font-weight:400;
+}
+.display{
+  font-weight:300;
+  letter-spacing:-.03em;
+  line-height:.98;
+}
+
+/* ── header ─────────────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(246,245,243,.88);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+.bar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:2rem;height:64px;
+}
+.mark{display:flex;align-items:center;gap:.75rem}
+/* logos and drawings are black-on-white JPEGs — multiply drops the white
+   box into the paper instead of inverting the artwork */
+.mark img{height:22px;width:auto;mix-blend-mode:multiply;opacity:.88}
+.mark span{
+  font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:500;
+}
+nav{display:flex;gap:2rem;align-items:center}
+nav a{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-60);
+  padding-bottom:2px;border-bottom:1px solid transparent;
+  transition:color .3s var(--ease),border-color .3s var(--ease);
+}
+nav a:hover{color:var(--ink);border-color:var(--ink)}
+nav a.quiet{color:var(--ink-40)}
+
+/* ── hero ───────────────────────────────────────────────── */
+.hero{padding-top:clamp(3rem,7vw,7rem);padding-bottom:clamp(2rem,5vw,4rem)}
+.hero-head{
+  display:grid;grid-template-columns:1fr auto;gap:2rem;
+  align-items:end;padding-bottom:clamp(1.5rem,3vw,2.5rem);
+  border-bottom:1px solid var(--rule);
+}
+.hero h1{
+  font-size:clamp(2.1rem,6.2vw,5.6rem);
+  max-width:22ch;
+}
+.hero h1 em{font-style:normal;color:var(--ink-40)}
+.hero-meta{text-align:right;padding-bottom:.5rem}
+.hero-meta p{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-40);line-height:2}
+
+/* full-bleed featured image — shown as drawn, no filters */
+.featured{margin-top:clamp(1.5rem,4vw,3rem);position:relative;display:block}
+.featured-img{
+  width:100%;
+  aspect-ratio:16/8.2;
+  object-fit:cover;
+  object-position:center 46%;
+  mix-blend-mode:multiply;
+  transition:transform 1.1s var(--ease);
+}
+.featured:hover .featured-img{transform:scale(1.015)}
+.featured-cap{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:2rem;padding-top:.9rem;flex-wrap:wrap;
+}
+.featured-cap h2{font-size:clamp(1.1rem,2vw,1.6rem);font-weight:400;letter-spacing:-.01em}
+.featured-cap .go{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-40);transition:color .3s var(--ease)}
+.featured:hover .featured-cap .go{color:var(--ink)}
+
+/* ── section scaffold ───────────────────────────────────── */
+section{padding-block:clamp(3.5rem,8vw,8rem)}
+.sec-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:2rem;padding-bottom:1.75rem;border-bottom:1px solid var(--ink);
+  margin-bottom:clamp(2rem,4vw,3.5rem);
+}
+.sec-head h2{font-size:clamp(1.35rem,3vw,2.4rem);font-weight:300;letter-spacing:-.02em}
+
+/* ── works ──────────────────────────────────────────────── */
+.works{display:grid;gap:clamp(2.5rem,5vw,4.5rem)}
+.work{
+  display:grid;grid-template-columns:1.35fr 1fr;
+  gap:clamp(1.5rem,4vw,3.5rem);align-items:center;
+}
+.work:nth-child(even) .work-media{order:2}
+.work-media{overflow:hidden;background:var(--paper-2)}
+.work-media img{
+  width:100%;aspect-ratio:4/3;
+  mix-blend-mode:multiply;
+  transition:transform 1.1s var(--ease);
+}
+/* renders fill the frame; line-art diagrams are letterboxed so nothing is cropped */
+.work-media img.render{object-fit:cover;object-position:center 48%}
+.work-media img.diagram{object-fit:contain;padding:clamp(1.5rem,5vw,4.5rem)}
+.work:hover .work-media img{transform:scale(1.03)}
+
+.work-body{max-width:44ch}
+.work-no{display:block;margin-bottom:1rem}
+.work-body h3{
+  font-size:clamp(1.6rem,3.4vw,2.9rem);font-weight:300;
+  letter-spacing:-.025em;line-height:1.02;margin-bottom:.85rem;
+}
+.work-course{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-40);margin-bottom:1.1rem;
+}
+.work-body p.desc{color:var(--ink-60);font-size:.98rem;margin-bottom:1.6rem;max-width:38ch}
+.work-link{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;padding-bottom:.35rem;
+  border-bottom:1px solid var(--ink);
+  transition:gap .35s var(--ease);
+}
+.work:hover .work-link{gap:1.1rem}
+.work-link.disabled{border-color:var(--rule);color:var(--ink-40)}
+
+/* ── research / tools: demoted to a text index ──────────── */
+.research{background:var(--paper-2);border-block:1px solid var(--rule)}
+.research .lede{max-width:52ch;color:var(--ink-60);margin-bottom:2.5rem;font-size:1.02rem}
+.index-list{border-top:1px solid var(--rule)}
+.index-row{
+  display:grid;grid-template-columns:3.5rem 1fr 1.4fr auto;
+  gap:1.5rem;align-items:baseline;
+  padding:1.15rem 0;border-bottom:1px solid var(--rule);
+  transition:padding-left .4s var(--ease);
+}
+.index-row:hover{padding-left:.75rem}
+.index-row h4{font-size:1.05rem;font-weight:400;letter-spacing:-.01em}
+.index-row p{font-size:.86rem;color:var(--ink-40)}
+.index-row .arrow{font-family:var(--mono);font-size:.8rem;color:var(--ink-40);transition:color .3s var(--ease)}
+.index-row:hover .arrow{color:var(--ink)}
+
+/* ── about ──────────────────────────────────────────────── */
+.about-grid{display:grid;grid-template-columns:280px 1fr;gap:clamp(2rem,5vw,4.5rem);align-items:start}
+.about-grid img{width:100%;aspect-ratio:4/5;object-fit:cover;filter:grayscale(1) contrast(1.03)}
+.about-body{max-width:56ch}
+.about-body p{margin-bottom:1.15rem;color:var(--ink-60);font-size:1.02rem}
+.about-body p.first{color:var(--ink);font-size:clamp(1.05rem,1.7vw,1.35rem);font-weight:300;letter-spacing:-.01em;line-height:1.45}
+.study{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;color:var(--ink-60);border-top:1px solid var(--rule);padding-top:1.25rem;margin-top:1.75rem}
+.study div{padding:.3rem 0}
+
+/* ── footer ─────────────────────────────────────────────── */
+footer{border-top:1px solid var(--ink);padding-block:clamp(2.5rem,5vw,4rem)}
+.foot-grid{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:end}
+.foot-grid h2{font-size:clamp(1.6rem,4vw,3.2rem);font-weight:300;letter-spacing:-.025em;max-width:24ch}
+.foot-links{display:flex;flex-direction:column;gap:.5rem;text-align:right}
+.foot-links a{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-60);transition:color .3s var(--ease)}
+.foot-links a:hover{color:var(--ink)}
+.foot-rule{margin-top:clamp(2rem,4vw,3rem);padding-top:1.25rem;border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.foot-rule span,.foot-rule a{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-40)}
+.foot-rule a:hover{color:var(--ink)}
+
+/* ── reveal ─────────────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  *{transition:none!important}
+  html{scroll-behavior:auto}
+}
+
+/* ── responsive ─────────────────────────────────────────── */
+@media (max-width:900px){
+  .hero-head{grid-template-columns:1fr}
+  .hero-meta{text-align:left;padding-bottom:0}
+  .work,.about-grid,.foot-grid{grid-template-columns:1fr}
+  .work:nth-child(even) .work-media{order:0}
+  .work-media img{aspect-ratio:3/2}
+  .featured-img{aspect-ratio:4/3}
+  .about-grid img{max-width:220px}
+  .index-row{grid-template-columns:2.5rem 1fr auto;gap:1rem}
+  .index-row p{display:none}
+  .foot-links{text-align:left}
+  nav{gap:1.1rem}
+  nav a.quiet{display:none}
+}
+@media (max-width:560px){
+  .mark span{font-size:.68rem}
+  nav a{font-size:.66rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a href="#top" class="mark">
+      <img src="Recourses/Logos/DDD.jpg" alt="DouweDoesDesign">
+      <span>DouweDoesDesign</span>
+    </a>
+    <nav>
+      <a href="#works">Work</a>
+      <a href="#research" class="quiet">Research</a>
+      <a href="#about">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ── HERO ─────────────────────────────────────────── -->
+  <div class="wrap hero">
+    <div class="hero-head rv">
+      <h1 class="display">Architecture, drawn and tested. <em>Plus an ongoing enquiry into what AI can actually do for it.</em></h1>
+      <div class="hero-meta">
+        <p>Douwe — Architecture</p>
+        <p>TU Delft · NUS Singapore</p>
+        <p>Selected work 2024—2026</p>
+      </div>
+    </div>
+
+    <a href="pages/projects/CC/convertible-convergence.html" class="featured rv">
+      <img class="featured-img" src="pages/projects/CC/Recourses/Render1.jpg" alt="Convertible Convergence — street-level render of the stacked, curved facade">
+      <div class="featured-cap">
+        <h2>Convertible Convergence <span class="label" style="margin-left:.75rem">NUS · Design 5</span></h2>
+        <span class="go">Enter project →</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- ── SELECTED WORK ────────────────────────────────── -->
+  <section id="works">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Selected work</h2>
+        <a class="label" href="projects.html" style="color:var(--ink)">All projects →</a>
+      </div>
+
+      <div class="works">
+
+        <article class="work rv">
+          <a class="work-media" href="pages/projects/CC/convertible-convergence.html">
+            <img class="render" src="pages/projects/CC/Recourses/Render3.jpg" alt="Convertible Convergence render">
+          </a>
+          <div class="work-body">
+            <span class="label work-no">01</span>
+            <h3>Convertible Convergence</h3>
+            <div class="work-course">NUS Singapore · Design 5</div>
+            <p class="desc">A response to the problematic urban convergences between competing plans — resolved through convertible interiors and a dynamic, permeable façade.</p>
+            <a class="work-link" href="pages/projects/CC/convertible-convergence.html">Plans, details, renders <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="work rv">
+          <a class="work-media" href="pages/projects/EscherGarden/escher-garden.html">
+            <img class="diagram" src="Recourses/Logos/EGLogo.jpg" alt="Escher's Garden — stepped plate diagram">
+          </a>
+          <div class="work-body">
+            <span class="label work-no">02</span>
+            <h3>Escher's Garden</h3>
+            <div class="work-course">TU Delft · WV3</div>
+            <p class="desc">A stage garden with a parametric sunroof, designed for the Escher Museum in Den Haag.</p>
+            <a class="work-link" href="pages/projects/EscherGarden/escher-garden.html">View project <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="work rv">
+          <a class="work-media" href="pages/projects/Ellypse/home-of-shadows.html">
+            <img class="diagram" src="Recourses/Logos/HOSLogo.jpg" alt="Home of Shadows — plan diagram">
+          </a>
+          <div class="work-body">
+            <span class="label work-no">03</span>
+            <h3>Home of Shadows</h3>
+            <div class="work-course">TU Delft · Design 2</div>
+            <p class="desc">A museum and restaurant recalling the history of Amsterdam's Marine port while thickening the urban environment around it.</p>
+            <a class="work-link" href="pages/projects/Ellypse/home-of-shadows.html">View project <span>→</span></a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RESEARCH / TOOLS (demoted) ───────────────────── -->
+  <section id="research" class="research">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Research &amp; tools</h2>
+        <span class="label">Ongoing</span>
+      </div>
+      <p class="lede rv">A working record of where AI is genuinely useful in the architectural process — and where it fails. Built as I go, open to anyone who wants it.</p>
+
+      <div class="index-list rv">
+        <a class="index-row" href="Workflow.html">
+          <span class="label">01</span>
+          <h4>Workflow</h4>
+          <p>An interactive map of AI across pre-design, documentation and site.</p>
+          <span class="arrow">→</span>
+        </a>
+        <a class="index-row" href="ai-limitations.html">
+          <span class="label">02</span>
+          <h4>Limits of AI</h4>
+          <p>Where the tools break down, with worked examples.</p>
+          <span class="arrow">→</span>
+        </a>
+        <a class="index-row" href="DouweDoesBenchmarks.html">
+          <span class="label">03</span>
+          <h4>Benchmarks</h4>
+          <p>Comparative tests across image and reasoning models.</p>
+          <span class="arrow">→</span>
+        </a>
+        <a class="index-row" href="MaterialData/public_material_portal.html">
+          <span class="label">04</span>
+          <h4>Material database</h4>
+          <p>Searchable material data for early-stage decisions.</p>
+          <span class="arrow">→</span>
+        </a>
+        <a class="index-row" href="testSites.html">
+          <span class="label">05</span>
+          <h4>Playground</h4>
+          <p>Unfinished experiments, kept public on purpose.</p>
+          <span class="arrow">→</span>
+        </a>
+        <a class="index-row" href="updates.html">
+          <span class="label">06</span>
+          <h4>Updates</h4>
+          <p>What changed, and when.</p>
+          <span class="arrow">→</span>
+        </a>
+        <a class="index-row" href="Roadmap.html">
+          <span class="label">07</span>
+          <h4>Roadmap</h4>
+          <p>What's being built next.</p>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ────────────────────────────────────────── -->
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>About</h2>
+        <span class="label">Douwe</span>
+      </div>
+      <div class="about-grid rv">
+        <img src="Recourses/Images/profielfoto.jpeg" alt="Portrait">
+        <div class="about-body">
+          <p class="first">I'm an architecture student working out how AI belongs in the everyday architectural process — as co-creation rather than automation.</p>
+          <p>This site is two things at once: the work itself, and a transparent record of the methods behind it. Where a drawing was generated, post-processed or parametrically driven, I say so and show how.</p>
+          <p>It's an ongoing experiment. If something is missing, wrong, or could be built better, I'd rather hear it.</p>
+          <div class="study">
+            <div>TU Delft — 2024–current · Architecture BSc</div>
+            <div>NUS Singapore — 2025 · Exchange, architecture focus</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid rv">
+      <h2 class="display">Have a project, a correction, or a better method?</h2>
+      <div class="foot-links">
+        <a href="mailto:douwedoesdesign@gmail.com">douwedoesdesign@gmail.com</a>
+        <a href="https://www.instagram.com/douwedoesdesign/" target="_blank" rel="noopener">Instagram</a>
+        <a href="contact.html">All contact details →</a>
+      </div>
+    </div>
+    <div class="foot-rule">
+      <span>© <span id="yr">2026</span> DouweDoesDesign</span>
+      <a href="index.html">View current homepage for comparison →</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* staggered reveal on scroll */
+(function () {
+  var items = document.querySelectorAll('.rv');
+  if (!('IntersectionObserver' in window)) {
+    items.forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e, i) {
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      setTimeout(function () { el.classList.add('in'); }, i * 70);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  items.forEach(function (el) { io.observe(el); });
+})();
+</script>
+
+</body>
+</html>

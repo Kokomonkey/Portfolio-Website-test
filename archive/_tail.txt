@@ -1,0 +1,246 @@
+function updateSyncStatusUI() {
+    const el = document.getElementById('sync-status');
+    if (!el) return;
+    if (!syncConfigured()) {
+        el.textContent = '⚙️ Setup sync';
+        el.className = 'sync-status not-setup';
+        return;
+    }
+    const labels = {
+        idle:    '☁️ Synced',
+        syncing: '⟳ Syncing…',
+        error:   '⚠️ Sync error — tap to fix',
+    };
+    el.textContent = labels[syncStatus] || labels.idle;
+    el.className = 'sync-status ' + syncStatus;
+}
+
+function setSyncStatus(s) {
+    syncStatus = s;
+    updateSyncStatusUI();
+}
+
+function mergeStates(a, b) {
+    const lists = ['tasks', 'books', 'movies', 'series', 'anime', 'songs'];
+    const out = {};
+    for (const k of lists) {
+        const map = new Map();
+        for (const it of (a[k] || [])) map.set(it.id, it);
+        for (const it of (b[k] || [])) {
+            const ex = map.get(it.id);
+            if (!ex) { map.set(it.id, it); continue; }
+            if (it.deleted && !ex.deleted) { map.set(it.id, it); continue; }
+            if (ex.deleted && !it.deleted) { continue; }
+            const eU = ex.updated_at || 0;
+            const iU = it.updated_at || 0;
+            if (iU > eU) map.set(it.id, it);
+        }
+        out[k] = Array.from(map.values());
+    }
+    return out;
+}
+
+function rerenderActive() {
+    const active = document.querySelector('.page.active');
+    if (!active) return;
+    const name = active.id.replace('page-', '');
+    if (name === 'calendar') renderCalendar();
+    if (name === 'books') renderBooks();
+    if (name === 'movies') renderMovies();
+    if (name === 'series') renderSeries();
+    if (name === 'anime') renderAnime();
+    if (name === 'songs') renderSongs();
+}
+
+async function fetchRemote() {
+    const r = await fetch(JSONBIN_BASE + '/' + syncBin + '/latest', {
+        headers: { 'X-Master-Key': syncKey, 'X-Bin-Meta': 'false' },
+        cache: 'no-store',
+    });
+    if (!r.ok) throw new Error('GET HTTP ' + r.status);
+    const remote = await r.json();
+    return (remote && typeof remote === 'object') ? remote : {};
+}
+
+async function pullSync() {
+    if (!syncConfigured()) return;
+    setSyncStatus('syncing');
+    try {
+        const remote = await fetchRemote();
+        state = mergeStates(state, remote);
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        rerenderActive();
+        setSyncStatus('idle');
+    } catch (e) {
+        console.warn('pullSync failed:', e);
+        setSyncStatus('error');
+    }
+}
+
+function scheduleSyncPush() {
+    if (!syncConfigured()) return;
+    if (pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(pushSync, 700);
+}
+
+async function pushSync() {
+    if (!syncConfigured() || pushInFlight) return;
+    pushInFlight = true;
+    setSyncStatus('syncing');
+    try {
+        let remote = {};
+        try { remote = await fetchRemote(); } catch (_) {}
+        const merged = mergeStates(remote, state);
+        const r = await fetch(JSONBIN_BASE + '/' + syncBin, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': syncKey },
+            body: JSON.stringify(merged),
+        });
+        if (!r.ok) throw new Error('PUT HTTP ' + r.status);
+        state = merged;
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        rerenderActive();
+        setSyncStatus('idle');
+    } catch (e) {
+        console.warn('pushSync failed:', e);
+        setSyncStatus('error');
+    } finally {
+        pushInFlight = false;
+    }
+}
+
+function startPullPolling() {
+    if (pullTimer) clearInterval(pullTimer);
+    if (!syncConfigured()) return;
+    pullTimer = setInterval(() => {
+        if (document.visibilityState === 'visible') pullSync();
+    }, 15000);
+}
+
+function openSyncSetup() {
+    document.getElementById('sync-bin-input').value = syncBin;
+    document.getElementById('sync-key-input').value = syncKey;
+    document.getElementById('syncModal').classList.add('open');
+}
+function closeSyncSetup() {
+    document.getElementById('syncModal').classList.remove('open');
+}
+function saveSyncConfig() {
+    const bin = document.getElementById('sync-bin-input').value.trim();
+    const key = document.getElementById('sync-key-input').value.trim();
+    if (!bin || !key) { alert('Both Bin ID and Master Key are required.'); return; }
+    syncBin = bin;
+    syncKey = key;
+    localStorage.setItem(SYNC_BIN_STORAGE, syncBin);
+    localStorage.setItem(SYNC_KEY_STORAGE, syncKey);
+    closeSyncSetup();
+    updateSyncStatusUI();
+    startPullPolling();
+    pushSync();
+}
+function clearSyncConfig() {
+    if (!confirm('Disconnect sync? Your local data stays on this device.')) return;
+    syncBin = '';
+    syncKey = '';
+    localStorage.removeItem(SYNC_BIN_STORAGE);
+    localStorage.removeItem(SYNC_KEY_STORAGE);
+    if (pullTimer) clearInterval(pullTimer);
+    setSyncStatus('idle');
+    updateSyncStatusUI();
+    closeSyncSetup();
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && syncConfigured()) pullSync();
+});
+
+const PAGE_INTROS = {
+    songs: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<circle class="ring" cx="150" cy="100" r="20"/>'
+        + '<circle class="ring ring2" cx="150" cy="100" r="20"/>'
+        + '<circle class="ring ring3" cx="150" cy="100" r="20"/>'
+        + '<rect class="bar" x="78"  y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="108" y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="138" y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="168" y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="198" y="80" width="14" height="40" rx="3"/>'
+        + '</svg>',
+    books: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style="perspective: 800px;">'
+        + '<rect class="spine" x="146" y="38" width="8" height="124" rx="2"/>'
+        + '<rect class="cover-l" x="50" y="40" width="100" height="120" rx="4"/>'
+        + '<rect class="cover-r" x="150" y="40" width="100" height="120" rx="4"/>'
+        + '<line class="page-line" x1="160" y1="70"  x2="240" y2="70"/>'
+        + '<line class="page-line" x1="160" y1="90"  x2="240" y2="90"/>'
+        + '<line class="page-line" x1="160" y1="110" x2="240" y2="110"/>'
+        + '<line class="page-line" x1="160" y1="130" x2="230" y2="130"/>'
+        + '</svg>',
+    movies: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<rect class="board" x="56" y="84" width="200" height="92" rx="4"/>'
+        + '<text class="board-label" x="156" y="138" text-anchor="middle">TAKE 1</text>'
+        + '<circle class="flash" cx="156" cy="84" r="38"/>'
+        + '<g class="arm">'
+        + '<rect x="56" y="58" width="200" height="26" rx="3"/>'
+        + '<polygon class="stripe" points="64,58 80,84 96,58"/>'
+        + '<polygon class="stripe" points="112,58 128,84 144,58"/>'
+        + '<polygon class="stripe" points="160,58 176,84 192,58"/>'
+        + '<polygon class="stripe" points="208,58 224,84 240,58"/>'
+        + '</g></svg>',
+    series: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<ellipse class="glow" cx="150" cy="100" rx="18" ry="60"/>'
+        + '<rect class="bar" x="138" y="30" width="24" height="140" rx="2"/>'
+        + '<path class="swoosh" d="M 30 95 Q 90 70 150 95 Q 210 120 270 95 L 270 110 Q 210 135 150 110 Q 90 85 30 110 Z"/>'
+        + '</svg>',
+    anime: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<rect class="panel" x="50" y="40" width="200" height="120" rx="4"/>'
+        + '<line class="speed" x1="80"  y1="100" x2="40"  y2="100"/>'
+        + '<line class="speed" x1="220" y1="100" x2="260" y2="100"/>'
+        + '<line class="speed" x1="85"  y1="78"  x2="50"  y2="60"/>'
+        + '<line class="speed" x1="215" y1="78"  x2="250" y2="60"/>'
+        + '<line class="speed" x1="85"  y1="122" x2="50"  y2="140"/>'
+        + '<line class="speed" x1="215" y1="122" x2="250" y2="140"/>'
+        + '<polygon class="ink" points="150,82 158,96 174,98 162,108 166,124 150,116 134,124 138,108 126,98 142,96"/>'
+        + '</svg>',
+};
+
+let lastPageShown = null;
+function showPageIntro(name) {
+    if (name === lastPageShown) return;
+    lastPageShown = name;
+    const svg = PAGE_INTROS[name];
+    if (!svg) return;
+    const intro = document.createElement('div');
+    intro.className = 'page-intro intro-' + name;
+    intro.innerHTML = svg;
+    document.body.appendChild(intro);
+    setTimeout(() => intro.remove(), 1950);
+}
+
+function showWelcome(person) {
+    const labels = { douwe: 'Douwe', ilian: 'Ilian' };
+    if (!labels[person]) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'welcome-overlay ' + person;
+    overlay.innerHTML = '<div class="welcome-text">Welcome ' + labels[person] + '</div>';
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.remove(), 2500);
+}
+
+// INIT
+renderPersonPicker();
+showPage('calendar');
+updateSyncStatusUI();
+if (syncConfigured()) {
+    pullSync();
+    startPullPolling();
+}
+if (VALID_PERSONS.includes(urlPerson)) {
+    showWelcome(urlPerson);
+    history.replaceState({}, '', window.location.pathname);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeTaskModal(); closeSyncSetup(); }
+});
+</script>
+
+</body>
+</html>

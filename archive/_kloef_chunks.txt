@@ -1,0 +1,1159 @@
+===<CHUNK:css>===
+/* Countdown widget */
+#countdown-widget {
+    background: linear-gradient(135deg, var(--card-warm), #f3e3c8);
+    border: 1px solid var(--border-strong);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.countdown-content { display: flex; align-items: baseline; gap: 14px; }
+.countdown-days {
+    font-size: 2.4em;
+    font-weight: 800;
+    color: var(--primary-dark);
+    line-height: 1;
+}
+.countdown-label { color: var(--text-muted); font-size: 0.92em; }
+.countdown-target { color: var(--text-muted); font-size: 0.78em; text-align: right; }
+
+/* View toggle */
+.view-toggle { display: flex; gap: 4px; margin-bottom: 14px; }
+.view-toggle button {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 0.82em;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.view-toggle button.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+/* Bookcase */
+.bookcase {
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(0,0,0,0.06) 0px, transparent 1px,
+            transparent 50px, rgba(0,0,0,0.06) 51px),
+        linear-gradient(180deg, #6b4226 0%, #4a2d18 100%);
+    border-radius: 14px;
+    padding: 18px 20px 8px;
+    box-shadow: var(--shadow-lg), inset 0 0 30px rgba(0,0,0,0.25);
+    position: relative;
+    border: 3px solid #3a200f;
+    overflow: hidden;
+}
+.bookcase-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #e6c89a;
+    font-size: 0.82em;
+    margin-bottom: 14px;
+    padding: 0 4px;
+    font-family: Georgia, serif;
+}
+.bookcase-stats .title { font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.shelf {
+    background: linear-gradient(180deg, transparent 88%, #2d1808 88%, #4a2d18 100%);
+    padding: 0 6px;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    min-height: 160px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+}
+.shelf::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 8px;
+    background: linear-gradient(180deg, #5a371f, #2d1808);
+}
+.book-spine {
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 2px 2px 0 0;
+    box-shadow:
+        inset -3px 0 4px rgba(0,0,0,0.25),
+        inset 3px 0 3px rgba(255,255,255,0.15),
+        -1px 2px 4px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+    background: var(--spine-color, #8b5a3c);
+    animation: bookSlideIn 0.6s ease-out both;
+    animation-delay: var(--delay, 0s);
+    margin-bottom: 8px;
+}
+.book-spine:hover { transform: translateY(-10px) rotate(-1deg); z-index: 5; }
+.book-spine::before, .book-spine::after {
+    content: '';
+    position: absolute;
+    left: 3px; right: 3px;
+    height: 1px;
+    background: rgba(255, 215, 130, 0.4);
+}
+.book-spine::before { top: 4px; }
+.book-spine::after  { bottom: 4px; }
+.book-spine.finished {
+    background: linear-gradient(135deg, #8b5a3c, var(--spine-color, #6b4226) 40%, #b89968);
+}
+.book-spine.finished::before, .book-spine.finished::after {
+    background: linear-gradient(90deg, #ffd97a, #d4a060, #ffd97a);
+    height: 2px;
+}
+.book-spine.unread { opacity: 0.55; filter: grayscale(0.4); }
+.spine-title {
+    color: #f5e8d0;
+    font-size: 0.68em;
+    font-weight: 600;
+    font-family: Georgia, serif;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    padding: 10px 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+@keyframes bookSlideIn {
+    from { transform: translateY(-120px) rotate(-8deg); opacity: 0; }
+    to   { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+/* Topic of the week */
+.weekly-hero {
+    background: linear-gradient(135deg, var(--card-warm), #f3e3c8);
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 24px;
+}
+.weekly-label {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--orange);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.weekly-topic-text {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--primary-dark);
+    line-height: 1.3;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+.weekly-topic-text.empty {
+    font-style: italic;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.weekly-topic-meta { font-size: 0.78em; color: var(--text-muted); margin-bottom: 18px; }
+.weekly-topic-editor {
+    display: none;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+.weekly-topic-editor input {
+    flex: 1;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1em;
+    background: var(--bg);
+}
+.weekly-answers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+}
+.weekly-answer {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 14px;
+    border-top: 4px solid var(--border-strong);
+}
+.weekly-answer.douwe { border-top-color: var(--douwe-color); }
+.weekly-answer.ilian { border-top-color: var(--ilian-color); }
+.weekly-answer .who {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.weekly-answer .who-name {
+    font-weight: 700;
+    font-size: 0.95em;
+    color: var(--primary-dark);
+}
+.weekly-answer textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.92em;
+    background: var(--bg);
+    resize: vertical;
+}
+.weekly-answer .text {
+    font-size: 0.92em;
+    line-height: 1.5;
+    color: var(--text);
+    white-space: pre-wrap;
+    margin-bottom: 8px;
+}
+.weekly-answer .empty-text {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 14px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+}
+.weekly-archive {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+}
+.weekly-archive .week-label {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+.weekly-archive .topic { font-weight: 700; font-size: 1.05em; color: var(--primary-dark); margin-bottom: 10px; }
+.weekly-archive-answers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+.weekly-archive-answer {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px;
+    border-left: 3px solid var(--border-strong);
+}
+.weekly-archive-answer.douwe { border-left-color: var(--douwe-color); }
+.weekly-archive-answer.ilian { border-left-color: var(--ilian-color); }
+.weekly-archive-answer .who-line {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.weekly-archive-answer .text { font-size: 0.85em; line-height: 1.4; white-space: pre-wrap; }
+.weekly-archive-answer .empty-text { font-size: 0.78em; color: var(--text-muted); font-style: italic; }
+
+/* Topics / conversations */
+.topics-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 18px;
+}
+@media (max-width: 768px) { .topics-layout { grid-template-columns: 1fr; } }
+.topics-pane {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid var(--border);
+}
+.spinner-card {
+    text-align: center;
+}
+.spinner-big-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    font-size: 1.4em;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s;
+    margin: 18px auto;
+    display: block;
+    line-height: 1.1;
+}
+.spinner-big-btn:hover { transform: scale(1.05); }
+.spinner-big-btn:active { transform: scale(0.97); }
+.spinner-big-btn.spinning { animation: spinnerSpin 0.8s ease-in-out; }
+@keyframes spinnerSpin { 0% { transform: rotate(0); } 100% { transform: rotate(720deg); } }
+.spin-result {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    text-align: left;
+}
+.spin-result .text { font-size: 1.05em; font-weight: 600; color: var(--primary-dark); margin-bottom: 10px; line-height: 1.4; }
+.spin-result .meta { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; font-size: 0.82em; color: var(--text-muted); }
+.spin-result .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.topic-type-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+    justify-content: center;
+}
+.topic-type-chip {
+    padding: 5px 11px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    cursor: pointer;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-family: inherit;
+}
+.topic-type-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.topic-list { display: flex; flex-direction: column; gap: 8px; max-height: 560px; overflow-y: auto; }
+.topic-item {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--primary);
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+.topic-item.douwe { border-left-color: var(--douwe-color); }
+.topic-item.ilian { border-left-color: var(--ilian-color); }
+.topic-item .topic-text { flex: 1; }
+.topic-item .topic-meta { font-size: 0.78em; color: var(--text-muted); margin-top: 4px; }
+.hidden-count {
+    background: var(--bg-alt);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text-muted);
+    font-size: 0.85em;
+    margin-bottom: 12px;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Achievements */
+.ach-summary {
+    background: linear-gradient(135deg, var(--card-warm), #f3e3c8);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 22px;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+.ach-summary .count { font-size: 2.2em; font-weight: 800; color: var(--primary-dark); }
+.ach-summary .lbl { color: var(--text-muted); font-size: 0.9em; }
+.ach-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
+}
+.ach-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: all 0.2s;
+}
+.ach-card.unlocked {
+    background: linear-gradient(135deg, #fff8e0, #fef0c4);
+    border-color: var(--yellow);
+    box-shadow: var(--shadow-md);
+}
+.ach-card.locked { opacity: 0.5; filter: grayscale(0.6); }
+.ach-icon { font-size: 2.4em; margin-bottom: 6px; }
+.ach-name { font-weight: 700; font-size: 0.95em; margin-bottom: 4px; color: var(--primary-dark); }
+.ach-desc { font-size: 0.8em; color: var(--text-muted); margin-bottom: 6px; }
+.ach-date { font-size: 0.72em; color: var(--orange); font-weight: 700; }
+
+/* Achievement toast */
+.ach-toast-wrap {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2200;
+    pointer-events: none;
+}
+.ach-toast {
+    background: linear-gradient(135deg, #fff8e0, #fde68a);
+    border: 1px solid var(--yellow);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 250px;
+    animation: toastIn 0.4s cubic-bezier(.34,1.6,.64,1) forwards, toastOut 0.4s 4s forwards;
+    pointer-events: auto;
+}
+.ach-toast .icon { font-size: 1.8em; }
+.ach-toast .body { flex: 1; }
+.ach-toast .lbl { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; color: var(--orange); font-weight: 700; }
+.ach-toast .name { font-weight: 700; color: var(--primary-dark); }
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(60px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+    to { opacity: 0; transform: translateX(60px); }
+}
+
+/* Page intros for new pages */
+.intro-weekly .planet {
+    fill: var(--orange);
+    transform-origin: center;
+    animation: planetSpin 1.6s ease-out forwards;
+}
+@keyframes planetSpin {
+    0% { transform: scale(0.3) rotate(-90deg); opacity: 0; }
+    60% { transform: scale(1.1) rotate(0); opacity: 1; }
+    100% { transform: scale(1) rotate(20deg); opacity: 1; }
+}
+.intro-weekly .orbit {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 2;
+    opacity: 0;
+    transform-origin: center;
+    animation: orbitFade 1.2s 0.3s ease forwards;
+}
+@keyframes orbitFade {
+    0% { opacity: 0; transform: scale(0.5) rotate(0); }
+    100% { opacity: 0.6; transform: scale(1) rotate(360deg); }
+}
+.intro-weekly .moon {
+    fill: var(--primary);
+    transform-origin: 150px 100px;
+    opacity: 0;
+    animation: moonOrbit 1.4s 0.4s ease forwards;
+}
+@keyframes moonOrbit {
+    0%   { opacity: 0; transform: rotate(0); }
+    20%  { opacity: 1; }
+    100% { opacity: 1; transform: rotate(330deg); }
+}
+
+.intro-topics .bubble {
+    fill: var(--primary);
+    opacity: 0;
+    transform-origin: center;
+    animation: bubblePop 0.5s ease forwards;
+}
+.intro-topics .bubble.b2 { fill: var(--blue); animation-delay: 0.18s; }
+.intro-topics .bubble.b3 { fill: var(--green); animation-delay: 0.36s; }
+@keyframes bubblePop {
+    0% { opacity: 0; transform: scale(0); }
+    60% { opacity: 1; transform: scale(1.15); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.intro-topics .dot {
+    fill: #ffffff;
+    opacity: 0;
+    animation: dotIn 0.4s forwards;
+}
+.intro-topics .dot:nth-of-type(1) { animation-delay: 0.65s; }
+.intro-topics .dot:nth-of-type(2) { animation-delay: 0.82s; }
+.intro-topics .dot:nth-of-type(3) { animation-delay: 0.99s; }
+@keyframes dotIn { to { opacity: 1; } }
+
+.intro-achievements .trophy {
+    fill: var(--yellow);
+    opacity: 0;
+    transform-origin: center bottom;
+    animation: trophyRise 0.75s cubic-bezier(.34,1.5,.64,1) forwards;
+}
+@keyframes trophyRise {
+    0%   { opacity: 0; transform: translateY(50px) scale(0.5); }
+    60%  { opacity: 1; transform: translateY(-8px) scale(1.1); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.intro-achievements .star {
+    fill: var(--orange);
+    opacity: 0;
+    transform-origin: center;
+    animation: starBurst 0.5s ease forwards;
+}
+.intro-achievements .star.s2 { animation-delay: 0.75s; }
+.intro-achievements .star.s3 { animation-delay: 0.85s; }
+.intro-achievements .star.s4 { animation-delay: 0.95s; }
+.intro-achievements .star.s5 { animation-delay: 1.05s; }
+@keyframes starBurst {
+    0% { opacity: 0; transform: scale(0) rotate(-30deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+===<CHUNK:nav>===
+    <button class="nav-item" data-page="weekly">&#128197; Topic of the week</button>
+    <button class="nav-item" data-page="topics">&#128172; Conversations</button>
+    <button class="nav-item" data-page="achievements">&#127942; Achievements</button>
+
+===<CHUNK:books_toolbar>===
+        <div id="books-toolbar"></div>
+
+===<CHUNK:page_sections>===
+
+    <section id="page-weekly" class="page">
+        <div class="page-header">
+            <div>
+                <h1>&#128197; Topic of the week</h1>
+                <p>One shared topic per week. Both answer when you have time.</p>
+            </div>
+        </div>
+        <div class="weekly-hero" id="weekly-hero"></div>
+        <div class="section-divider">&#128250; Past weeks</div>
+        <div id="weekly-archive"></div>
+    </section>
+
+    <section id="page-topics" class="page">
+        <div class="page-header">
+            <div>
+                <h1>&#128172; Conversations</h1>
+                <p>Bewaar gespreksonderwerpen. De spinner trekt random uit beider lijsten.</p>
+            </div>
+        </div>
+        <div class="topics-layout">
+            <div class="topics-pane spinner-card">
+                <div style="font-size: 0.78em; color: var(--text-muted); text-transform:uppercase; letter-spacing: 1px;">Filter by type</div>
+                <div class="topic-type-filter" id="spin-type-filter"></div>
+                <button class="spinner-big-btn" id="spin-button" onclick="spinTopic()">&#127922;<br><span style="font-size: 0.55em;">SPIN</span></button>
+                <div id="spin-result-area"></div>
+            </div>
+            <div class="topics-pane">
+                <h3 style="margin-bottom: 12px; font-size: 1.05em;">Add a topic</h3>
+                <form onsubmit="addTopic(event)" style="margin-bottom: 16px;">
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px;">
+                        <input type="text" name="text" required placeholder="What do you want to talk about?"
+                               style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.92em; background: var(--bg);">
+                        <select name="type" id="add-topic-type" style="padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-family: inherit;"></select>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content: space-between; margin-top: 8px; gap: 10px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85em; color: var(--text-muted);">
+                            <input type="checkbox" name="for_inperson"> Save for in-person only
+                        </label>
+                        <button class="btn btn-primary btn-sm" type="submit">+ Add</button>
+                    </div>
+                </form>
+                <div class="topic-type-filter" id="lib-type-filter"></div>
+                <div id="lib-hidden-count" class="hidden-count" style="display: none;"></div>
+                <div class="topic-list" id="topic-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="page-achievements" class="page">
+        <div class="page-header">
+            <div>
+                <h1>&#127942; Achievements</h1>
+                <p>Game-style goals across every section. Unlock as you go.</p>
+            </div>
+        </div>
+        <div class="ach-summary" id="ach-summary"></div>
+        <div class="ach-grid" id="ach-grid"></div>
+    </section>
+
+===<CHUNK:render_books>===
+function renderBooks() {
+    const grid = document.getElementById('books-grid');
+    const items = state.books.filter(b => !b.deleted);
+    const toolbar = document.getElementById('books-toolbar');
+    if (toolbar) {
+        toolbar.innerHTML = '<div class="view-toggle">'
+            + '<button class="' + (booksView==='grid'?'active':'') + '" onclick="setBooksView(\'grid\')">Grid</button>'
+            + '<button class="' + (booksView==='bookcase'?'active':'') + '" onclick="setBooksView(\'bookcase\')">&#128218; Bookcase</button>'
+            + '</div>';
+    }
+    if (booksView === 'bookcase') {
+        grid.style.display = 'block';
+        grid.innerHTML = renderBookcase(items);
+        return;
+    }
+    grid.style.display = '';
+    if (!items.length) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">&#128214;</div>Add your first book above.</div>';
+        return;
+    }
+    let html = '';
+    for (const b of items) {
+        html += '<div class="lib-card">';
+        html += coverHtml(b.cover_url, '&#128214;');
+        html += '<div class="nm">' + escapeHtml(b.title) + '</div>';
+        html += '<div class="meta">' + escapeHtml(b.author || '-') + '</div>';
+        html += '<progress value="' + b.pages_read + '" max="' + b.total_pages + '"></progress>';
+        html += '<div class="meta">' + b.pages_read + '/' + b.total_pages + ' pages</div>';
+        html += '<div class="tag-row">' + personTag(b.person) + '</div>';
+        html += '<div class="actions">';
+        html += '<button class="btn btn-ghost btn-sm" onclick="updateBookProgress(\'' + b.id + '\')">Update</button>';
+        html += '<button class="btn btn-link btn-sm" onclick="deleteItem(\'books\',\'' + b.id + '\')">&times;</button>';
+        html += '</div></div>';
+    }
+    grid.innerHTML = html;
+}
+
+===<CHUNK:js_functions>===
+// === COUNTDOWN ===
+const COUNTDOWN_TARGET = new Date('2026-09-01T00:00:00');
+function renderCountdown() {
+    const el = document.getElementById('countdown-widget');
+    if (!el) return;
+    const now = new Date();
+    const diffMs = COUNTDOWN_TARGET.getTime() - now.getTime();
+    const days = Math.max(0, Math.ceil(diffMs / 86400000));
+    if (!state.counters) state.counters = {};
+    state.counters.countdown_views = (state.counters.countdown_views || 0) + 1;
+    if (days <= 0) {
+        el.innerHTML = '<div class="countdown-content">'
+            + '<div class="countdown-days">&#127881;</div>'
+            + '<div><div style="font-weight:700;color:var(--primary-dark);">The day is here!</div>'
+            + '<div class="countdown-label">September 1st 2026</div></div></div>';
+        return;
+    }
+    el.innerHTML = '<div class="countdown-content">'
+        + '<div class="countdown-days">' + days + '</div>'
+        + '<div><div style="font-weight:700;color:var(--primary-dark);">days to go</div>'
+        + '<div class="countdown-label">until we meet again</div></div></div>'
+        + '<div class="countdown-target">&#128197;&nbsp;September 1, 2026</div>';
+}
+
+// === BOOKCASE ===
+let booksView = localStorage.getItem('kloef_books_view') || 'grid';
+function setBooksView(v) {
+    booksView = v;
+    localStorage.setItem('kloef_books_view', v);
+    if (v === 'bookcase') {
+        if (!state.counters) state.counters = {};
+        state.counters.bookcase_opens = (state.counters.bookcase_opens || 0) + 1;
+        saveState();
+    }
+    renderBooks();
+}
+const BOOKCASE_PALETTE = ['#8b3a3a','#6b4226','#3d5a47','#5c3a5e','#4a5d7a','#7d6b3a','#6b2e2e','#3a5a5a','#8b5a3c','#9b6b3c','#7a5a8a','#5a7a8a'];
+function renderBookcase(items) {
+    if (!items.length) {
+        return '<div class="bookcase"><div class="empty-state" style="color:#e6c89a;"><div class="empty-icon">&#128218;</div>No books on the shelf yet.</div></div>';
+    }
+    const finishedCount = items.filter(b => b.is_finished).length;
+    let html = '<div class="bookcase">';
+    html += '<div class="bookcase-stats"><span class="title">Our library</span>'
+        + '<span>' + finishedCount + ' / ' + items.length + ' read &middot; '
+        + (items.length ? Math.round(finishedCount / items.length * 100) : 0) + '%</span></div>';
+    html += '<div class="shelf">';
+    items.forEach((b, i) => {
+        const pages = b.total_pages || 200;
+        const width = Math.min(42, 16 + Math.floor(pages / 50));
+        const height = Math.min(140, 95 + Math.floor(pages / 12));
+        const color = BOOKCASE_PALETTE[i % BOOKCASE_PALETTE.length];
+        const klass = b.is_finished ? 'finished' : (b.pages_read === 0 ? 'unread' : '');
+        html += '<div class="book-spine ' + klass + '" '
+            + 'style="width:' + width + 'px;height:' + height + 'px;'
+            + '--spine-color:' + color + ';--delay:' + (i*0.04) + 's"'
+            + ' onclick="updateBookProgress(\'' + b.id + '\')"'
+            + ' title="' + escapeAttr(b.title) + ' (' + b.pages_read + '/' + b.total_pages + ')">'
+            + '<span class="spine-title">' + escapeHtml(b.title) + '</span></div>';
+    });
+    html += '</div></div>';
+    return html;
+}
+
+// === WEEKLY ===
+function getMondayOf(d) {
+    const date = new Date(d);
+    date.setHours(0,0,0,0);
+    const day = date.getDay();
+    const diff = (day === 0 ? -6 : 1 - day);
+    date.setDate(date.getDate() + diff);
+    return date;
+}
+function getWeekStartISO(d) { return fmtISODate(getMondayOf(d || new Date())); }
+
+function renderWeekly() {
+    if (!state.weeklies) state.weeklies = [];
+    const today = new Date();
+    const thisWeek = getWeekStartISO(today);
+
+    // Find current topic & answers
+    const items = state.weeklies.filter(w => !w.deleted);
+    const topicItems = items.filter(w => w.kind === 'topic' && w.week_start === thisWeek)
+                            .sort((a,b) => (b.updated_at||0) - (a.updated_at||0));
+    const currentTopic = topicItems[0] || null;
+    const findAnswer = (person) => items
+        .filter(w => w.kind === 'answer' && w.week_start === thisWeek && w.person === person)
+        .sort((a,b) => (b.updated_at||0) - (a.updated_at||0))[0] || null;
+
+    const douweAns = findAnswer('douwe');
+    const ilianAns = findAnswer('ilian');
+
+    const hero = document.getElementById('weekly-hero');
+    const weekLabel = getMondayOf(today).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+        + ' — week ' + getISOWeek(today);
+
+    let topicHtml;
+    if (currentTopic) {
+        topicHtml = '<div class="weekly-topic-text" onclick="editWeeklyTopic()" id="weekly-topic-display">'
+            + escapeHtml(currentTopic.text) + '</div>'
+            + '<div class="weekly-topic-meta">Set by ' + (currentTopic.person === 'douwe' ? 'Douwe' : 'Ilian') + ' &middot; click to edit</div>';
+    } else {
+        topicHtml = '<div class="weekly-topic-text empty" onclick="editWeeklyTopic()" id="weekly-topic-display">'
+            + 'No topic yet — click to set one for this week.</div>';
+    }
+    topicHtml += '<div class="weekly-topic-editor" id="weekly-topic-editor">'
+        + '<input type="text" id="weekly-topic-input" placeholder="What\'s this week\'s topic?">'
+        + '<button class="btn btn-primary btn-sm" onclick="saveWeeklyTopic()">Save</button>'
+        + '<button class="btn btn-ghost btn-sm" onclick="cancelWeeklyTopic()">Cancel</button>'
+        + '</div>';
+
+    const answerHtml = (person, ans) => {
+        const isMe = person === currentPerson;
+        const label = person === 'douwe' ? 'Douwe' : 'Ilian';
+        let inner;
+        if (isMe) {
+            inner = '<textarea id="weekly-ans-' + person + '" placeholder="Write your answer...">'
+                + (ans ? escapeHtml(ans.text) : '') + '</textarea>'
+                + '<div style="margin-top:8px; text-align:right;">'
+                + '<button class="btn btn-primary btn-sm" onclick="saveWeeklyAnswer(\'' + person + '\')">Save</button>'
+                + '</div>';
+        } else if (ans) {
+            inner = '<div class="text">' + escapeHtml(ans.text) + '</div>';
+        } else {
+            inner = '<div class="empty-text">Not answered yet.</div>';
+        }
+        return '<div class="weekly-answer ' + person + '">'
+            + '<div class="who"><span class="who-name">' + label + '</span>' + personTag(person) + '</div>'
+            + inner + '</div>';
+    };
+
+    hero.innerHTML = '<div class="weekly-label">Week of ' + weekLabel + '</div>'
+        + topicHtml
+        + '<div class="weekly-answers">' + answerHtml('douwe', douweAns) + answerHtml('ilian', ilianAns) + '</div>';
+
+    // Archive: all past weeks (not thisWeek), grouped by week_start desc
+    const past = items.filter(w => w.week_start !== thisWeek);
+    const byWeek = {};
+    for (const w of past) {
+        if (!byWeek[w.week_start]) byWeek[w.week_start] = { topic: null, answers: {} };
+        if (w.kind === 'topic') {
+            if (!byWeek[w.week_start].topic || w.updated_at > (byWeek[w.week_start].topic.updated_at || 0)) {
+                byWeek[w.week_start].topic = w;
+            }
+        } else if (w.kind === 'answer') {
+            const existing = byWeek[w.week_start].answers[w.person];
+            if (!existing || w.updated_at > (existing.updated_at || 0)) {
+                byWeek[w.week_start].answers[w.person] = w;
+            }
+        }
+    }
+    const weeks = Object.keys(byWeek).sort().reverse();
+    const archEl = document.getElementById('weekly-archive');
+    if (!weeks.length) {
+        archEl.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128250;</div>No past weeks yet — once Monday rolls around, this week\'s topic moves here.</div>';
+        return;
+    }
+    let archHtml = '';
+    for (const wk of weeks) {
+        const d = new Date(wk + 'T00:00:00');
+        const lbl = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const entry = byWeek[wk];
+        archHtml += '<div class="weekly-archive">';
+        archHtml += '<div class="week-label">Week of ' + lbl + '</div>';
+        archHtml += '<div class="topic">' + (entry.topic ? escapeHtml(entry.topic.text) : '<span style="color:var(--text-muted);font-weight:500;font-style:italic;">No topic was set</span>') + '</div>';
+        archHtml += '<div class="weekly-archive-answers">';
+        for (const p of ['douwe', 'ilian']) {
+            const a = entry.answers[p];
+            const lblP = p === 'douwe' ? 'Douwe' : 'Ilian';
+            archHtml += '<div class="weekly-archive-answer ' + p + '">';
+            archHtml += '<div class="who-line">' + lblP + '</div>';
+            if (a) archHtml += '<div class="text">' + escapeHtml(a.text) + '</div>';
+            else archHtml += '<div class="empty-text">No answer.</div>';
+            archHtml += '</div>';
+        }
+        archHtml += '</div></div>';
+    }
+    archEl.innerHTML = archHtml;
+}
+function getISOWeek(d) {
+    const date = new Date(d);
+    date.setHours(0,0,0,0);
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    const week1 = new Date(date.getFullYear(), 0, 4);
+    return 1 + Math.round(((date - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+}
+function editWeeklyTopic() {
+    const items = (state.weeklies || []).filter(w => !w.deleted);
+    const thisWeek = getWeekStartISO(new Date());
+    const topicItems = items.filter(w => w.kind === 'topic' && w.week_start === thisWeek)
+                            .sort((a,b) => (b.updated_at||0) - (a.updated_at||0));
+    const current = topicItems[0];
+    document.getElementById('weekly-topic-display').style.display = 'none';
+    document.getElementById('weekly-topic-editor').style.display = 'flex';
+    document.getElementById('weekly-topic-input').value = current ? current.text : '';
+    document.getElementById('weekly-topic-input').focus();
+}
+function cancelWeeklyTopic() { renderWeekly(); }
+function saveWeeklyTopic() {
+    const txt = document.getElementById('weekly-topic-input').value.trim();
+    if (!txt) { renderWeekly(); return; }
+    if (!state.weeklies) state.weeklies = [];
+    const thisWeek = getWeekStartISO(new Date());
+    // Soft-delete any existing topic for this week
+    for (const w of state.weeklies) {
+        if (!w.deleted && w.kind === 'topic' && w.week_start === thisWeek) {
+            w.deleted = true;
+            w.updated_at = nowTs();
+        }
+    }
+    state.weeklies.push({
+        id: uid(),
+        kind: 'topic',
+        week_start: thisWeek,
+        text: txt,
+        person: currentPerson,
+        updated_at: nowTs(),
+    });
+    saveState();
+    renderWeekly();
+}
+function saveWeeklyAnswer(person) {
+    if (person !== currentPerson) return;
+    const txt = document.getElementById('weekly-ans-' + person).value.trim();
+    if (!state.weeklies) state.weeklies = [];
+    const thisWeek = getWeekStartISO(new Date());
+    // Soft-delete existing answer
+    for (const w of state.weeklies) {
+        if (!w.deleted && w.kind === 'answer' && w.week_start === thisWeek && w.person === person) {
+            w.deleted = true;
+            w.updated_at = nowTs();
+        }
+    }
+    if (txt) {
+        state.weeklies.push({
+            id: uid(),
+            kind: 'answer',
+            week_start: thisWeek,
+            person: person,
+            text: txt,
+            updated_at: nowTs(),
+        });
+    }
+    saveState();
+    renderWeekly();
+}
+
+// === TOPICS / CONVERSATIONS ===
+const TOPIC_TYPES = [
+    { key: 'tea',         label: 'Tea',          icon: '&#129481;' },
+    { key: 'gebeurtenis', label: 'Gebeurtenis',  icon: '&#128240;' },
+    { key: 'interests',   label: 'Interests',    icon: '&#127912;' },
+    { key: 'rant',        label: 'Rant',         icon: '&#128556;' },
+    { key: 'random',      label: 'Random topic', icon: '&#127922;' },
+    { key: 'braviaal',    label: 'Braviaal idee',icon: '&#128161;' },
+    { key: 'vraagje',     label: 'Random vraag', icon: '&#10067;' },
+    { key: 'romeins',     label: 'Romeins Rijk', icon: '&#127963;' },
+];
+let spinFilter = 'all';
+let libFilter = 'all';
+function topicTypeLabel(key) {
+    const t = TOPIC_TYPES.find(x => x.key === key);
+    return t ? (t.icon + ' ' + t.label) : key;
+}
+function renderTopics() {
+    if (!state.topics) state.topics = [];
+    // Populate add-form select on first render
+    const sel = document.getElementById('add-topic-type');
+    if (sel && !sel.options.length) {
+        sel.innerHTML = TOPIC_TYPES.map(t => '<option value="' + t.key + '">' + t.label + '</option>').join('');
+    }
+    // Spinner filter chips
+    const spinEl = document.getElementById('spin-type-filter');
+    spinEl.innerHTML = '<button class="topic-type-chip ' + (spinFilter==='all'?'active':'') + '" onclick="setSpinFilter(\'all\')">All</button>'
+        + TOPIC_TYPES.map(t => '<button class="topic-type-chip ' + (spinFilter===t.key?'active':'') + '" onclick="setSpinFilter(\'' + t.key + '\')" title="' + t.label + '">' + t.icon + '</button>').join('');
+    // Library filter chips
+    const libEl = document.getElementById('lib-type-filter');
+    libEl.innerHTML = '<button class="topic-type-chip ' + (libFilter==='all'?'active':'') + '" onclick="setLibFilter(\'all\')">All</button>'
+        + TOPIC_TYPES.map(t => '<button class="topic-type-chip ' + (libFilter===t.key?'active':'') + '" onclick="setLibFilter(\'' + t.key + '\')" title="' + t.label + '">' + t.icon + '</button>').join('');
+    // List YOUR own topics only
+    const mine = state.topics.filter(t => !t.deleted && !t.discussed_at && t.person === currentPerson);
+    const view = libFilter === 'all' ? mine : mine.filter(t => t.type === libFilter);
+    const list = document.getElementById('topic-list');
+    if (!view.length) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128172;</div>No topics from you yet. Add one above.</div>';
+    } else {
+        list.innerHTML = view.sort((a,b)=>(b.updated_at||0)-(a.updated_at||0)).map(t => {
+            const isNew = (nowTs() - (t.updated_at||0)) < 3*86400000;
+            return '<div class="topic-item ' + t.person + '">'
+                + '<div class="topic-text"><div>' + escapeHtml(t.text) + (isNew ? ' <span title="new" style="color:var(--orange);">&#10024;</span>' : '') + '</div>'
+                + '<div class="topic-meta">' + topicTypeLabel(t.type) + (t.for_inperson ? ' &middot; <span style="color:var(--primary-dark);font-weight:700;">In-person</span>' : '') + '</div></div>'
+                + '<button class="btn btn-link btn-sm" onclick="deleteItem(\'topics\',\'' + t.id + '\')">&times;</button>'
+                + '</div>';
+        }).join('');
+    }
+    // Hidden count from other user
+    const others = state.topics.filter(t => !t.deleted && !t.discussed_at && t.person !== currentPerson).length;
+    const hiddenEl = document.getElementById('lib-hidden-count');
+    if (others > 0) {
+        hiddenEl.style.display = 'block';
+        hiddenEl.innerHTML = '&#128064; ' + others + ' hidden topic' + (others === 1 ? '' : 's') + ' from the other person — spin to reveal';
+    } else {
+        hiddenEl.style.display = 'none';
+    }
+}
+function setSpinFilter(k) { spinFilter = k; renderTopics(); }
+function setLibFilter(k) { libFilter = k; renderTopics(); }
+function addTopic(e) {
+    e.preventDefault();
+    const f = e.target;
+    if (!state.topics) state.topics = [];
+    state.topics.push({
+        id: uid(),
+        text: f.text.value.trim(),
+        type: f.type.value,
+        for_inperson: !!f.for_inperson.checked,
+        person: currentPerson,
+        discussed_at: null,
+        updated_at: nowTs(),
+    });
+    saveState();
+    f.reset();
+    renderTopics();
+}
+function spinTopic() {
+    if (!state.topics) state.topics = [];
+    if (!state.counters) state.counters = {};
+    state.counters.spins = (state.counters.spins || 0) + 1;
+    const btn = document.getElementById('spin-button');
+    btn.classList.add('spinning');
+    setTimeout(() => btn.classList.remove('spinning'), 800);
+    const pool = state.topics.filter(t => !t.deleted && !t.discussed_at
+        && (spinFilter === 'all' || t.type === spinFilter));
+    const area = document.getElementById('spin-result-area');
+    if (!pool.length) {
+        area.innerHTML = '<div class="spin-result"><div class="text">No topics available for this filter.</div></div>';
+        saveState();
+        return;
+    }
+    const t = pool[Math.floor(Math.random() * pool.length)];
+    setTimeout(() => {
+        area.innerHTML = '<div class="spin-result">'
+            + '<div class="text">' + escapeHtml(t.text) + '</div>'
+            + '<div class="meta">' + topicTypeLabel(t.type)
+            + ' &middot; ' + personTag(t.person)
+            + (t.for_inperson ? ' &middot; <span style="color:var(--primary-dark);font-weight:700;">In-person</span>' : '')
+            + '</div>'
+            + '<div class="actions">'
+            + '<button class="btn btn-success btn-sm" onclick="archiveSpunTopic(\'' + t.id + '\')">&#10003; Discussed (archive)</button>'
+            + '<button class="btn btn-ghost btn-sm" onclick="spinTopic()">&#127922; Spin again</button>'
+            + '</div></div>';
+        saveState();
+    }, 600);
+}
+function archiveSpunTopic(id) {
+    if (!state.topics) return;
+    const t = state.topics.find(x => x.id === id);
+    if (!t) return;
+    const note = prompt('Optional: 1-line afterthought from your chat?', '');
+    t.discussed_at = nowTs();
+    if (note) t.afterthought = note.trim();
+    t.updated_at = nowTs();
+    saveState();
+    document.getElementById('spin-result-area').innerHTML = '<div class="spin-result"><div class="text">&#10003; Archived. Spin again or close.</div></div>';
+    renderTopics();
+}
+
+// === ACHIEVEMENTS ===
+const ACHIEVEMENTS = [
+    { key:'first_steps',          icon:'🌱', name:'First Steps',        desc:'Add your first task.',                                check:s=>(s.tasks||[]).filter(t=>!t.deleted).length>=1 },
+    { key:'bookworm',             icon:'📚', name:'Bookworm',           desc:'Add 5 books.',                                       check:s=>(s.books||[]).filter(b=>!b.deleted).length>=5 },
+    { key:'page_turner',          icon:'📖', name:'Page Turner',        desc:'Read 1000 pages in total.',                          check:s=>(s.books||[]).filter(b=>!b.deleted).reduce((a,b)=>a+(b.pages_read||0),0)>=1000 },
+    { key:'cinema_buff',          icon:'🎬', name:'Cinema Buff',        desc:'Mark 5 movies as watched.',                          check:s=>(s.movies||[]).filter(m=>!m.deleted&&m.watched).length>=5 },
+    { key:'binge_watcher',        icon:'📺', name:'Binge Watcher',      desc:'Finish a series.',                                   check:s=>(s.series||[]).some(x=>!x.deleted&&x.total_episodes>0&&x.episodes_watched>=x.total_episodes) },
+    { key:'otaku',                icon:'🍙', name:'Otaku',              desc:'Add 3 anime.',                                       check:s=>(s.anime||[]).filter(a=>!a.deleted).length>=3 },
+    { key:'dj_of_the_day',        icon:'🎵', name:'DJ of the Day',      desc:'Pick a song on 7 different days.',                   check:s=>new Set((s.songs||[]).filter(x=>!x.deleted).map(x=>x.date)).size>=7 },
+    { key:'synced_pair',          icon:'🎶', name:'Synced Pair',        desc:'Both pick songs on the same day, 3 times.',          check:s=>{const m={};for(const sg of (s.songs||[]).filter(x=>!x.deleted)){(m[sg.date]=m[sg.date]||new Set()).add(sg.person);}return Object.values(m).filter(x=>x.size>=2).length>=3;} },
+    { key:'conversation_starter', icon:'💬', name:'Conversation Starter',desc:'Add 5 conversation topics.',                       check:s=>(s.topics||[]).filter(t=>!t.deleted).length>=5 },
+    { key:'spinner',              icon:'🎯', name:'Spinner',            desc:'Use the topic spinner 25 times.',                    check:s=>(s.counters&&s.counters.spins>=25) },
+    { key:'spinner_pro',          icon:'🎰', name:'Spinner Pro',        desc:'Spin 50 times.',                                     check:s=>(s.counters&&s.counters.spins>=50) },
+    { key:'deep_discussion',      icon:'🗣', name:'Deep Discussion',    desc:'Archive 10 discussed topics.',                       check:s=>(s.topics||[]).filter(t=>t.discussed_at).length>=10 },
+    { key:'tea_time',             icon:'🍵', name:'Tea Time',           desc:'Archive 3 tea topics.',                              check:s=>(s.topics||[]).filter(t=>t.discussed_at && t.type==='tea').length>=3 },
+    { key:'tagged_in',            icon:'📌', name:'Tagged In',          desc:'5 topics saved for in-person.',                       check:s=>(s.topics||[]).filter(t=>!t.deleted && t.for_inperson).length>=5 },
+    { key:'weekly_thinker',       icon:'📝', name:'Weekly Thinker',     desc:'Answer 3 weekly topics.',                            check:s=>{const seen=new Set();for(const w of (s.weeklies||[]).filter(x=>!x.deleted&&x.kind==='answer'&&x.person==='douwe'))seen.add(w.week_start);return seen.size>=3;} },
+    { key:'topic_curator',        icon:'🏛', name:'Topic Curator',      desc:'Set 3 weekly topics.',                               check:s=>{const seen=new Set();for(const w of (s.weeklies||[]).filter(x=>!x.deleted&&x.kind==='topic'))seen.add(w.week_start);return seen.size>=3;} },
+    { key:'wordsmith',            icon:'✍',       name:'Wordsmith',          desc:'Write a 50+ word weekly answer.',                    check:s=>(s.weeklies||[]).some(w=>!w.deleted&&w.kind==='answer'&&(w.text||'').split(/\s+/).filter(Boolean).length>=50) },
+    { key:'variety_pack',         icon:'🎁', name:'Variety Pack',       desc:'Add an item in every section.',                      check:s=>['tasks','books','movies','series','anime','songs','weeklies','topics'].every(k=>(s[k]||[]).filter(x=>!x.deleted).length>0) },
+    { key:'two_person_show',      icon:'👯', name:'Two-Person Show',    desc:'Both users contribute to 4+ sections.',              check:s=>{let n=0;for(const k of ['tasks','books','movies','series','anime','songs','weeklies','topics']){const p=new Set((s[k]||[]).filter(x=>!x.deleted).map(x=>x.person));if(p.has('douwe')&&p.has('ilian'))n++;}return n>=4;} },
+    { key:'hidden_gem',           icon:'🔑', name:'Hidden Gem',         desc:'Discover the secret passcode.',                       check:s=>true },
+    { key:'bookshelf_curator',    icon:'🪑', name:'Bookshelf Curator',  desc:'Open the bookcase view.',                            check:s=>(s.counters&&s.counters.bookcase_opens>=1) },
+    { key:'september_dreams',     icon:'📅', name:'September Dreams',   desc:'Open the countdown to September 1st.',               check:s=>(s.counters&&s.counters.countdown_views>=1) },
+];
+
+function checkAchievements() {
+    if (!state.achievements) state.achievements = [];
+    const unlockedKeys = new Set(state.achievements.map(a => a.key));
+    const newOnes = [];
+    for (const a of ACHIEVEMENTS) {
+        if (unlockedKeys.has(a.key)) continue;
+        try {
+            if (a.check(state)) {
+                state.achievements.push({ id: uid(), key: a.key, unlocked_at: nowTs(), person: currentPerson });
+                newOnes.push(a);
+            }
+        } catch (e) { /* ignore */ }
+    }
+    if (newOnes.length) {
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+        for (const a of newOnes) showAchievementToast(a);
+    }
+}
+
+function showAchievementToast(a) {
+    let wrap = document.querySelector('.ach-toast-wrap');
+    if (!wrap) {
+        wrap = document.createElement('div');
+        wrap.className = 'ach-toast-wrap';
+        document.body.appendChild(wrap);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'ach-toast';
+    toast.innerHTML = '<div class="icon">' + a.icon + '</div>'
+        + '<div class="body"><div class="lbl">Achievement unlocked</div>'
+        + '<div class="name">' + a.name + '</div></div>';
+    wrap.appendChild(toast);
+    setTimeout(() => toast.remove(), 4600);
+}
+
+function renderAchievements() {
+    if (!state.achievements) state.achievements = [];
+    const unlocked = {};
+    for (const a of state.achievements) {
+        if (!unlocked[a.key] || a.unlocked_at < unlocked[a.key].unlocked_at) unlocked[a.key] = a;
+    }
+    const summary = document.getElementById('ach-summary');
+    const total = ACHIEVEMENTS.length;
+    const got = Object.keys(unlocked).length;
+    summary.innerHTML = '<div class="count">' + got + ' / ' + total + '</div>'
+        + '<div class="lbl">unlocked &middot; ' + Math.round(got/total*100) + '% complete</div>';
+    const grid = document.getElementById('ach-grid');
+    grid.innerHTML = ACHIEVEMENTS.map(a => {
+        const u = unlocked[a.key];
+        const cls = u ? 'unlocked' : 'locked';
+        const date = u ? new Date(u.unlocked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        return '<div class="ach-card ' + cls + '">'
+            + '<div class="ach-icon">' + (u ? a.icon : '🔒') + '</div>'
+            + '<div class="ach-name">' + escapeHtml(a.name) + '</div>'
+            + '<div class="ach-desc">' + escapeHtml(a.desc) + '</div>'
+            + (u ? '<div class="ach-date">Unlocked ' + date + '</div>' : '')
+            + '</div>';
+    }).join('');
+}
+
+===<CHUNK:intros>===
+const PAGE_INTROS = {
+    songs: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<circle class="ring" cx="150" cy="100" r="20"/>'
+        + '<circle class="ring ring2" cx="150" cy="100" r="20"/>'
+        + '<circle class="ring ring3" cx="150" cy="100" r="20"/>'
+        + '<rect class="bar" x="78"  y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="108" y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="138" y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="168" y="80" width="14" height="40" rx="3"/>'
+        + '<rect class="bar" x="198" y="80" width="14" height="40" rx="3"/>'
+        + '</svg>',
+    books: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" style="perspective: 800px;">'
+        + '<rect class="spine" x="146" y="38" width="8" height="124" rx="2"/>'
+        + '<rect class="cover-l" x="50" y="40" width="100" height="120" rx="4"/>'
+        + '<rect class="cover-r" x="150" y="40" width="100" height="120" rx="4"/>'
+        + '<line class="page-line" x1="160" y1="70"  x2="240" y2="70"/>'
+        + '<line class="page-line" x1="160" y1="90"  x2="240" y2="90"/>'
+        + '<line class="page-line" x1="160" y1="110" x2="240" y2="110"/>'
+        + '<line class="page-line" x1="160" y1="130" x2="230" y2="130"/>'
+        + '</svg>',
+    movies: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<rect class="board" x="56" y="84" width="200" height="92" rx="4"/>'
+        + '<text class="board-label" x="156" y="138" text-anchor="middle">TAKE 1</text>'
+        + '<circle class="flash" cx="156" cy="84" r="38"/>'
+        + '<g class="arm">'
+        + '<rect x="56" y="58" width="200" height="26" rx="3"/>'
+        + '<polygon class="stripe" points="64,58 80,84 96,58"/>'
+        + '<polygon class="stripe" points="112,58 128,84 144,58"/>'
+        + '<polygon class="stripe" points="160,58 176,84 192,58"/>'
+        + '<polygon class="stripe" points="208,58 224,84 240,58"/>'
+        + '</g></svg>',
+    series: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<ellipse class="glow" cx="150" cy="100" rx="18" ry="60"/>'
+        + '<rect class="bar" x="138" y="30" width="24" height="140" rx="2"/>'
+        + '<path class="swoosh" d="M 30 95 Q 90 70 150 95 Q 210 120 270 95 L 270 110 Q 210 135 150 110 Q 90 85 30 110 Z"/>'
+        + '</svg>',
+    anime: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<rect class="panel" x="50" y="40" width="200" height="120" rx="4"/>'
+        + '<line class="speed" x1="80"  y1="100" x2="40"  y2="100"/>'
+        + '<line class="speed" x1="220" y1="100" x2="260" y2="100"/>'
+        + '<line class="speed" x1="85"  y1="78"  x2="50"  y2="60"/>'
+        + '<line class="speed" x1="215" y1="78"  x2="250" y2="60"/>'
+        + '<line class="speed" x1="85"  y1="122" x2="50"  y2="140"/>'
+        + '<line class="speed" x1="215" y1="122" x2="250" y2="140"/>'
+        + '<polygon class="ink" points="150,82 158,96 174,98 162,108 166,124 150,116 134,124 138,108 126,98 142,96"/>'
+        + '</svg>',
+    weekly: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<ellipse class="orbit" cx="150" cy="100" rx="100" ry="40"/>'
+        + '<circle class="planet" cx="150" cy="100" r="32"/>'
+        + '<circle class="moon" cx="248" cy="100" r="8"/>'
+        + '</svg>',
+    topics: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<g class="bubble"><path d="M 70 70 Q 50 70 50 90 Q 50 110 70 110 L 80 110 L 75 125 L 95 110 L 100 110 Q 120 110 120 90 Q 120 70 100 70 Z"/>'
+        + '<circle class="dot" cx="68" cy="90" r="3.5"/><circle class="dot" cx="84" cy="90" r="3.5"/><circle class="dot" cx="100" cy="90" r="3.5"/></g>'
+        + '<g class="bubble b2"><path d="M 175 100 Q 155 100 155 120 Q 155 140 175 140 L 220 140 Q 240 140 240 120 Q 240 100 220 100 Z"/></g>'
+        + '<g class="bubble b3"><path d="M 130 50 Q 110 50 110 70 Q 110 90 130 90 L 175 90 Q 195 90 195 70 Q 195 50 175 50 Z"/></g>'
+        + '</svg>',
+    achievements: '<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">'
+        + '<g class="trophy">'
+        + '<path d="M 100 60 L 200 60 L 195 130 Q 195 150 175 150 L 125 150 Q 105 150 105 130 Z"/>'
+        + '<rect x="135" y="150" width="30" height="14"/>'
+        + '<rect x="115" y="164" width="70" height="10" rx="2"/>'
+        + '<path d="M 100 70 L 75 75 Q 60 80 65 105 Q 70 120 100 120" fill="none" stroke="var(--yellow)" stroke-width="6"/>'
+        + '<path d="M 200 70 L 225 75 Q 240 80 235 105 Q 230 120 200 120" fill="none" stroke="var(--yellow)" stroke-width="6"/>'
+        + '</g>'
+        + '<polygon class="star" points="50,40 53,48 61,49 55,55 56,63 50,59 44,63 45,55 39,49 47,48"/>'
+        + '<polygon class="star s2" points="250,40 253,48 261,49 255,55 256,63 250,59 244,63 245,55 239,49 247,48"/>'
+        + '<polygon class="star s3" points="40,170 43,178 51,179 45,185 46,193 40,189 34,193 35,185 29,179 37,178"/>'
+        + '<polygon class="star s4" points="260,170 263,178 271,179 265,185 266,193 260,189 254,193 255,185 249,179 257,178"/>'
+        + '<polygon class="star s5" points="150,20 154,30 164,31 156,38 158,48 150,43 142,48 144,38 136,31 146,30"/>'
+        + '</svg>',
+};
