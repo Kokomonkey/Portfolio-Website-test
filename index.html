@@ -575,8 +575,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // 'Angus' → opens shared page as Ilian (purple)
     (function () {
         const CODES = {
-            'Kloef': 'kloef.html?as=douwe',
-            'Angus': 'kloef.html?as=ilian',
+            'Kloef': 'archive/kloef.html?as=douwe',
+            'Angus': 'archive/kloef.html?as=ilian',
+            'Koko':  'koko.html',
         };
         const MAX_LEN = Math.max(...Object.keys(CODES).map(s => s.length));
         let buffer = '';

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../Recourses/Logos/DDD.jpg">
+    <title>IOP2 | DouweDoesDesign</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .page-header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 11vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2vh;
+            background: rgba(0,0,0,0.88);
+            border-bottom: 1px solid #333;
+            z-index: 100;
+        }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 1.5vh;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .logo-placeholder {
+            height: 5.5vh; width: 5.5vh;
+            background-color: var(--accent-color);
+            display: flex; justify-content: center; align-items: center;
+            filter: invert(1);
+        }
+        .logo-placeholder img { max-height: 100%; width: auto; }
+
+        h1 {
+            font-size: 2.2vh;
+            letter-spacing: 0.5vh;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* Navigation buttons */
+        .nav-btn {
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.5);
+            background-color: transparent;
+            color: var(--accent-color);
+            padding: 0.8vh 1.6vh;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.3vh;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .nav-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* Tab bar */
+        .tab-bar {
+            position: fixed;
+            top: 11vh; left: 0;
+            width: 100%;
+            height: 6vh;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0;
+            background: rgba(0,0,0,0.88);
+            border-bottom: 1px solid #333;
+            z-index: 90;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            border-right: 1px solid #333;
+            color: rgba(255,255,255,0.55);
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.35vh;
+            letter-spacing: 1.5px;
+            padding: 0 3vh;
+            cursor: pointer;
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .tab-btn:first-child { border-left: 1px solid #333; }
+        .tab-btn:hover { color: var(--accent-color); }
+        .tab-btn.active {
+            color: var(--bg-color);
+            background-color: var(--accent-color);
+        }
+
+        /* Poster viewport */
+        .poster-viewport {
+            position: fixed;
+            top: 17vh; left: 0;
+            width: 100vw;
+            height: 83vh;
+            overflow: hidden;
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .poster-viewport:active { cursor: grabbing; }
+
+        canvas#posterCanvas {
+            display: block;
+            box-shadow: 0 0 60px rgba(255,255,255,0.06);
+        }
+
+        /* Loading */
+        .loading {
+            color: #555;
+            font-size: 1.4vh;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: pulse 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes pulse { from { opacity: 0.2; } to { opacity: 0.8; } }
+
+        /* Placeholder (empty tab) */
+        .placeholder-msg {
+            display: none;
+            text-align: center;
+            color: #555;
+            padding: 4vh;
+        }
+        .placeholder-msg .big {
+            font-size: 2.4vh;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 1.5vh;
+        }
+        .placeholder-msg .small {
+            font-size: 1.4vh;
+            letter-spacing: 2px;
+            color: #666;
+        }
+
+        /* Minimap */
+        #minimap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 160px;
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(0,0,0,0.8);
+            overflow: hidden;
+            z-index: 300;
+            pointer-events: none;
+            display: none;
+        }
+        #minimapCanvas {
+            width: 100%;
+            display: block;
+            opacity: 0.55;
+        }
+        #minimapVP {
+            position: absolute;
+            border: 1px solid rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.08);
+            top: 0; left: 0;
+            pointer-events: none;
+        }
+        #zoomLevel {
+            position: fixed;
+            bottom: 26px;
+            right: 195px;
+            color: rgba(255,255,255,0.3);
+            font-size: 1.1vh;
+            letter-spacing: 2px;
+            z-index: 300;
+            pointer-events: none;
+        }
+
+        /* Page controls */
+        #pageControls {
+            position: fixed;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            gap: 1.2vh;
+            z-index: 300;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.6vh 1.5vh;
+        }
+        .pg-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.4);
+            color: var(--accent-color);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.4vh;
+            font-weight: bold;
+            padding: 0.4vh 1vh;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            line-height: 1;
+        }
+        .pg-btn:hover:not(:disabled) {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+        .pg-btn:disabled { opacity: 0.2; cursor: default; }
+        #pageIndicator {
+            font-size: 1.3vh;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.7);
+            min-width: 6ch;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.5vh; letter-spacing: 0; }
+            #minimap { width: 100px; }
+            .tab-btn { padding: 0 1.6vh; font-size: 1.15vh; letter-spacing: 0.5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <a href="../../../projects.html" class="nav-btn">&larr; Projects</a>
+        <div class="header-center">
+            <div class="logo-placeholder">
+                <img src="../../../Recourses/Logos/DDD.jpg" />
+            </div>
+            <h1>IOP2</h1>
+        </div>
+        <a href="../../../projects.html" class="nav-btn">Projects &rarr;</a>
+    </div>
+
+    <div class="tab-bar" id="tabBar">
+        <button class="tab-btn" data-tab="pitch">Pitch</button>
+        <button class="tab-btn" data-tab="tussen">Tussenpresentatie</button>
+        <button class="tab-btn" data-tab="eind">Eindpresentatie</button>
+    </div>
+
+    <div id="zoomLevel">100%</div>
+
+    <div class="poster-viewport" id="posterViewport">
+        <p class="loading" id="loadingText">Loading poster...</p>
+        <div class="placeholder-msg" id="placeholderMsg">
+            <div class="big">Pitch</div>
+            <div class="small">Content to be added.</div>
+        </div>
+        <canvas id="posterCanvas"></canvas>
+    </div>
+
+    <div id="minimap">
+        <canvas id="minimapCanvas"></canvas>
+        <div id="minimapVP"></div>
+    </div>
+
+    <div id="pageControls">
+        <button class="pg-btn" id="prevPage">&#8249;</button>
+        <span id="pageIndicator">1 / 1</span>
+        <button class="pg-btn" id="nextPage">&#8250;</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        /* Each tab lists an ordered set of single-page PDF files.
+           An empty list renders the placeholder message. */
+        const TABS = {
+            pitch:  { label: 'Pitch',            files: [] },
+            tussen: { label: 'Tussenpresentatie', files: ['tussenpresentatie.pdf'] },
+            eind:   { label: 'Eindpresentatie',   files: ['eind-part1.pdf', 'eind-part2.pdf'] }
+        };
+
+        const viewport      = document.getElementById('posterViewport');
+        const canvas        = document.getElementById('posterCanvas');
+        const ctx           = canvas.getContext('2d');
+        const loading       = document.getElementById('loadingText');
+        const placeholder   = document.getElementById('placeholderMsg');
+        const minimap       = document.getElementById('minimap');
+        const mmCanvas      = document.getElementById('minimapCanvas');
+        const mmCtx         = mmCanvas.getContext('2d');
+        const mmVP          = document.getElementById('minimapVP');
+        const zoomLevel     = document.getElementById('zoomLevel');
+        const pageControls  = document.getElementById('pageControls');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const btnPrev       = document.getElementById('prevPage');
+        const btnNext       = document.getElementById('nextPage');
+        const tabButtons    = document.querySelectorAll('.tab-btn');
+
+        let state       = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+        let currentTab  = null;
+        let files       = [];
+        let currentIdx  = 0;    // index into files[]
+        let pdfCache    = {};   // filename -> pdfDoc
+        let rendering   = false;
+        let loadToken   = 0;    // guards against stale async renders
+
+        // --- Tab switching ---
+        function selectTab(tabKey) {
+            if (currentTab === tabKey) return;
+            currentTab = tabKey;
+            files      = TABS[tabKey].files;
+            currentIdx = 0;
+
+            tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === tabKey));
+
+            if (!files.length) {
+                // Empty tab -> placeholder
+                loadToken++;
+                canvas.style.display       = 'none';
+                minimap.style.display      = 'none';
+                pageControls.style.display = 'none';
+                loading.style.display      = 'none';
+                zoomLevel.style.display    = 'none';
+                placeholder.querySelector('.big').textContent = TABS[tabKey].label;
+                placeholder.style.display  = 'block';
+                return;
+            }
+
+            placeholder.style.display = 'none';
+            zoomLevel.style.display   = 'block';
+            renderItem(0);
+        }
+
+        tabButtons.forEach(b => b.addEventListener('click', () => selectTab(b.dataset.tab)));
+
+        function getPdf(fname) {
+            if (pdfCache[fname]) return Promise.resolve(pdfCache[fname]);
+            return pdfjsLib.getDocument(fname).promise.then(pdf => {
+                pdfCache[fname] = pdf;
+                return pdf;
+            });
+        }
+
+        function renderItem(idx) {
+            if (rendering) return;
+            rendering = true;
+            const token = ++loadToken;
+
+            loading.style.display = 'block';
+            canvas.style.display  = 'none';
+            minimap.style.display = 'none';
+
+            // Reset pan/zoom
+            state.scale  = 1;
+            state.pointX = 0;
+            state.pointY = 0;
+            canvas.style.transform = 'translate(0px,0px) scale(1)';
+
+            getPdf(files[idx]).then(pdf => pdf.getPage(1)).then(page => {
+                if (token !== loadToken) { rendering = false; return null; }
+                const dpr         = window.devicePixelRatio || 1;
+                const renderScale = 3 * dpr;
+                const pdfVP       = page.getViewport({ scale: renderScale });
+
+                canvas.width  = pdfVP.width;
+                canvas.height = pdfVP.height;
+
+                const vpW   = viewport.clientWidth  * 0.90;
+                const vpH   = viewport.clientHeight * 0.94;
+                const ratio = Math.min(vpW / (pdfVP.width / dpr), vpH / (pdfVP.height / dpr));
+                canvas.style.width  = (pdfVP.width  / dpr * ratio) + 'px';
+                canvas.style.height = (pdfVP.height / dpr * ratio) + 'px';
+
+                return page.render({ canvasContext: ctx, viewport: pdfVP }).promise;
+            }).then((res) => {
+                if (res === null || token !== loadToken) { rendering = false; return; }
+                rendering             = false;
+                loading.style.display = 'none';
+                canvas.style.display  = 'block';
+
+                // Rebuild minimap
+                const mmW = 160;
+                const cW  = parseInt(canvas.style.width);
+                const cH  = parseInt(canvas.style.height);
+                mmCanvas.width  = mmW;
+                mmCanvas.height = Math.round(mmW * cH / cW);
+                minimap.style.height = mmCanvas.height + 'px';
+                mmCtx.clearRect(0, 0, mmCanvas.width, mmCanvas.height);
+                mmCtx.drawImage(canvas, 0, 0, mmCanvas.width, mmCanvas.height);
+                minimap.style.display = 'block';
+                updateMinimap();
+
+                // Page controls (across the files in this tab)
+                currentIdx = idx;
+                pageIndicator.textContent  = `${currentIdx + 1} / ${files.length}`;
+                btnPrev.disabled           = currentIdx <= 0;
+                btnNext.disabled           = currentIdx >= files.length - 1;
+                pageControls.style.display = files.length > 1 ? 'flex' : 'none';
+                zoomLevel.textContent      = '100%';
+            }).catch(() => {
+                rendering = false;
+                if (token === loadToken) loading.textContent = 'Error loading poster.';
+            });
+        }
+
+        btnPrev.addEventListener('click', () => { if (currentIdx > 0) renderItem(currentIdx - 1); });
+        btnNext.addEventListener('click', () => { if (currentIdx < files.length - 1) renderItem(currentIdx + 1); });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentIdx < files.length - 1) renderItem(currentIdx + 1);
+            if (e.key === 'ArrowLeft'  && currentIdx > 0)                renderItem(currentIdx - 1);
+        });
+
+        // --- Transform ---
+        function applyTransform() {
+            canvas.style.transform = `translate(${state.pointX}px,${state.pointY}px) scale(${state.scale})`;
+            zoomLevel.textContent  = Math.round(state.scale * 100) + '%';
+            updateMinimap();
+        }
+
+        // --- Minimap ---
+        function updateMinimap() {
+            const cRect = canvas.getBoundingClientRect();
+            const vRect = viewport.getBoundingClientRect();
+            const mmW   = mmCanvas.width;
+            const mmH   = mmCanvas.height;
+            if (!cRect.width || !mmW) return;
+
+            const sx = mmW / cRect.width;
+            const sy = mmH / cRect.height;
+
+            const visL = Math.max(0, vRect.left - cRect.left);
+            const visT = Math.max(0, vRect.top  - cRect.top);
+            const visR = Math.min(cRect.width,  vRect.right  - cRect.left);
+            const visB = Math.min(cRect.height, vRect.bottom - cRect.top);
+
+            mmVP.style.left   = (visL * sx) + 'px';
+            mmVP.style.top    = (visT * sy) + 'px';
+            mmVP.style.width  = Math.max(4, (visR - visL) * sx) + 'px';
+            mmVP.style.height = Math.max(4, (visB - visT) * sy) + 'px';
+        }
+
+        // --- Zoom at cursor ---
+        function zoomAtCursor(e, newScale) {
+            const rect = canvas.getBoundingClientRect();
+            if (!rect.width) return;
+            const nW  = rect.width  / state.scale;
+            const nH  = rect.height / state.scale;
+            const nCX = rect.left + rect.width  / 2 - state.pointX;
+            const nCY = rect.top  + rect.height / 2 - state.pointY;
+            const fx  = (e.clientX - rect.left) / rect.width;
+            const fy  = (e.clientY - rect.top)  / rect.height;
+            state.scale  = Math.max(0.25, Math.min(10, newScale));
+            state.pointX = e.clientX + nW * state.scale * (0.5 - fx) - nCX;
+            state.pointY = e.clientY + nH * state.scale * (0.5 - fy) - nCY;
+            applyTransform();
+        }
+
+        // Wheel zoom
+        viewport.addEventListener('wheel', (e) => {
+            if (canvas.style.display === 'none') return;
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+            zoomAtCursor(e, state.scale * factor);
+        }, { passive: false });
+
+        // Pan start
+        viewport.addEventListener('mousedown', (e) => {
+            if (canvas.style.display === 'none') return;
+            state.panning = true;
+            state.startX  = e.clientX - state.pointX;
+            state.startY  = e.clientY - state.pointY;
+            viewport.style.cursor = 'grabbing';
+        });
+
+        // Pan move
+        window.addEventListener('mousemove', (e) => {
+            if (!state.panning) return;
+            state.pointX = e.clientX - state.startX;
+            state.pointY = e.clientY - state.startY;
+            applyTransform();
+        });
+
+        // Pan end
+        window.addEventListener('mouseup', () => {
+            if (state.panning) {
+                state.panning = false;
+                viewport.style.cursor = 'grab';
+            }
+        });
+
+        // Double-click reset
+        viewport.addEventListener('dblclick', () => {
+            if (canvas.style.display === 'none') return;
+            state.scale  = 1;
+            state.pointX = 0;
+            state.pointY = 0;
+            applyTransform();
+        });
+
+        // Touch pinch support
+        let lastTouchDist = null;
+        let lastTouchMid  = null;
+        viewport.addEventListener('touchstart', (e) => {
+            if (canvas.style.display === 'none') return;
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastTouchDist = Math.sqrt(dx*dx + dy*dy);
+                lastTouchMid  = {
+                    clientX: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                    clientY: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                };
+            } else if (e.touches.length === 1) {
+                state.panning = true;
+                state.startX  = e.touches[0].clientX - state.pointX;
+                state.startY  = e.touches[0].clientY - state.pointY;
+            }
+        }, { passive: true });
+
+        viewport.addEventListener('touchmove', (e) => {
+            if (canvas.style.display === 'none') return;
+            e.preventDefault();
+            if (e.touches.length === 2) {
+                const dx   = e.touches[0].clientX - e.touches[1].clientX;
+                const dy   = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (lastTouchDist) zoomAtCursor(lastTouchMid, state.scale * dist / lastTouchDist);
+                lastTouchDist = dist;
+                lastTouchMid  = {
+                    clientX: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                    clientY: (e.touches[0].clientY + e.touches[1].clientY) / 2
+                };
+            } else if (e.touches.length === 1 && state.panning) {
+                state.pointX = e.touches[0].clientX - state.startX;
+                state.pointY = e.touches[0].clientY - state.startY;
+                applyTransform();
+            }
+        }, { passive: false });
+
+        viewport.addEventListener('touchend', () => {
+            state.panning = false;
+            lastTouchDist = null;
+        });
+
+        // Start on the tussenpresentatie tab (first tab with content)
+        selectTab('tussen');
+    </script>
+</body>
+</html>

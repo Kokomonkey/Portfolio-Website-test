@@ -1,0 +1,893 @@
+===<CHUNK:css>===
+/* Kanban (Heloda) */
+.kanban-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.kanban {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 14px;
+    align-items: flex-start;
+}
+.kanban-col {
+    background: var(--card-warm);
+    border-radius: 12px;
+    padding: 12px;
+    min-width: 260px;
+    max-width: 280px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    transition: background 0.15s, box-shadow 0.15s;
+}
+.kanban-col.drag-target {
+    background: rgba(212, 163, 115, 0.35);
+    box-shadow: inset 0 0 0 2px var(--primary);
+}
+.kanban-col-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-strong);
+}
+.kanban-col-head .name {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 0.95em;
+    cursor: pointer;
+    flex: 1;
+    line-height: 1.3;
+}
+.kanban-col-head .name:hover { color: var(--text); }
+.kanban-col-head .icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: inherit;
+    line-height: 1;
+}
+.kanban-col-head .icon-btn:hover { background: rgba(0,0,0,0.08); color: var(--red); }
+.kanban-col-progress {
+    height: 5px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.kanban-col-progress .fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.4s;
+}
+.kanban-col-count {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    text-align: right;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.kanban-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 40px;
+}
+.kanban-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    border-left: 3px solid var(--primary);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.kanban-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kanban-card[draggable="true"] { cursor: grab; }
+.kanban-card.dragging { opacity: 0.4; }
+.kanban-card.status-done { opacity: 0.75; border-left-color: var(--green); }
+.kanban-card.status-progress { border-left-color: var(--orange); }
+.kanban-card.status-idea { border-left-color: var(--primary); }
+.kanban-card .card-title {
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+    color: var(--text);
+    line-height: 1.3;
+}
+.kanban-card.status-done .card-title { text-decoration: line-through; }
+.kanban-card .card-status {
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+.kanban-card .card-desc {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.kanban-card .card-checklist {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-weight: 600;
+}
+.kanban-add-card {
+    background: rgba(212, 163, 115, 0.15);
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.85em;
+    font-family: inherit;
+    width: 100%;
+    margin-top: 8px;
+    transition: all 0.15s;
+}
+.kanban-add-card:hover { background: rgba(212, 163, 115, 0.28); color: var(--text); }
+
+/* Modal (Kanban card + generic) */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(35, 22, 14, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+    background: var(--card-bg);
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    padding: 26px;
+    box-shadow: var(--shadow-lg);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal h3 { margin-bottom: 14px; color: var(--primary-dark); }
+.modal .close-x {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 1.6em;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+}
+.field-group { margin-bottom: 14px; }
+.field-group label {
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 5px;
+}
+.field-group input, .field-group select, .field-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.92em;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+}
+.field-group textarea { resize: vertical; min-height: 90px; }
+
+/* Book — quests + ideas */
+.book-layout {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 18px;
+}
+@media (max-width: 900px) { .book-layout { grid-template-columns: 1fr; } }
+.book-progress-summary {
+    background: linear-gradient(135deg, var(--card-warm), #f3e3c8);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid var(--border);
+}
+.book-progress-summary .num {
+    font-size: 1.8em;
+    font-weight: 800;
+    color: var(--primary-dark);
+    line-height: 1;
+}
+.book-progress-summary .lbl { color: var(--text-muted); font-size: 0.9em; }
+.quest-list { display: flex; flex-direction: column; gap: 14px; }
+.quest-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+.quest-card.answered {
+    border-left-color: var(--green);
+    background: linear-gradient(135deg, var(--card-bg) 70%, rgba(122,155,118,0.12));
+}
+.quest-num {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.quest-prompt {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 1.02em;
+    margin: 4px 0 12px;
+    line-height: 1.4;
+}
+.quest-card textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.92em;
+    background: var(--bg);
+    color: var(--text);
+    resize: vertical;
+}
+.quest-card .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+}
+.quest-card .answered-badge {
+    background: var(--green);
+    color: white;
+    font-size: 0.68em;
+    padding: 2px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-left: auto;
+}
+
+/* Book idea board (corkboard) */
+.idea-add-form {
+    display: grid;
+    grid-template-columns: 1fr 100px auto;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+@media (max-width: 500px) { .idea-add-form { grid-template-columns: 1fr; } }
+.idea-add-form input {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    font-family: inherit;
+    font-size: 0.9em;
+    color: var(--text);
+}
+.idea-board {
+    background:
+        radial-gradient(circle at 25% 30%, #a67c52 1px, transparent 1.5px),
+        radial-gradient(circle at 75% 20%, #8b6a3f 1px, transparent 1.5px),
+        radial-gradient(circle at 50% 60%, #b58862 1px, transparent 1.5px),
+        radial-gradient(circle at 20% 80%, #9c744d 1px, transparent 1.5px),
+        linear-gradient(135deg, #c19a6b, #a67c52);
+    background-size: 22px 22px, 26px 26px, 20px 20px, 24px 24px, 100% 100%;
+    padding: 22px 16px;
+    border-radius: 14px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.25), var(--shadow-lg);
+    border: 3px solid #7a4a24;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    min-height: 300px;
+}
+@media (max-width: 700px) { .idea-board { grid-template-columns: 1fr; } }
+.idea-note {
+    background: var(--note-bg, #fff2b8);
+    padding: 14px 12px 12px;
+    border-radius: 2px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15);
+    position: relative;
+    transform: rotate(var(--rot, -1deg));
+    transition: transform 0.25s;
+    font-family: Georgia, serif;
+    color: #3a2a1e;
+    animation: ideaDrop 0.5s cubic-bezier(.34,1.4,.64,1) both;
+}
+.idea-note:hover { transform: rotate(var(--rot, -1deg)) translateY(-3px) scale(1.03); z-index: 2; }
+.idea-note::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 30% 30%, #ff8080, #b12020);
+    border-radius: 50%;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.4);
+    z-index: 2;
+}
+.idea-note.pink   { --note-bg: #ffd6d6; }
+.idea-note.yellow { --note-bg: #fff2b8; }
+.idea-note.blue   { --note-bg: #d4e8ff; }
+.idea-note.green  { --note-bg: #d4ffd8; }
+.idea-note.orange { --note-bg: #ffddb8; }
+.idea-note.purple { --note-bg: #e6d4ff; }
+.idea-note .idea-text {
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+.idea-note .idea-tag {
+    font-size: 0.68em;
+    color: #6a4a2a;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(90,60,30,0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+.idea-note .idea-del {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: none;
+    border: none;
+    color: rgba(58,42,30,0.4);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.1em;
+    padding: 0 4px;
+    line-height: 1;
+}
+.idea-note .idea-del:hover { color: #b12020; }
+@keyframes ideaDrop {
+    0%   { opacity: 0; transform: rotate(var(--rot, -1deg)) translateY(-30px); }
+    100% { opacity: 1; transform: rotate(var(--rot, -1deg)) translateY(0); }
+}
+
+/* Edges use paths for orthogonal routing */
+.edges .edge-solid,
+.edges .edge-dashed { fill: none; }
+
+===<CHUNK:edges_orthogonal>===
+                <g class="edges">
+                    <path class="edge-solid"  d="M 360 82 L 360 115 L 80 115 L 80 149"/>
+                    <path class="edge-solid"  d="M 360 82 L 360 115 L 220 115 L 220 149"/>
+                    <path class="edge-solid"  d="M 360 82 L 360 149"/>
+                    <path class="edge-solid"  d="M 360 82 L 360 115 L 500 115 L 500 149"/>
+                    <path class="edge-dashed" d="M 360 82 L 360 115 L 640 115 L 640 149"/>
+                    <path class="edge-solid"  d="M 360 201 L 360 245 L 230 245 L 230 298"/>
+                    <path class="edge-solid"  d="M 360 201 L 360 245 L 320 245 L 320 298"/>
+                    <path class="edge-solid"  d="M 360 201 L 360 245 L 410 245 L 410 298"/>
+                    <path class="edge-dashed" d="M 360 201 L 360 245 L 500 245 L 500 298"/>
+                </g>
+
+===<CHUNK:heloda_section>===
+    <section id="page-heloda" class="page">
+        <div class="page-header">
+            <div>
+                <h1>&#127807; Heloda Drogas</h1>
+                <p>Kanban board of features grouped by version.</p>
+            </div>
+        </div>
+        <div class="kanban-toolbar">
+            <div style="color:var(--text-muted); font-size:0.88em;">Drag cards between versions &middot; click a card to edit</div>
+            <button class="btn btn-primary btn-sm" onclick="addVersion()">+ Add version</button>
+        </div>
+        <div class="kanban" id="kanban"></div>
+    </section>
+===<CHUNK:book_section>===
+    <section id="page-book" class="page">
+        <div class="page-header">
+            <div>
+                <h1>&#128214; Book Project</h1>
+                <p>Idea quests on the left, free idea board on the right.</p>
+            </div>
+        </div>
+        <div class="book-layout">
+            <div>
+                <div class="book-progress-summary" id="book-progress"></div>
+                <div class="quest-list" id="quest-list"></div>
+            </div>
+            <div>
+                <h3 style="margin-bottom: 10px; color: var(--primary-dark); font-size: 1em;">&#128204; Idea board</h3>
+                <form class="idea-add-form" onsubmit="addIdea(event)">
+                    <input type="text" name="text" required placeholder="A scene, phrase, character seed...">
+                    <input type="text" name="tag" placeholder="Tag (optional)">
+                    <button class="btn btn-primary btn-sm" type="submit">&#128204; Pin</button>
+                </form>
+                <div class="idea-board" id="idea-board"></div>
+            </div>
+        </div>
+    </section>
+===<CHUNK:card_modal>===
+
+<!-- CARD EDIT MODAL -->
+<div class="modal-backdrop" id="cardModal" onclick="if(event.target===this) closeCardModal()">
+    <div class="modal">
+        <button class="close-x" onclick="closeCardModal()">&times;</button>
+        <h3>Edit card</h3>
+        <div class="field-group">
+            <label>Title</label>
+            <input type="text" id="card-title">
+        </div>
+        <div class="field-group">
+            <label>Description</label>
+            <textarea id="card-desc" rows="3"></textarea>
+        </div>
+        <div class="field-group">
+            <label>Status</label>
+            <select id="card-status">
+                <option value="idea">&#128161; Idea</option>
+                <option value="progress">&#128295; In progress</option>
+                <option value="done">&#9989; Done</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label>Sub-tasks</label>
+            <div id="card-subtasks"></div>
+            <button class="btn btn-ghost btn-sm" onclick="addSubtask()" style="margin-top:6px;">+ Sub-task</button>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:18px; align-items:center;">
+            <button class="btn btn-primary" onclick="saveCard()">Save</button>
+            <button class="btn btn-ghost" onclick="closeCardModal()">Cancel</button>
+            <button class="btn" onclick="deleteCard()" style="margin-left:auto; color:var(--red); background:transparent;">Delete</button>
+        </div>
+    </div>
+</div>
+
+===<CHUNK:js>===
+/* ── HELODA KANBAN ─────────────────────────────────────────────────── */
+const DEFAULT_VERSIONS = [
+    { id: 'v01', name: 'v0.1 Core loop',    description: 'Plant, grow, harvest one plant.', order: 1 },
+    { id: 'v02', name: 'v0.2 Warehouse',    description: 'Build & upgrade tiles.',           order: 2 },
+    { id: 'v03', name: 'v0.3 Economy',      description: 'Buyers, prices, sales.',           order: 3 },
+    { id: 'v04', name: 'v0.4 Variety',      description: 'Multiple plant types.',            order: 4 },
+    { id: 'v05', name: 'v0.5 Risk',         description: 'Heat/police mechanic.',            order: 5 },
+    { id: 'v06', name: 'v0.6 Progression',  description: 'Upgrades tree.',                   order: 6 },
+    { id: 'v07', name: 'v0.7 Polish',       description: 'Sound, particles, tutorial.',      order: 7 },
+];
+
+function seedHeloda() {
+    if (!state.heloda) state.heloda = { versions: [], cards: [] };
+    if (!state.heloda.versions) state.heloda.versions = [];
+    if (!state.heloda.cards) state.heloda.cards = [];
+    if (!state.heloda.versions.length && !state.heloda._seeded) {
+        state.heloda.versions = DEFAULT_VERSIONS.map(v => ({...v, updated_at: nowTs()}));
+        state.heloda._seeded = true;
+        saveState();
+    }
+}
+
+function renderHeloda() {
+    seedHeloda();
+    const kanban = document.getElementById('kanban');
+    if (!kanban) return;
+    const versions = state.heloda.versions
+        .filter(v => !v.deleted)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+    kanban.innerHTML = versions.map(v => renderHelodaColumn(v)).join('');
+}
+
+function renderHelodaColumn(v) {
+    const cards = (state.heloda.cards || [])
+        .filter(c => !c.deleted && c.version_id === v.id)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+    const done = cards.filter(c => c.status === 'done').length;
+    const pct = cards.length ? Math.round(done / cards.length * 100) : 0;
+    const cardsHtml = cards.map(c => renderHelodaCard(c)).join('') || '<div style="color:var(--text-muted); font-size:0.8em; text-align:center; padding:8px 0; font-style:italic;">Empty</div>';
+    return '<div class="kanban-col" ondragover="cardDragOver(event)" ondragleave="cardDragLeave(event)" ondrop="cardDrop(event, \'' + v.id + '\')">'
+        + '<div class="kanban-col-head">'
+        + '<div class="name" onclick="editVersion(\'' + v.id + '\')" title="Click to rename">' + escapeHtml(v.name) + '</div>'
+        + '<button class="icon-btn" onclick="deleteVersion(\'' + v.id + '\')" title="Delete version">&times;</button>'
+        + '</div>'
+        + '<div class="kanban-col-progress"><div class="fill" style="width:' + pct + '%"></div></div>'
+        + '<div class="kanban-col-count">' + done + '/' + cards.length + ' &middot; ' + pct + '%</div>'
+        + '<div class="kanban-cards">' + cardsHtml + '</div>'
+        + '<button class="kanban-add-card" onclick="addCardTo(\'' + v.id + '\')">+ Add card</button>'
+        + '</div>';
+}
+
+function renderHelodaCard(c) {
+    const statusIcon  = { idea: '&#128161;', progress: '&#128295;', done: '&#9989;' }[c.status] || '&#128161;';
+    const statusLabel = { idea: 'Idea', progress: 'In progress', done: 'Done' }[c.status] || 'Idea';
+    const subs = c.subtasks || [];
+    const subDone = subs.filter(s => s.done).length;
+    return '<div class="kanban-card status-' + (c.status || 'idea') + '" draggable="true"'
+        + ' ondragstart="cardDragStart(event, \'' + c.id + '\')" ondragend="cardDragEnd(event)"'
+        + ' onclick="editCard(\'' + c.id + '\')">'
+        + '<div class="card-title">' + escapeHtml(c.title) + '</div>'
+        + '<div class="card-status">' + statusIcon + ' ' + statusLabel + '</div>'
+        + (c.description ? '<div class="card-desc">' + escapeHtml(c.description) + '</div>' : '')
+        + (subs.length ? '<div class="card-checklist">&#10003; ' + subDone + '/' + subs.length + ' sub-tasks</div>' : '')
+        + '</div>';
+}
+
+/* Drag handlers */
+function cardDragStart(e, id) {
+    e.dataTransfer.setData('text/plain', id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.currentTarget.classList.add('dragging');
+    e.stopPropagation();
+}
+function cardDragEnd(e) {
+    e.currentTarget.classList.remove('dragging');
+}
+function cardDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-target');
+}
+function cardDragLeave(e) {
+    if (e.currentTarget.contains(e.relatedTarget)) return;
+    e.currentTarget.classList.remove('drag-target');
+}
+function cardDrop(e, versionId) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-target');
+    const id = e.dataTransfer.getData('text/plain');
+    const card = state.heloda.cards.find(c => c.id === id);
+    if (card && card.version_id !== versionId) {
+        card.version_id = versionId;
+        card.updated_at = nowTs();
+        saveState();
+        renderHeloda();
+    }
+}
+
+function addCardTo(versionId) {
+    const title = prompt('Card title:');
+    if (!title || !title.trim()) return;
+    state.heloda.cards.push({
+        id: uid(),
+        title: title.trim(),
+        description: '',
+        status: 'idea',
+        version_id: versionId,
+        subtasks: [],
+        order: (state.heloda.cards.length + 1) * 10,
+        updated_at: nowTs(),
+    });
+    saveState();
+    renderHeloda();
+}
+
+/* Card edit modal */
+let editingCardId = null;
+
+function editCard(id) {
+    const c = state.heloda.cards.find(x => x.id === id);
+    if (!c) return;
+    editingCardId = id;
+    document.getElementById('card-title').value = c.title || '';
+    document.getElementById('card-desc').value = c.description || '';
+    document.getElementById('card-status').value = c.status || 'idea';
+    renderSubtasks();
+    document.getElementById('cardModal').classList.add('open');
+}
+function closeCardModal() {
+    document.getElementById('cardModal').classList.remove('open');
+    editingCardId = null;
+}
+function renderSubtasks() {
+    const c = state.heloda.cards.find(x => x.id === editingCardId);
+    if (!c) return;
+    const list = document.getElementById('card-subtasks');
+    const subs = c.subtasks || [];
+    if (!subs.length) {
+        list.innerHTML = '<div style="color:var(--text-muted); font-size:0.85em; font-style:italic; padding:4px 0;">No sub-tasks yet.</div>';
+        return;
+    }
+    list.innerHTML = subs.map((s, i) =>
+        '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">'
+        + '<input type="checkbox" ' + (s.done ? 'checked' : '') + ' onchange="toggleSubtask(' + i + ', this.checked)">'
+        + '<input type="text" value="' + escapeHtml(s.text) + '"'
+        + ' oninput="updateSubtaskText(' + i + ', this.value)"'
+        + ' style="flex:1; padding:4px 8px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text); font-family:inherit;">'
+        + '<button onclick="removeSubtask(' + i + ')" style="background:none; border:none; color:var(--red); cursor:pointer; font-family:inherit; font-size:1.1em; padding:0 4px;">&times;</button>'
+        + '</div>'
+    ).join('');
+}
+function addSubtask() {
+    const c = state.heloda.cards.find(x => x.id === editingCardId);
+    if (!c) return;
+    c.subtasks = c.subtasks || [];
+    c.subtasks.push({ text: '', done: false });
+    renderSubtasks();
+}
+function toggleSubtask(i, checked) {
+    const c = state.heloda.cards.find(x => x.id === editingCardId);
+    if (!c || !c.subtasks) return;
+    c.subtasks[i].done = checked;
+}
+function updateSubtaskText(i, text) {
+    const c = state.heloda.cards.find(x => x.id === editingCardId);
+    if (!c || !c.subtasks) return;
+    c.subtasks[i].text = text;
+}
+function removeSubtask(i) {
+    const c = state.heloda.cards.find(x => x.id === editingCardId);
+    if (!c || !c.subtasks) return;
+    c.subtasks.splice(i, 1);
+    renderSubtasks();
+}
+function saveCard() {
+    const c = state.heloda.cards.find(x => x.id === editingCardId);
+    if (!c) return;
+    const newTitle = document.getElementById('card-title').value.trim();
+    if (newTitle) c.title = newTitle;
+    c.description = document.getElementById('card-desc').value.trim();
+    c.status = document.getElementById('card-status').value;
+    c.subtasks = (c.subtasks || []).filter(s => (s.text || '').trim());
+    c.updated_at = nowTs();
+    saveState();
+    closeCardModal();
+    renderHeloda();
+}
+function deleteCard() {
+    if (!confirm('Delete this card?')) return;
+    const c = state.heloda.cards.find(x => x.id === editingCardId);
+    if (c) {
+        c.deleted = true;
+        c.updated_at = nowTs();
+        saveState();
+    }
+    closeCardModal();
+    renderHeloda();
+}
+
+function addVersion() {
+    const name = prompt('Version name (e.g. v0.8 Multiplayer):');
+    if (!name || !name.trim()) return;
+    const maxOrder = state.heloda.versions.reduce((a, v) => Math.max(a, v.order || 0), 0);
+    state.heloda.versions.push({
+        id: uid(),
+        name: name.trim(),
+        description: '',
+        order: maxOrder + 1,
+        updated_at: nowTs(),
+    });
+    saveState();
+    renderHeloda();
+}
+function editVersion(id) {
+    const v = state.heloda.versions.find(x => x.id === id);
+    if (!v) return;
+    const newName = prompt('Version name:', v.name);
+    if (newName === null) return;
+    if (newName.trim()) {
+        v.name = newName.trim();
+        v.updated_at = nowTs();
+        saveState();
+        renderHeloda();
+    }
+}
+function deleteVersion(id) {
+    if (!confirm('Delete this version and all its cards?')) return;
+    const v = state.heloda.versions.find(x => x.id === id);
+    if (v) {
+        v.deleted = true;
+        v.updated_at = nowTs();
+    }
+    (state.heloda.cards || []).forEach(c => {
+        if (c.version_id === id) {
+            c.deleted = true;
+            c.updated_at = nowTs();
+        }
+    });
+    saveState();
+    renderHeloda();
+}
+
+/* ── BOOK QUESTS + IDEAS ─────────────────────────────────────────────── */
+const BOOK_QUESTS = [
+    { key: 'q1',  prompt: "What kind of book made you close the last page reluctant to leave? Why?" },
+    { key: 'q2',  prompt: "Describe your protagonist's oldest scar in 2 sentences." },
+    { key: 'q3',  prompt: "Antagonist's logic: why do they believe they're right?" },
+    { key: 'q4',  prompt: "One weird thing about the world only insiders know." },
+    { key: 'q5',  prompt: "What conflict tightens your gut when you read it in other books?" },
+    { key: 'q6',  prompt: "Pick 3 books you loved. One thing each did well." },
+    { key: 'q7',  prompt: "Setting one-liner: where and when. Why THAT time and place?" },
+    { key: 'q8',  prompt: "Describe a scene you've been imagining before you had a story." },
+    { key: 'q9',  prompt: "What are you scared to write about?" },
+    { key: 'q10', prompt: "If you had to pitch it in one sentence today, what would it be?" },
+    { key: 'q11', prompt: "What emotion should the reader close the book feeling?" },
+    { key: 'q12', prompt: "Which minor character surprised you into caring? Why?" },
+    { key: 'q13', prompt: "One rule of your world nobody breaks. What happens if they do?" },
+    { key: 'q14', prompt: "Give the protagonist a want and a need in one line each." },
+    { key: 'q15', prompt: "The last sentence of the book — draft it now, even rough." },
+];
+const IDEA_COLORS = ['yellow', 'pink', 'blue', 'green', 'orange', 'purple'];
+
+function hashCode(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i) | 0;
+    return Math.abs(h);
+}
+
+function renderBook() {
+    if (!state.book) state.book = { quests: [], ideas: [] };
+    if (!state.book.quests) state.book.quests = [];
+    if (!state.book.ideas) state.book.ideas = [];
+    renderBookProgress();
+    renderQuests();
+    renderIdeas();
+}
+
+function renderBookProgress() {
+    const el = document.getElementById('book-progress');
+    if (!el) return;
+    const answered = new Set();
+    for (const q of (state.book.quests || [])) {
+        if (!q.deleted && q.answer && q.answer.trim()) answered.add(q.prompt_key);
+    }
+    const total = BOOK_QUESTS.length;
+    const done = answered.size;
+    el.innerHTML = '<div class="num">' + done + '/' + total + '</div>'
+        + '<div><div style="font-weight:700; color:var(--primary-dark);">quests answered</div>'
+        + '<div class="lbl">' + Math.round(done / total * 100) + '% of your idea foundation</div></div>';
+}
+
+function renderQuests() {
+    const list = document.getElementById('quest-list');
+    if (!list) return;
+    const answers = {};
+    for (const q of (state.book.quests || [])) {
+        if (q.deleted) continue;
+        if (!answers[q.prompt_key] || q.updated_at > answers[q.prompt_key].updated_at) {
+            answers[q.prompt_key] = q;
+        }
+    }
+    list.innerHTML = BOOK_QUESTS.map((q, i) => {
+        const existing = answers[q.key];
+        const answer = existing ? (existing.answer || '') : '';
+        const answered = !!answer.trim();
+        return '<div class="quest-card ' + (answered ? 'answered' : '') + '">'
+            + '<div style="display:flex; justify-content:space-between; align-items:baseline;">'
+            + '<div class="quest-num">Quest ' + (i + 1) + ' / ' + BOOK_QUESTS.length + '</div>'
+            + (answered ? '<span class="answered-badge">&#10003; Answered</span>' : '')
+            + '</div>'
+            + '<div class="quest-prompt">' + escapeHtml(q.prompt) + '</div>'
+            + '<textarea id="quest-input-' + q.key + '" placeholder="Write your answer…">' + escapeHtml(answer) + '</textarea>'
+            + '<div class="actions">'
+            + '<button class="btn btn-primary btn-sm" onclick="saveQuest(\'' + q.key + '\')">Save</button>'
+            + (answered ? '<button class="btn btn-ghost btn-sm" onclick="clearQuest(\'' + q.key + '\')">Clear</button>' : '')
+            + '</div>'
+            + '</div>';
+    }).join('');
+}
+
+function saveQuest(key) {
+    const input = document.getElementById('quest-input-' + key);
+    if (!input) return;
+    const text = input.value.trim();
+    for (const q of (state.book.quests || [])) {
+        if (!q.deleted && q.prompt_key === key) {
+            q.deleted = true;
+            q.updated_at = nowTs();
+        }
+    }
+    if (text) {
+        state.book.quests.push({
+            id: uid(),
+            prompt_key: key,
+            answer: text,
+            updated_at: nowTs(),
+        });
+    }
+    saveState();
+    renderBookProgress();
+    renderQuests();
+}
+function clearQuest(key) {
+    if (!confirm('Clear your answer for this quest?')) return;
+    for (const q of (state.book.quests || [])) {
+        if (!q.deleted && q.prompt_key === key) {
+            q.deleted = true;
+            q.updated_at = nowTs();
+        }
+    }
+    saveState();
+    renderBookProgress();
+    renderQuests();
+}
+
+function renderIdeas() {
+    const board = document.getElementById('idea-board');
+    if (!board) return;
+    const items = (state.book.ideas || [])
+        .filter(i => !i.deleted)
+        .sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0));
+    if (!items.length) {
+        board.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#fff5db; padding:40px 20px; font-family:Georgia, serif; font-style:italic;">The board is empty. Pin an idea above.</div>';
+        return;
+    }
+    board.innerHTML = items.map(idea => {
+        const h = hashCode(idea.id);
+        const color = IDEA_COLORS[h % IDEA_COLORS.length];
+        const rot = ((h % 7) - 3);
+        return '<div class="idea-note ' + color + '" style="--rot:' + rot + 'deg;">'
+            + '<button class="idea-del" onclick="deleteIdea(\'' + idea.id + '\')" title="Remove">&times;</button>'
+            + '<div class="idea-text">' + escapeHtml(idea.text) + '</div>'
+            + (idea.tag ? '<div class="idea-tag">' + escapeHtml(idea.tag) + '</div>' : '')
+            + '</div>';
+    }).join('');
+}
+
+function addIdea(e) {
+    e.preventDefault();
+    const f = e.target;
+    if (!state.book.ideas) state.book.ideas = [];
+    state.book.ideas.push({
+        id: uid(),
+        text: f.text.value.trim(),
+        tag: f.tag.value.trim(),
+        updated_at: nowTs(),
+    });
+    saveState();
+    f.reset();
+    renderIdeas();
+}
+function deleteIdea(id) {
+    const i = state.book.ideas.find(x => x.id === id);
+    if (i) {
+        i.deleted = true;
+        i.updated_at = nowTs();
+        saveState();
+        renderIdeas();
+    }
+}
+
+===<CHUNK:new_achievements>===
+    { key:'groundbreaker',    icon:'\u{26CF}\u{FE0F}',   name:'Groundbreaker',    desc:'Create your first Heloda card.',
+      check:s=>(s.heloda&&(s.heloda.cards||[]).filter(c=>!c.deleted).length>=1) },
+    { key:'warehouse_foreman',icon:'\u{1F3D7}\u{FE0F}',  name:'Warehouse Foreman',desc:'Reach 20 Heloda cards.',
+      check:s=>(s.heloda&&(s.heloda.cards||[]).filter(c=>!c.deleted).length>=20) },
+    { key:'shipped_a_version',icon:'\u{1F6A2}',          name:'Shipped it',        desc:'Complete every card in a Heloda version.',
+      check:s=>{if(!s.heloda)return false;const versions=(s.heloda.versions||[]).filter(v=>!v.deleted);for(const v of versions){const cards=(s.heloda.cards||[]).filter(c=>!c.deleted&&c.version_id===v.id);if(cards.length>=2&&cards.every(c=>c.status==='done'))return true;}return false;} },
+    { key:'first_seed',       icon:'\u{1F331}',          name:'First Seed',        desc:'Answer your first book quest.',
+      check:s=>(s.book&&(s.book.quests||[]).filter(q=>!q.deleted&&q.answer&&q.answer.trim()).length>=1) },
+    { key:'novelist_seeds',   icon:'\u{1F33E}',          name:'Novelist Seeds',    desc:'Answer 5 book quests.',
+      check:s=>{if(!s.book)return false;const answered=new Set();for(const q of (s.book.quests||[])){if(!q.deleted&&q.answer&&q.answer.trim())answered.add(q.prompt_key);}return answered.size>=5;} },
+    { key:'pinned_ideas',     icon:'\u{1F4CC}',          name:'Pinned Ideas',      desc:'Pin 5 book ideas.',
+      check:s=>(s.book&&(s.book.ideas||[]).filter(i=>!i.deleted).length>=5) },
