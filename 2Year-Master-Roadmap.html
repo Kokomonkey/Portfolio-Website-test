@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2-Year Master Plan — Ordered Roadmap</title>
+<style>
+    :root{
+        --bg:#0a1628; --panel:rgba(12,22,40,.72); --line:rgba(0,200,255,.20);
+        --fg:#e8eef5; --dim:#8ba3bd; --cyan:#00c8ff;
+        --found:#00c8ff; --tool:#b08cff; --port:#e0a52b; --career:#57c07a; --creative:#e26fa0;
+        --mono:'Courier New',Courier,monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+        background-color:var(--bg);
+        background-image:
+            linear-gradient(rgba(0,200,255,.06) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(0,200,255,.06) 1px,transparent 1px);
+        background-size:100px 100px,100px 100px;
+        color:var(--fg);font-family:var(--mono);min-height:100vh;padding:0 0 70px;
+    }
+    header{padding:40px 5vw 6px}
+    .kicker{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+    h1{font-size:clamp(22px,3.6vw,38px);letter-spacing:.5px;line-height:1.05}
+    h1 span{color:var(--cyan)}
+    .intro{max-width:820px;margin-top:12px;color:var(--dim);font-size:13px;line-height:1.6}
+    .intro b{color:var(--fg)}
+
+    .wrap{padding:0 5vw}
+    .section-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+
+    /* ---- continuous tracks gantt ---- */
+    .gantt{border:1px solid var(--line);background:var(--panel);padding:14px 16px}
+    .grow{display:grid;grid-template-columns:150px repeat(6,1fr);gap:6px;align-items:center}
+    .grow + .grow{margin-top:8px}
+    .colhead{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);text-align:center;padding-bottom:6px}
+    .rowlabel{font-size:11.5px;color:var(--fg);letter-spacing:.5px}
+    .cellwrap{grid-column:2 / 8;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;position:relative}
+    .bar{height:20px;border-radius:3px;display:flex;align-items:center;padding:0 8px;font-size:9.5px;letter-spacing:.5px;color:#04121f;font-weight:bold;white-space:nowrap;overflow:hidden}
+    .mk{height:20px;display:flex;align-items:center;justify-content:center;font-size:11px}
+    .b-track{background:var(--found)} .b-port{background:var(--port)} .b-book{background:var(--creative)}
+    .b-game{background:var(--creative);opacity:.8} .b-aud{background:var(--tool);color:#0a0416}
+
+    /* ---- phases ---- */
+    .phase{margin-top:26px}
+    .phase-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+    .phase-h .when{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);border:1px solid var(--line);padding:4px 9px}
+    .phase-h .name{font-size:16px;letter-spacing:.5px;font-weight:700}
+    .phase-h .goal{font-size:12px;color:var(--dim)}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+    .card{border:1px solid var(--line);background:var(--panel);padding:15px 16px 13px;position:relative;display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--tool)}
+    .card.t-found{border-left-color:var(--found)} .card.t-tool{border-left-color:var(--tool)}
+    .card.t-port{border-left-color:var(--port)} .card.t-career{border-left-color:var(--career)} .card.t-creative{border-left-color:var(--creative)}
+    .card .num{position:absolute;top:12px;right:14px;font-size:22px;font-weight:700;color:rgba(255,255,255,.10);line-height:1}
+    .card .title{font-size:14.5px;font-weight:700;letter-spacing:.3px;padding-right:30px}
+    .card .desc{font-size:12px;line-height:1.55;color:var(--fg)}
+    .card .why{font-size:11.5px;line-height:1.5;color:var(--dim);border-left:2px solid var(--line);padding-left:9px}
+    .card .why b{color:var(--cyan);font-weight:normal}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:5px;align-items:center}
+    .tg{font-size:9px;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;border:1px solid var(--line);color:var(--dim)}
+    .tg.type{color:var(--fg)}
+    .tg.type.found{color:var(--found);border-color:var(--found)} .tg.type.tool{color:var(--tool);border-color:var(--tool)}
+    .tg.type.port{color:var(--port);border-color:var(--port)} .tg.type.career{color:var(--career);border-color:var(--career)} .tg.type.creative{color:var(--creative);border-color:var(--creative)}
+    .eff{margin-left:auto;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:5px}
+    .eff .d{width:7px;height:7px;border-radius:50%}
+    .eff.Low .d{background:var(--career)} .eff.Med .d{background:var(--port)} .eff.High .d{background:var(--creative)}
+
+    .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:10.5px;color:var(--dim);letter-spacing:.5px}
+    .legend span{display:flex;align-items:center;gap:6px}
+    .sw{width:11px;height:11px;border-radius:2px;display:inline-block}
+
+    .rhythm{border:1px solid var(--line);background:var(--panel);padding:12px 16px;margin-top:18px}
+    .rhythm-h{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:9px}
+    .rhythm-items{display:flex;flex-wrap:wrap;gap:8px 20px}
+    .rhythm-items span{font-size:11.5px;color:var(--dim);position:relative;padding-left:12px}
+    .rhythm-items span::before{content:'▹';position:absolute;left:0;color:var(--cyan)}
+    .rhythm-items b{color:var(--fg);font-weight:normal}
+    .buildnote{font-size:12px;color:var(--dim);line-height:1.6;margin:-2px 0 6px;max-width:880px}
+    .buildnote b{color:var(--fg);font-weight:normal}
+
+    .backlog{margin-top:16px;border:1px dashed var(--line);background:rgba(12,22,40,.4);padding:14px 16px}
+    .backlog h3{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+    .backlog ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px 18px}
+    .backlog li{font-size:12px;color:var(--dim)}
+    .backlog li b{color:var(--fg);font-weight:normal}
+    footer{padding:30px 5vw 0;color:var(--dim);font-size:12px;line-height:1.6;max-width:860px}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="kicker">TU Delft M.Arch · 2-year plan</div>
+    <h1>Ordered roadmap — <span>study, portfolio, book, game, internship</span></h1>
+    <p class="intro">One sequence for the next two years of your <b>M.Arch</b>, tuned to your reality: <b>Rhino-strong but light on code</b>, aiming at a big, creative office like <b>MVRDV</b>, holding studio to <b>≤ 40 h/week</b> so you keep the space to stand out. The <b>book</b> and <b>game</b> both begin now with a two-month concept sprint and must reach a <b>first draft</b> and a <b>playable demo</b> by graduation. Numbered projects run roughly in order, front-loaded so the low-effort tools pay off all masters long.</p>
+</header>
+
+<div class="wrap">
+
+    <div class="rhythm">
+        <div class="rhythm-h">Operating rhythm — the guardrails that keep you creative</div>
+        <div class="rhythm-items">
+            <span><b>≤ 40 h/week</b> on studio — past that you stop setting yourself apart</span>
+            <span><b>30 min</b> workout, daily</span>
+            <span><b>1 h</b> violin · sketching · reading, daily</span>
+            <span>then <b>study + side projects</b> in the time that remains</span>
+            <span><b>one High-effort project</b> at a time — never two</span>
+        </div>
+    </div>
+
+    <!-- ===== CONTINUOUS TRACKS ===== -->
+    <div class="section-label">Continuous tracks — start once, run in the background</div>
+    <div class="gantt">
+        <div class="grow">
+            <div></div>
+            <div class="colhead">Now · 4 wks</div><div class="colhead">Y1 · S1</div><div class="colhead">Y1 · S2</div>
+            <div class="colhead">Y2 · S1</div><div class="colhead">Y2 · S2</div><div class="colhead">Internship →</div>
+        </div>
+        <div class="grow"><div class="rowlabel">Life Tracker</div>
+            <div class="cellwrap"><div class="bar b-track" style="grid-column:1/7">daily goals · tasks · all projects</div></div></div>
+        <div class="grow"><div class="rowlabel">Living portfolio</div>
+            <div class="cellwrap"><div class="bar b-port" style="grid-column:1/7">grow every project · re-export each semester</div></div></div>
+        <div class="grow"><div class="rowlabel">The Book</div>
+            <div class="cellwrap"><div class="bar b-book" style="grid-column:2/6">2-mo concept · plot &amp; arcs → writing</div><div class="mk" style="grid-column:6;color:var(--creative)">1st draft ▸</div></div></div>
+        <div class="grow"><div class="rowlabel">The Video Game</div>
+            <div class="cellwrap"><div class="bar b-game" style="grid-column:2/6">2-mo concept · UX map → production (+ friends)</div><div class="mk" style="grid-column:6;color:var(--creative)">demo ▸</div></div></div>
+        <div class="grow"><div class="rowlabel">Audience</div>
+            <div class="cellwrap"><div class="bar b-aud" style="grid-column:3/7">post process work weekly · build following</div></div></div>
+    </div>
+
+    <!-- ===== ORDERED PROJECTS ===== -->
+    <div class="section-label">Ordered projects — what comes first, what comes next</div>
+    <p class="buildnote">Since you're light on code, build these <b>no-code first</b>: custom GPTs (Brief Decoder, Concept Writer, Crit Simulator), NotebookLM / Obsidian (Knowledge Garden), ComfyUI (Drawing Style Transfer, Model→Render), CapCut (Reel Machine). Lean on <b>Grasshopper</b> — your real strength — for the CAD-side tools. The one that genuinely wants a developer is <b>Detail Doctor</b>; pull in one of your game-dev friends for it.</p>
+
+    <div class="phase">
+        <div class="phase-h"><span class="when">Phase 0 · Next 4 weeks</span><span class="name">Foundations, before day one</span><span class="goal">get your house in order before the masters swallows your time</span></div>
+        <div class="cards">
+            <div class="card t-found"><span class="num">01</span><div class="title">Life Tracker</div>
+                <div class="desc">Your operating system: daily goals, task lists, and a dashboard across all parallel projects.</div>
+                <div class="why"><b>First because</b> it's the tool that keeps the other 14 (plus a book and a game) from colliding. Low effort, compounds daily.</div>
+                <div class="tags"><span class="tg type found">Essential</span><span class="eff Low"><span class="d"></span>Low</span></div></div>
+            <div class="card t-port"><span class="num">02</span><div class="title">Portfolio PDF — v1 (new build)</div>
+                <div class="desc">Build a <em>fresh</em> portfolio from scratch — mine the old one for content, but a new structure and story.</div>
+                <div class="why"><b>Urgent</b> — the old one is out of date; a living v1 you grow beats a perfect one built too late, and you'll want it for early opportunities.</div>
+                <div class="tags"><span class="tg type port">Portfolio</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+            <div class="card t-port"><span class="num">03</span><div class="title">Portfolio site — refresh</div>
+                <div class="desc">Bring your existing site up to date and mirror the PDF; get one clean public link.</div>
+                <div class="why"><b>Cheap now</b> — you already have the site infrastructure; a current link is your calling card for the next two years.</div>
+                <div class="tags"><span class="tg type port">Portfolio</span><span class="eff Low"><span class="d"></span>Low</span></div></div>
+        </div>
+    </div>
+
+    <div class="phase">
+        <div class="phase-h"><span class="when">Phase 1 · Year 1 · Sem 1</span><span class="name">Studio workflow + quick wins</span><span class="goal">low-effort tools you use in week one + the 2-month concept sprints for book &amp; game</span></div>
+        <div class="cards">
+            <div class="card t-tool"><span class="num">04</span><div class="title">Brief Decoder</div>
+                <div class="desc">Paste a studio brief → requirements, deliverables, hidden constraints, and a task board.</div>
+                <div class="why"><b>Day one</b> value, tiny build. Feeds straight into your Life Tracker.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Low"><span class="d"></span>Low</span></div></div>
+            <div class="card t-tool"><span class="num">05</span><div class="title">Site Story</div>
+                <div class="desc">An address → an illustrated site-analysis pack of editable diagrams.</div>
+                <div class="why"><b>Every project</b> starts with site analysis; automate the boring 40%.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+            <div class="card t-tool"><span class="num">06</span><div class="title">Concept Writer</div>
+                <div class="desc">Turns sketches + bullets into concept statements and board text in your voice.</div>
+                <div class="why"><b>Weak-spot fixer</b> — great drawings deserve sharp words, on every panel.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Low"><span class="d"></span>Low</span></div></div>
+            <div class="card t-tool"><span class="num">07</span><div class="title">Crit Simulator</div>
+                <div class="desc">A mock jury of AI personas that grills your project before the real panel.</div>
+                <div class="why"><b>Before every crit</b> — turns nerves into rehearsed answers and better narratives.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Low"><span class="d"></span>Low</span></div></div>
+        </div>
+    </div>
+
+    <div class="phase">
+        <div class="phase-h"><span class="when">Phase 2 · Year 1 · Sem 2</span><span class="name">First signature tool + portfolio v2</span><span class="goal">one standout build; start posting; game → production, book → drafting</span></div>
+        <div class="cards">
+            <div class="card t-port"><span class="num">08</span><div class="title">Portfolio Auto-Layout → v2</div>
+                <div class="desc">Feed in real masters work → print-grade spreads in your style; publish portfolio v2.</div>
+                <div class="why"><b>Now you have material</b> worth showing; make refreshes a one-click habit.</div>
+                <div class="tags"><span class="tg type port">Portfolio</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+            <div class="card t-tool"><span class="num">09</span><div class="title">Detail Doctor</div>
+                <div class="desc">Vision-AI that critiques detail drawings against your library of detail manuals.</div>
+                <div class="why"><b>Your signature tool</b> — technical depth that impresses prestigious offices, and a portfolio piece in itself. Worth the high effort once your workflow is stable.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff High"><span class="d"></span>High</span></div></div>
+            <div class="card t-tool"><span class="num">10</span><div class="title">Reel Machine</div>
+                <div class="desc">Turns a finished project into short vertical videos + captions to grow a following.</div>
+                <div class="why"><b>Start the audience clock</b> — a following takes ~18 months to matter, so begin now.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Low"><span class="d"></span>Low</span></div></div>
+        </div>
+    </div>
+
+    <div class="phase">
+        <div class="phase-h"><span class="when">Phase 3 · Year 2 · Sem 1</span><span class="name">Depth + internship groundwork</span><span class="goal">technical credibility; build the target list; book first draft</span></div>
+        <div class="cards">
+            <div class="card t-tool"><span class="num">11</span><div class="title">Knowledge Garden</div>
+                <div class="desc">A queryable second-brain graph of everything you read across the masters.</div>
+                <div class="why"><b>Reuses your graph engine</b> — turns two years of readings into thesis fuel and content.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+            <div class="card t-tool"><span class="num">12</span><div class="title">Assembly Sanity-Check</div>
+                <div class="desc">Describe a buildup → instant λ, embodied carbon, rough cost, code flags.</div>
+                <div class="why"><b>Reuses your material KB</b> — technical rigour that reads well in a graduation project.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+            <div class="card t-tool"><span class="num">13</span><div class="title">Drawing Style Transfer</div>
+                <div class="desc">Unify every drawing into one signature ink language.</div>
+                <div class="why"><b>Portfolio coherence</b> — a single visual voice is what makes a prestige book feel authored.</div>
+                <div class="tags"><span class="tg type tool">AI tool</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+            <div class="card t-career"><span class="num">14</span><div class="title">Internship groundwork</div>
+                <div class="desc">Build a ranked target-office list, enter 1–2 competitions, and start networking + informational chats.</div>
+                <div class="why"><b>Lead time wins</b> — prestigious offices are relationship- and timing-driven; plant seeds a year out.</div>
+                <div class="tags"><span class="tg type career">Career</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+        </div>
+    </div>
+
+    <div class="phase">
+        <div class="phase-h"><span class="when">Phase 4 · Year 2 · Sem 2</span><span class="name">Graduate + land the office</span><span class="goal">prestige-tailored portfolio; apply; playable game demo; first book draft</span></div>
+        <div class="cards">
+            <div class="card t-port"><span class="num">15</span><div class="title">Portfolio v3 — prestige cut</div>
+                <div class="desc">A version tuned to a big, creative office like MVRDV — bold concept, diagram-driven, strong narrative — with your graduation project as the centerpiece.</div>
+                <div class="why"><b>The one that matters</b> — MVRDV-type offices hire on a clear idea and a coherent story, not a folder of images.</div>
+                <div class="tags"><span class="tg type port">Portfolio</span><span class="eff High"><span class="d"></span>High</span></div></div>
+            <div class="card t-career"><span class="num">16</span><div class="title">Internship Campaign</div>
+                <div class="desc">Tailored applications + outreach to your prestigious targets, with interview prep.</div>
+                <div class="why"><b>Timed to graduate into a role</b> — apply 3–6 months before your degree finishes.</div>
+                <div class="tags"><span class="tg type career">Career</span><span class="eff High"><span class="d"></span>High</span></div></div>
+        </div>
+    </div>
+
+    <div class="phase">
+        <div class="phase-h"><span class="when">Phase 5 · After graduation</span><span class="name">2-year internship → certification</span><span class="goal">start at the office; launch the book & game; keep the tracker running</span></div>
+        <div class="cards">
+            <div class="card t-career"><span class="num">17</span><div class="title">Start the internship</div>
+                <div class="desc">Begin your 2 years at a prestigious office — the path to your architect certification.</div>
+                <div class="why"><b>Everything above</b> was aimed at making this a choice, not a scramble.</div>
+                <div class="tags"><span class="tg type career">Career</span><span class="eff High"><span class="d"></span>High</span></div></div>
+            <div class="card t-creative"><span class="num">18</span><div class="title">Launch Book + Game</div>
+                <div class="desc">Publish the book and ship/launch the game you built through the masters.</div>
+                <div class="why"><b>Differentiators</b> few architects have — proof of range, and your own audience.</div>
+                <div class="tags"><span class="tg type creative">Creative</span><span class="eff Med"><span class="d"></span>Med</span></div></div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <span><span class="sw" style="background:var(--found)"></span>Essential</span>
+        <span><span class="sw" style="background:var(--tool)"></span>AI tool</span>
+        <span><span class="sw" style="background:var(--port)"></span>Portfolio</span>
+        <span><span class="sw" style="background:var(--career)"></span>Career</span>
+        <span><span class="sw" style="background:var(--creative)"></span>Creative</span>
+        <span style="margin-left:10px"><span class="sw" style="background:var(--career);border-radius:50%"></span>Low</span>
+        <span><span class="sw" style="background:var(--port);border-radius:50%"></span>Med</span>
+        <span><span class="sw" style="background:var(--creative);border-radius:50%"></span>High effort</span>
+    </div>
+
+    <div class="backlog">
+        <h3>Backlog — good ideas, deliberately parked</h3>
+        <ul>
+            <li><b>Floorplan Digitizer</b> — high effort; better as a post-masters side business</li>
+            <li><b>CAD Prop Forge</b> — nice productivity, not urgent</li>
+            <li><b>Precedent Finder</b> — useful; fold into Knowledge Garden later</li>
+            <li><b>Model → Render</b> — a weekend build when you need it</li>
+            <li><b>Competition Radar</b> — folded into internship groundwork</li>
+        </ul>
+    </div>
+</div>
+
+<footer>
+    Rule of thumb: never run more than <b>one High-effort project</b> at a time, and keep the continuous tracks to small weekly doses. If a semester gets heavy, the AI tools slip before the portfolio and book do — those two are the assets that outlast the masters.
+</footer>
+
+</body>
+</html>

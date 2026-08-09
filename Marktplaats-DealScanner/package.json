@@ -1,0 +1,12 @@
+{
+  "name": "marktplaats-dealscanner",
+  "version": "0.1.0",
+  "description": "Scans Marktplaats for bordspellen and ranks listings by BoardGameGeek rating.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

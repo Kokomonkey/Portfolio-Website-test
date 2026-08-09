@@ -571,11 +571,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ── 3.5 SECRET PASSCODES ────────────────────────────────────
-    // 'Kloef' → opens shared page as Douwe (blue)
-    // 'Angus' → opens shared page as Ilian (purple)
+    // 'Kloef' → opens the private life tracker (auto-unlocked)
+    // 'Angus' → opens shared archive page as Ilian (purple)
     (function () {
         const CODES = {
-            'Kloef': 'archive/kloef.html?as=douwe',
+            'Kloef': 'pages/tracker/index.html',
             'Angus': 'archive/kloef.html?as=ilian',
             'Koko':  'koko.html',
         };
@@ -590,6 +590,9 @@ document.addEventListener("DOMContentLoaded", function () {
             for (const code in CODES) {
                 if (buffer.endsWith(code)) {
                     buffer = '';
+                    if (CODES[code].indexOf('tracker') !== -1) {
+                        try { sessionStorage.setItem('kloefUnlocked', '1'); } catch (_) {}
+                    }
                     window.location.href = CODES[code];
                     return;
                 }

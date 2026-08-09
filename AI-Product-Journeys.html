@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI × Architecture — 15 Product Journeys</title>
+<style>
+    :root{
+        --bg:#0a1628; --panel:rgba(12,22,40,.72); --line:rgba(0,200,255,.20);
+        --fg:#e8eef5; --dim:#8ba3bd; --cyan:#00c8ff;
+        --prod:#00c8ff; --port:#e0a52b; --aud:#e26fa0; --rev:#57c07a;
+        --mono:'Courier New',Courier,monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+        background-color:var(--bg);
+        background-image:
+            linear-gradient(rgba(0,200,255,.06) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(0,200,255,.06) 1px,transparent 1px),
+            linear-gradient(rgba(0,200,255,.025) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(0,200,255,.025) 1px,transparent 1px);
+        background-size:100px 100px,100px 100px,20px 20px,20px 20px;
+        color:var(--fg);font-family:var(--mono);min-height:100vh;padding:0 0 60px;
+    }
+    header{padding:42px 6vw 10px}
+    .kicker{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+    h1{font-size:clamp(24px,4vw,40px);letter-spacing:1px;line-height:1.05;font-weight:700}
+    h1 span{color:var(--cyan)}
+    .intro{max-width:760px;margin-top:14px;color:var(--dim);font-size:13.5px;line-height:1.6}
+    .intro b{color:var(--fg)}
+
+    .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:22px 6vw 6px}
+    .filters .lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-right:6px}
+    .chip{font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;border:1px solid var(--line);
+        background:transparent;color:var(--dim);cursor:pointer;font-family:var(--mono);font-weight:bold;transition:.15s}
+    .chip:hover{color:var(--fg);border-color:var(--cyan)}
+    .chip.on{background:var(--cyan);color:#04121f;border-color:var(--cyan)}
+    .chip[data-f="Productivity"].on{background:var(--prod);border-color:var(--prod)}
+    .chip[data-f="Portfolio"].on{background:var(--port);border-color:var(--port);color:#1a1204}
+    .chip[data-f="Audience"].on{background:var(--aud);border-color:var(--aud)}
+    .chip[data-f="Revenue"].on{background:var(--rev);border-color:var(--rev);color:#04140a}
+
+    main{padding:18px 6vw 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px}
+    .card{border:1px solid var(--line);background:var(--panel);padding:18px 18px 16px;position:relative;
+        display:flex;flex-direction:column;gap:10px;transition:.18s;backdrop-filter:blur(2px)}
+    .card:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 30px rgba(0,200,255,.08)}
+    .num{position:absolute;top:14px;right:16px;font-size:26px;font-weight:700;color:rgba(0,200,255,.22);line-height:1}
+    .title{font-size:16px;letter-spacing:.5px;font-weight:700;padding-right:34px}
+    .pitch{font-size:12.5px;line-height:1.55;color:var(--fg)}
+    .journey{font-size:12px;line-height:1.55;color:var(--dim);border-left:2px solid var(--cyan);padding-left:10px}
+    .journey b{color:var(--cyan);font-weight:normal;letter-spacing:1px}
+    .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:auto;padding-top:6px}
+    .tag{font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;border:1px solid;border-radius:2px}
+    .tag.Productivity{color:var(--prod);border-color:var(--prod)}
+    .tag.Portfolio{color:var(--port);border-color:var(--port)}
+    .tag.Audience{color:var(--aud);border-color:var(--aud)}
+    .tag.Revenue{color:var(--rev);border-color:var(--rev)}
+    .build{font-size:10.5px;color:var(--dim);letter-spacing:.3px}
+    .build .k{color:var(--cyan)}
+    .effort{margin-left:auto;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:5px}
+    .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+    .e-Low .dot{background:var(--rev)} .e-Med .dot{background:var(--port)} .e-High .dot{background:var(--aud)}
+    .seed{position:absolute;top:0;left:0;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
+        background:var(--cyan);color:#04121f;padding:2px 7px;font-weight:bold}
+
+    footer{padding:34px 6vw 0;color:var(--dim);font-size:12px;line-height:1.6;max-width:820px}
+    .count{padding:0 6vw;color:var(--dim);font-size:11px;letter-spacing:1px;margin-top:14px}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="kicker">AI × Architecture · product exploration</div>
+    <h1>15 ways an architecture student turns <span>AI into leverage</span></h1>
+    <p class="intro">Each is a small, buildable digital product framed as one <b>customer journey</b> — from your own perspective as a student compounding <b>experience, portfolio, audience</b> and <b>productivity</b>. Filter by what each one earns you. Your three seeds are marked <b style="color:var(--cyan)">SEED</b>; two others (11, 15) quietly reuse the material and knowledge-graph work you already built.</p>
+</header>
+
+<div class="filters" id="filters">
+    <span class="lbl">Earns me →</span>
+    <button class="chip on" data-f="all">All 15</button>
+    <button class="chip" data-f="Productivity">Productivity</button>
+    <button class="chip" data-f="Portfolio">Portfolio</button>
+    <button class="chip" data-f="Audience">Audience</button>
+    <button class="chip" data-f="Revenue">Revenue</button>
+</div>
+<div class="count" id="count"></div>
+
+<main><div class="grid" id="grid"></div></main>
+
+<footer>
+    A deliberately mixed bag: some sharpen your <b>own process</b> (faster, better work), some become <b>portfolio pieces</b> in themselves, some build an <b>audience</b>, and a few are directly <b>sellable</b>. Low-effort ones are good weekend builds to ship and learn; high-effort ones are worth it only if they become your signature tool. Pick two — one that helps you this semester, one you'd be proud to show.
+</footer>
+
+<script>
+const IDEAS = [
+    {n:1, seed:true, title:"Detail Doctor", pitch:"Vision-AI that critiques your detail drawings against your own library of detail manuals.",
+     journey:"Upload a façade section → it flags the missing vapour barrier and cites the manual page → you fix it before the crit.",
+     build:"Vision LLM + RAG over your PDF library", effort:"High", value:["Productivity","Portfolio"]},
+    {n:2, seed:true, title:"Floorplan Digitizer", pitch:"Turn an archive plan or napkin sketch into clean vectors and a live Revit / Rhino 8 model.",
+     journey:"Photograph a 1930s archive plan → get a dimensioned DWG and a Rhino massing in minutes.",
+     build:"Image→vector + CAD API", effort:"High", value:["Productivity","Revenue"]},
+    {n:3, seed:true, title:"CAD Prop Forge", pitch:"An offline, self-growing library that generates drawing-ready CAD props on demand.",
+     journey:"Need a specific mid-century chair in plan → generate it, save to the library, reuse it forever.",
+     build:"Local gen model + block library", effort:"Med", value:["Productivity"]},
+    {n:4, title:"Precedent Finder", pitch:"Describe the design problem; get curated precedents with parti diagrams from your library + web.",
+     journey:"Start a museum project → receive 8 relevant precedents with diagrams, ready to cite.",
+     build:"Embeddings + retrieval", effort:"Med", value:["Productivity","Portfolio"]},
+    {n:5, title:"Portfolio Auto-Layout", pitch:"Drop in project images; get print-grade spread layouts in your style to refine.",
+     journey:"Dump a project folder → pick from 6 spread options on a grid → export to InDesign/PDF.",
+     build:"Layout model + templates", effort:"Med", value:["Portfolio","Audience"]},
+    {n:6, title:"Crit Simulator", pitch:"A mock jury of AI personas that interrogates your project before the real panel does.",
+     journey:"Night before crit → get the 12 hardest questions and your weak spots → rehearse the answers.",
+     build:"Multi-persona LLM", effort:"Low", value:["Productivity","Portfolio"]},
+    {n:7, title:"Concept Writer", pitch:"Turns sketches and bullet notes into sharp concept statements and board text in your voice.",
+     journey:"Great drawings, no words → out comes a tight 150-word concept and every caption.",
+     build:"Style-prompted LLM", effort:"Low", value:["Portfolio","Audience"]},
+    {n:8, title:"Site Story", pitch:"An address becomes an illustrated site-analysis pack of editable diagrams.",
+     journey:"New site → one click → sun path, wind, zoning, figure-ground and history as an editable board.",
+     build:"Geo APIs + diagram gen", effort:"Med", value:["Productivity","Portfolio"]},
+    {n:9, title:"Reel Machine", pitch:"Turns a finished project into short vertical videos + captions to grow a following.",
+     journey:"Project done → get a 20-second reel and 5 caption options → post weekly, build an audience.",
+     build:"Auto-edit + caption LLM", effort:"Low", value:["Audience","Revenue"]},
+    {n:10, title:"Model → Render", pitch:"Photograph a physical study model; get atmospheric renders that keep the real geometry.",
+     journey:"Shoot a chipboard model on your desk → four mood renders for the board by dinner.",
+     build:"Depth-guided diffusion (img2img)", effort:"Low", value:["Portfolio","Productivity"]},
+    {n:11, title:"Assembly Sanity-Check", pitch:"Describe a wall buildup; get instant λ, embodied carbon, rough cost and code flags.",
+     journey:"Pick a façade buildup → see performance, carbon and a warning before you commit to it.",
+     build:"Material KB + rules — your material project", effort:"Med", value:["Productivity"]},
+    {n:12, title:"Competition Radar", pitch:"Matches open competitions to your interests and drafts a submission plan.",
+     journey:"Set your interests → weekly digest of 5 comps → pick one and get a timeline + checklist.",
+     build:"Scraper + matching + LLM", effort:"Low", value:["Portfolio","Revenue"]},
+    {n:13, title:"Drawing Style Transfer", pitch:"Unifies every drawing into one signature ink language for a coherent portfolio.",
+     journey:"Feed in mixed-style CAD and hand drawings → one consistent hand comes out.",
+     build:"ControlNet / style transfer", effort:"Med", value:["Portfolio","Audience"]},
+    {n:14, title:"Brief Decoder", pitch:"Paste any brief; get requirements, deliverables, hidden constraints and a task board.",
+     journey:"A 20-page competition brief in → a 1-page checklist and Gantt out, in seconds.",
+     build:"LLM extraction", effort:"Low", value:["Productivity"]},
+    {n:15, title:"Knowledge Garden", pitch:"Your architecture second-brain: a linked, queryable graph of everything you read.",
+     journey:"Save a semester of readings → ask “theories of threshold” → get a synthesized note with sources.",
+     build:"RAG + knowledge graph — your SCP graph engine", effort:"Med", value:["Productivity","Audience","Portfolio"]},
+];
+
+const grid = document.getElementById("grid");
+const count = document.getElementById("count");
+let filter = "all";
+
+function render(){
+    const list = IDEAS.filter(i => filter === "all" || i.value.includes(filter));
+    count.textContent = list.length + " / " + IDEAS.length + " products" + (filter==="all" ? "" : " · earning " + filter);
+    grid.innerHTML = list.map(i => `
+        <div class="card">
+            ${i.seed ? '<span class="seed">seed</span>' : ''}
+            <span class="num">${String(i.n).padStart(2,'0')}</span>
+            <div class="title">${i.title}</div>
+            <div class="pitch">${i.pitch}</div>
+            <div class="journey"><b>JOURNEY</b><br>${i.journey}</div>
+            <div class="build"><span class="k">build:</span> ${i.build}</div>
+            <div class="meta">
+                ${i.value.map(v => `<span class="tag ${v}">${v}</span>`).join("")}
+                <span class="effort e-${i.effort}"><span class="dot"></span>${i.effort} effort</span>
+            </div>
+        </div>`).join("");
+}
+
+document.getElementById("filters").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if(!b) return;
+    filter = b.dataset.f;
+    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c === b));
+    render();
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="../../../Recourses/Logos/DDD.jpg">
+<title>SCP Knowledge Graph | DouweDoesDesign</title>
+<style>
+    :root{
+        --bg:#0b0c0e;
+        --panel:#111418;
+        --line:#2a2f36;
+        --fg:#d7dce2;
+        --dim:#7b828c;
+        --accent:#e94f3d;      /* Foundation warning red */
+        --accent-2:#e0a52b;
+        --mono:'Courier New',Courier,monospace;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+        background:var(--bg);color:var(--fg);font-family:var(--mono);
+        overflow:hidden;
+    }
+
+    /* ---------- header ---------- */
+    .page-header{
+        position:fixed;top:0;left:0;width:100%;height:8vh;min-height:52px;
+        display:flex;align-items:center;justify-content:space-between;
+        padding:0 16px;background:rgba(11,12,14,0.94);
+        border-bottom:1px solid var(--line);z-index:500;
+    }
+    .header-center{display:flex;align-items:center;gap:12px;position:absolute;left:50%;transform:translateX(-50%);pointer-events:none}
+    .logo-badge{height:30px;width:30px;display:flex;align-items:center;justify-content:center;background:#fff;filter:invert(1)}
+    .logo-badge img{max-height:100%}
+    h1{font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:700;white-space:nowrap}
+    .h1 small{display:block;font-size:9px;letter-spacing:2px;color:var(--dim);font-weight:400}
+    .nav-btn{
+        text-decoration:none;border:1px solid #444;background:transparent;color:var(--fg);
+        padding:7px 12px;font-weight:bold;text-transform:uppercase;font-size:11px;letter-spacing:1px;
+        cursor:pointer;font-family:var(--mono);transition:.2s;white-space:nowrap;
+    }
+    .nav-btn:hover{background:var(--fg);color:var(--bg)}
+
+    /* ---------- layout ---------- */
+    .workspace{position:fixed;top:8vh;left:0;width:100%;height:92vh;display:flex}
+    .panel{
+        width:290px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);
+        display:flex;flex-direction:column;overflow-y:auto;z-index:200;
+    }
+    .graph-wrap{flex:1;position:relative;overflow:hidden}
+    svg#graph{width:100%;height:100%;display:block;cursor:grab}
+    svg#graph:active{cursor:grabbing}
+
+    /* ---------- panel bits ---------- */
+    .p-sec{padding:14px 16px;border-bottom:1px solid var(--line)}
+    .p-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+    .modes{display:flex;gap:0;border:1px solid var(--line)}
+    .mode-btn{
+        flex:1;padding:8px 4px;text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+        background:transparent;color:var(--dim);border:none;border-right:1px solid var(--line);
+        cursor:pointer;font-family:var(--mono);font-weight:bold;transition:.15s;
+    }
+    .mode-btn:last-child{border-right:none}
+    .mode-btn:hover{color:var(--fg)}
+    .mode-btn.active{background:var(--accent);color:#fff}
+    .mode-desc{margin-top:10px;font-size:11px;line-height:1.5;color:var(--dim)}
+    .mode-desc b{color:var(--fg)}
+
+    .search-box{width:100%;background:#0b0c0e;border:1px solid var(--line);color:var(--fg);
+        font-family:var(--mono);font-size:12px;padding:8px 10px;outline:none}
+    .search-box:focus{border-color:var(--accent-2)}
+
+    select.ctl{width:100%;background:#0b0c0e;border:1px solid var(--line);color:var(--fg);
+        font-family:var(--mono);font-size:11px;padding:7px 8px;outline:none;margin-bottom:8px;cursor:pointer}
+    select.ctl:focus{border-color:var(--accent-2)}
+
+    .btn{
+        width:100%;background:transparent;border:1px solid #444;color:var(--fg);
+        font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:bold;
+        padding:9px;cursor:pointer;transition:.15s;margin-top:6px;
+    }
+    .btn:hover{background:var(--fg);color:var(--bg)}
+    .btn.warn{border-color:var(--accent);color:var(--accent)}
+    .btn.warn:hover{background:var(--accent);color:#fff}
+
+    .legend-item{display:flex;align-items:center;gap:8px;font-size:11px;margin:5px 0;color:var(--fg);cursor:default}
+    .legend-swatch{width:11px;height:11px;flex-shrink:0;border-radius:2px}
+    .legend-item.faded{opacity:.35}
+
+    .stat-row{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin:3px 0}
+    .stat-row b{color:var(--fg)}
+
+    .hoplist{font-size:11px;line-height:1.6;color:var(--fg);margin-top:8px}
+    .hoplist .hop{padding:3px 0;border-bottom:1px dashed var(--line)}
+    .hoplist .rel{color:var(--accent-2);font-size:9px;letter-spacing:1px}
+
+    /* ---------- graph elements ---------- */
+    .link{stroke:#3a3f47;stroke-opacity:.6}
+    .link.path{stroke:var(--accent);stroke-opacity:1;stroke-width:2.5px}
+    .link.hl{stroke:var(--accent-2);stroke-opacity:.95}
+    .node circle{stroke:#0b0c0e;stroke-width:1.5px;cursor:pointer;transition:opacity .25s}
+    .node.dim{opacity:.12}
+    .node.path circle{stroke:#fff;stroke-width:2.5px}
+    .node text{font-family:var(--mono);font-size:9px;fill:var(--fg);pointer-events:none;
+        paint-order:stroke;stroke:#0b0c0e;stroke-width:2.4px;stroke-linejoin:round}
+    .node.leaf text{display:none}
+    .node.showlabel text{display:block}
+
+    /* ---------- tooltip / dossier ---------- */
+    #dossier{
+        position:absolute;pointer-events:none;z-index:400;max-width:260px;
+        background:rgba(10,11,13,0.97);border:1px solid var(--line);border-left:3px solid var(--accent);
+        padding:11px 13px;font-size:11px;line-height:1.5;opacity:0;transition:opacity .12s;
+        box-shadow:0 8px 30px rgba(0,0,0,.6);
+    }
+    #dossier .d-num{font-size:13px;font-weight:bold;letter-spacing:1px;color:#fff}
+    #dossier .d-title{color:var(--accent-2);font-size:11px;margin-bottom:6px}
+    #dossier .d-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+    #dossier .chip{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border:1px solid var(--line);color:var(--dim)}
+    #dossier .d-blurb{color:var(--fg);opacity:.85}
+
+    /* ---------- toast ---------- */
+    #toast{
+        position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
+        background:rgba(10,11,13,0.97);border:1px solid var(--accent);color:var(--fg);
+        padding:10px 18px;font-size:11px;letter-spacing:1px;z-index:600;opacity:0;
+        transition:.3s;pointer-events:none;text-align:center;
+    }
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* hint bar bottom-left of graph */
+    .graph-hint{position:absolute;bottom:12px;left:14px;font-size:10px;letter-spacing:1px;color:var(--dim);z-index:120;pointer-events:none}
+    .zoom-btns{position:absolute;top:12px;right:14px;display:flex;flex-direction:column;gap:6px;z-index:120}
+    .zoom-btns button{width:30px;height:30px;background:rgba(17,20,24,.9);border:1px solid var(--line);color:var(--fg);
+        font-family:var(--mono);font-size:15px;cursor:pointer}
+    .zoom-btns button:hover{background:var(--fg);color:var(--bg)}
+
+    .loadlog{margin-top:8px;font-size:10px;line-height:1.55;color:var(--dim);
+        max-height:150px;overflow-y:auto;white-space:pre-wrap;
+        border-left:2px solid var(--line);padding-left:8px}
+    input[type=range]{-webkit-appearance:none;appearance:none;height:4px;background:var(--line);outline:none;border-radius:2px}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;background:var(--accent);cursor:pointer;border-radius:2px}
+    input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--accent);cursor:pointer;border:none;border-radius:2px}
+
+    @media(max-width:820px){
+        .panel{width:230px}
+        .header-center{display:none}
+    }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+    <a href="../../../testSites.html" class="nav-btn">&larr; Playground</a>
+    <div class="header-center">
+        <div class="logo-badge"><img src="../../../Recourses/Logos/DDD.jpg"></div>
+        <div class="h1"><h1>SCP Knowledge Graph</h1></div>
+    </div>
+    <a href="../../../testSites.html" class="nav-btn">Playground &rarr;</a>
+</div>
+
+<div class="workspace">
+
+    <!-- ================= CONTROL PANEL ================= -->
+    <aside class="panel">
+        <div class="p-sec">
+            <div class="p-label">Overseer's Console — Lens</div>
+            <div class="modes">
+                <button class="mode-btn active" data-mode="explore">Explore</button>
+                <button class="mode-btn" data-mode="clusters">Clusters</button>
+                <button class="mode-btn" data-mode="pathfinder">Pathfind</button>
+            </div>
+            <div class="mode-desc" id="modeDesc"></div>
+        </div>
+
+        <div class="p-sec">
+            <div class="p-label">Locate node</div>
+            <input class="search-box" id="search" placeholder="e.g. 682, Church, Bright…" autocomplete="off">
+        </div>
+
+        <!-- mode-specific controls -->
+        <div class="p-sec" id="ctlExplore">
+            <div class="p-label">Exploration</div>
+            <div class="mode-desc" style="margin-top:0">Click a node to <b>reveal its links</b>. The graph grows one neighbourhood at a time.</div>
+            <button class="btn" id="btnExpandAll">Reveal all</button>
+            <button class="btn" id="btnReset">Reset to seed</button>
+        </div>
+
+        <div class="p-sec" id="ctlClusters" style="display:none">
+            <div class="p-label">Colour by</div>
+            <select class="ctl" id="colorBy">
+                <option value="class">Object class</option>
+                <option value="group">Faction / theme</option>
+            </select>
+            <div class="p-label" style="margin-top:6px">Legend</div>
+            <div id="legend"></div>
+        </div>
+
+        <div class="p-sec" id="ctlPath" style="display:none">
+            <div class="p-label">From</div>
+            <select class="ctl" id="pathFrom"></select>
+            <div class="p-label">To</div>
+            <select class="ctl" id="pathTo"></select>
+            <button class="btn warn" id="btnFindPath">Trace shortest path</button>
+            <div class="hoplist" id="hoplist"></div>
+        </div>
+
+        <div class="p-sec">
+            <div class="p-label">Dataset</div>
+            <div class="stat-row"><span>Displayed</span><b id="statNodes">0</b></div>
+            <div class="stat-row"><span>Links</span><b id="statLinks">0</b></div>
+            <div class="stat-row"><span>Loaded</span><b id="statLoaded">—</b></div>
+            <div class="stat-row"><span>Source</span><b id="statSource">Contained</b></div>
+            <button class="btn warn" id="btnLoadAll">⇊ Load full corpus</button>
+            <div id="displayCtl" style="display:none;margin-top:12px">
+                <div class="p-label">Show top <span id="dispVal">350</span> by links</div>
+                <input type="range" id="dispSlider" min="100" max="1000" step="50" value="350">
+                <button class="btn" id="btnResetData" style="margin-top:10px">Reset to curated set</button>
+            </div>
+            <div id="loadLog" class="loadlog"></div>
+            <div class="mode-desc" style="margin-top:8px">Systematically pulls <b>Items, GOI, Tales &amp; Hubs</b> from the SCP Data API, indexes every reference, then renders the most-connected core. Requires the API to permit cross-origin requests.</div>
+        </div>
+    </aside>
+
+    <!-- ================= GRAPH ================= -->
+    <div class="graph-wrap">
+        <svg id="graph"></svg>
+        <div class="zoom-btns">
+            <button id="zin">+</button>
+            <button id="zout">&minus;</button>
+            <button id="zfit" title="Fit">⤢</button>
+        </div>
+        <div class="graph-hint" id="hint">Drag to pan · scroll to zoom · drag nodes to pin</div>
+        <div id="dossier"></div>
+        <div id="toast"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="scp-data.js"></script>
+<script>
+(function(){
+    "use strict";
+
+    // ---------- palettes ----------
+    const CLASS_COLORS = {
+        "Safe":"#57a05a", "Euclid":"#e0a52b", "Keter":"#d64541",
+        "Thaumiel":"#3a7bd5", "Apollyon":"#8e6fc0", "Neutralized":"#6b7280",
+        "Archon":"#b08d57", "Explained":"#7f8fa6", "—":"#9aa0a6"
+    };
+    const TYPE_COLORS = { goi:"#c95c8a", mtf:"#6fa8dc", person:"#d9a066", org:"#e8e8e8", site:"#7f8fa6", hub:"#8e6fc0", tale:"#9b8cc4", live:"#5bb8b0" };
+
+    // deterministic fallback colour for unknown groups/series in the live corpus
+    function colorHash(s){ let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffffff; return `hsl(${h%360},52%,56%)`; }
+    // SCP object class is not a field — derive it from the article tags
+    function classFromTags(tags){
+        if(!Array.isArray(tags)) return "—";
+        const t = tags.map(x=>String(x).toLowerCase());
+        for(const c of ["safe","euclid","keter","neutralized","thaumiel","apollyon","archon","explained"])
+            if(t.includes(c)) return c.charAt(0).toUpperCase()+c.slice(1);
+        return "—";
+    }
+    const GROUP_COLORS = {
+        "Keter Threats":"#d64541","Cognitohazards":"#d67b2b","Humanoids":"#c9a227",
+        "Safe / Benign":"#57a05a","Personnel & O5":"#4a8dbf","Anomalous Spaces":"#5bb8b0",
+        "Broken God":"#b0862f","Narrative / Meta":"#8e6fc0","001 Proposals":"#b23c6e",
+        "GOIs":"#7d7de0","Task Forces":"#9aa0a6","Foundation":"#e8e8e8",
+        "Live Hubs":"#5bb8b0","Live":"#3f6f6a"
+    };
+    const CLASS_ORDER = ["Safe","Euclid","Keter","Thaumiel","Apollyon","Neutralized","Archon","Explained","—"];
+
+    function nodeColor(n, dim){
+        if(dim === "group") return GROUP_COLORS[n.group] || colorHash(n.group || "x");
+        // default: by object class, non-SCP by type
+        if(n.type === "scp") return CLASS_COLORS[n.class] || "#9aa0a6";
+        return TYPE_COLORS[n.type] || "#888";
+    }
+
+    // ---------- data (deep copy so live-merge doesn't mutate source) ----------
+    const RAW = window.SCP_DATA;
+    let nodes = RAW.nodes.map(d => Object.assign({}, d));
+    let links = RAW.links.map(d => Object.assign({}, d));
+
+    // ---------- svg / zoom ----------
+    const svg = d3.select("#graph");
+    const gZoom = svg.append("g");
+    const gLink = gZoom.append("g");
+    const gNode = gZoom.append("g");
+
+    const zoom = d3.zoom().scaleExtent([0.2, 5]).on("zoom", e => gZoom.attr("transform", e.transform));
+    svg.call(zoom);
+
+    function size(){ const r = svg.node().getBoundingClientRect(); return [r.width, r.height]; }
+
+    // ---------- simulation ----------
+    let sim = d3.forceSimulation()
+        .force("link", d3.forceLink().id(d=>d.id).distance(70).strength(0.5))
+        .force("charge", d3.forceManyBody().strength(-260))
+        .force("collide", d3.forceCollide().radius(d=>radius(d)+4))
+        .force("center", null)
+        .force("x", null).force("y", null)
+        .on("tick", ticked);
+
+    let linkSel = gLink.selectAll("line");
+    let nodeSel = gNode.selectAll("g");
+
+    // adjacency (undirected) rebuilt whenever data changes
+    let adj = new Map();
+    function buildAdj(){
+        adj = new Map();
+        nodes.forEach(n => adj.set(n.id, new Set()));
+        links.forEach(l => {
+            const s = typeof l.source === "object" ? l.source.id : l.source;
+            const t = typeof l.target === "object" ? l.target.id : l.target;
+            if(adj.has(s)) adj.get(s).add(t);
+            if(adj.has(t)) adj.get(t).add(s);
+        });
+    }
+    let degree = {};
+    function buildDegree(){
+        degree = {};
+        links.forEach(l=>{
+            const s = typeof l.source==="object"?l.source.id:l.source;
+            const t = typeof l.target==="object"?l.target.id:l.target;
+            degree[s]=(degree[s]||0)+1; degree[t]=(degree[t]||0)+1;
+        });
+    }
+    function radius(d){ return 5 + Math.min(16, Math.sqrt(degree[d.id]||1) * 2.2); }
+
+    // ---------- state ----------
+    let mode = "explore";
+    let colorBy = "class";
+    const SEED = "scp-682";
+    let seedId = SEED;                 // seed node for Explore (dynamic once corpus loads)
+    let labelThreshold = 4;           // min degree to show a label
+    let visible = new Set();          // explore mode
+    let pathNodes = new Set(), pathLinks = new Set();
+
+    // ---------- live corpus ----------
+    const API_BASE = "https://scp-data.tedivm.com";
+    const DATASETS = [
+        { key:"items", label:"Items", url:API_BASE+"/data/scp/items/index.json", type:"scp"  },
+        { key:"goi",   label:"GOI",   url:API_BASE+"/data/scp/goi/index.json",   type:"goi"  },
+        { key:"tales", label:"Tales", url:API_BASE+"/data/scp/tales/index.json", type:"tale" },
+        { key:"hubs",  label:"Hubs",  url:API_BASE+"/data/scp/hubs/index.json",  type:"hub"  }
+    ];
+    let corpus = null;                // { byId, order, deg, total, edges }
+    let simNodeCache = new Map();     // persist node objects (positions) across slider changes
+
+    // ================= RENDER =================
+    function activeData(){
+        if(mode === "explore"){
+            const ns = nodes.filter(n => visible.has(n.id));
+            const vis = new Set(ns.map(n=>n.id));
+            const ls = links.filter(l=>{
+                const s=typeof l.source==="object"?l.source.id:l.source;
+                const t=typeof l.target==="object"?l.target.id:l.target;
+                return vis.has(s)&&vis.has(t);
+            });
+            return {ns, ls};
+        }
+        return {ns:nodes, ls:links};
+    }
+
+    function render(reheat){
+        const {ns, ls} = activeData();
+        const [w,h] = size();
+
+        // links
+        linkSel = gLink.selectAll("line").data(ls, d=>{
+            const s=typeof d.source==="object"?d.source.id:d.source;
+            const t=typeof d.target==="object"?d.target.id:d.target;
+            return s+"|"+t;
+        });
+        linkSel.exit().remove();
+        linkSel = linkSel.enter().append("line").attr("class","link").merge(linkSel);
+
+        // nodes
+        nodeSel = gNode.selectAll("g.node").data(ns, d=>d.id);
+        nodeSel.exit().remove();
+        const enter = nodeSel.enter().append("g").attr("class","node")
+            .call(d3.drag()
+                .on("start", dragStart).on("drag", dragged).on("end", dragEnd))
+            .on("mouseover", showDossier).on("mousemove", moveDossier).on("mouseout", hideDossier)
+            .on("click", onNodeClick);
+        enter.append("circle");
+        enter.append("text").attr("x", d=>radius(d)+4).attr("y", 3);
+        nodeSel = enter.merge(nodeSel);
+
+        nodeSel.select("circle").attr("r", radius).attr("fill", d=>nodeColor(d, colorBy));
+        nodeSel.select("text").text(d=>d.label).attr("x", d=>radius(d)+4);
+        nodeSel.classed("leaf", d=>(degree[d.id]||0) < 2)
+               .classed("showlabel", d=>(degree[d.id]||0) >= labelThreshold);
+
+        applyModeStyles();
+
+        sim.nodes(ns);
+        sim.force("link").links(ls);
+        if(reheat){ sim.alpha(0.9).restart(); } else { sim.alpha(0.3).restart(); }
+
+        document.getElementById("statNodes").textContent = ns.length;
+        document.getElementById("statLinks").textContent = ls.length;
+    }
+
+    function ticked(){
+        linkSel
+            .attr("x1", d=>d.source.x).attr("y1", d=>d.source.y)
+            .attr("x2", d=>d.target.x).attr("y2", d=>d.target.y);
+        nodeSel.attr("transform", d=>`translate(${d.x},${d.y})`);
+    }
+
+    // ================= MODE STYLING =================
+    function applyModeStyles(){
+        // reset
+        nodeSel.classed("dim", false).classed("path", false);
+        linkSel.classed("path", false).classed("hl", false);
+
+        if(mode === "pathfinder"){
+            const hasPath = pathNodes.size > 0;
+            nodeSel.classed("dim", d => hasPath && !pathNodes.has(d.id));
+            nodeSel.classed("path", d => pathNodes.has(d.id));
+            linkSel.classed("path", d=>{
+                const s=d.source.id||d.source, t=d.target.id||d.target;
+                return pathLinks.has(s+"|"+t) || pathLinks.has(t+"|"+s);
+            });
+        }
+    }
+
+    // ================= FORCES PER MODE =================
+    function applyForces(){
+        const [w,h] = size();
+        const count = nodes.length;
+        const big = count > 180;
+        sim.force("link").distance(big ? 34 : 70).strength(big ? 0.35 : 0.5);
+        sim.force("collide").radius(d=>radius(d) + (big ? 1.5 : 4));
+        if(mode === "clusters"){
+            // arrange group anchors on a circle, pull members toward them
+            const groups = Array.from(new Set(nodes.map(n=>n.group)));
+            const anchors = {};
+            const R = Math.min(w,h)*0.36;
+            groups.forEach((g,i)=>{
+                const a = (i/groups.length)*Math.PI*2 - Math.PI/2;
+                anchors[g] = [w/2 + R*Math.cos(a), h/2 + R*Math.sin(a)];
+            });
+            sim.force("center", null);
+            sim.force("x", d3.forceX(d=>anchors[d.group] ? anchors[d.group][0] : w/2).strength(0.16));
+            sim.force("y", d3.forceY(d=>anchors[d.group] ? anchors[d.group][1] : h/2).strength(0.16));
+            sim.force("charge").strength(big ? -55 : -180);
+        } else {
+            sim.force("x", d3.forceX(w/2).strength(0.03));
+            sim.force("y", d3.forceY(h/2).strength(0.03));
+            sim.force("center", d3.forceCenter(w/2, h/2));
+            sim.force("charge").strength(big ? -60 : -260);
+        }
+    }
+
+    // ================= INTERACTIONS =================
+    function onNodeClick(event, d){
+        if(mode === "explore"){
+            let added = 0;
+            for(const nb of (adj.get(d.id)||new Set())){ if(!visible.has(nb)){ visible.add(nb); if(++added>=80) break; } }
+            if(added){ render(true); } else { toast("No further connections from "+d.label); }
+        } else if(mode === "pathfinder"){
+            // clicking sets endpoints: first click = from, second = to
+            const from = document.getElementById("pathFrom");
+            const to = document.getElementById("pathTo");
+            if(!clickPick || clickPick==="to"){ from.value = d.id; clickPick="from"; toast("From: "+d.label); }
+            else { to.value = d.id; clickPick="to"; toast("To: "+d.label); }
+        } else {
+            // clusters: highlight this node's group
+            focusGroup(d.group);
+        }
+    }
+    let clickPick = null;
+
+    function focusGroup(group){
+        nodeSel.classed("dim", d => d.group !== group);
+        linkSel.classed("hl", d=>{
+            const s=d.source, t=d.target;
+            return s.group===group && t.group===group;
+        });
+        toast("Cluster: "+group);
+    }
+
+    // drag
+    function dragStart(event,d){ if(!event.active) sim.alphaTarget(0.25).restart(); d.fx=d.x; d.fy=d.y; }
+    function dragged(event,d){ d.fx=event.x; d.fy=event.y; }
+    function dragEnd(event,d){ if(!event.active) sim.alphaTarget(0); /* keep pinned */ }
+
+    // ================= DOSSIER TOOLTIP =================
+    const dossier = document.getElementById("dossier");
+    function showDossier(event,d){
+        const cls = d.type==="scp" ? (d.class||"—") : d.type.toUpperCase();
+        const clsColor = d.type==="scp" ? (CLASS_COLORS[d.class]||"#9aa0a6") : (TYPE_COLORS[d.type]||"#888");
+        dossier.innerHTML =
+            `<div class="d-num">${d.label}</div>`+
+            `<div class="d-title">${d.title||""}</div>`+
+            `<div class="d-meta">`+
+                `<span class="chip" style="border-color:${clsColor};color:${clsColor}">${cls}</span>`+
+                `<span class="chip">${d.group}</span>`+
+                `<span class="chip">deg ${degree[d.id]||0}</span>`+
+            `</div>`+
+            `<div class="d-blurb">${d.blurb||""}</div>`;
+        dossier.style.opacity = 1;
+        moveDossier(event);
+    }
+    function moveDossier(event){
+        const wrap = document.querySelector(".graph-wrap").getBoundingClientRect();
+        let x = event.clientX - wrap.left + 16;
+        let y = event.clientY - wrap.top + 16;
+        if(x + 270 > wrap.width) x = event.clientX - wrap.left - 270;
+        if(y + 160 > wrap.height) y = wrap.height - 170;
+        dossier.style.left = x+"px"; dossier.style.top = y+"px";
+    }
+    function hideDossier(){ dossier.style.opacity = 0; }
+
+    // ================= PATHFINDER (BFS) =================
+    function bfs(src, dst){
+        if(src===dst) return [src];
+        const q=[src], prev={}; prev[src]=null;
+        while(q.length){
+            const cur=q.shift();
+            for(const nb of (adj.get(cur)||[])){
+                if(!(nb in prev)){ prev[nb]=cur; if(nb===dst){
+                    const path=[nb]; let p=cur; while(p!==null){ path.unshift(p); p=prev[p]; } return path;
+                } q.push(nb); }
+            }
+        }
+        return null;
+    }
+    function findPath(){
+        const src=document.getElementById("pathFrom").value;
+        const dst=document.getElementById("pathTo").value;
+        const path = bfs(src,dst);
+        const hoplist=document.getElementById("hoplist");
+        pathNodes=new Set(); pathLinks=new Set();
+        if(!path){ hoplist.innerHTML='<div class="hop" style="color:var(--accent)">No path found.</div>'; applyModeStyles(); return; }
+        // animate reveal
+        let i=0;
+        const nameOf = id => (nodes.find(n=>n.id===id)||{}).label || id;
+        hoplist.innerHTML="";
+        function step(){
+            if(i>=path.length){ toast(`Path found · ${path.length-1} hop(s)`); return; }
+            pathNodes.add(path[i]);
+            if(i>0) pathLinks.add(path[i-1]+"|"+path[i]);
+            applyModeStyles();
+            const label = nameOf(path[i]);
+            const relTxt = i>0 ? relBetween(path[i-1],path[i]) : "origin";
+            hoplist.innerHTML += `<div class="hop"><span class="rel">${relTxt}</span><br>${label}</div>`;
+            i++; setTimeout(step, 420);
+        }
+        step();
+    }
+    function relBetween(a,b){
+        const l = links.find(x=>{
+            const s=typeof x.source==="object"?x.source.id:x.source;
+            const t=typeof x.target==="object"?x.target.id:x.target;
+            return (s===a&&t===b)||(s===b&&t===a);
+        });
+        return l ? ("→ "+l.rel) : "→ linked";
+    }
+
+    // ================= SEARCH =================
+    document.getElementById("search").addEventListener("input", function(){
+        const q=this.value.trim().toLowerCase();
+        if(!q){ nodeSel.classed("dim",false); return; }
+        const match = n => (n.label+" "+(n.title||"")+" "+(n.blurb||"")).toLowerCase().includes(q);
+        if(mode==="explore"){
+            // reveal matches + their neighbours
+            let added=false;
+            nodes.filter(match).forEach(n=>{ if(!visible.has(n.id)){visible.add(n.id);added=true;}
+                (adj.get(n.id)||[]).forEach(nb=>{if(!visible.has(nb)){visible.add(nb);added=true;}}); });
+            if(added) render(true);
+        }
+        nodeSel.classed("dim", d=>!match(d));
+        // center on first match
+        const first = nodes.find(match);
+        if(first && first.x!=null) centerOn(first);
+    });
+
+    function centerOn(d){
+        const [w,h]=size();
+        const t=d3.zoomIdentity.translate(w/2 - d.x*1.4, h/2 - d.y*1.4).scale(1.4);
+        svg.transition().duration(500).call(zoom.transform, t);
+    }
+
+    // ================= MODE SWITCH =================
+    function setMode(m){
+        mode=m; clickPick=null;
+        document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===m));
+        document.getElementById("ctlExplore").style.display = m==="explore"?"block":"none";
+        document.getElementById("ctlClusters").style.display = m==="clusters"?"block":"none";
+        document.getElementById("ctlPath").style.display = m==="pathfinder"?"block":"none";
+        const desc={
+            explore:"<b>Explore</b> — grow the graph by hand. Each click reveals a node's neighbourhood, so you feel how a knowledge graph is built from relationships.",
+            clusters:"<b>Clusters</b> — show every node at once and colour by class or faction. Communities emerge from how the links pull related nodes together.",
+            pathfinder:"<b>Pathfind</b> — pick two anomalies; a breadth-first search traces the shortest chain of references between them."
+        };
+        document.getElementById("modeDesc").innerHTML=desc[m];
+        document.getElementById("hint").textContent =
+            m==="explore" ? "Click a node to reveal its links · drag to pan · scroll to zoom"
+          : m==="pathfinder" ? "Click two nodes to set endpoints, or use the dropdowns"
+          : "Click a node to isolate its cluster · drag to pan · scroll to zoom";
+        pathNodes=new Set(); pathLinks=new Set();
+        document.getElementById("search").value="";
+        applyForces();
+        render(true);
+        if(m==="clusters") buildLegend();
+    }
+
+    // ================= LEGEND =================
+    function buildLegend(){
+        const box=document.getElementById("legend");
+        box.innerHTML="";
+        let entries;
+        if(colorBy==="class"){
+            entries = CLASS_ORDER.filter(c=>nodes.some(n=>n.type==="scp"&&n.class===c))
+                .map(c=>[c, CLASS_COLORS[c]]);
+            // add non-SCP types
+            Object.keys(TYPE_COLORS).filter(t=>nodes.some(n=>n.type===t))
+                .forEach(t=>entries.push([t.toUpperCase(), TYPE_COLORS[t]]));
+        } else {
+            entries = Array.from(new Set(nodes.map(n=>n.group))).map(g=>[g, GROUP_COLORS[g]||"#888"]);
+        }
+        entries.forEach(([label,color])=>{
+            const el=document.createElement("div");
+            el.className="legend-item";
+            el.innerHTML=`<span class="legend-swatch" style="background:${color}"></span>${label}`;
+            box.appendChild(el);
+        });
+    }
+
+    // ================= FULL CORPUS LOADER =================
+    let logLines = [];
+    function renderLog(){ const el=document.getElementById("loadLog"); el.textContent=logLines.join("\n"); el.scrollTop=el.scrollHeight; }
+    function logPush(s){ logLines.push(s); renderLog(); }
+    function logSet(s){ logLines[logLines.length-1]=s; renderLog(); }
+
+    // streaming fetch so we can show a live byte counter ("systematic" progress)
+    async function fetchJSON(url, onProgress){
+        const res = await fetch(url, { mode:"cors" });
+        if(!res.ok) throw new Error("HTTP "+res.status);
+        if(res.body && res.body.getReader){
+            const reader = res.body.getReader();
+            const chunks = []; let recv = 0;
+            while(true){
+                const { done, value } = await reader.read();
+                if(done) break;
+                chunks.push(value); recv += value.length;
+                if(onProgress) onProgress(recv);
+            }
+            let buf = new Uint8Array(recv), p = 0;
+            for(const c of chunks){ buf.set(c, p); p += c.length; }
+            return JSON.parse(new TextDecoder("utf-8").decode(buf));
+        }
+        return res.json();
+    }
+
+    async function loadAll(){
+        const btn = document.getElementById("btnLoadAll");
+        btn.disabled = true; btn.textContent = "⇊ Loading…";
+        logLines = []; renderLog();
+
+        const byId = new Map();      // id -> { id, label, title, type, class, group, rating, blurb, refs[] }
+        let anyOk = false;
+
+        for(const ds of DATASETS){
+            logPush("▸ " + ds.label + ": connecting…");
+            try{
+                const data = await fetchJSON(ds.url, recv => logSet("▸ " + ds.label + ": " + (recv/1048576).toFixed(1) + " MB"));
+                let n = 0;
+                for(const key in data){
+                    const v = data[key]; if(!v || typeof v !== "object") continue;
+                    let node = byId.get(key);
+                    if(!node){ node = { id:key, refs:[] }; byId.set(key, node); n++; }
+                    node.type = node.type || ds.type;
+                    if(ds.type === "scp"){
+                        node.label = v.scp || ("SCP-" + (v.scp_number != null ? v.scp_number : "?"));
+                        node.title = v.title || "";
+                        node.class = classFromTags(v.tags);
+                        node.group = v.series || "misc";
+                    } else {
+                        node.label = String(v.title || key).replace(/\s+/g," ").slice(0,26);
+                        node.title = ds.type.toUpperCase();
+                        node.class = null;
+                        node.group = ds.type==="goi" ? "GOIs" : ds.type==="tale" ? "Tales" : "Hubs";
+                    }
+                    if(v.rating != null) node.rating = v.rating;
+                    node.blurb = String(v.title || key) + (Array.isArray(v.tags) && v.tags.length ? (" · " + v.tags.slice(0,6).join(", ")) : "");
+                    if(Array.isArray(v.references)) for(const r of v.references) node.refs.push(r);
+                }
+                logSet("▸ " + ds.label + ": " + n.toLocaleString() + " records ✓");
+                anyOk = true;
+            } catch(e){
+                logSet("▸ " + ds.label + ": unavailable (" + e.message + ")");
+            }
+        }
+
+        if(!anyOk){
+            toast("Live corpus blocked — the API refused cross-origin requests. Using contained dataset.");
+            btn.disabled = false; btn.textContent = "⇊ Load full corpus";
+            return;
+        }
+
+        logPush("▸ indexing references…");
+        const deg = {}; let edgeCount = 0;
+        byId.forEach(node => {
+            for(const r of node.refs){
+                if(byId.has(r)){ deg[node.id]=(deg[node.id]||0)+1; deg[r]=(deg[r]||0)+1; edgeCount++; }
+            }
+        });
+        const order = [...byId.keys()].filter(id => deg[id] > 0).sort((a,b)=>deg[b]-deg[a]);
+        corpus = { byId, order, deg, total: byId.size, edges: edgeCount };
+        simNodeCache = new Map();
+
+        logSet("▸ indexed " + order.length.toLocaleString() + " connected nodes ✓");
+        document.getElementById("statLoaded").textContent = byId.size.toLocaleString();
+        document.getElementById("statSource").textContent = "Full corpus";
+        document.getElementById("displayCtl").style.display = "block";
+        btn.textContent = "⇊ Corpus loaded";
+
+        buildDisplay(+document.getElementById("dispSlider").value);
+        toast("Corpus loaded · " + byId.size.toLocaleString() + " nodes, " + edgeCount.toLocaleString() + " references");
+        setTimeout(fitView, 1200);
+    }
+
+    // build the displayed subgraph = top-N most-connected corpus nodes + edges among them
+    function buildDisplay(n){
+        if(!corpus) return;
+        const ids = corpus.order.slice(0, n);
+        const S = new Set(ids);
+        nodes = ids.map(id => {
+            let sn = simNodeCache.get(id);
+            if(!sn){
+                const s = corpus.byId.get(id);
+                sn = { id, label:s.label, title:s.title, type:s.type, class:s.class, group:s.group, rating:s.rating, blurb:s.blurb };
+                simNodeCache.set(id, sn);
+            }
+            return sn;
+        });
+        const seen = new Set(); const edges = [];
+        for(const id of ids){
+            const s = corpus.byId.get(id);
+            for(const r of s.refs){
+                if(S.has(r) && r !== id){
+                    const k = id < r ? id+"|"+r : r+"|"+id;
+                    if(!seen.has(k)){ seen.add(k); edges.push({ source:id, target:r, rel:"references" }); }
+                }
+            }
+        }
+        links = edges;
+        buildAdj(); buildDegree();
+        const degs = nodes.map(x => degree[x.id]||0).sort((a,b)=>b-a);
+        labelThreshold = degs[Math.min(24, degs.length-1)] || 1;   // ~25 labels
+        seedId = corpus.order[0];
+        resetExplore(); refreshPathSelects();
+        applyForces(); render(true);
+        if(mode === "clusters") buildLegend();
+    }
+
+    function resetData(){
+        corpus = null; simNodeCache = new Map();
+        nodes = RAW.nodes.map(d => Object.assign({}, d));
+        links = RAW.links.map(d => Object.assign({}, d));
+        labelThreshold = 4; seedId = SEED; logLines = []; renderLog();
+        document.getElementById("statLoaded").textContent = "—";
+        document.getElementById("statSource").textContent = "Contained";
+        document.getElementById("displayCtl").style.display = "none";
+        const btn = document.getElementById("btnLoadAll");
+        btn.textContent = "⇊ Load full corpus"; btn.disabled = false;
+        buildAdj(); buildDegree(); resetExplore(); refreshPathSelects();
+        applyForces(); setMode(mode);
+        toast("Restored contained dataset");
+    }
+
+    // ================= TOAST =================
+    let toastT=null;
+    function toast(msg){
+        const t=document.getElementById("toast");
+        t.textContent=msg; t.classList.add("show");
+        clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"), 2600);
+    }
+
+    // ================= PATH SELECT OPTIONS =================
+    function refreshPathSelects(){
+        const from=document.getElementById("pathFrom"), to=document.getElementById("pathTo");
+        const opts = nodes.slice().sort((a,b)=>a.label.localeCompare(b.label))
+            .map(n=>`<option value="${n.id}">${n.label} — ${n.title||n.type}</option>`).join("");
+        const fv=from.value, tv=to.value;
+        from.innerHTML=opts; to.innerHTML=opts;
+        from.value = fv || "scp-682";
+        to.value = tv || "goi-cotbg";
+    }
+
+    // ================= ZOOM BUTTONS =================
+    document.getElementById("zin").onclick =()=>svg.transition().call(zoom.scaleBy,1.4);
+    document.getElementById("zout").onclick=()=>svg.transition().call(zoom.scaleBy,1/1.4);
+    document.getElementById("zfit").onclick=fitView;
+    function fitView(){
+        const {ns}=activeData();
+        if(!ns.length) return;
+        const xs=ns.map(n=>n.x), ys=ns.map(n=>n.y);
+        const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+        const [w,h]=size();
+        const dx=maxX-minX||1, dy=maxY-minY||1;
+        const scale=Math.min(3, 0.85*Math.min(w/dx, h/dy));
+        const tx=w/2-scale*(minX+maxX)/2, ty=h/2-scale*(minY+maxY)/2;
+        svg.transition().duration(600).call(zoom.transform, d3.zoomIdentity.translate(tx,ty).scale(scale));
+    }
+
+    // ================= WIRE UP =================
+    document.querySelectorAll(".mode-btn").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+    document.getElementById("colorBy").onchange=function(){ colorBy=this.value; nodeSel.select("circle").attr("fill",d=>nodeColor(d,colorBy)); buildLegend(); };
+    document.getElementById("btnExpandAll").onclick=()=>{ nodes.forEach(n=>visible.add(n.id)); render(true); toast("Full graph revealed"); };
+    document.getElementById("btnReset").onclick=()=>{ resetExplore(); render(true); toast("Reset to SCP-682"); };
+    document.getElementById("btnFindPath").onclick=findPath;
+    document.getElementById("btnLoadAll").onclick=loadAll;
+    document.getElementById("btnResetData").onclick=resetData;
+    (function(){
+        const sl=document.getElementById("dispSlider");
+        sl.oninput=function(){ document.getElementById("dispVal").textContent=this.value; };
+        sl.onchange=function(){ if(corpus) buildDisplay(+this.value); };
+    })();
+    window.addEventListener("resize", ()=>{ applyForces(); sim.alpha(0.3).restart(); });
+
+    function resetExplore(){
+        visible=new Set([seedId]);
+        let c=0;
+        for(const nb of (adj.get(seedId)||[])){ visible.add(nb); if(++c>=40) break; }
+    }
+
+    // ================= INIT =================
+    buildAdj(); buildDegree();
+    resetExplore();
+    refreshPathSelects();
+    applyForces();
+    render(true);
+    setMode("explore");
+    setTimeout(fitView, 900);
+})();
+</script>
+</body>
+</html>
