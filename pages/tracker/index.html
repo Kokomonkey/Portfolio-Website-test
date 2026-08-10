@@ -508,8 +508,8 @@ function renderToday(){
         row.querySelector(".indel").onclick=()=>{ S.inbox=S.inbox.filter(x=>x.id!==id); commit(); };
         row.querySelector(".in2err").onclick=()=>{ S.errands.push({id:uid(),title:n.text,est:1,done:false,date:td}); S.inbox=S.inbox.filter(x=>x.id!==id); commit(); }; });
     el.querySelector("#timerAct").onchange=e=>{ currentActivity=e.target.value; };
-    wireDay(el,td);
     wireTimer(el);
+    wireDay(el,td);
 }
 
 /* ----- TOMORROW ----- */
@@ -544,7 +544,7 @@ function taskRow(t){
 }
 function findTask(pid,tid){ const p=S.projects.find(x=>x.id===pid); if(!p)return[null,null]; return [p,p.tasks.find(t=>t.id===tid)]; }
 function wireTaskRows(scope){
-    scope.querySelectorAll(".task").forEach(row=>{
+    scope.querySelectorAll(".task[data-tid]").forEach(row=>{   // only real project-task rows, not errands/inbox
         const pid=row.dataset.pid, tid=row.dataset.tid;
         row.querySelector(".chk").onclick=()=>{ const[,t]=findTask(pid,tid); if(!t)return; t.done=!t.done; t.doneAt=t.done?todayStr():null; commit(); };
         row.querySelectorAll(".mini").forEach(b=>b.onclick=()=>{
@@ -825,16 +825,20 @@ function renderSettings(){
 /* ---------------- focus timer ---------------- */
 let timer={sec:1500,run:false,iv:null};
 function wireTimer(el){
-    const disp=el.querySelector("#timer"); if(!disp)return;
-    const paint=()=>{ const m=String(Math.floor(timer.sec/60)).padStart(2,'0'), s=String(timer.sec%60).padStart(2,'0'); disp.textContent=`${m}:${s}`; };
+    const startBtn=el.querySelector("#timerStart"); if(!startBtn) return;
+    const paint=()=>{ const disp=document.getElementById("timer"); if(!disp) return;
+        disp.textContent=`${String(Math.floor(timer.sec/60)).padStart(2,'0')}:${String(timer.sec%60).padStart(2,'0')}`; };
     paint();
-    el.querySelector("#timerStart").onclick=(e)=>{
-        if(timer.run){ clearInterval(timer.iv); timer.run=false; e.target.textContent="Start"; e.target.classList.add("acc"); logFocus(); }
-        else{ timer.run=true; e.target.textContent="Pause"; e.target.classList.remove("acc");
-            timer.iv=setInterval(()=>{ if(timer.sec>0){timer.sec--;paint();} else { clearInterval(timer.iv); timer.run=false; logFocus(true); } },1000); }
+    // reflect state if we re-rendered mid-run
+    startBtn.textContent = timer.run ? "Pause" : "Start";
+    startBtn.classList.toggle("acc", !timer.run);
+    startBtn.onclick=()=>{
+        if(timer.run){ clearInterval(timer.iv); timer.run=false; startBtn.textContent="Start"; startBtn.classList.add("acc"); logFocus(); }
+        else{ timer.run=true; startBtn.textContent="Pause"; startBtn.classList.remove("acc");
+            timer.iv=setInterval(()=>{ if(timer.sec>0){ timer.sec--; paint(); } else { clearInterval(timer.iv); timer.run=false; logFocus(true); } },1000); }
     };
-    el.querySelector("#timerReset").onclick=()=>{ clearInterval(timer.iv); timer.run=false; timer.sec=1500; paint(); const b=el.querySelector("#timerStart"); b.textContent="Start"; b.classList.add("acc"); };
-    let lastLogged=1500;
+    el.querySelector("#timerReset").onclick=()=>{ clearInterval(timer.iv); timer.run=false; timer.sec=1500; paint(); startBtn.textContent="Start"; startBtn.classList.add("acc"); };
+    let lastLogged=timer.sec;
     function logFocus(finished){ const spent=Math.round((lastLogged-timer.sec)/60);
         if(spent>0){ const td=todayStr(); const d=S.dayLog[td]=S.dayLog[td]||{}; d.focusMin=(d.focusMin||0)+spent;
             d.byActivity=d.byActivity||{}; d.byActivity[currentActivity]=(d.byActivity[currentActivity]||0)+spent;
