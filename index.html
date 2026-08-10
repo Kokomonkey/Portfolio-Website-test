@@ -572,11 +572,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ── 3.5 SECRET PASSCODES ────────────────────────────────────
     // 'Kloef' → opens the private life tracker (auto-unlocked)
-    // 'Angus' → opens shared archive page as Ilian (purple)
     (function () {
         const CODES = {
             'Kloef': 'pages/tracker/index.html',
-            'Angus': 'archive/kloef.html?as=ilian',
             'Koko':  'koko.html',
         };
         const MAX_LEN = Math.max(...Object.keys(CODES).map(s => s.length));
