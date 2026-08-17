@@ -6,115 +6,91 @@
 <title>Marktplaats DealScanner — Bordspellen</title>
 <style>
   :root {
-    --bg: #0f1216;
-    --card: #1a1f27;
-    --card2: #222933;
-    --text: #e8eaed;
-    --muted: #9aa4b2;
-    --accent: #4ea1ff;
-    --good: #38c172;
+    --bg: #0f1216; --card: #1a1f27; --card2: #222933; --text: #e8eaed;
+    --muted: #9aa4b2; --accent: #4ea1ff; --good: #38c172; --fire: #ff9f43;
     --border: #2a323d;
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.4;
-  }
-  header {
-    padding: 28px 24px 18px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.4; }
+  header { padding: 24px; border-bottom: 1px solid var(--border); display: flex;
+    align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
   h1 { font-size: 20px; margin: 0; font-weight: 650; }
-  h1 span { color: var(--muted); font-weight: 400; }
-  .controls { display: flex; align-items: center; gap: 14px; }
+  h1 span { color: var(--muted); font-weight: 400; font-size: 14px; }
+  .controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   #status { color: var(--muted); font-size: 13px; min-height: 18px; }
-  button {
-    background: var(--accent);
-    color: #05243f;
-    border: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 650;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: opacity .15s;
-  }
-  button:hover { opacity: .9; }
-  button:disabled { opacity: .5; cursor: default; }
-  main { padding: 20px 24px 60px; max-width: 1100px; margin: 0 auto; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  .thumb {
-    height: 150px;
-    background: var(--card2) center/cover no-repeat;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--muted); font-size: 12px;
-  }
-  .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  label.toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer; }
+  select { background: var(--card2); color: var(--text); border: 1px solid var(--border); border-radius: 7px; padding: 7px 9px; font-size: 13px; }
+  button { background: var(--accent); color: #05243f; border: none; padding: 10px 20px;
+    font-size: 14px; font-weight: 650; border-radius: 8px; cursor: pointer; }
+  button:hover { opacity: .9; } button:disabled { opacity: .5; cursor: default; }
+  main { padding: 20px 24px 60px; max-width: 1150px; margin: 0 auto; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .card.fire { border-color: var(--fire); box-shadow: 0 0 0 1px var(--fire) inset; }
+  .card.isnew::after { content: "NIEUW"; position: absolute; top: 10px; right: 10px;
+    background: var(--good); color: #04240f; font-size: 10px; font-weight: 800; padding: 3px 7px; border-radius: 5px; letter-spacing: .5px; }
+  .deal { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,.75); color: #fff;
+    min-width: 42px; height: 42px; border-radius: 10px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.2); }
+  .deal b { font-size: 16px; line-height: 1; } .deal small { font-size: 8px; color: var(--muted); text-transform: uppercase; }
+  .card.fire .deal { background: var(--fire); color: #3a1c00; border-color: transparent; }
+  .card.fire .deal small { color: #6b3600; }
+  .thumb { height: 155px; background: var(--card2) center/cover no-repeat; display: flex;
+    align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+  .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
   .title { font-size: 14px; font-weight: 600; }
-  .title a { color: var(--text); text-decoration: none; }
-  .title a:hover { color: var(--accent); }
-  .meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
-  .row { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+  .title a { color: var(--text); text-decoration: none; } .title a:hover { color: var(--accent); }
+  .bgg { font-size: 11px; color: var(--muted); } .bgg a { color: var(--accent); text-decoration: none; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; text-transform: uppercase; letter-spacing: .3px; }
+  .tag.nieuw { background: rgba(56,193,114,.15); color: var(--good); }
+  .tag.zgan { background: rgba(78,161,255,.15); color: var(--accent); }
+  .tag.compleet { background: rgba(154,164,178,.15); color: var(--muted); }
+  .tag.incompleet { background: rgba(255,99,99,.15); color: #ff6363; }
+  .tag.bundel { background: rgba(255,159,67,.18); color: var(--fire); }
+  .bundle-extra { font-size: 11px; color: var(--muted); font-style: italic; }
+  .meta { font-size: 12px; color: var(--muted); }
+  .row { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 4px; }
   .price { font-size: 15px; font-weight: 650; }
-  .rating {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(56,193,114,.12);
-    color: var(--good);
-    padding: 4px 9px; border-radius: 20px;
-    font-size: 13px; font-weight: 650;
-  }
-  .rating.none { background: rgba(154,164,178,.12); color: var(--muted); font-weight: 500; }
-  .bgg { font-size: 11px; color: var(--muted); }
-  .bgg a { color: var(--accent); text-decoration: none; }
+  .rating { display: inline-flex; align-items: center; gap: 5px; background: rgba(56,193,114,.12);
+    color: var(--good); padding: 4px 9px; border-radius: 20px; font-size: 13px; font-weight: 650; }
+  .tabs { display: flex; gap: 6px; padding: 16px 24px 0; max-width: 1150px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+  .tab { padding: 9px 16px; border-radius: 8px 8px 0 0; background: transparent; color: var(--muted);
+    cursor: pointer; font-size: 14px; font-weight: 600; border: 1px solid transparent; border-bottom: none; margin-bottom: -1px; }
+  .tab:hover { color: var(--text); }
+  .tab.active { background: var(--card); color: var(--text); border-color: var(--border); border-bottom-color: var(--card); }
+  .tab small { font-weight: 400; color: var(--muted); font-size: 11px; }
   .empty { color: var(--muted); text-align: center; padding: 60px 0; }
-  .spinner {
-    width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.3);
-    border-top-color: #05243f; border-radius: 50%;
-    display: inline-block; animation: spin .7s linear infinite; vertical-align: -2px; margin-right: 6px;
-  }
+  .spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.3); border-top-color: #05243f;
+    border-radius: 50%; display: inline-block; animation: spin .7s linear infinite; vertical-align: -2px; margin-right: 6px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .rank {
-    position: absolute; top: 10px; left: 10px;
-    background: rgba(0,0,0,.7); color: #fff;
-    width: 30px; height: 30px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 14px; border: 1px solid rgba(255,255,255,.25);
-  }
-  .card { position: relative; }
-  .progress-wrap { max-width: 420px; margin: 40px auto 0; }
-  .bar { height: 8px; background: var(--card2); border-radius: 6px; overflow: hidden; }
-  .bar > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
-  .progress-text { text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px; }
-  .rating { font-size: 15px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>🎲 Marktplaats DealScanner <span>· bordspellen op BGG-rating</span></h1>
+  <h1>🎲 DealScanner <span>· bordspel-deals op BGG-rating</span></h1>
   <div class="controls">
     <span id="status"></span>
+    <label class="toggle">Sorteer
+      <select id="sortBy">
+        <option value="deal">Deal-score</option>
+        <option value="rating">BGG-rating</option>
+        <option value="price">Prijs (laag→hoog)</option>
+      </select>
+    </label>
+    <label class="toggle"><input type="checkbox" id="autoBtn" /> Auto (elke 15 min)</label>
     <button id="scanBtn">Scan</button>
   </div>
 </header>
+<div class="tabs">
+  <div class="tab active" data-mode="category">Losse deals <small>· 200 uit categorie</small></div>
+  <div class="tab" data-mode="bundles">Partijen <small>· 40 · zoekt "bordspellen partij"</small></div>
+</div>
 <main>
   <div id="results" class="grid"></div>
-  <div id="empty" class="empty">Klik op <b>Scan</b>. Ik doorzoek de nieuwste 200 bordspel-advertenties, koppel ze aan hun BGG-rating en toon de <b>top 10</b>.</div>
+  <div id="empty" class="empty">Klik op <b>Scan</b>. Ik doorzoek de nieuwste bordspel-advertenties (titel én beschrijving), koppel ze aan BGG-ratings en rangschik op <b>deal-score</b> (goede game + lage prijs).</div>
 </main>
 
 <script>
@@ -122,58 +98,127 @@ const btn = document.getElementById("scanBtn");
 const statusEl = document.getElementById("status");
 const grid = document.getElementById("results");
 const empty = document.getElementById("empty");
+const sortBy = document.getElementById("sortBy");
+const autoBtn = document.getElementById("autoBtn");
 
-btn.addEventListener("click", runScan);
+let mode = "category";
+const cache = { category: null, bundles: null };   // last result per tab
+const seen = { category: new Set(), bundles: new Set() }; // seen ids per tab
+let autoTimer = null;
+const AUTO_MS = 15 * 60 * 1000;
 
-async function runScan() {
+// --- Tabs ---
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    if (tab.classList.contains("active")) return;
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    mode = tab.dataset.mode;
+    if (cache[mode]) { render(cache[mode]); showStatus(cache[mode]); }
+    else runScan(false); // first visit to this tab → scan it
+  });
+});
+
+btn.addEventListener("click", () => runScan(false));
+sortBy.addEventListener("change", () => { if (cache[mode]) render(cache[mode]); });
+autoBtn.addEventListener("change", () => {
+  if (autoBtn.checked) {
+    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+    autoTimer = setInterval(() => runScan(true), AUTO_MS);
+    statusEl.textContent = "Auto aan — volgende scan binnen 15 min.";
+  } else {
+    clearInterval(autoTimer); autoTimer = null;
+  }
+});
+
+function showStatus(data) {
+  const time = new Date(data.scannedAt).toLocaleTimeString("nl-NL");
+  statusEl.textContent = `${data.scanned} gescand · ${data.ratedCount} matches · ${time}` +
+    (autoTimer ? " · auto aan" : "");
+}
+
+async function runScan(isAuto) {
+  const scanMode = mode; // capture: user could switch tabs mid-request
   btn.disabled = true;
-  grid.innerHTML = "";
-  empty.style.display = "none";
+  if (!isAuto) { grid.innerHTML = ""; empty.style.display = "none"; }
   statusEl.innerHTML = '<span class="spinner"></span>Bezig met scannen…';
   try {
-    const res = await fetch("/api/scan");
+    const res = await fetch("/api/scan?mode=" + encodeURIComponent(scanMode));
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    render(data);
-    statusEl.textContent = `${data.scanned} gescand · ${data.ratedCount} met rating · top ${data.top.length} · ${new Date(data.scannedAt).toLocaleTimeString("nl-NL")}`;
+
+    // Flag which listings are new since the previous scan of THIS tab.
+    const prevSeen = seen[scanMode];
+    const newlyFound = [];
+    data.top.forEach(r => {
+      r._isNew = prevSeen.size > 0 && !prevSeen.has(r.id);
+      if (r._isNew) newlyFound.push(r);
+    });
+    data.top.forEach(r => prevSeen.add(r.id));
+
+    cache[scanMode] = data;
+    if (scanMode === mode) { render(data); showStatus(data); } // only paint if still on this tab
+    if (isAuto && newlyFound.length && scanMode === mode) notifyNew(newlyFound);
   } catch (e) {
     statusEl.textContent = "Fout: " + e.message;
     empty.style.display = "block";
-    empty.innerHTML = "Er ging iets mis: <b>" + e.message + "</b>.<br>Check de terminal voor details.";
+    empty.innerHTML = "Er ging iets mis: <b>" + e.message + "</b>.<br>Check de terminal.";
   } finally {
     btn.disabled = false;
   }
 }
 
+function notifyNew(rows) {
+  const best = rows[0];
+  const msg = `${rows.length} nieuwe deal(s). Beste: ${best.matchedName} (★${best.bggRating.toFixed(1)}) — ${best.priceLabel}`;
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("🎲 Nieuwe bordspel-deal", { body: msg });
+  }
+}
+
+function sortRows(rows) {
+  const r = rows.slice();
+  const v = sortBy.value;
+  if (v === "rating") r.sort((a, b) => b.bggRating - a.bggRating);
+  else if (v === "price") r.sort((a, b) => (a.priceEuros ?? 1e9) - (b.priceEuros ?? 1e9));
+  else r.sort((a, b) => b.dealScore - a.dealScore);
+  return r;
+}
+
 function render(data) {
-  const rows = data.top || [];
+  const rows = sortRows(data.top || []);
   if (!rows.length) {
     empty.style.display = "block";
-    empty.innerHTML = `Geen advertenties met BGG-rating gevonden onder de ${data.scanned} gescande. Probeer opnieuw of verlaag <code>minBggVotes</code> in server.js.`;
+    empty.innerHTML = `Geen bordspellen uit de BGG-top gevonden onder de ${data.scanned} gescande advertenties. Probeer opnieuw.`;
+    grid.innerHTML = "";
     return;
   }
-  grid.innerHTML = rows.map((r, i) => cardHtml(r, i + 1)).join("");
+  empty.style.display = "none";
+  grid.innerHTML = rows.map(cardHtml).join("");
 }
 
 function esc(s) {
   return String(s || "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
 }
 
-function cardHtml(r, rank) {
+function cardHtml(r) {
   const thumb = r.image
     ? `<div class="thumb" style="background-image:url('${esc(r.image)}')"></div>`
     : `<div class="thumb">geen foto</div>`;
-  const bggLine = r.bggUrl
-    ? `<div class="bgg">${esc(r.matchedName || "")}${r.bggRank ? " · BGG #"+r.bggRank : ""}${r.bggYear ? " ("+r.bggYear+")" : ""} · ${r.bggVotes.toLocaleString("nl-NL")} stemmen · <a href="${esc(r.bggUrl)}" target="_blank">BGG</a></div>`
-    : "";
+  const tags = (r.tags || []).map(t => `<span class="tag ${t}">${t}</span>`).join("");
+  const extra = r.otherGames && r.otherGames.length
+    ? `<div class="bundle-extra">+ ook: ${esc(r.otherGames.slice(0,4).join(", "))}${r.otherGames.length>4?"…":""}</div>` : "";
+  const bgg = `<div class="bgg">${esc(r.matchedName)}${r.bggRank ? " · BGG #"+r.bggRank : ""}${r.bggYear ? " ("+r.bggYear+")" : ""} · ${r.bggVotes.toLocaleString("nl-NL")} stemmen · <a href="${esc(r.bggUrl)}" target="_blank">BGG</a></div>`;
   return `
-  <div class="card">
-    <div class="rank">${rank}</div>
+  <div class="card${r.topDeal ? " fire" : ""}${r._isNew ? " isnew" : ""}">
+    <div class="deal"><b>${r.dealScore}</b><small>deal</small></div>
     ${thumb}
     <div class="body">
       <div class="title"><a href="${esc(r.url)}" target="_blank">${esc(r.title)}</a></div>
-      ${bggLine}
-      <div class="meta">${esc(r.location)}${r.location && r.date ? " · " : ""}${esc(r.date)}</div>
+      ${bgg}
+      ${extra}
+      ${tags ? `<div class="tags">${tags}</div>` : ""}
+      <div class="meta">${esc(r.location)}${r.location && r.date ? " · " : ""}${esc(r.date)} · via ${esc(r.matchedIn)}</div>
       <div class="row">
         <span class="price">${esc(r.priceLabel)}</span>
         <span class="rating">★ ${r.bggRating.toFixed(1)}</span>
