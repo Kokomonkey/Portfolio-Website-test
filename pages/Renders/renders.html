@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../Recourses/Logos/DDD.jpg">
+    <title>Renders | DouweDoesDesign</title>
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-color: #000000;
+            --accent-color: #ffffff;
+            --secondary-bg: #111111;
+            --header-height: 15vh;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER & NAV --- */
+        .back-btn {
+            position: fixed;
+            top: 40px; left: 40px;
+            text-decoration: none;
+            z-index: 1000;
+            border: 1px solid var(--accent-color);
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            color: var(--accent-color);
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background-color: var(--accent-color); color: var(--bg-color); }
+
+        header {
+            height: var(--header-height);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            z-index: 10;
+            padding-top: 10px;
+        }
+
+        .site-logo {
+            height: 70px; width: auto; margin-bottom: 10px;
+            filter: invert();
+        }
+
+        h1 {
+            font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase;
+            font-weight: 300; border-bottom: 1px solid #333;
+            padding-bottom: 6px; color: #ccc;
+        }
+        .subtitle {
+            margin-top: 10px; font-size: 0.7rem; letter-spacing: 2px;
+            text-transform: uppercase; color: #666;
+        }
+
+        /* --- GALLERY GRID (masonry: every format shown uncropped) --- */
+        main {
+            flex-grow: 1;
+            width: 100%;
+            padding: 20px 40px 70px 40px;
+        }
+
+        .feed-grid {
+            width: 100%;
+            max-width: 1700px;
+            margin: 0 auto;
+            column-width: 360px;
+            column-gap: 16px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .gallery-thumb {
+            width: 100%;
+            display: block;
+            margin: 0 0 16px 0;
+            break-inside: avoid;
+            background-color: #141414;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .gallery-thumb:hover { border-color: var(--accent-color); }
+
+        .gallery-thumb img {
+            width: 100%; height: auto; display: block;
+            opacity: 0.82;
+            transition: opacity 0.3s, transform 0.6s, filter 0.4s;
+            filter: grayscale(100%);
+        }
+        .gallery-thumb:hover img {
+            opacity: 1;
+            transform: scale(1.04);
+            filter: grayscale(0%);
+        }
+        .thumb-cap {
+            position: absolute; left: 0; bottom: 0;
+            width: 100%; padding: 24px 12px 10px 12px;
+            font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase;
+            color: #fff;
+            background: linear-gradient(transparent, rgba(0,0,0,0.75));
+            opacity: 0; transform: translateY(6px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+        .gallery-thumb:hover .thumb-cap { opacity: 1; transform: translateY(0); }
+
+        /* --- MODAL --- */
+        .presentation-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 2000; display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+        }
+        .presentation-modal.active { opacity: 1; pointer-events: all; }
+
+        .stage-area {
+            flex-grow: 1; position: relative;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .stage-area:active { cursor: grabbing; }
+
+        /* Image sized as large as possible for ANY format without going off screen */
+        .presentation-img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            transform: translate(0px, 0px) scale(1);
+            transition: transform 0.12s ease-out;
+            will-change: transform;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        .presentation-img.zoomed { transition: none; }
+
+        .nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 3rem; color: #fff; background: rgba(0,0,0,0.25);
+            border: none; cursor: pointer; padding: 16px 20px; line-height: 1;
+            opacity: 0.35; transition: opacity 0.2s, background 0.2s; z-index: 10;
+        }
+        .nav-arrow:hover { opacity: 1; background: rgba(0,0,0,0.5); }
+        .nav-arrow.left { left: 12px; } .nav-arrow.right { right: 12px; }
+
+        .control-bar { height: 14vh; min-height: 96px; background: #0d0d0d; border-top: 1px solid #2a2a2a; display: flex; flex-direction: column; z-index: 5; }
+        .caption-overlay { background: #1a1a1a; color: #bbb; padding: 9px; text-align: center; font-size: 0.78rem; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #2a2a2a; }
+        .strip-container { flex-grow: 1; display: flex; align-items: center; gap: 6px; overflow-x: auto; padding: 8px 12px; }
+        .strip-thumb { height: 100%; aspect-ratio: 16/10; flex-shrink: 0; opacity: 0.35; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; background: #000; }
+        .strip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .strip-thumb.active { opacity: 1; border-color: #fff; }
+
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 1.6rem; color: #fff; cursor: pointer; z-index: 2001; width: 42px; height: 42px; text-align: center; line-height: 40px; border: 1px solid #666; border-radius: 50%; background: rgba(0,0,0,0.4); transition: all 0.2s; }
+        .close-modal:hover { background: #fff; color: #000; border-color: #fff; }
+
+        /* Zoom readout + hint */
+        .zoom-level {
+            position: absolute; bottom: 14px; left: 18px;
+            color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 2px;
+            z-index: 11; pointer-events: none;
+        }
+        .zoom-hint {
+            position: absolute; bottom: 14px; right: 18px;
+            color: rgba(255,255,255,0.35); font-size: 0.68rem; letter-spacing: 1px;
+            z-index: 11; pointer-events: none; text-transform: uppercase;
+        }
+
+        /* Minimap for orientation while zoomed */
+        #miniMap {
+            position: absolute; top: 20px; left: 20px;
+            width: 150px; border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(0,0,0,0.75); overflow: hidden; z-index: 11;
+            pointer-events: none; display: none;
+        }
+        #miniMapImg { width: 100%; display: block; opacity: 0.55; }
+        #miniMapVP { position: absolute; border: 1px solid rgba(255,255,255,0.9); background: rgba(255,255,255,0.1); top: 0; left: 0; pointer-events: none; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            main { padding: 20px 16px 60px 16px; }
+            .feed-grid { column-width: 100%; column-count: 1; }
+            .back-btn { top: 18px; left: 18px; padding: 8px 14px; }
+            header { height: auto; margin-top: 70px; margin-bottom: 10px; }
+            .nav-arrow { font-size: 2rem; padding: 10px 12px; }
+            #miniMap { width: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="../../projects.html" class="back-btn">&larr; Back to Projects</a>
+
+    <header>
+        <img src="../../Recourses/Logos/DDD.jpg" alt="DDD Logo" class="site-logo">
+        <h1>Renders</h1>
+        <div class="subtitle">Ordered by colour</div>
+    </header>
+
+    <main>
+        <div class="feed-grid" id="feedContent"></div>
+    </main>
+
+    <div class="presentation-modal" id="modal">
+        <div class="close-modal" onclick="closeModal()">&times;</div>
+        <div class="stage-area" id="stageArea">
+            <button class="nav-arrow left" onclick="changeSlide(-1)">&#8249;</button>
+            <img src="" class="presentation-img" id="mainImage" alt="Render">
+            <button class="nav-arrow right" onclick="changeSlide(1)">&#8250;</button>
+            <div id="miniMap"><img id="miniMapImg" alt=""><div id="miniMapVP"></div></div>
+            <div class="zoom-level" id="zoomLevel">100%</div>
+            <div class="zoom-hint">Scroll / click to zoom &middot; drag to pan &middot; double-click to reset</div>
+        </div>
+        <div class="control-bar">
+            <div class="caption-overlay" id="imageCaption"></div>
+            <div class="strip-container" id="thumbStrip"></div>
+        </div>
+    </div>
+
+    <script>
+        /* --- DATA (colour-ordered) --- */
+        const projectImages = [
+            { id: 1, large: "gallery/large/Week_1_D5_Render_Iterations_Urns_1.jpg", thumb: "gallery/thumbs/Week_1_D5_Render_Iterations_Urns_1.jpg", w: 3840, h: 2160, desc: "Urns - Week 1" },
+            { id: 2, large: "gallery/large/Copy_of_werkkamer_render.jpg", thumb: "gallery/thumbs/Copy_of_werkkamer_render.jpg", w: 1920, h: 1080, desc: "Study" },
+            { id: 3, large: "gallery/large/Week_2_D5_Render_Iterations_Render_poging_3_Scene_2.jpg", thumb: "gallery/thumbs/Week_2_D5_Render_Iterations_Render_poging_3_Scene_2.jpg", w: 3840, h: 2160, desc: "Scene 2 - Week 2" },
+            { id: 4, large: "gallery/large/Week_1_D5_Render_Iterations_Sketch_to_Render_2_Image.jpg", thumb: "gallery/thumbs/Week_1_D5_Render_Iterations_Sketch_to_Render_2_Image.jpg", w: 3840, h: 2160, desc: "Sketch to Render - Study - Week 1" },
+            { id: 5, large: "gallery/large/Image7_002.jpg", thumb: "gallery/thumbs/Image7_002.jpg", w: 3840, h: 2160, desc: "Interior Study" },
+            { id: 6, large: "gallery/large/Week_9_Products_Render_Hero_2_outside.jpg", thumb: "gallery/thumbs/Week_9_Products_Render_Hero_2_outside.jpg", w: 3840, h: 1712, desc: "Product Hero - Exterior - Week 9" },
+            { id: 7, large: "gallery/large/Copy_of_gang_render_1.jpg", thumb: "gallery/thumbs/Copy_of_gang_render_1.jpg", w: 1920, h: 1080, desc: "Hallway" },
+            { id: 8, large: "gallery/large/Copy_of_keuken_1.jpg", thumb: "gallery/thumbs/Copy_of_keuken_1.jpg", w: 1920, h: 1080, desc: "Kitchen" },
+            { id: 9, large: "gallery/large/Week_5_D5_Render_Iterations_Poging_4_Scene_1_3_upscale02.jpg", thumb: "gallery/thumbs/Week_5_D5_Render_Iterations_Poging_4_Scene_1_3_upscale02.jpg", w: 5760, h: 2565, desc: "Scene 1 - Week 5" },
+            { id: 10, large: "gallery/large/Week_4_Products_Render_1.jpg", thumb: "gallery/thumbs/Week_4_Products_Render_1.jpg", w: 5760, h: 4320, desc: "Product Render - Week 4" },
+            { id: 11, large: "gallery/large/Copy_of_woonkamer.jpg", thumb: "gallery/thumbs/Copy_of_woonkamer.jpg", w: 1920, h: 1080, desc: "Living Room" },
+            { id: 12, large: "gallery/large/Week_1_D5_Render_Iterations_Sketch_to_Render_1_Scene_1.jpg", thumb: "gallery/thumbs/Week_1_D5_Render_Iterations_Sketch_to_Render_1_Scene_1.jpg", w: 3840, h: 1711, desc: "Sketch to Render - Scene 1 - Week 1" },
+            { id: 13, large: "gallery/large/Week_9_Products_Render_hero_1_Scene_1.jpg", thumb: "gallery/thumbs/Week_9_Products_Render_hero_1_Scene_1.jpg", w: 3840, h: 3840, desc: "Product Hero - Interior - Week 9" },
+            { id: 14, large: "gallery/large/Week_5_D5_Render_Iterations_poging_2_Scene_1.jpg", thumb: "gallery/thumbs/Week_5_D5_Render_Iterations_poging_2_Scene_1.jpg", w: 5760, h: 2565, desc: "Scene 1 - Week 5" },
+            { id: 15, large: "gallery/large/Copy_of_badkamer_render.jpg", thumb: "gallery/thumbs/Copy_of_badkamer_render.jpg", w: 1920, h: 1080, desc: "Bathroom" },
+            { id: 16, large: "gallery/large/Image_1.jpg", thumb: "gallery/thumbs/Image_1.jpg", w: 3840, h: 2963, desc: "Interior Scene" },
+            { id: 17, large: "gallery/large/Scene_1_upscale02.jpg", thumb: "gallery/thumbs/Scene_1_upscale02.jpg", w: 3840, h: 3840, desc: "Scene 1" },
+        ];
+
+        let currentIndex = 0;
+
+        const feedContent = document.getElementById('feedContent');
+        const modal   = document.getElementById('modal');
+        const mainImg = document.getElementById('mainImage');
+        const caption = document.getElementById('imageCaption');
+        const strip   = document.getElementById('thumbStrip');
+        const stage   = document.getElementById('stageArea');
+        const zoomLevel = document.getElementById('zoomLevel');
+        const miniMap = document.getElementById('miniMap');
+        const miniImg = document.getElementById('miniMapImg');
+        const miniVP  = document.getElementById('miniMapVP');
+
+        window.onload = renderFeed;
+
+        function renderFeed() {
+            feedContent.innerHTML = '';
+            projectImages.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'gallery-thumb';
+                div.style.aspectRatio = item.w + ' / ' + item.h;
+                div.innerHTML =
+                    '<img src="' + item.thumb + '" loading="lazy" alt="Render ' + (index + 1) + '">' +
+                    '<div class="thumb-cap">' + item.desc + '</div>';
+                div.onclick = () => openModal(index);
+                feedContent.appendChild(div);
+            });
+        }
+
+        /* --- MODAL --- */
+        function openModal(index) {
+            currentIndex = index;
+            updateModalContent();
+            renderStrip();
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            resetZoom();
+            document.body.style.overflow = '';
+        }
+
+        function updateModalContent() {
+            const data = projectImages[currentIndex];
+            resetZoom();
+            mainImg.src = data.large;
+            caption.innerText = data.desc;
+            miniImg.src = data.thumb;
+
+            document.querySelectorAll('.strip-thumb').forEach((t, i) => {
+                t.classList.toggle('active', i === currentIndex);
+            });
+            const activeStrip = document.querySelector('.strip-thumb.active');
+            if (activeStrip) activeStrip.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+
+            mainImg.onload = () => { if (z.scale > 1) updateMiniMap(); };
+        }
+
+        function renderStrip() {
+            strip.innerHTML = '';
+            projectImages.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'strip-thumb' + (idx === currentIndex ? ' active' : '');
+                div.innerHTML = '<img src="' + item.thumb + '" alt="">';
+                div.onclick = () => { currentIndex = idx; updateModalContent(); };
+                strip.appendChild(div);
+            });
+        }
+
+        function changeSlide(dir) {
+            currentIndex += dir;
+            if (currentIndex < 0) currentIndex = projectImages.length - 1;
+            if (currentIndex >= projectImages.length) currentIndex = 0;
+            updateModalContent();
+        }
+
+        /* --- ZOOM & PAN (translate + scale, cursor-anchored) --- */
+        let z = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+
+        function applyTransform() {
+            mainImg.style.transform = 'translate(' + z.pointX + 'px,' + z.pointY + 'px) scale(' + z.scale + ')';
+            zoomLevel.textContent = Math.round(z.scale * 100) + '%';
+            mainImg.classList.toggle('zoomed', z.scale !== 1);
+            if (z.scale > 1) { miniMap.style.display = 'block'; updateMiniMap(); }
+            else { miniMap.style.display = 'none'; }
+        }
+
+        function resetZoom() {
+            z = { scale: 1, panning: false, pointX: 0, pointY: 0, startX: 0, startY: 0 };
+            mainImg.style.transform = 'translate(0px,0px) scale(1)';
+            mainImg.classList.remove('zoomed');
+            zoomLevel.textContent = '100%';
+            miniMap.style.display = 'none';
+        }
+
+        function zoomAtCursor(clientX, clientY, newScale) {
+            const rect = mainImg.getBoundingClientRect();
+            if (!rect.width) return;
+            const naturalW = rect.width / z.scale;
+            const naturalH = rect.height / z.scale;
+            const cX = rect.left + rect.width / 2 - z.pointX;
+            const cY = rect.top + rect.height / 2 - z.pointY;
+            const fx = (clientX - rect.left) / rect.width;
+            const fy = (clientY - rect.top) / rect.height;
+            z.scale = Math.max(1, Math.min(8, newScale));
+            if (z.scale === 1) { resetZoom(); return; }
+            z.pointX = clientX + naturalW * z.scale * (0.5 - fx) - cX;
+            z.pointY = clientY + naturalH * z.scale * (0.5 - fy) - cY;
+            applyTransform();
+        }
+
+        function updateMiniMap() {
+            const r = mainImg.getBoundingClientRect();
+            const v = stage.getBoundingClientRect();
+            const mmW = miniMap.clientWidth;
+            if (!r.width || !mmW) return;
+            const mmH = Math.round(mmW * r.height / r.width);
+            miniMap.style.height = mmH + 'px';
+            const sx = mmW / r.width, sy = mmH / r.height;
+            const l = Math.max(0, v.left - r.left);
+            const t = Math.max(0, v.top - r.top);
+            const rr = Math.min(r.width, v.right - r.left);
+            const bb = Math.min(r.height, v.bottom - r.top);
+            miniVP.style.left = (l * sx) + 'px';
+            miniVP.style.top = (t * sy) + 'px';
+            miniVP.style.width = Math.max(4, (rr - l) * sx) + 'px';
+            miniVP.style.height = Math.max(4, (bb - t) * sy) + 'px';
+        }
+
+        /* wheel zoom */
+        stage.addEventListener('wheel', (e) => {
+            if (!modal.classList.contains('active')) return;
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+            zoomAtCursor(e.clientX, e.clientY, z.scale * factor);
+        }, { passive: false });
+
+        /* click to toggle zoom (ignore drags) */
+        let downPos = null, moved = false;
+        stage.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('nav-arrow')) return;
+            downPos = { x: e.clientX, y: e.clientY };
+            moved = false;
+            if (z.scale > 1) {
+                z.panning = true;
+                z.startX = e.clientX - z.pointX;
+                z.startY = e.clientY - z.pointY;
+            }
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (downPos && (Math.abs(e.clientX - downPos.x) > 3 || Math.abs(e.clientY - downPos.y) > 3)) moved = true;
+            if (!z.panning) return;
+            z.pointX = e.clientX - z.startX;
+            z.pointY = e.clientY - z.startY;
+            applyTransform();
+        });
+        window.addEventListener('mouseup', () => { z.panning = false; downPos = null; });
+
+        stage.addEventListener('click', (e) => {
+            if (e.target.classList.contains('nav-arrow')) return;
+            if (moved) return;               // was a drag, not a click
+            if (z.scale === 1) zoomAtCursor(e.clientX, e.clientY, 2.5);
+            else resetZoom();
+        });
+
+        stage.addEventListener('dblclick', () => resetZoom());
+
+        /* touch: pinch zoom + drag pan */
+        let lastDist = null, lastMid = null;
+        stage.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastDist = Math.hypot(dx, dy);
+                lastMid = { x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
+            } else if (e.touches.length === 1 && z.scale > 1) {
+                z.panning = true;
+                z.startX = e.touches[0].clientX - z.pointX;
+                z.startY = e.touches[0].clientY - z.pointY;
+            }
+        }, { passive: true });
+        stage.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.hypot(dx, dy);
+                if (lastDist) zoomAtCursor(lastMid.x, lastMid.y, z.scale * dist / lastDist);
+                lastDist = dist;
+                lastMid = { x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
+            } else if (e.touches.length === 1 && z.panning) {
+                e.preventDefault();
+                z.pointX = e.touches[0].clientX - z.startX;
+                z.pointY = e.touches[0].clientY - z.startY;
+                applyTransform();
+            }
+        }, { passive: false });
+        stage.addEventListener('touchend', (e) => { if (e.touches.length === 0) { z.panning = false; lastDist = null; } });
+
+        /* keyboard */
+        document.addEventListener('keydown', (e) => {
+            if (!modal.classList.contains('active')) return;
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

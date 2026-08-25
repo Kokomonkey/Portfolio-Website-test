@@ -201,6 +201,10 @@
             .square-text { font-size: 1rem; }
             .project-info p { font-size: 0.8rem; }
         }
+        /* RENDERS CARD */
+        .renders-card .square-img { filter: grayscale(100%); }
+        .renders-card:hover .square-img { filter: none; transform: scale(1.08); }
+
     </style>
 </head>
 <body>
@@ -259,6 +263,16 @@
                 </div>
             </a>
 
+            <a href="pages/Renders/renders.html" class="grid-item renders-card">
+                <div class="square">
+                    <img src="pages/Renders/gallery/thumbs/Week_9_Products_Render_hero_1_Scene_1.jpg" alt="Renders" class="square-img">
+                    <span class="square-text">Renders</span>
+                </div>
+                <div class="project-info">
+                    <p>Douwe Does Design <br> A collected gallery of architectural renders, ordered by colour.</p>
+                </div>
+            </a>
+
             <div onclick="openPopup(event)" class="grid-item">
                 <div class="square">
                     <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
@@ -266,16 +280,6 @@
                 </div>
                 <div class="project-info">
                     <p>A hand drawn urban anasysis of Berlins's 'Stalin Allee' and 'Hansaviertel'</p>
-                </div>
-            </div>
-
-            <div onclick="openPopup(event)" class="grid-item">
-                <div class="square">
-                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
-                    <span class="square-text">Coming Soon</span>
-                </div>
-                <div class="project-info">
-                    <p>This project slot is currently reserved for future developments.</p>
                 </div>
             </div>
 
