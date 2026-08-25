@@ -106,6 +106,17 @@
         paint-order:stroke;stroke:#0b0c0e;stroke-width:2.4px;stroke-linejoin:round}
     .node.leaf text{display:none}
     .node.showlabel text{display:block}
+    /* enterprise demo states */
+    .node.intercept circle{stroke:#5aa9e6;stroke-width:3px}
+    .node.excluded{opacity:.08}
+    .ent-pitch{margin-top:12px;border-left:2px solid var(--accent-2);background:rgba(224,165,43,.06);padding:8px 10px;font-size:10.5px;line-height:1.55;color:var(--dim)}
+    .ent-pitch b{color:var(--accent-2)}
+    .ent-pitch .uc{display:block;color:var(--fg);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+    .rag-answer{margin-top:8px;font-size:11px;line-height:1.55;color:var(--fg);background:#0b0c0e;border:1px solid var(--line);padding:9px 10px}
+    .rag-answer .cite{color:var(--accent-2);font-weight:bold}
+    .rag-q{font-size:11px;color:var(--fg);font-style:italic;margin:4px 0 8px;line-height:1.4}
+    .impact-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin:4px 0}
+    .impact-row b{color:var(--fg)}
 
     /* ---------- tooltip / dossier ---------- */
     #dossier{
@@ -165,11 +176,18 @@
     <!-- ================= CONTROL PANEL ================= -->
     <aside class="panel">
         <div class="p-sec">
-            <div class="p-label">Overseer's Console — Lens</div>
+            <div class="p-label">Analyst lenses</div>
             <div class="modes">
                 <button class="mode-btn active" data-mode="explore">Explore</button>
                 <button class="mode-btn" data-mode="clusters">Clusters</button>
                 <button class="mode-btn" data-mode="pathfinder">Pathfind</button>
+            </div>
+            <div class="p-label" style="margin-top:10px">Enterprise demos</div>
+            <div class="modes">
+                <button class="mode-btn" data-mode="graphrag">RAG</button>
+                <button class="mode-btn" data-mode="breach">Breach</button>
+                <button class="mode-btn" data-mode="threats">Threats</button>
+                <button class="mode-btn" data-mode="central">Key</button>
             </div>
             <div class="mode-desc" id="modeDesc"></div>
         </div>
@@ -206,6 +224,50 @@
             <div class="hoplist" id="hoplist"></div>
         </div>
 
+        <div class="p-sec" id="ctlGraphRAG" style="display:none">
+            <div class="p-label">Query subject</div>
+            <select class="ctl" id="ragSubject"></select>
+            <div class="p-label" style="margin-top:6px">Context size · <span id="ragKval">6</span></div>
+            <input type="range" id="ragK" min="3" max="12" step="1" value="6" style="width:100%">
+            <button class="btn warn" id="btnRunRag" style="margin-top:8px">Run retrieval</button>
+            <div class="hoplist" id="ragOut"></div>
+            <div class="ent-pitch"><span class="uc">Enterprise use case · GraphRAG</span>How an AI traverses a <b>Databricks</b> knowledge graph — hopping across linked records to gather context <b>before</b> generating an answer, instead of a flat vector search.</div>
+        </div>
+
+        <div class="p-sec" id="ctlBreach" style="display:none">
+            <div class="p-label">Breach origin</div>
+            <select class="ctl" id="breachOrigin"></select>
+            <div class="p-label" style="margin-top:6px">Severity · <span id="breachDval">10</span> / 10 hops</div>
+            <input type="range" id="breachDepth" min="1" max="10" step="1" value="10" style="width:100%">
+            <button class="btn warn" id="btnRunBreach" style="margin-top:8px">Trigger breach</button>
+            <div id="breachOut" style="margin-top:10px"></div>
+            <div class="ent-pitch"><span class="uc">Enterprise use case · Blast radius</span>Rippling a node's neighbourhood to see what's impacted is the same math for <b>supply-chain</b> and IT-topology <b>single-point-of-failure</b> analysis.</div>
+        </div>
+
+        <div class="p-sec" id="ctlThreats" style="display:none">
+            <div class="p-label">Faction A</div>
+            <select class="ctl" id="threatA"></select>
+            <div class="p-label">Faction B</div>
+            <select class="ctl" id="threatB"></select>
+            <button class="btn warn" id="btnRunThreats">Trace hidden link</button>
+            <button class="btn" id="btnAutoRing" style="margin-top:6px">⟳ Auto-detect ring (sampled)</button>
+            <div class="p-label" style="margin-top:6px">Random samples · <span id="ringSval">600</span></div>
+            <input type="range" id="ringSamples" min="100" max="2000" step="100" value="600" style="width:100%">
+            <div class="hoplist" id="threatOut"></div>
+            <div class="ent-pitch"><span class="uc">Enterprise use case · Fraud rings</span><b>Auto-detect</b> randomly samples pairs of <b>unconnected</b> nodes and scores their <b>shared neighbours</b> (Adamic-Adar, so mega-hubs are discounted) — exactly how banks use <b>GraphFrames</b> to surface fraud rings between accounts that never transact directly.</div>
+        </div>
+
+        <div class="p-sec" id="ctlCentral" style="display:none">
+            <div class="p-label">Rank by</div>
+            <select class="ctl" id="centralBy">
+                <option value="pagerank">Influence · PageRank</option>
+                <option value="degree">Connections · degree</option>
+            </select>
+            <button class="btn warn" id="btnRunCentral">Rank players</button>
+            <div class="hoplist" id="centralOut"></div>
+            <div class="ent-pitch"><span class="uc">Enterprise use case · Critical assets</span>Degree centrality surfaces the <b>critical few</b> — the vendors, servers or accounts whose failure cascades furthest.</div>
+        </div>
+
         <div class="p-sec">
             <div class="p-label">Dataset</div>
             <div class="stat-row"><span>Displayed</span><b id="statNodes">0</b></div>
@@ -214,8 +276,9 @@
             <div class="stat-row"><span>Source</span><b id="statSource">Contained</b></div>
             <button class="btn warn" id="btnLoadAll">⇊ Load full corpus</button>
             <div id="displayCtl" style="display:none;margin-top:12px">
-                <div class="p-label">Show top <span id="dispVal">350</span> by links</div>
-                <input type="range" id="dispSlider" min="100" max="1000" step="50" value="350">
+                <div class="p-label">Show top <span id="dispVal">1000</span> by links</div>
+                <input type="range" id="dispSlider" min="1000" max="20000" step="500" value="1000">
+                <div class="mode-desc" style="margin-top:6px">Above ~2500 the SVG gets heavy — it renders the most-connected core first.</div>
                 <button class="btn" id="btnResetData" style="margin-top:10px">Reset to curated set</button>
             </div>
             <div id="loadLog" class="loadlog"></div>
@@ -336,6 +399,10 @@
     let labelThreshold = 4;           // min degree to show a label
     let visible = new Set();          // explore mode
     let pathNodes = new Set(), pathLinks = new Set();
+    // enterprise demo state
+    let breachLevel = new Map(), breachLinks = new Set();
+    let threatExclude = new Set();
+    const THREAT_HUBS = new Set(["foundation","o5","site-19","mtf-e11","mtf-a1"]);
 
     // ---------- live corpus ----------
     const API_BASE = "https://scp-data.tedivm.com";
@@ -411,19 +478,31 @@
     }
 
     // ================= MODE STYLING =================
+    function breachColor(level, d){
+        if(d.type==="goi") return "#5aa9e6";                 // GOIs mobilise to intercept
+        const cols=["#ff3b30","#ff7a1a","#ffb300","#ffd95e","#ffe9a8"];
+        return cols[Math.min(level, cols.length-1)];
+    }
     function applyModeStyles(){
-        // reset
-        nodeSel.classed("dim", false).classed("path", false);
-        linkSel.classed("path", false).classed("hl", false);
+        nodeSel.classed("dim",false).classed("path",false).classed("intercept",false).classed("excluded",false);
+        linkSel.classed("path",false).classed("hl",false);
 
-        if(mode === "pathfinder"){
-            const hasPath = pathNodes.size > 0;
-            nodeSel.classed("dim", d => hasPath && !pathNodes.has(d.id));
+        const PATHY = mode==="pathfinder"||mode==="graphrag"||mode==="threats"||mode==="central";
+        if(PATHY){
+            const has = pathNodes.size>0;
+            nodeSel.classed("dim", d => has && !pathNodes.has(d.id));
             nodeSel.classed("path", d => pathNodes.has(d.id));
-            linkSel.classed("path", d=>{
-                const s=d.source.id||d.source, t=d.target.id||d.target;
-                return pathLinks.has(s+"|"+t) || pathLinks.has(t+"|"+s);
-            });
+            linkSel.classed("path", d=>{ const s=d.source.id||d.source, t=d.target.id||d.target; return pathLinks.has(s+"|"+t)||pathLinks.has(t+"|"+s); });
+            if(mode==="threats") nodeSel.classed("excluded", d => threatExclude.has(d.id) && !pathNodes.has(d.id));
+            nodeSel.select("circle").attr("fill", d=>nodeColor(d, colorBy));
+        } else if(mode==="breach"){
+            const has = breachLevel.size>0;
+            nodeSel.classed("dim", d => has && !breachLevel.has(d.id));
+            nodeSel.classed("intercept", d => breachLevel.has(d.id) && d.type==="goi");
+            nodeSel.select("circle").attr("fill", d => breachLevel.has(d.id) ? breachColor(breachLevel.get(d.id), d) : nodeColor(d, colorBy));
+            linkSel.classed("path", d=>{ const s=d.source.id||d.source, t=d.target.id||d.target; return breachLinks.has(s+"|"+t)||breachLinks.has(t+"|"+s); });
+        } else {
+            nodeSel.select("circle").attr("fill", d=>nodeColor(d, colorBy));  // explore / clusters
         }
     }
 
@@ -433,7 +512,9 @@
         const count = nodes.length;
         const big = count > 180;
         sim.force("link").distance(big ? 34 : 70).strength(big ? 0.35 : 0.5);
-        sim.force("collide").radius(d=>radius(d) + (big ? 1.5 : 4));
+        // ONLY change from the version you liked: a fatter collision bubble (+ 2 iterations) so
+        // densely-clustered nodes keep a little more distance — gravity/charge/centering untouched.
+        sim.force("collide").radius(d=>radius(d) + (big ? 6 : 4)).iterations(2);
         if(mode === "clusters"){
             // arrange group anchors on a circle, pull members toward them
             const groups = Array.from(new Set(nodes.map(n=>n.group)));
@@ -462,13 +543,18 @@
             for(const nb of (adj.get(d.id)||new Set())){ if(!visible.has(nb)){ visible.add(nb); if(++added>=80) break; } }
             if(added){ render(true); } else { toast("No further connections from "+d.label); }
         } else if(mode === "pathfinder"){
-            // clicking sets endpoints: first click = from, second = to
-            const from = document.getElementById("pathFrom");
-            const to = document.getElementById("pathTo");
+            const from = document.getElementById("pathFrom"), to = document.getElementById("pathTo");
             if(!clickPick || clickPick==="to"){ from.value = d.id; clickPick="from"; toast("From: "+d.label); }
             else { to.value = d.id; clickPick="to"; toast("To: "+d.label); }
-        } else {
-            // clusters: highlight this node's group
+        } else if(mode === "graphrag"){
+            document.getElementById("ragSubject").value = d.id; runGraphRAG();
+        } else if(mode === "breach"){
+            document.getElementById("breachOrigin").value = d.id; runBreach();
+        } else if(mode === "threats"){
+            const A=document.getElementById("threatA"), B=document.getElementById("threatB");
+            if(!clickPick || clickPick==="B"){ A.value=d.id; clickPick="A"; toast("Faction A: "+d.label); }
+            else { B.value=d.id; clickPick="B"; runThreats(); }
+        } else if(mode === "clusters"){
             focusGroup(d.group);
         }
     }
@@ -561,6 +647,167 @@
         return l ? ("→ "+l.rel) : "→ linked";
     }
 
+    // ================= ENTERPRISE DEMOS =================
+    function nodeById(id){ return nodes.find(n=>n.id===id); }
+    function fillNodeSelect(el, filterFn, defId){
+        if(!el) return;
+        const list = nodes.filter(filterFn).sort((a,b)=>a.label.localeCompare(b.label));
+        const prev = el.value;
+        el.innerHTML = list.map(n=>`<option value="${n.id}">${n.label}${n.title?" — "+n.title:""}</option>`).join("");
+        if(defId && nodes.some(n=>n.id===defId)) el.value=defId;
+        else if(prev && list.some(n=>n.id===prev)) el.value=prev;
+    }
+    function bfsLevels(src){
+        const dist=new Map([[src,0]]); const q=[src]; const tree=new Set();
+        while(q.length){ const c=q.shift(); for(const nb of (adj.get(c)||[])){ if(!dist.has(nb)){ dist.set(nb,dist.get(c)+1); tree.add(c+"|"+nb); q.push(nb); } } }
+        return {dist, tree};
+    }
+    function bfsExcluding(src,dst,excl){
+        if(src===dst) return [src];
+        const q=[src], prev={}; prev[src]=null;
+        while(q.length){ const c=q.shift();
+            for(const nb of (adj.get(c)||[])){ if(excl.has(nb) && nb!==dst) continue;
+                if(!(nb in prev)){ prev[nb]=c; if(nb===dst){ const p=[nb]; let x=c; while(x!==null){ p.unshift(x); x=prev[x]; } return p; } q.push(nb); } } }
+        return null;
+    }
+
+    function linksWithin(set){ const out=new Set(); links.forEach(l=>{ const s=l.source.id||l.source, t=l.target.id||l.target; if(set.has(s)&&set.has(t)) out.add(s+"|"+t); }); return out; }
+    function aa(w){ return 1/Math.log2((degree[w]||1)+2); }   // Adamic-Adar weight (discounts hubs)
+
+    // 1 · GraphRAG — 2-hop retrieval, ranked by closeness × specificity, then "generate"
+    function runGraphRAG(){
+        const subj=document.getElementById("ragSubject").value, sn=nodeById(subj); if(!sn) return;
+        const K=+(document.getElementById("ragK")||{value:6}).value;
+        // gather up to 2 hops with distance
+        const hop=new Map([[subj,0]]); const q=[subj];
+        while(q.length){ const c=q.shift(); if(hop.get(c)>=2) continue; for(const nb of (adj.get(c)||[])){ if(!hop.has(nb)){ hop.set(nb,hop.get(c)+1); q.push(nb); } } }
+        hop.delete(subj);
+        // relevance = close (low hop) AND specific (low degree beats generic hubs)
+        const ctx=[...hop.keys()].map(nodeById).filter(Boolean)
+            .map(n=>({n, hop:hop.get(n.id), score:(1/hop.get(n.id))*aa(n.id)}))
+            .sort((a,b)=>b.score-a.score).slice(0,K);
+        const que = sn.type==="scp" ? `How do we contain ${sn.label}?` : `What do we know about ${sn.label}?`;
+        pathNodes=new Set([subj]); pathLinks=new Set();
+        const out=document.getElementById("ragOut");
+        let i=0;
+        (function step(){
+            if(i>=ctx.length){ synth(); return; }
+            pathNodes.add(ctx[i].n.id); pathLinks=linksWithin(pathNodes); applyModeStyles();
+            out.innerHTML=`<div class="rag-q">“${que}”</div><div class="p-label">Retrieved context · ${i+1}/${ctx.length}</div>`+
+                ctx.slice(0,i+1).map((c,k)=>`<div class="hop"><span class="rel">[${k+1}] ${c.hop}-hop · rel ${c.score.toFixed(2)}</span><br>${c.n.label}${c.n.title?" · "+c.n.title:""}</div>`).join("");
+            i++; setTimeout(step,260);
+        })();
+        function synth(){
+            const cites=ctx.map((c,k)=>`${c.n.title||c.n.label}<span class="cite">[${k+1}]</span>`).join("; ");
+            const oneHop=ctx.filter(c=>c.hop===1).length;
+            out.innerHTML+=`<div class="p-label" style="margin-top:8px">Generated answer</div>`+
+                `<div class="rag-answer">Addressing <b>${sn.label}</b> assembled <b>${ctx.length}</b> records across <b>2 hops</b> (${oneHop} direct, ${ctx.length-oneHop} inferred) — ${cites}. Ranking by closeness × specificity keeps generic hubs out of the context window, so the answer stays grounded in the relevant records.</div>`;
+            toast("GraphRAG · "+ctx.length+" records, 2-hop");
+        }
+    }
+
+    // 2 · Containment breach — blast-radius ripple, capped by a severity slider
+    function runBreach(){
+        const origin=document.getElementById("breachOrigin").value; if(!nodeById(origin)) return;
+        const depth=+(document.getElementById("breachDepth")||{value:10}).value;
+        const {dist,tree}=bfsLevels(origin);
+        breachLevel=new Map(); breachLinks=new Set();
+        const byLevel={}; dist.forEach((d,id)=>{ if(d<=depth)(byLevel[d]=byLevel[d]||[]).push(id); });
+        const reach=[...dist.values()].filter(d=>d<=depth);
+        const maxL=Math.max(0,...reach);
+        const out=document.getElementById("breachOut");
+        let lvl=0;
+        (function wave(){
+            if(lvl>maxL){ toast("Breach mapped · "+breachLevel.size+" nodes impacted (severity "+depth+")"); return; }
+            (byLevel[lvl]||[]).forEach(id=>breachLevel.set(id,lvl));
+            tree.forEach(k=>{ const[a,b]=k.split("|"); if(breachLevel.has(a)&&breachLevel.has(b)) breachLinks.add(k); });
+            applyModeStyles();
+            const gois=[...breachLevel.keys()].filter(id=>{const n=nodeById(id);return n&&n.type==="goi";}).length;
+            const contained = nodes.length - breachLevel.size;
+            out.innerHTML=`<div class="impact-row"><span>Wave</span><b>${lvl} / ${maxL}</b></div>`+
+                `<div class="impact-row"><span>Nodes breached</span><b style="color:var(--accent)">${breachLevel.size}</b></div>`+
+                `<div class="impact-row"><span>Still contained</span><b>${contained}</b></div>`+
+                `<div class="impact-row"><span>GOIs mobilised</span><b style="color:#5aa9e6">${gois}</b></div>`;
+            lvl++; setTimeout(wave,480);
+        })();
+    }
+
+    // 2b · Threat auto-detect — random-sampled common-neighbour link prediction
+    function detectRing(){
+        const samples=+(document.getElementById("ringSamples")||{value:600}).value;
+        const ids=nodes.map(n=>n.id); if(ids.length<3) return;
+        let best=null;
+        for(let s=0;s<samples;s++){
+            const u=ids[(Math.random()*ids.length)|0], v=ids[(Math.random()*ids.length)|0];
+            if(u===v) continue;
+            const Nu=adj.get(u), Nv=adj.get(v);
+            if(!Nu||!Nv||Nu.has(v)) continue;               // must be UNCONNECTED
+            const small=Nu.size<Nv.size?Nu:Nv, big=small===Nu?Nv:Nu;
+            let score=0; const shared=[];
+            for(const w of small){ if(big.has(w)){ shared.push(w); score+=aa(w); } }
+            if(shared.length>=2 && (!best||score>best.score)) best={u,v,shared,score};
+        }
+        const out=document.getElementById("threatOut");
+        if(!best){ out.innerHTML='<div class="hop" style="color:var(--accent)">No suspicious pair in this sample — slide up the samples and retry.</div>'; toast("No ring found"); return; }
+        const A=document.getElementById("threatA"), B=document.getElementById("threatB");
+        if([...A.options].some(o=>o.value===best.u)) A.value=best.u;
+        if([...B.options].some(o=>o.value===best.v)) B.value=best.v;
+        pathNodes=new Set([best.u,best.v,...best.shared]); pathLinks=new Set();
+        best.shared.forEach(w=>{ pathLinks.add(best.u+"|"+w); pathLinks.add(best.v+"|"+w); });
+        threatExclude=new Set(); applyModeStyles();
+        const uN=nodeById(best.u), vN=nodeById(best.v);
+        out.innerHTML=`<div class="p-label">Suspicious pair · ${best.shared.length} shared links</div>`+
+            `<div class="rag-q">${uN.label} ⟺ ${vN.label} — never directly linked, yet joined through:</div>`+
+            best.shared.map(w=>{const n=nodeById(w);return `<div class="hop">${n?n.label:w}${n&&n.title?" · "+n.title:""}</div>`;}).join("")+
+            `<div class="impact-row" style="margin-top:6px"><span>Adamic-Adar score</span><b>${best.score.toFixed(2)}</b></div>`+
+            `<div class="impact-row"><span>Sampled pairs</span><b>${samples}</b></div>`;
+        toast("Hidden ring · "+best.shared.length+" shared links");
+    }
+
+    function pagerank(iter, damp){
+        iter=iter||40; damp=damp||0.85; const ids=nodes.map(n=>n.id), N=ids.length||1;
+        let pr={}; ids.forEach(id=>pr[id]=1/N);
+        for(let it=0; it<iter; it++){
+            const nx={}; ids.forEach(id=>nx[id]=(1-damp)/N);
+            let dangling=0;
+            ids.forEach(id=>{ const nb=[...(adj.get(id)||[])]; if(nb.length===0){ dangling+=pr[id]; return; } const sh=damp*pr[id]/nb.length; nb.forEach(j=>{ if(nx[j]!==undefined) nx[j]+=sh; }); });
+            if(dangling){ const add=damp*dangling/N; ids.forEach(id=>nx[id]+=add); }
+            pr=nx;
+        }
+        return pr;
+    }
+
+    // 3 · Threat detection — hidden link between rivals, Foundation hubs removed
+    function runThreats(){
+        const a=document.getElementById("threatA").value, b=document.getElementById("threatB").value;
+        threatExclude=new Set([...THREAT_HUBS].filter(id=>id!==a&&id!==b));
+        const path=bfsExcluding(a,b,threatExclude);
+        const out=document.getElementById("threatOut");
+        pathNodes=new Set(); pathLinks=new Set();
+        if(!path){ out.innerHTML='<div class="hop" style="color:var(--accent)">No hidden chain — the only link runs through Foundation hubs.</div>'; applyModeStyles(); return; }
+        let i=0;
+        (function step(){
+            if(i>=path.length){ toast("Hidden alliance · "+(path.length-1)+" hops"); return; }
+            pathNodes.add(path[i]); if(i>0) pathLinks.add(path[i-1]+"|"+path[i]); applyModeStyles();
+            out.innerHTML=`<div class="p-label">Hidden chain · ${path.length-1} hops (hubs removed)</div>`+
+                path.slice(0,i+1).map((id,k)=>{ const n=nodeById(id); return `<div class="hop"><span class="rel">${k>0?relBetween(path[k-1],id):"faction A"}</span><br>${n?n.label:id}${n&&n.title?" · "+n.title:""}</div>`; }).join("");
+            i++; setTimeout(step,440);
+        })();
+    }
+
+    // 4 · Key players — PageRank (influence) or raw degree
+    function runCentral(){
+        const by=(document.getElementById("centralBy")||{value:"pagerank"}).value;
+        let scoreOf, label, fmt;
+        if(by==="pagerank"){ const pr=pagerank(); scoreOf=id=>pr[id]||0; label="Influence · PageRank"; fmt=v=>(v*1000).toFixed(1); }
+        else { scoreOf=id=>degree[id]||0; label="Most-connected · degree"; fmt=v=>String(v); }
+        const ranked=nodes.slice().sort((a,b)=>scoreOf(b.id)-scoreOf(a.id)).slice(0,8);
+        pathNodes=new Set(ranked.map(n=>n.id)); pathLinks=new Set(); applyModeStyles();
+        document.getElementById("centralOut").innerHTML=`<div class="p-label">${label}</div>`+
+            ranked.map((n,k)=>`<div class="hop"><span class="rel">#${k+1} · ${fmt(scoreOf(n.id))}</span><br>${n.label}${n.title?" · "+n.title:""}</div>`).join("");
+        toast("Key players · "+(by==="pagerank"?"PageRank":"degree"));
+    }
+
     // ================= SEARCH =================
     document.getElementById("search").addEventListener("input", function(){
         const q=this.value.trim().toLowerCase();
@@ -589,24 +836,39 @@
     function setMode(m){
         mode=m; clickPick=null;
         document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===m));
-        document.getElementById("ctlExplore").style.display = m==="explore"?"block":"none";
-        document.getElementById("ctlClusters").style.display = m==="clusters"?"block":"none";
-        document.getElementById("ctlPath").style.display = m==="pathfinder"?"block":"none";
+        const PANELS={explore:"ctlExplore",clusters:"ctlClusters",pathfinder:"ctlPath",graphrag:"ctlGraphRAG",breach:"ctlBreach",threats:"ctlThreats",central:"ctlCentral"};
+        Object.values(PANELS).forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display="none"; });
+        if(PANELS[m]) document.getElementById(PANELS[m]).style.display="block";
         const desc={
             explore:"<b>Explore</b> — grow the graph by hand. Each click reveals a node's neighbourhood, so you feel how a knowledge graph is built from relationships.",
             clusters:"<b>Clusters</b> — show every node at once and colour by class or faction. Communities emerge from how the links pull related nodes together.",
-            pathfinder:"<b>Pathfind</b> — pick two anomalies; a breadth-first search traces the shortest chain of references between them."
+            pathfinder:"<b>Pathfind</b> — pick two anomalies; a breadth-first search traces the shortest chain of references between them.",
+            graphrag:"<b>GraphRAG</b> — watch an AI gather context by hopping across linked records before it answers, the way enterprise RAG traverses a graph instead of flat search.",
+            breach:"<b>Breach</b> — trigger a containment breach and watch the blast radius ripple outward wave by wave — a supply-chain failure model.",
+            threats:"<b>Threats</b> — with the Foundation hubs removed, trace the hidden multi-hop link between two rival factions — graph fraud detection.",
+            central:"<b>Key players</b> — rank nodes by connections to surface the critical, cascade-prone assets."
         };
-        document.getElementById("modeDesc").innerHTML=desc[m];
-        document.getElementById("hint").textContent =
-            m==="explore" ? "Click a node to reveal its links · drag to pan · scroll to zoom"
-          : m==="pathfinder" ? "Click two nodes to set endpoints, or use the dropdowns"
-          : "Click a node to isolate its cluster · drag to pan · scroll to zoom";
-        pathNodes=new Set(); pathLinks=new Set();
+        const hints={
+            explore:"Click a node to reveal its links · drag to pan · scroll to zoom",
+            clusters:"Click a node to isolate its cluster · drag to pan · scroll to zoom",
+            pathfinder:"Click two nodes to set endpoints, or use the dropdowns",
+            graphrag:"Click any node to make it the query subject",
+            breach:"Click any node to breach it · watch the waves spread",
+            threats:"Click two factions, or use the dropdowns",
+            central:"The critical few glow — everything else dims"
+        };
+        document.getElementById("modeDesc").innerHTML=desc[m]||"";
+        document.getElementById("hint").textContent=hints[m]||"drag to pan · scroll to zoom";
+        pathNodes=new Set(); pathLinks=new Set(); breachLevel=new Map(); breachLinks=new Set(); threatExclude=new Set();
         document.getElementById("search").value="";
         applyForces();
         render(true);
         if(m==="clusters") buildLegend();
+        // populate selects + auto-run the enterprise demos for an immediate payoff
+        if(m==="graphrag"){ fillNodeSelect(document.getElementById("ragSubject"), ()=>true, "scp-682"); setTimeout(runGraphRAG, 350); }
+        else if(m==="breach"){ fillNodeSelect(document.getElementById("breachOrigin"), ()=>true, "site-19"); setTimeout(runBreach, 350); }
+        else if(m==="threats"){ fillNodeSelect(document.getElementById("threatA"), n=>n.type==="goi", "goi-ci"); fillNodeSelect(document.getElementById("threatB"), n=>n.type==="goi", "goi-cotbg"); setTimeout(detectRing, 350); }
+        else if(m==="central"){ setTimeout(runCentral, 350); }
     }
 
     // ================= LEGEND =================
@@ -815,6 +1077,19 @@
     document.getElementById("btnExpandAll").onclick=()=>{ nodes.forEach(n=>visible.add(n.id)); render(true); toast("Full graph revealed"); };
     document.getElementById("btnReset").onclick=()=>{ resetExplore(); render(true); toast("Reset to SCP-682"); };
     document.getElementById("btnFindPath").onclick=findPath;
+    document.getElementById("btnRunRag").onclick=runGraphRAG;
+    document.getElementById("ragSubject").onchange=runGraphRAG;
+    document.getElementById("btnRunBreach").onclick=runBreach;
+    document.getElementById("breachOrigin").onchange=runBreach;
+    document.getElementById("btnRunThreats").onclick=runThreats;
+    document.getElementById("btnAutoRing").onclick=detectRing;
+    document.getElementById("btnRunCentral").onclick=runCentral;
+    document.getElementById("centralBy").onchange=runCentral;
+    (function(){
+        const rk=document.getElementById("ragK"); rk.oninput=()=>document.getElementById("ragKval").textContent=rk.value; rk.onchange=runGraphRAG;
+        const bd=document.getElementById("breachDepth"); bd.oninput=()=>document.getElementById("breachDval").textContent=bd.value; bd.onchange=runBreach;
+        const rs=document.getElementById("ringSamples"); rs.oninput=()=>document.getElementById("ringSval").textContent=rs.value;
+    })();
     document.getElementById("btnLoadAll").onclick=loadAll;
     document.getElementById("btnResetData").onclick=resetData;
     (function(){
