@@ -146,11 +146,11 @@
             display: flex; flex-direction: column; align-items: center; gap: 7px; white-space: nowrap;
         }
         .tag-main {
-            font-size: 15px; letter-spacing: 6px; text-transform: uppercase; font-weight: 700;
+            font-size: 21px; letter-spacing: 8px; text-transform: uppercase; font-weight: 700;
             color: #ffffff; text-shadow: 0 1px 12px rgba(0,0,0,0.7), 0 0 3px rgba(0,0,0,0.55);
         }
         .tag-sub {
-            font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+            font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
             color: rgba(255,255,255,0.9); text-shadow: 0 1px 9px rgba(0,0,0,0.65);
         }
 
@@ -381,6 +381,12 @@ const THUMBS = projectImages.map(p => p.thumb);
 // Which project each render belongs to (all are part of the Renders collection for now;
 // reassign per-render here to point a specific image at a specific project page).
 projectImages.forEach(p => { p.proj = 'Renders'; p.projHref = 'pages/Renders/renders.html'; });
+// Client-facing titles (edit these to rename a render everywhere it appears)
+const TITLES = ["Columbarium Hall","The Reading Room","Light-Filled Atrium","The Framed Courtyard",
+    "Dappled Passage","Threshold to the Sky","Corridor of Light","Timber Kitchen","The Overlook",
+    "Ceremonial Hall","Garden Lounge","The Reflecting Pool","Under the Oak","The Long Elevation",
+    "The Bath House","The Colonnade","Nocturne"];
+projectImages.forEach((p, i) => { p.desc = TITLES[i]; });
 
 const NAV = [
   { href:"projects.html",                              icon:"Projects.jpg",     label:"Projects" },
@@ -405,6 +411,7 @@ const smooth = p => { p = clamp(p,0,1); return p*p*(3-2*p); };
 const flowWall = document.getElementById('flowWall');
 let lanes = [];        // { x, w, cardW, speed, cards:[{el,y,h,idx}] }
 let bag = [];
+let hoverCard = null;  // the flow card currently under the cursor (its lane pauses)
 function drawFromBag() {
     if (!bag.length) {
         bag = projectImages.map((_, i) => i);
@@ -419,6 +426,7 @@ function makeCard(laneIdx) {
     const h = lane.cardW * im.h / im.w;
     const el = document.createElement('div');
     el.className = 'flow-card';
+    el.dataset.lane = laneIdx;
     el.style.width = lane.cardW + 'px';
     el.style.left = (lane.x + (lane.w - lane.cardW) / 2) + 'px';
     el.innerHTML = '<img src="' + im.thumb + '" alt=""><div class="flow-name">' + im.desc +
@@ -455,7 +463,10 @@ function flowTick(now) {
     const dt = Math.min(0.05, (now - lastFlow) / 1000);
     lastFlow = now;
     const H = window.innerHeight;
-    for (const lane of lanes) {
+    const hoveredLane = hoverCard ? parseInt(hoverCard.dataset.lane) : -1;
+    for (let li = 0; li < lanes.length; li++) {
+        const lane = lanes[li];
+        if (li === hoveredLane) continue;   // freeze the column while a card in it is hovered
         for (let k = lane.cards.length - 1; k >= 0; k--) {
             const c = lane.cards[k];
             c.y += lane.speed * dt;
@@ -466,7 +477,7 @@ function flowTick(now) {
         let topY = Infinity;
         for (const c of lane.cards) if (c.y < topY) topY = c.y;
         if (topY === Infinity || topY > (40 + Math.random() * 60)) {
-            const c = makeCard(lanes.indexOf(lane));
+            const c = makeCard(li);
             const newTop = (topY === Infinity ? H : topY);
             c.y = newTop - c.h - (40 + Math.random() * 120);
             c.el.style.transform = 'translateY(' + c.y + 'px)';
@@ -555,7 +566,8 @@ function update() {
     const g = (y <= INTRO) ? smooth(clamp((t - 0.84) / 0.16, 0, 1)) : 1;
     navLayer.style.opacity = g;
     navScrim.style.opacity = 0.30 * g;                 // lighter overlay
-    navLayer.style.pointerEvents = g > 0.1 ? 'auto' : 'none';
+    // only the grid tiles capture clicks; the rest of the layer passes through to the render wall
+    navGrid.style.pointerEvents = g > 0.1 ? 'auto' : 'none';
     visitorCounter.style.opacity = g;                  // counter appears with the grid
 
     for (let i = 0; i < tileEls.length; i++) {
@@ -694,7 +706,9 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
     document.addEventListener('mouseover', e => {
         if (e.target.closest('a,button,.flow-card,.strip-thumb,.close-modal,.nav-arrow')) hovering = true;
-        flowWall.classList.toggle('focus', !!(e.target.closest && e.target.closest('.flow-card')));
+        const card = (e.target.closest && e.target.closest('.flow-card')) || null;
+        hoverCard = card;                                  // pauses that card's lane
+        flowWall.classList.toggle('focus', !!card);
     });
     document.addEventListener('mouseout',  e => { if (e.target.closest('a,button,.flow-card,.strip-thumb,.close-modal,.nav-arrow')) hovering = false; });
 

@@ -258,6 +258,9 @@
             { id: 17, large: "gallery/large/Scene_1_upscale02.jpg", thumb: "gallery/thumbs/Scene_1_upscale02.jpg", w: 3840, h: 3840, desc: "Scene 1" },
         ];
 
+        const TITLES = ["Columbarium Hall", "The Reading Room", "Light-Filled Atrium", "The Framed Courtyard", "Dappled Passage", "Threshold to the Sky", "Corridor of Light", "Timber Kitchen", "The Overlook", "Ceremonial Hall", "Garden Lounge", "The Reflecting Pool", "Under the Oak", "The Long Elevation", "The Bath House", "The Colonnade", "Nocturne"];
+        projectImages.forEach((p, i) => { p.desc = TITLES[i]; });
+
         let currentIndex = 0;
 
         const feedContent = document.getElementById('feedContent');
