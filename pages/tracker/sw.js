@@ -1,5 +1,5 @@
 /* Kloef tracker — service worker (offline app shell) */
-const CACHE = "kloef-v1";
+const CACHE = "kloef-v2";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
@@ -11,6 +11,34 @@ self.addEventListener("activate", e => {
     caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
+});
+
+// tap a notification → focus or open the app
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then(cs => {
+    for (const c of cs) { if ("focus" in c) return c.focus(); }
+    if (clients.openWindow) return clients.openWindow("./");
+  }));
+});
+
+// browser-scheduled daily nudge (installed PWA on Android) — fires even when the app is closed
+self.addEventListener("periodicsync", e => {
+  if (e.tag === "kloef-reminder") {
+    e.waitUntil(self.registration.showNotification("Kloef", {
+      body: "Time to check in — plan your day and reset.",
+      icon: "icon-192.png", badge: "icon-192.png", tag: "kloef-daily"
+    }));
+  }
+});
+
+// future: true push via FCM (needs a server/Cloud Function to send)
+self.addEventListener("push", e => {
+  let d = { title: "Kloef", body: "Reminder" };
+  try { d = e.data.json(); } catch (_) { if (e.data) d.body = e.data.text(); }
+  e.waitUntil(self.registration.showNotification(d.title || "Kloef", {
+    body: d.body || "", icon: "icon-192.png", badge: "icon-192.png"
+  }));
 });
 
 self.addEventListener("fetch", e => {

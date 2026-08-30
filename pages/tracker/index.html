@@ -265,14 +265,29 @@
     nav.bottom{display:none}
     @media(max-width:720px){
         nav.side{display:none}
-        main.view{padding:16px 14px 78px}
-        .kb{grid-template-columns:1fr}
-        nav.bottom{display:flex;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--panel);
-            border-top:1px solid var(--line);z-index:50;justify-content:space-between;align-items:center;overflow-x:auto}
-        nav.bottom a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dim);text-decoration:none;font-size:9px;letter-spacing:.3px;cursor:pointer;padding:6px 9px;flex:0 0 auto}
-        nav.bottom a.on{color:var(--accent)}
-        nav.bottom a .i{font-size:17px}
+        /* notch-safe top bar */
+        .topbar{padding-top:env(safe-area-inset-top);height:calc(54px + env(safe-area-inset-top))}
         .topbar .date{display:none}
+        h1{font-size:13px}
+        main.view{padding:14px 13px calc(78px + env(safe-area-inset-bottom))}
+        .card{padding:14px 15px}
+        .kb{grid-template-columns:1fr}
+        /* notch-safe bottom nav, evenly spread, horizontally scrollable */
+        nav.bottom{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--panel);
+            border-top:1px solid var(--line);z-index:50;justify-content:space-between;align-items:center;overflow-x:auto;
+            height:calc(60px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom)}
+        nav.bottom a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dim);text-decoration:none;font-size:9px;letter-spacing:.3px;cursor:pointer;padding:8px 10px;flex:1 0 auto;min-width:56px}
+        nav.bottom a.on{color:var(--accent)}
+        nav.bottom a .i{font-size:18px}
+        /* stack add-forms so nothing overflows a narrow screen */
+        .addrow{flex-direction:column;align-items:stretch}
+        .addrow>*{width:100% !important}
+        /* bigger touch targets + no iOS focus-zoom */
+        .mini{font-size:16px;padding:6px 9px}
+        input.ipt,select.ipt,textarea.ipt,.search{font-size:16px}
+        .chk{width:22px;height:22px}
+        .bm-box,.tm-box{max-height:86vh;overflow-y:auto}
+        .reading-card{flex:0 0 100px}
     }
 </style>
 </head>
@@ -514,6 +529,8 @@ function migrate(){ S.errands=S.errands||[]; S.inbox=S.inbox||[]; S.dayPlan=S.da
     if(!S.commitMenu) S.commitMenu=["Violin — 10 min","Walk outside","Read a chapter","Sketch something","Push-ups","Message a friend"];
     S.urges=S.urges||[]; S.boundaryLog=S.boundaryLog||{};
     S.sprint=S.sprint||{active:false,start:null,end:null,projectIds:[]};
+    if(!S.settings.reminders) S.settings.reminders={enabled:false,morning:"08:30",evening:"21:00"};
+    S.settings.reminderLog=S.settings.reminderLog||{};
     // new task + library fields on existing data
     S.projects.forEach(p=>p.tasks.forEach(tk=>{ if(!tk.col)tk.col=tk.done?"done":"todo"; if(!tk.subtasks)tk.subtasks=[]; if(tk.notes===undefined)tk.notes=""; if(tk.link===undefined)tk.link=""; if(tk.due===undefined)tk.due=null; }));
     S.library.forEach(l=>{ if(l.progress===undefined)l.progress=l.status==="done"?100:0; if(l.rating===undefined)l.rating=0; });
@@ -1216,6 +1233,18 @@ function renderSettings(){
           <div class="small muted" style="margin-top:6px">Both auto-off if your system prefers reduced motion.</div>
         </div>
       </div>
+      <div class="card"><h3>Notifications <span class="pill">${notifSupported()?Notification.permission:"n/a"}</span></h3>
+        <p class="small muted" style="margin-bottom:10px">Gentle daily nudges to plan and reset. For reminders while the app is closed, install Kloef to your home screen (Android).</p>
+        ${!notifSupported()?`<div class="small muted">This browser can't show notifications.</div>`:
+          (Notification.permission!=="granted"
+            ? `<button class="btn acc" id="notifEnable">Enable notifications</button>`
+            : `<div class="togrow ${st.reminders.enabled?'on':''}" id="remTog"><span class="sw"></span>Daily reminders</div>
+               <div class="row" style="gap:16px;flex-wrap:wrap;margin-top:10px">
+                 <label class="small muted">Morning <input class="ipt" id="remMorning" type="time" value="${st.reminders.morning}" style="width:120px;display:inline-block"></label>
+                 <label class="small muted">Evening <input class="ipt" id="remEvening" type="time" value="${st.reminders.evening}" style="width:120px;display:inline-block"></label>
+               </div>
+               <button class="btn sm" id="notifTest" style="margin-top:10px">Send test</button>`)}
+      </div>
       <div class="card"><h3>Data</h3>
         <p class="small muted" style="margin-bottom:10px">Local-first: your data is saved in this browser. Use Export/Import to move it between PC and phone (cloud auto-sync coming next).</p>
         <div class="row" style="gap:8px"><button class="btn" id="expBtn">⬇ Export JSON</button>
@@ -1242,6 +1271,11 @@ function renderSettings(){
     el.querySelectorAll("[data-theme]").forEach(b=>b.onclick=()=>{ st.theme=b.dataset.theme; save(); applyTheme(); renderSettings(); if(st.theme==="scp") runBoot(); });
     const ta=el.querySelector("#togAnim"); if(ta) ta.onclick=()=>{ st.scpAnim=!st.scpAnim; save(); renderSettings(); };
     const tc=el.querySelector("#togCRT"); if(tc) tc.onclick=()=>{ st.scpCRT=!st.scpCRT; save(); applyTheme(); renderSettings(); };
+    const ne=el.querySelector("#notifEnable"); if(ne) ne.onclick=enableNotifs;
+    const nt=el.querySelector("#notifTest"); if(nt) nt.onclick=()=>showNotif("Kloef test 🔔","Reminders like this will show up."+competitionNudge(),true);
+    const rtog=el.querySelector("#remTog"); if(rtog) rtog.onclick=()=>{ st.reminders.enabled=!st.reminders.enabled; save(); renderSettings(); if(st.reminders.enabled) startReminders(); };
+    const rmm=el.querySelector("#remMorning"); if(rmm) rmm.onchange=e=>{ st.reminders.morning=e.target.value; save(); };
+    const rme=el.querySelector("#remEvening"); if(rme) rme.onchange=e=>{ st.reminders.evening=e.target.value; save(); };
     el.querySelector("#expBtn").onclick=exportData;
     el.querySelector("#impFile").onchange=importData;
     el.querySelector("#resetBtn").onclick=()=>{ if(confirm("Wipe all data and reload the starter plan?")){ S=seed(); commit(); } };
@@ -1375,6 +1409,40 @@ async function syncEnable(silent){
 }
 function syncDisable(){ sync.on=false; S.settings.syncEnabled=false; save(); toast("Cloud sync off"); renderSettings(); }
 
+/* ---------------- notifications / reminders ---------------- */
+function notifSupported(){ return "Notification" in window; }
+async function showNotif(title, body, silent){
+    try{
+        if(navigator.serviceWorker && navigator.serviceWorker.ready){ const reg=await navigator.serviceWorker.ready;
+            reg.showNotification(title,{ body, icon:"icon-192.png", badge:"icon-192.png", tag:"kloef", renotify:!silent }); }
+        else if(notifSupported() && Notification.permission==="granted"){ new Notification(title,{ body, icon:"icon-192.png" }); }
+    }catch(e){}
+}
+async function enableNotifs(){
+    if(!notifSupported()){ toast("Notifications not supported here"); return; }
+    const p=await Notification.requestPermission();
+    S.settings.reminders.enabled=(p==="granted"); save(); renderSettings();
+    if(p==="granted"){ registerPeriodicSync(); startReminders(); showNotif("Kloef","Notifications on — I'll nudge you to plan and reset.",true); }
+    else toast("Permission: "+p);
+}
+function competitionNudge(){ const c=S.projects.find(p=>p.deadline); if(!c) return ""; const n=daysUntil(c.deadline); return (n!=null&&n<=7)?` · ${c.name} in ${n<0?"overdue":n+"d"}`:""; }
+function reminderTick(){
+    const r=S.settings.reminders; if(!r||!r.enabled) return;
+    if(!notifSupported()||Notification.permission!=="granted") return;
+    const td=todayStr(), now=new Date(), hm=String(now.getHours()).padStart(2,'0')+":"+String(now.getMinutes()).padStart(2,'0');
+    S.settings.reminderLog[td]=S.settings.reminderLog[td]||{};
+    const fire=(key,time,title,body)=>{ if(time && hm>=time && !S.settings.reminderLog[td][key]){ S.settings.reminderLog[td][key]=true; save(); showNotif(title,body); } };
+    fire("morning", r.morning, "Good morning ☀️", "Set your Top 3 and glance at today's must-dos."+competitionNudge());
+    fire("evening", r.evening, "Evening check-in 🌙", "Plan tomorrow, log your focus, keep your boundaries."+competitionNudge());
+}
+let reminderIv=null;
+function startReminders(){ if(reminderIv) clearInterval(reminderIv); reminderTick(); reminderIv=setInterval(reminderTick, 60000); }
+async function registerPeriodicSync(){
+    try{ const reg=await navigator.serviceWorker.ready; if(reg && "periodicSync" in reg){
+        const st=await navigator.permissions.query({name:"periodic-background-sync"});
+        if(st.state==="granted"){ await reg.periodicSync.register("kloef-reminder",{ minInterval:12*60*60*1000 }); } } }catch(e){}
+}
+
 /* ---------------- theming ---------------- */
 function ensureCRT(){ if(!document.getElementById("crt")){ const c=document.createElement("div"); c.id="crt"; document.body.appendChild(c); } }
 function applyTheme(){
@@ -1409,7 +1477,8 @@ function runBoot(force){
 /* ---------------- gate + boot ---------------- */
 function unlock(){ document.getElementById("gate").style.display="none"; document.getElementById("app").style.display="flex";
     sessionStorage.setItem("kloefUnlocked","1"); if(!location.hash)location.hash="today"; applyTheme(); renderAll(); route(); runBoot();
-    if(S.settings && S.settings.syncEnabled) syncEnable(true); }
+    if(S.settings && S.settings.syncEnabled) syncEnable(true);
+    if(S.settings.reminders && S.settings.reminders.enabled){ startReminders(); registerPeriodicSync(); } }
 document.getElementById("gateInput").addEventListener("keydown",e=>{ if(e.key!=="Enter")return;
     if(e.target.value.trim().toLowerCase()==="kloef"){ unlock(); } else { document.getElementById("gateErr").textContent="nope."; e.target.value=""; } });
 
