@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../../Recourses/Logos/DDD.jpg">
+    <title>Thingamajigs | DouweDoesDesign</title>
+    <style>
+        :root {
+            --bg:#0a1628; --fg:#fff; --cyan:#00c8ff; --cyan-dim:rgba(0,200,255,0.18);
+            --grid-major:rgba(0,200,255,0.07); --grid-minor:rgba(0,200,255,0.025);
+            --speed:0.5s; --sq:20vh; --gap:2vh;
+        }
+        html { cursor:none; }
+        * { box-sizing:border-box; margin:0; padding:0; cursor:none !important; }
+        body {
+            background-color:var(--bg);
+            background-image:
+                linear-gradient(var(--grid-major) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(var(--grid-minor) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+            background-size:100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            color:var(--fg); font-family:'Courier New', Courier, monospace;
+            display:flex; flex-direction:column; align-items:center; height:100vh;
+            overflow:hidden; justify-content:center;
+        }
+        #cur-main { position:fixed; pointer-events:none; z-index:10001; top:0; left:0; width:1px; height:20px; background:rgba(255,255,255,0.92); will-change:transform; }
+        #cur-main::before { content:''; position:absolute; top:50%; left:50%; width:20px; height:1px; background:rgba(255,255,255,0.92); transform:translate(-50%,-50%); }
+        #cur-main::after { content:''; position:absolute; top:50%; left:50%; width:4px; height:4px; background:#fff; border-radius:50%; transform:translate(-50%,-50%); }
+        #cur-follow { position:fixed; pointer-events:none; z-index:10000; top:0; left:0; width:36px; height:36px; border:1px solid var(--cyan); opacity:0.75; will-change:transform,width,height; transition:width .15s ease,height .15s ease; }
+
+        .popup-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.88); z-index:2000; justify-content:center; align-items:center; padding:20px; backdrop-filter:blur(5px); }
+        .popup-box { background:var(--bg); border:1px solid var(--cyan); box-shadow:0 0 30px var(--cyan-dim); padding:30px; max-width:400px; text-align:center; animation:fadeIn .3s ease; }
+        .popup-box p { font-size:1rem; margin-bottom:20px; line-height:1.5; }
+        .close-btn { background:transparent; color:var(--cyan); border:1px solid var(--cyan); padding:10px 20px; font-family:inherit; font-weight:bold; text-transform:uppercase; transition:.3s; }
+        .close-btn:hover { background:var(--cyan); color:var(--bg); }
+        @keyframes fadeIn { from{opacity:0;transform:scale(.95);} to{opacity:1;transform:scale(1);} }
+
+        .back-btn { position:fixed; top:2vh; left:2vh; text-decoration:none; z-index:200; border:1px solid var(--cyan); background:transparent; color:var(--cyan); padding:1vh 2vh; font-family:inherit; font-weight:bold; text-transform:uppercase; font-size:1.5vh; letter-spacing:0.1vh; transition:all var(--speed) ease; }
+        .back-btn:hover { background:var(--cyan); color:var(--bg); }
+
+        header { height:15vh; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:2vh; margin-bottom:4vh; flex-shrink:0; }
+        .logo-placeholder { height:8vh; width:8vh; display:flex; justify-content:center; align-items:center; }
+        .logo-placeholder img { max-height:100%; width:auto; filter:invert(1); mix-blend-mode:screen; opacity:0.35; }
+        h1 { font-size:4vh; letter-spacing:0.5vh; text-transform:uppercase; font-weight:700; line-height:1; }
+        .subtitle { position:fixed; top:calc(15vh + 1vh); width:100%; text-align:center; color:var(--cyan); opacity:.6; font-size:1.4vh; letter-spacing:2px; text-transform:uppercase; }
+
+        main { display:flex; justify-content:center; align-items:center; flex-grow:1; width:100%; overflow-y:auto; }
+        .grid-container { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gap); width:fit-content; padding-bottom:20px; }
+
+        .grid-item { display:block; text-decoration:none; position:relative; width:var(--sq); height:var(--sq); opacity:0; animation:blueprintPlot .55s cubic-bezier(0.16,1,0.5,1) forwards; }
+        .grid-item:hover { z-index:100; }
+        .grid-item:nth-child(1){animation-delay:0s;} .grid-item:nth-child(2){animation-delay:.07s;} .grid-item:nth-child(3){animation-delay:.14s;}
+        @keyframes blueprintPlot { 0%{opacity:0;transform:scale(.9);} 40%{box-shadow:0 0 22px rgba(0,200,255,0.4);} 100%{opacity:1;transform:scale(1);box-shadow:none;} }
+
+        .square { width:100%; height:100%; background:rgba(10,22,40,0.9); border:1px solid rgba(255,255,255,0.22); display:flex; justify-content:center; align-items:center; transition:all var(--speed) cubic-bezier(0.25,1,0.5,1); position:absolute; top:0; left:0; z-index:2; }
+        .square-icon { width:50%; height:50%; background:var(--fg); transition:all var(--speed) ease; }
+        .square-text { position:absolute; bottom:8%; width:100%; text-align:center; color:var(--bg); font-weight:bold; text-transform:uppercase; font-size:calc(var(--sq)/9); opacity:0; transform:translateY(10px); transition:all var(--speed) ease; }
+
+        .project-info { width:100%; height:100%; position:absolute; top:0; left:0; background:var(--cyan); color:var(--bg); border:1px solid var(--cyan); display:flex; align-items:center; padding:1.5vh; opacity:0; z-index:1; pointer-events:none; transition:all var(--speed) cubic-bezier(0.25,1,0.5,1); }
+        .project-info p { font-size:1.3vh; line-height:1.4; text-align:left; overflow:hidden; color:var(--bg); font-weight:600; }
+
+        .square-img { width:100%; height:100%; object-fit:cover; object-position:center; display:block; filter:grayscale(100%); transition:all var(--speed) ease; }
+        .grid-item:hover .square-img { filter:none; transform:scale(1.08); }
+
+        .grid-item:hover .square { transform:translateX(-55%); background:var(--fg); border-color:var(--cyan); }
+        .grid-item:hover .project-info { transform:translateX(55%); opacity:1; pointer-events:auto; }
+        .grid-item:hover .square-icon { background:var(--bg); transform:translateY(-15%); }
+        .grid-item:hover .square-text { opacity:1; transform:translateY(0); }
+
+        @media (max-width:768px){
+            html{cursor:auto;} *{cursor:auto !important;} #cur-main,#cur-follow{display:none;}
+            body{height:auto; min-height:100vh; padding-bottom:50px; overflow-y:scroll;}
+            header{flex-direction:column; height:auto; margin-top:80px; gap:10px;}
+            .subtitle{position:static; margin-bottom:20px;}
+            .logo-placeholder{height:60px; width:60px;} h1{font-size:1.8rem; letter-spacing:2px;}
+            .grid-container{grid-template-columns:1fr; gap:40px;}
+            .grid-item{width:60vw; height:60vw; opacity:1; animation:none;}
+            .grid-item:hover .square{transform:translateX(-15%);} .grid-item:hover .project-info{transform:translateX(15%);}
+            .square-text{font-size:1rem;} .project-info p{font-size:0.8rem;}
+        }
+    </style>
+</head>
+<body>
+    <div id="cur-follow"></div>
+    <div id="cur-main"></div>
+
+    <a href="../../../projects.html" class="back-btn">← Back</a>
+
+    <header>
+        <div class="logo-placeholder"><img src="../../../Recourses/Logos/DDD.jpg" /></div>
+        <h1>Thingamajigs</h1>
+    </header>
+    <div class="subtitle">Buildings grown from small found objects</div>
+
+    <main>
+        <div class="grid-container">
+
+            <a href="thingamajig-1.html" class="grid-item">
+                <div class="square">
+                    <img src="../../Renders/gallery/thumbs/Thingamajig_Scene_1.jpg" alt="Thingamajig 1" class="square-img">
+                    <span class="square-text">Thingamajig 1</span>
+                </div>
+                <div class="project-info">
+                    <p>The Cliff Viewpoint <br> A cliff-edge restaurant &amp; lookout grown from a transparent plastic packaging clip.</p>
+                </div>
+            </a>
+
+            <div onclick="openPopup(event)" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Thingamajig 2</span>
+                </div>
+                <div class="project-info">
+                    <p>Coming soon — the next object waiting to become a building.</p>
+                </div>
+            </div>
+
+            <div onclick="openPopup(event)" class="grid-item">
+                <div class="square">
+                    <div class="square-icon" style="clip-path: circle(25% at 50% 50%);"></div>
+                    <span class="square-text">Thingamajig 3</span>
+                </div>
+                <div class="project-info">
+                    <p>Coming soon — the next object waiting to become a building.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="popup" class="popup-overlay">
+        <div class="popup-box">
+            <p>Not built yet — this Thingamajig is still on the workbench.</p>
+            <button class="close-btn" onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const c1 = document.getElementById('cur-main');
+            const c2 = document.getElementById('cur-follow');
+            if (!c1 || !c2) return;
+            let mx = innerWidth/2, my = innerHeight/2, fx = mx, fy = my, hov = false;
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX; my = e.clientY;
+                c1.style.transform = `translate(${mx-.5}px,${my-10}px)`;
+            });
+            (function loop() {
+                fx += (mx-fx)*.09; fy += (my-fy)*.09;
+                const s = hov ? 52 : 36;
+                c2.style.width = s+'px'; c2.style.height = s+'px';
+                c2.style.transform = `translate(${fx-s/2}px,${fy-s/2}px)`;
+                requestAnimationFrame(loop);
+            })();
+            document.querySelectorAll('a,button,.grid-item').forEach(el => {
+                el.addEventListener('mouseenter', () => hov = true);
+                el.addEventListener('mouseleave', () => hov = false);
+            });
+        })();
+        function openPopup(event){ event.preventDefault(); document.getElementById('popup').style.display='flex'; }
+        function closePopup(){ document.getElementById('popup').style.display='none'; }
+        document.getElementById('popup').addEventListener('click', function(e){ if(e.target===this) closePopup(); });
+    </script>
+</body>
+</html>

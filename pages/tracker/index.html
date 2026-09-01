@@ -49,6 +49,11 @@
     nav.side a:hover{background:var(--panel2);color:var(--fg)}
     nav.side a.on{background:var(--accent);color:#04120e;font-weight:600}
     nav.side a .i{width:18px;text-align:center}
+    nav.side .subnav{display:flex;flex-direction:column;gap:2px;margin:2px 0 6px 14px;padding-left:9px;border-left:1px solid var(--line)}
+    nav.side a.sublink{padding:6px 10px;font-size:12px;border-radius:6px;color:var(--dim);gap:6px}
+    nav.side a.sublink:hover{background:var(--panel2);color:var(--fg)}
+    nav.side a.sublink.on{background:var(--panel2);color:var(--fg);font-weight:600}
+    @media(min-width:721px){ .proj-picker{display:none !important} }
     main.view{flex:1;overflow-y:auto;padding:22px 26px 60px}
     section.page{display:none;max-width:900px;margin:0 auto}
     section.page.on{display:block;animation:fade .2s ease}
@@ -532,7 +537,8 @@ function migrate(){ S.errands=S.errands||[]; S.inbox=S.inbox||[]; S.dayPlan=S.da
     if(!S.settings.reminders) S.settings.reminders={enabled:false,morning:"08:30",evening:"21:00"};
     S.settings.reminderLog=S.settings.reminderLog||{};
     // new task + library fields on existing data
-    S.projects.forEach(p=>p.tasks.forEach(tk=>{ if(!tk.col)tk.col=tk.done?"done":"todo"; if(!tk.subtasks)tk.subtasks=[]; if(tk.notes===undefined)tk.notes=""; if(tk.link===undefined)tk.link=""; if(tk.due===undefined)tk.due=null; }));
+    S.projects.forEach(p=>{ if(!p.sprint) p.sprint={active:false,start:null,end:null};
+        p.tasks.forEach(tk=>{ if(!tk.col)tk.col=tk.done?"done":"todo"; if(!tk.subtasks)tk.subtasks=[]; if(tk.notes===undefined)tk.notes=""; if(tk.link===undefined)tk.link=""; if(tk.due===undefined)tk.due=null; }); });
     S.library.forEach(l=>{ if(l.progress===undefined)l.progress=l.status==="done"?100:0; if(l.rating===undefined)l.rating=0; });
     // one-time: currently-reading = Leman Russ
     if(!S.settings._mLeman){ const lr=S.library.find(l=>/leman russ/i.test(l.title)); if(lr){ lr.status="consuming"; lr.progress=45; } S.settings._mLeman=true; }
@@ -549,13 +555,63 @@ function migrate(){ S.errands=S.errands||[]; S.inbox=S.inbox||[]; S.dayPlan=S.da
             ct("Compose & submit the board",4),
         ]});
         S.settings._compAdded=true;
+    }
+    // one-time: archive the completed "Urban Sculpture Challenge #8"
+    if(!S.settings._archUrban){
+        const up=S.projects.find(p=>/urban sculpture/i.test(p.name));
+        if(up){ up.tasks.forEach(t=>{ if(!t.done){ t.done=true; t.doneAt=todayStr(); t.col="done"; } }); up.archived=true; up.archivedAt=todayStr(); }
+        S.settings._archUrban=true;
+    }
+    // one-time: expand Masters — Studio with a curated psychology-of-architecture + data-science reading/watching plan
+    if(!S.settings._mastersCurated){
+        const mp=S.projects.find(p=>/^masters/i.test(p.name));
+        if(mp){
+            const mk=(title,est,link,notes,subs)=>({id:uid(),title,est,done:false,doneAt:null,today:null,col:"todo",
+                subtasks:(subs||[]).map(s=>({title:s,done:false})),notes:notes||"",link:link||"",due:null});
+            [
+              mk("Watch: How Architecture Affects Human Behaviour (playlist)",3,
+                 "https://www.youtube.com/playlist?list=PLPrDDV5Lf0vXzqau5dL9LnnyUR_gS31s_",
+                 "YouTube playlist · ~145 min (rounded to 3h). A primer on how the built environment shapes behaviour — good warm-up for the Cambridge psychology collaboration.",[]),
+              mk("Phenomenological psychology — sensory experience & feedback",4.5,
+                 "https://www.youtube.com/watch?v=Cl-MRNz4rmg",
+                 "Focus: the cognitive triggers & psychological feedback loops of space.\n• Read 2h — Pallasmaa, The Eyes of the Skin (book); read for cognitive/feedback cues, not just theory.\n• Watch 1h — Neuroscience & Architecture: can space take care of us? (F. Sanchez, TEDx) → the link.\n• Read 1.5h — Colin Ellard, Places of the Heart, ch. 1–3 (book).",
+                 ["Read: Eyes of the Skin — cognitive-trigger lens (2h)","Watch: Neuroscience & Architecture — Sanchez TEDx (1h)","Read: Places of the Heart, ch.1–3 (1.5h)"]),
+              mk("Cognitive architecture — biometrics & evolutionary perception",4.5,
+                 "https://www.youtube.com/watch?v=iV-EMA5g288",
+                 "Focus: how evolutionary psychology shapes our response to buildings.\n• Read 3h — Ann Sussman & Justin Hollander, Cognitive Architecture (book).\n• Watch 1.5h — how the brain builds spatial maps (place cells) → the link (A. Kirsanov).",
+                 ["Read: Cognitive Architecture — Sussman & Hollander (3h)","Watch: how the brain maps space (1.5h)"]),
+              mk("Space syntax — the mathematics of human movement",4.5,
+                 "https://www.spacesyntax.online/",
+                 "Focus: linking spatial networks to movement & co-presence.\n• Course 3h — Space Syntax Online Training Platform (UCL Bartlett) → the link.\n• Read 1.5h — Hillier & Hanson, The Social Logic of Space, ch. 1–2 → free scan: archive.org/details/sociallogicofspa0000hill",
+                 ["Course: Space Syntax Online Training, modules 1–3 (3h)","Read: Social Logic of Space, ch.1–2 (1.5h)"]),
+              mk("Spatial data science — behavioural data + urban models",4.5,
+                 "https://geodacenter.github.io/",
+                 "Focus: integrating behavioural data with spatial models.\n• Read 2h — Anselin, Introduction to Spatial Data Science with GeoDa (free online book) → the link. Lectures: youtube.com/geodacenter\n• Practical 2.5h — Python stack: Pandas + GeoPandas (geopandas.org) on a spatial+behavioural dataset.",
+                 ["Read: GeoDa intro to spatial data science (2h)","Practical: Pandas + GeoPandas on a spatial dataset (2.5h)"]),
+              mk("Parametric psychology — scripting human-centric metrics",4.5,"",
+                 "Focus: making cognition measurable in the model.\n• Read 1.5h — papers on isovist analysis & visual permeability in spatial cognition.\n• Practical 3h — map wayfinding/isovist metrics in Grasshopper; try the DeCodingSpaces Toolbox (isovist + PedSim crowd sim) — search 'DeCodingSpaces Toolbox Grasshopper'.",
+                 ["Read: isovist & visual-permeability papers (1.5h)","Practical: isovist + PedSim in Grasshopper (3h)"]),
+              mk("Environmental psychology — restoration & public life",4.5,"",
+                 "Focus: attention restoration & how people use public space.\n• Read 2.5h — R. & S. Kaplan, The Experience of Nature — Attention Restoration Theory (book).\n• Read 2h — Jan Gehl, Life Between Buildings (book).",
+                 ["Read: The Experience of Nature — ART (2.5h)","Read: Life Between Buildings — Gehl (2h)"]),
+              mk("Predictive behavioural modelling — ML for spatial use",4,"",
+                 "Focus: forecasting how space gets used.\n• Read 2h — papers using computer vision to map human interaction in the built environment.\n• Practical 2h — adapt node-based AI workflows (beyond image-gen) to process/predict spatial-utilisation data.",
+                 ["Read: CV-for-behaviour-mapping papers (2h)","Practical: node-based AI on spatial-use data (2h)"]),
+              mk("Interdisciplinary translation — data ↔ the mind",4.5,
+                 "https://www.ucl.ac.uk/bartlett/architecture/research/space-syntax-laboratory",
+                 "Focus: bridging analytics and psychological outcomes (your actual Cambridge brief).\n• Study 3h — UCL Space Syntax Lab case studies, esp. healthcare design → the link.\n• Synthesise 1.5h — draft a framework mapping psychological variables (stress, social cohesion) to measurable metrics (visual integration, light levels).",
+                 ["Study: UCL Space Syntax Lab healthcare cases (3h)","Synthesise: variables → metrics framework (1.5h)"]),
+            ].forEach(t=>mp.tasks.push(t));
+        }
+        S.settings._mastersCurated=true;
     } }
 migrate();
 function save(){ S._updatedAt=Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); if(sync.on && !sync.applying) sync.push(); }
 function commit(){ save(); renderAll(); }
 
 /* ---------------- helpers ---------------- */
-const allTasks = () => S.projects.flatMap(p => p.tasks.map(t => ({...t, _pid:p.id, _pname:p.name, _color:p.color})));
+const activeProjects = () => S.projects.filter(p => !p.archived);
+const allTasks = () => activeProjects().flatMap(p => p.tasks.map(t => ({...t, _pid:p.id, _pname:p.name, _color:p.color})));
 const projStats = p => { const d=p.tasks.filter(t=>t.done).length, tot=p.tasks.length;
     const hDone=p.tasks.filter(t=>t.done).reduce((a,t)=>a+(+t.est||0),0);
     const hTot=p.tasks.reduce((a,t)=>a+(+t.est||0),0);
@@ -579,7 +635,14 @@ function renderAll(){ renderNav(); renderToday(); renderTomorrow(); renderReset(
 function renderNav(){
     const side=document.getElementById("navSide"), bot=document.getElementById("navBottom");
     const cur=location.hash.slice(1)||"today";
-    side.innerHTML = NAV.map(n=>`<a data-go="${n.id}" class="${n.id===cur?'on':''}"><span class="i">${n.icon}</span>${n.label}</a>`).join("");
+    side.innerHTML = NAV.map(n=>{
+        let h=`<a data-go="${n.id}" class="${n.id===cur?'on':''}"><span class="i">${n.icon}</span>${n.label}</a>`;
+        if(n.id==="projects"){
+            h+=`<div class="subnav">`+activeProjects().map(p=>`<a data-go="projects" data-proj="${p.id}" class="sublink ${(cur==='projects'&&selProject===p.id)?'on':''}"><span class="dotc" style="background:${p.color};flex:0 0 8px;width:8px;height:8px"></span>${esc(p.name)}</a>`).join("")
+              +`<a data-go="projects" data-newproj="1" class="sublink" style="color:var(--accent)">＋ New project</a></div>`;
+        }
+        return h;
+    }).join("");
     bot.innerHTML  = NAV.map(n=>`<a data-go="${n.id}" class="${n.id===cur?'on':''}"><span class="i">${n.icon}</span>${n.label}</a>`).join("");
 }
 function route(){
@@ -795,63 +858,82 @@ function wireTaskRows(scope){
     });
 }
 
-/* ----- PROJECTS ----- */
+/* ----- PROJECTS (one subtab per project; each has its own List / Board / Sprint) ----- */
 let projectsView="list";
+let selProject=null;
 function newTask(title,est){ return {id:uid(),title,est:est||1,done:false,doneAt:null,today:null,col:"todo",subtasks:[],notes:"",link:"",due:null}; }
 function taskCol(t){ return t.done?"done":(t.col==="doing"?"doing":"todo"); }
 function setTaskCol(t,col){ if(col==="done"){ t.done=true; t.doneAt=todayStr(); t.col="done"; } else { t.done=false; t.doneAt=null; t.col=col; } }
 function projDeadlineBadge(p){ if(!p.deadline) return ""; const n=daysUntil(p.deadline); const cls=n<0?"overdue":n<=3?"soon":""; return `<span class="subbadge ${cls}">⏳ ${n<0?"overdue":n+"d"}</span>`; }
+const PROJ_COLORS=["#37c7a6","#e0a52b","#e2657a","#b08cff","#5aa9e6"];
+function addProjectByName(v){ const np={id:uid(),name:v,color:PROJ_COLORS[S.projects.length%PROJ_COLORS.length],phase:"—",tasks:[],sprint:{active:false,start:null,end:null}}; S.projects.push(np); selProject=np.id; projectsView="list"; commit(); }
+function addProjectPrompt(){ const v=prompt("New project name:"); if(v&&v.trim()) addProjectByName(v.trim()); }
+function archiveProject(pid){ const p=S.projects.find(x=>x.id===pid); if(!p)return;
+    if(!confirm(`Archive "${p.name}"?\nIt moves to the Roadmap (Completed & archived) and leaves your project list.`))return;
+    p.tasks.forEach(t=>{ if(!t.done){ t.done=true; t.doneAt=todayStr(); t.col="done"; } });
+    p.archived=true; p.archivedAt=todayStr(); selProject=null; commit(); }
 
 function renderProjects(){
     const el=document.getElementById("page-projects");
-    el.innerHTML=`<div class="row" style="gap:8px;margin:2px 0 14px">
+    const aps=activeProjects();
+    if(!aps.length){ el.innerHTML=`<div class="card"><h3 style="margin:0 0 8px">No active projects</h3>
+        <div class="addrow"><input class="ipt" id="newProj" placeholder="New project name…" style="flex:1"><button class="btn acc" id="newProjBtn">＋ Project</button></div></div>`;
+        el.querySelector("#newProjBtn").onclick=()=>{ const v=el.querySelector("#newProj").value.trim(); if(v)addProjectByName(v); }; return; }
+    if(!aps.find(p=>p.id===selProject)) selProject=aps[0].id;
+    const p=aps.find(x=>x.id===selProject), s=projStats(p);
+    el.innerHTML=`
+      <div class="proj-picker row" style="gap:8px;margin:0 0 12px">
+        <select class="ipt" id="projSel" style="flex:1">${aps.map(x=>`<option value="${x.id}" ${x.id===selProject?'selected':''}>${esc(x.name)}</option>`).join("")}</select>
+        <button class="btn" id="newProjBtn2" title="New project">＋</button>
+      </div>
+      <div class="proj-head" style="margin:0 0 10px">
+        <span class="dotc" style="background:${p.color}"></span>
+        <h2 style="margin:0;font-size:18px">${esc(p.name)}</h2>
+        <span class="pill">${p.phase}</span>${projDeadlineBadge(p)}
+        <div class="spacer"></div>
+        <span class="mono small muted">${s.d}/${s.tot} · ${s.hDone}/${s.hTot}h</span>
+        <button class="mini" id="archProj" title="Archive — mark done & move to Roadmap">🗄</button>
+      </div>
+      <div class="bar" style="margin:0 0 14px"><i style="width:${s.pct}%;background:${p.color}"></i></div>
+      <div class="row" style="gap:8px;margin:0 0 14px">
         <button class="btn sm ${projectsView==='list'?'acc':''}" data-pv="list">List</button>
         <button class="btn sm ${projectsView==='board'?'acc':''}" data-pv="board">Board</button>
         <button class="btn sm ${projectsView==='sprint'?'acc':''}" data-pv="sprint">Sprint</button></div>
       <div id="pjBody"></div>`;
+    el.querySelector("#projSel").onchange=e=>{ selProject=e.target.value; renderProjects(); renderNav(); };
+    el.querySelector("#newProjBtn2").onclick=addProjectPrompt;
+    el.querySelector("#archProj").onclick=()=>archiveProject(p.id);
     el.querySelectorAll("[data-pv]").forEach(b=>b.onclick=()=>{ projectsView=b.dataset.pv; renderProjects(); });
     const box=document.getElementById("pjBody");
-    if(projectsView==="board") renderBoard(box);
-    else if(projectsView==="sprint") renderSprint(box);
-    else renderProjList(box);
+    if(projectsView==="board") renderBoard(box,p);
+    else if(projectsView==="sprint") renderSprint(box,p);
+    else renderProjList(box,p);
+    const sel=document.querySelector('nav.side .sublink.on');   // keep sidebar highlight synced
+    if(!sel) renderNav();
 }
-function renderProjList(el){
-    el.innerHTML=`${S.projects.map(p=>{ const s=projStats(p); return `
-        <div class="card">
-          <div class="proj-head">
-            <span class="dotc" style="background:${p.color}"></span>
-            <h3 style="margin:0">${esc(p.name)}</h3>
-            <span class="pill">${p.phase}</span>${projDeadlineBadge(p)}
-            <div class="spacer"></div>
-            <span class="mono small muted">${s.d}/${s.tot} · ${s.hDone}/${s.hTot}h</span>
-          </div>
-          <div class="bar" style="margin:12px 0"><i style="width:${s.pct}%;background:${p.color}"></i></div>
-          <div>${p.tasks.map(t=>taskRow({...t,_pid:p.id})).join("")}</div>
-          <div class="addrow">
-            <input class="ipt" data-addtask="${p.id}" placeholder="Add a task…" style="flex:1">
-            <input class="ipt" data-addest="${p.id}" placeholder="hrs" style="width:70px">
-            <button class="btn" data-addbtn="${p.id}">＋</button>
-          </div>
-        </div>`; }).join("")}
-      <div class="card"><div class="addrow"><input class="ipt" id="newProj" placeholder="New project name…"><button class="btn acc" id="newProjBtn">＋ Project</button></div></div>`;
+function renderProjList(el,p){
+    el.innerHTML=`<div class="card">
+        <div>${p.tasks.length?p.tasks.map(t=>taskRow({...t,_pid:p.id})).join(""):'<div class="small muted">No tasks yet — add your first below.</div>'}</div>
+        <div class="addrow" style="margin-top:10px">
+          <input class="ipt" id="addtask" placeholder="Add a task…" style="flex:1">
+          <input class="ipt" id="addest" placeholder="hrs" style="width:70px">
+          <button class="btn" id="addbtn">＋</button>
+        </div></div>`;
     wireTaskRows(el);
-    el.querySelectorAll("[data-addbtn]").forEach(b=>b.onclick=()=>{ const pid=b.dataset.addbtn;
-        const ti=el.querySelector(`[data-addtask="${pid}"]`), ei=el.querySelector(`[data-addest="${pid}"]`);
-        const v=ti.value.trim(); if(!v)return; const p=S.projects.find(x=>x.id===pid);
-        p.tasks.push(newTask(v, parseFloat(ei.value)||1)); commit(); });
-    el.querySelector("#newProjBtn").onclick=()=>{ const v=el.querySelector("#newProj").value.trim(); if(!v)return;
-        const colors=["#37c7a6","#e0a52b","#e2657a","#b08cff","#5aa9e6"];
-        S.projects.push({id:uid(),name:v,color:colors[S.projects.length%colors.length],phase:"—",tasks:[]}); commit(); };
+    const add=()=>{ const ti=el.querySelector("#addtask"), ei=el.querySelector("#addest"); const v=ti.value.trim(); if(!v)return;
+        p.tasks.push(newTask(v, parseFloat(ei.value)||1)); commit(); };
+    el.querySelector("#addbtn").onclick=add;
+    el.querySelector("#addtask").addEventListener("keydown",e=>{ if(e.key==="Enter") add(); });
 }
-function renderBoard(el){
+function renderBoard(el,p){
     const cols=[["todo","To do"],["doing","Doing"],["done","Done"]];
-    const tasks=allTasks();
+    const tasks=p.tasks.map(t=>({...t,_pid:p.id,_color:p.color}));
     el.innerHTML=`<div class="kb">${cols.map(([c,label])=>`
         <div class="kb-col"><div class="kb-h">${label} <span>${tasks.filter(t=>taskCol(t)===c).length}</span></div>
           <div class="kb-list" data-col="${c}">${tasks.filter(t=>taskCol(t)===c).map(t=>`
             <div class="kb-card" draggable="true" data-tid="${t.id}" data-pid="${t._pid}" style="border-left:3px solid ${t._color}">
               <div class="kb-title">${esc(t.title)}</div>
-              <div class="kb-meta"><span>${esc(t._pname)}</span><span class="mono">${fmtEst(t.est)}</span></div>
+              <div class="kb-meta"><span class="mono">${fmtEst(t.est)}</span></div>
             </div>`).join("")}</div></div>`).join("")}</div>
       <div class="small muted" style="margin-top:8px">Drag cards between columns · click a card for detail.</div>`;
     el.querySelectorAll(".kb-card").forEach(card=>{
@@ -865,26 +947,22 @@ function renderBoard(el){
         list.addEventListener("drop",e=>{ e.preventDefault(); list.classList.remove("drop"); const [pid,tid]=e.dataTransfer.getData("text").split("|"); const[,t]=findTask(pid,tid); if(!t)return; setTaskCol(t,list.dataset.col); commit(); });
     });
 }
-function renderSprint(el){
-    const sp=S.sprint;
+function renderSprint(el,p){
+    const sp=p.sprint||(p.sprint={active:false,start:null,end:null});
     if(!sp.active){
-        el.innerHTML=`<div class="card"><h3>Plan a 2-week sprint</h3>
-          <p class="small muted" style="margin-bottom:10px">Pick a few projects to focus on. Everything else fades for two weeks — less to hold in your head.</p>
-          ${S.projects.map(p=>`<div class="bound ${sp.projectIds.includes(p.id)?'on':''}" data-sp="${p.id}"><div class="chk">${sp.projectIds.includes(p.id)?'✓':''}</div><span><span class="dotc" style="display:inline-block;background:${p.color};margin-right:6px"></span>${esc(p.name)}</span></div>`).join("")}
-          <button class="btn acc" id="startSprint" style="margin-top:12px">Start 2-week sprint</button></div>`;
-        el.querySelectorAll("[data-sp]").forEach(l=>l.onclick=()=>{ const id=l.dataset.sp, i=sp.projectIds.indexOf(id); if(i>=0)sp.projectIds.splice(i,1); else sp.projectIds.push(id); save(); renderSprint(el); });
-        el.querySelector("#startSprint").onclick=()=>{ if(!sp.projectIds.length){ toast("Pick at least one project"); return; } sp.active=true; sp.start=todayStr(); sp.end=new Date(Date.now()+14*864e5).toLocaleDateString("en-CA"); commit(); };
+        el.innerHTML=`<div class="card"><h3 style="margin:0 0 6px">Sprint · ${esc(p.name)}</h3>
+          <p class="small muted" style="margin-bottom:12px">Commit to a focused 2-week push on this project. You'll get a countdown and just this project's open tasks.</p>
+          <button class="btn acc" id="startSprint">Start 2-week sprint</button></div>`;
+        el.querySelector("#startSprint").onclick=()=>{ sp.active=true; sp.start=todayStr(); sp.end=new Date(Date.now()+14*864e5).toLocaleDateString("en-CA"); commit(); };
         return;
     }
     const daysLeft=Math.max(0,Math.ceil((new Date(sp.end)-new Date(todayStr()))/864e5));
-    const ps=S.projects.filter(p=>sp.projectIds.includes(p.id));
-    const allT=ps.reduce((a,p)=>a+p.tasks.length,0), doneT=ps.reduce((a,p)=>a+p.tasks.filter(t=>t.done).length,0);
+    const open=p.tasks.filter(t=>!t.done), s=projStats(p);
     el.innerHTML=`<div class="card"><div class="row"><h3 style="margin:0">Sprint focus</h3><div class="spacer"></div><span class="pill mono">${daysLeft} days left</span></div>
-        <div class="bar" style="margin:10px 0"><i style="width:${allT?Math.round(100*doneT/allT):0}%"></i></div>
-        <div class="small muted">${sp.start} → ${sp.end} · ${doneT}/${allT} tasks · ${ps.length} project(s)</div>
+        <div class="bar" style="margin:10px 0"><i style="width:${s.pct}%;background:${p.color}"></i></div>
+        <div class="small muted">${sp.start} → ${sp.end} · ${s.d}/${s.tot} tasks done</div>
         <button class="btn sm" id="endSprint" style="margin-top:10px">End sprint</button></div>
-      ${ps.map(p=>{ const open=p.tasks.filter(t=>!t.done); return `<div class="card"><div class="row"><span class="dotc" style="background:${p.color}"></span><h3 style="margin:0">${esc(p.name)}</h3>${projDeadlineBadge(p)}<div class="spacer"></div><span class="mono small muted">${projStats(p).d}/${projStats(p).tot}</span></div>
-        <div style="margin-top:8px">${open.length?open.map(t=>taskRow({...t,_pid:p.id})).join(""):'<div class="small muted">All done 🎉</div>'}</div></div>`; }).join("")}`;
+      <div class="card"><h3 style="margin:0 0 8px">Open tasks</h3>${open.length?open.map(t=>taskRow({...t,_pid:p.id})).join(""):'<div class="small muted">All done 🎉</div>'}</div>`;
     el.querySelector("#endSprint").onclick=()=>{ sp.active=false; commit(); };
     wireTaskRows(el);
 }
@@ -946,10 +1024,16 @@ function renderRoadmap(){
     el.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>{ roadmapView=b.dataset.rv; renderRoadmap(); });
     const box=document.getElementById("rmBody");
     if(roadmapView==="plan") renderPlan(box); else renderTree(box);
+    const arch=S.projects.filter(p=>p.archived);
+    if(arch.length){
+        el.insertAdjacentHTML("beforeend", `<div class="card" style="margin-top:14px"><h3>🏆 Completed &amp; archived <span class="muted small">— done, off the active list</span></h3>`+
+          arch.map(p=>{ const s=projStats(p); return `<div class="row small" style="padding:5px 0"><span class="dotc" style="background:${p.color}"></span>${esc(p.name)} <span class="pill">done</span><div class="spacer"></div><span class="mono muted">${s.d}/${s.tot} · ${p.archivedAt||""}</span><button class="mini" data-restore="${p.id}" title="Restore to project list">↩</button></div>`; }).join("")+`</div>`);
+        el.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>{ const p=S.projects.find(x=>x.id===b.dataset.restore); if(p){ p.archived=false; commit(); } });
+    }
 }
 function renderPlan(box){
     const ts=allTasks(); const overall=ts.length?Math.round(100*ts.filter(t=>t.done).length/ts.length):0;
-    const withDl=S.projects.filter(p=>p.deadline).map(p=>({p,n:daysUntil(p.deadline)})).sort((a,b)=>a.n-b.n);
+    const withDl=activeProjects().filter(p=>p.deadline).map(p=>({p,n:daysUntil(p.deadline)})).sort((a,b)=>a.n-b.n);
     let dlHtml="";
     if(withDl.length){ const {p,n}=withDl[0]; const col=n<0?"var(--warn)":n<=3?"var(--accent2)":"var(--accent)";
         dlHtml=`<div class="card"><div class="row"><h3 style="margin:0">⏳ Next deadline</h3><div class="spacer"></div><span class="mono" style="color:${col};font-size:19px">${n<0?"overdue":n+" days"}</span></div>
@@ -959,10 +1043,10 @@ function renderPlan(box){
       <div class="card"><div class="row"><h3 style="margin:0">Overall progress</h3><div class="spacer"></div><span class="mono">${overall}%</span></div>
         <div class="bar" style="margin-top:10px"><i style="width:${overall}%"></i></div>
         <div class="small muted" style="margin-top:6px">Your full 2-year plan, live from your task completion.</div></div>`;
-    const cont=S.projects.filter(p=>p.phase==="Continuous");
+    const cont=activeProjects().filter(p=>p.phase==="Continuous");
     if(cont.length){ html+=`<div class="card"><h3>Continuous tracks <span class="muted small">— run the whole two years</span></h3>`+
         cont.map(p=>{const s=projStats(p);return `<div class="row small" style="padding:4px 0"><span class="dotc" style="background:${p.color}"></span>${esc(p.name)}<div class="spacer"></div><div class="bar" style="width:110px;margin:0 8px"><i style="width:${s.pct}%;background:${p.color}"></i></div><span class="mono muted">${s.pct}%</span></div>`;}).join("")+`</div>`; }
-    PLAN_PHASES.forEach(ph=>{ const ps=S.projects.filter(p=>p.phase===ph.id);
+    PLAN_PHASES.forEach(ph=>{ const ps=activeProjects().filter(p=>p.phase===ph.id);
         const tot=ps.reduce((a,p)=>a+p.tasks.length,0), d=ps.reduce((a,p)=>a+p.tasks.filter(t=>t.done).length,0), pct=tot?Math.round(100*d/tot):0;
         html+=`<div class="card"><div class="row" style="flex-wrap:wrap;gap:6px"><span class="pill mono">${ph.time}</span><h3 style="margin:0">${ph.name}</h3><div class="spacer"></div><span class="mono small">${pct}%</span></div>
           <div class="bar" style="margin:10px 0"><i style="width:${pct}%"></i></div>
@@ -972,14 +1056,14 @@ function renderPlan(box){
 }
 function renderTree(el){
     const W=1200,H=840,cx=W/2,cy=H/2;
-    const phaseList=PHASES.filter(ph=>S.projects.some(p=>p.phase===ph));
+    const phaseList=PHASES.filter(ph=>activeProjects().some(p=>p.phase===ph));
     const n=phaseList.length||1;
     const nodes=[], links=[];
     nodes.push({x:cx,y:cy,r:26,type:"core",label:"YOU",state:"core"});
     phaseList.forEach((ph,i)=>{
         const ang=(i/n)*2*Math.PI - Math.PI/2;
         const px=cx+Math.cos(ang)*155, py=cy+Math.sin(ang)*155;
-        const projs=S.projects.filter(p=>p.phase===ph);
+        const projs=activeProjects().filter(p=>p.phase===ph);
         const pdone=projs.reduce((a,p)=>a+p.tasks.filter(t=>t.done).length,0), ptot=projs.reduce((a,p)=>a+p.tasks.length,0);
         const pct=ptot?Math.round(100*pdone/ptot):0;
         nodes.push({x:px,y:py,r:16,type:"phase",label:ph.replace("Phase ","P").replace("Continuous","∞"),
@@ -1212,7 +1296,7 @@ function renderStats(){
           </div>`).join("")}
         </div></div>
       <div class="card"><h3>By project</h3>
-        ${S.projects.map(p=>{const s=projStats(p);return `<div class="row small" style="padding:5px 0"><span class="dotc" style="background:${p.color}"></span>${esc(p.name)}<div class="spacer"></div><div class="bar" style="width:120px;margin:0 10px"><i style="width:${s.pct}%;background:${p.color}"></i></div><span class="mono muted">${s.pct}%</span></div>`;}).join("")}
+        ${activeProjects().map(p=>{const s=projStats(p);return `<div class="row small" style="padding:5px 0"><span class="dotc" style="background:${p.color}"></span>${esc(p.name)}<div class="spacer"></div><div class="bar" style="width:120px;margin:0 10px"><i style="width:${s.pct}%;background:${p.color}"></i></div><span class="mono muted">${s.pct}%</span></div>`;}).join("")}
       </div>`;
 }
 
@@ -1425,7 +1509,7 @@ async function enableNotifs(){
     if(p==="granted"){ registerPeriodicSync(); startReminders(); showNotif("Kloef","Notifications on — I'll nudge you to plan and reset.",true); }
     else toast("Permission: "+p);
 }
-function competitionNudge(){ const c=S.projects.find(p=>p.deadline); if(!c) return ""; const n=daysUntil(c.deadline); return (n!=null&&n<=7)?` · ${c.name} in ${n<0?"overdue":n+"d"}`:""; }
+function competitionNudge(){ const c=activeProjects().find(p=>p.deadline); if(!c) return ""; const n=daysUntil(c.deadline); return (n!=null&&n<=7)?` · ${c.name} in ${n<0?"overdue":n+"d"}`:""; }
 function reminderTick(){
     const r=S.settings.reminders; if(!r||!r.enabled) return;
     if(!notifSupported()||Notification.permission!=="granted") return;
@@ -1482,7 +1566,11 @@ function unlock(){ document.getElementById("gate").style.display="none"; documen
 document.getElementById("gateInput").addEventListener("keydown",e=>{ if(e.key!=="Enter")return;
     if(e.target.value.trim().toLowerCase()==="kloef"){ unlock(); } else { document.getElementById("gateErr").textContent="nope."; e.target.value=""; } });
 
-document.addEventListener("click",e=>{ const a=e.target.closest("[data-go]"); if(a){ location.hash=a.dataset.go; } });
+document.addEventListener("click",e=>{ const a=e.target.closest("[data-go]"); if(!a) return;
+    if(a.dataset.newproj){ addProjectPrompt(); if(location.hash.slice(1)!=="projects") location.hash="projects"; return; }
+    if(a.dataset.proj){ selProject=a.dataset.proj; renderProjects(); }
+    if(location.hash.slice(1)===a.dataset.go){ renderNav(); } else { location.hash=a.dataset.go; }
+});
 window.addEventListener("hashchange",route);
 document.getElementById("lockBtn").onclick=()=>{ sessionStorage.removeItem("kloefUnlocked"); location.reload(); };
 
